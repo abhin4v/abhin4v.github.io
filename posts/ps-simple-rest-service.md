@@ -1,8 +1,8 @@
-At [Nilenso], we've been working with a client who has chosen [Purescript] as their primary programming language. Since I didn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.
+At [Nilenso], we've been working with a client who has chosen [Purescript] as their primary programming language. Since I couldn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.
 
-The aim of this two part tutorial is to create a simple JSON REST service written in purescript, to run on a node.js server. This assumes that you have basic proficiency with purescript. We have the following requirements:
+The aim of this two-part tutorial is to create a simple JSON [REST] service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
 
-1. persisting users into a postgres database.
+1. persisting users into a Postgres database.
 2. API endpoints for creating, updating, reading, listing and deleting users.
 3. validation of API requests.
 4. logging HTTP requests and debugging info.
@@ -13,14 +13,14 @@ The aim of this two part tutorial is to create a simple JSON REST service writte
 
 ## Setting Up
 
-We start with installing purescript and the required tools. This assumes that we have [node] and [npm] installed on our machine.
+We start with installing Purescript and the required tools. This assumes that we have [node] and [npm] installed on our machine.
 
 ```bash
 $ mkdir -p ~/.local/
 $ npm install -g purescript pulp bower --prefix ~/.local/
 ```
 
-[Pulp] is a build tool for purescript projects and [bower] is a package manager used to get purescript libraries. You'll have to add `~/.local/bin` in your `$PATH` (if it is not already added) to access the binaries installed.
+[Pulp] is a build tool for Purescript projects and [bower] is a package manager used to get Purescript libraries. We'll have to add `~/.local/bin` in our `$PATH` (if it is not already added) to access the binaries installed.
 
 Let's create a directory for our project and make Pulp initialize it:
 
@@ -51,7 +51,7 @@ $ ls bower_components
 purescript-console  purescript-eff  purescript-prelude purescript-psci-support
 ```
 
-Pulp creates the basic project structure for us. `src` directory will contain the source while the `test` directory will contain the tests. `bower.json` contains the purescript libraries as dependencies which are downloaded and installed in the `bower_components` directory.
+Pulp creates the basic project structure for us. `src` directory will contain the source while the `test` directory will contain the tests. `bower.json` contains the Purescript libraries as dependencies which are downloaded and installed in the `bower_components` directory.
 
 ## Types First
 
@@ -86,13 +86,13 @@ instance encodeUser :: Encode User where
   encode = genericEncode $ defaultOptions { unwrapSingleConstructors = true }
 ```
 
-We are using the generic support for purescript types from the [`purescript-generics-rep`][2] and [`purescript-foreign-generic`][1] libraries to encode and decode the `User` type to JSON. We install the library by running the following command:
+We are using the generic support for Purescript types from the [`purescript-generics-rep`][2] and [`purescript-foreign-generic`][1] libraries to encode and decode the `User` type to JSON. We install the library by running the following command:
 
 ```bash
-bower install purescript-foreign-generic --save
+$ bower install purescript-foreign-generic --save
 ```
 
-Now we can load up the module in the purescript REPL and try out the JSON conversion features:
+Now we can load up the module in the Purescript REPL and try out the JSON conversion features:
 
 ```haskell
 $ pulp repl
@@ -115,10 +115,10 @@ $ pulp repl
 (Right (User { id: 1, name: "Abhinav" }))
 ```
 
-We use `encodeJSON` and `decodeJSON` functions from [`Data.Foreign.Generic`][6] module to encode and decode the `User` instance to JSON. The return type of `decodeJSON` is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a `Right` with the correctly parsed `User` instance.
+We use `encodeJSON` and `decodeJSON` functions from the [`Data.Foreign.Generic`][6] module to encode and decode the `User` instance to JSON. The return type of `decodeJSON` is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a `Right` with the correctly parsed `User` instance.
 
 ## Persisting It
-Next, we add the support for saving a `User` instance to a postgres DB. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for purescript wrapper over `pg`:
+Next, we add the support for saving a `User` instance to a Postgres DB. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call Postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for Purescript wrapper over `pg`:
 
 ```bash
 $ npm init -y
@@ -127,7 +127,7 @@ $ bower install purescript-aff --save
 $ bower install purescript-postgresql-client --save
 ```
 
-Before writing the code, we create the database and users table using the command-line postgres client:
+Before writing the code, we create the database and the `users` table using the command-line Postgres client:
 
 ```
 $ psql postgres
@@ -150,7 +150,7 @@ Indexes:
     "users_pkey" PRIMARY KEY, btree (id)
 ```
 
-Now we add support for converting a `User` instance to and from an SQL row by adding the following code in the `src/SimpleServer/Types.purs` file:
+Now we add support for converting a `User` instance to-and-from an SQL row by adding the following code in the `src/SimpleServer/Types.purs` file:
 
 ```haskell
 import Data.Array as Array
@@ -170,7 +170,7 @@ instance userToSQLRow :: ToSQLRow User where
   toSQLRow (User {id, name}) = [toSQLValue id, toSQLValue name]
 ```
 
-We can try out the persistence in the REPL:
+We can try out the persistence support in the REPL:
 
 ```haskell
 $ pulp repl
@@ -206,7 +206,7 @@ unit
 (User { id: 1, name: "Abhinav" })
 ```
 
-We create the `databaseConfig` record with the configs needed to connect to the database. Using the recond, we create a new postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
+We create the `databaseConfig` record with the configs needed to connect to the database. Using the recond, we create a new Postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
 
 Similarly, in the second part, we query the table using `PG.query` function by calling it with a connection, the SQL select query and the `User` ID as the query parameter. It returns an `Array` of users which we log to the console using the `logShow` function.
 
@@ -218,6 +218,7 @@ module SimpleServer.Persistence
   , findUser
   , updateUser
   , deleteUser
+  , listUsers
   ) where
 
 import Prelude
@@ -243,32 +244,42 @@ deleteUserQuery = "delete from users where id = $1"
 listUsersQuery :: String
 listUsersQuery = "select id, name from users"
 
-insertUser :: forall eff. PG.Connection -> User -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
-insertUser conn user = PG.execute conn (PG.Query insertUserQuery) user
+insertUser :: forall eff. PG.Connection -> User
+           -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
+insertUser conn user =
+  PG.execute conn (PG.Query insertUserQuery) user
 
-findUser :: forall eff. PG.Connection -> UserID -> Aff (postgreSQL :: PG.POSTGRESQL | eff) (Maybe User)
-findUser conn userID = map Array.head $ PG.query conn (PG.Query findUserQuery) (PG.Row1 userID)
+findUser :: forall eff. PG.Connection -> UserID
+         -> Aff (postgreSQL :: PG.POSTGRESQL | eff) (Maybe User)
+findUser conn userID =
+  map Array.head $ PG.query conn (PG.Query findUserQuery) (PG.Row1 userID)
 
-updateUser :: forall eff. PG.Connection -> User -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
-updateUser conn (User {id, name}) = PG.execute conn (PG.Query updateUserQuery) (PG.Row2 name id)
+updateUser :: forall eff. PG.Connection -> User
+           -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
+updateUser conn (User {id, name}) =
+  PG.execute conn (PG.Query updateUserQuery) (PG.Row2 name id)
 
-deleteUser :: forall eff. PG.Connection -> UserID -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
-deleteUser conn userID = PG.execute conn (PG.Query deleteUserQuery) (PG.Row1 userID)
+deleteUser :: forall eff. PG.Connection -> UserID
+           -> Aff (postgreSQL :: PG.POSTGRESQL | eff) Unit
+deleteUser conn userID =
+  PG.execute conn (PG.Query deleteUserQuery) (PG.Row1 userID)
 
-listUsers :: forall eff. PG.Connection -> Aff (postgreSQL :: PG.POSTGRESQL | eff) (Array User)
-listUsers conn = PG.query conn (PG.Query listUsersQuery) PG.Row0
+listUsers :: forall eff. PG.Connection
+          -> Aff (postgreSQL :: PG.POSTGRESQL | eff) (Array User)
+listUsers conn =
+  PG.query conn (PG.Query listUsersQuery) PG.Row0
 ```
 
 ## Serving It
 
-We can now write a simple HTTP API over the persistence layer using [express] to provide CRUD functionality for users. Let's install express and [purescript-express], the purescript wrapper over it:
+We can now write a simple HTTP API over the persistence layer using [express] to provide CRUD functionality for users. Let's install express and [purescript-express], the Purescript wrapper over it:
 
 ```bash
 $ npm install express --save
 $ bower install purescript-express --save
 ```
 
-### Getting User
+### Getting a User
 
 We do this top-down. First, we change `src/Main.purs` to run the HTTP server by providing the server port and database configuration:
 
@@ -307,11 +318,10 @@ module SimpleService.Server (runServer) where
 
 import Prelude
 
-import Control.Monad.Aff (launchAff)
+import Control.Monad.Aff (runAff)
 import Control.Monad.Eff (Eff)
 import Control.Monad.Eff.Class (liftEff)
 import Control.Monad.Eff.Console (CONSOLE, log, logShow)
-import Control.Monad.Eff.Exception (catchException)
 import Database.PostgreSQL as PG
 import Node.Express.App (App, get, listenHttp)
 import Node.Express.Types (EXPRESS)
@@ -328,12 +338,10 @@ runServer :: forall eff.
                  , postgreSQL :: PG.POSTGRESQL
                  , console :: CONSOLE
                  | eff ) Unit
-runServer port databaseConfig = catchException logShow $
-  void $ launchAff do
-    pool <- PG.newPool databaseConfig
-    let app' = app pool
-    liftEff $ listenHttp app' port \_ -> log $ "Server listening on :" <> show port
-
+runServer port databaseConfig =  void $ runAff logShow pure do
+  pool <- PG.newPool databaseConfig
+  let app' = app pool
+  void $ liftEff $ listenHttp app' port \_ -> log $ "Server listening on :" <> show port
 ```
 
 `runServer` creates a PostgreSQL connection pool and passes it to the `app` function which creates the express application, which in turn, binds it to the handler `getUser`. Then it launches the HTTP server by calling `listenHttp`.
@@ -377,7 +385,7 @@ respondNoContent status = do
 
 `getUser` validates the route parameter for valid user ID, sending error HTTP responses in case of failures. It then calls `findUser` to find the user and returns appropriate response.
 
-We can test this on command line using [HTTPie]. We run `pulp --watch run` in one terminal to start the server with file watching, and test it from another terminal:
+We can test this on the command-line using [HTTPie]. We run `pulp --watch run` in one terminal to start the server with file watching, and test it from another terminal:
 
 ```bash
 $ pulp --watch run
@@ -430,14 +438,14 @@ X-Powered-By: Express
 }
 ```
 
-### Deleting User
+### Deleting a User
 
 `deleteUser` handler is similar. We add the route in the `app` function in the `src/SimpleService/Server.purs` file:
 
 ```haskell
 -- previous code
 import Node.Express.App (App, delete, get, listenHttp)
-import SimpleService.Handler (createUser, deleteUser, getUser)
+import SimpleService.Handler (deleteUser, getUser)
 -- previous code
 
 app :: forall eff. PG.Pool -> App (postgreSQL :: PG.POSTGRESQL | eff)
@@ -523,9 +531,9 @@ X-Powered-By: Express
 }
 ```
 
-### Creating User
+### Creating a User
 
-`createUser` handler is a bit more involved. First, we need to add an express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through purescript FFI. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
+`createUser` handler is a bit more involved. First, we add an express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through Purescript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
 
 ```javascript
 "use strict";
@@ -546,10 +554,11 @@ import Prelude
 import Data.Function.Uncurried (Fn3)
 import Node.Express.Types (ExpressM, Response, Request)
 
-foreign import jsonBodyParser :: forall e. Fn3 Request Response (ExpressM e Unit) (ExpressM e Unit)
+foreign import jsonBodyParser ::
+  forall e. Fn3 Request Response (ExpressM e Unit) (ExpressM e Unit)
 ```
 
-We also need to install the `body-parser` npm dependency:
+We also install the `body-parser` npm dependency:
 
 ```bash
 $ npm install --save body-parser
@@ -655,7 +664,7 @@ X-Powered-By: Express
 
 First try returns a parsing failure because we didn't provide the `id` field. Second try is a validation failure because the name was empty. Third try is a success which we check by doing a `GET` request next.
 
-### Updating User
+### Updating a User
 
 We want to allow a user's name to be updated through the API, but not the user's id. So we add a new type to `src/SimpleService/Types.purs` to represent a possible change in user's name:
 
@@ -672,7 +681,7 @@ instance decodeUserPatch :: Decode UserPatch where
   decode = genericDecode $ defaultOptions { unwrapSingleConstructors = true }
 ```
 
-`NullOrUndefined` is a wrapper over `Maybe` with added support for Javascript `null` and `undefined` values. We define `UserPatch` as having a possibly null (or undefined) `name` field.
+[`NullOrUndefined`][11] is a wrapper over `Maybe` with added support for Javascript `null` and `undefined` values. We define `UserPatch` as having a possibly null (or undefined) `name` field.
 
 Now we can add the corresponding handler in `src/SimpleService/Handlers.purs`:
 
@@ -705,7 +714,7 @@ updateUser pool = getRouteParam "id" >>= case _ of
               Just user -> respond 200 (encode user)
 ```
 
-After checking for a valid user ID as before, we get the decoded request body as a `UserPatch` instance. If the path does not have the name field or has it as `null`, there is nothing to do and we respond with a 204 status. If the user name is present in the patch, we validate it for non-emptiness. Then, within a DB transaction, we try to find the user with the given ID, responding with a 404 status if the user is not found. If the user is found, we update the user's name in the database, and respond with a 200 status and the saved user encoded as JSON response body.
+After checking for a valid user ID as before, we get the decoded request body as a `UserPatch` instance. If the path does not have the name field or has it as `null`, there is nothing to do and we respond with a 204 status. If the user name is present in the patch, we validate it for non-emptiness. Then, within a DB transaction, we try to find the user with the given ID, responding with a 404 status if the user is not found. If the user is found, we update the user's name in the database, and respond with a 200 status and the saved user encoded as the JSON response body.
 
 Finally, we can add the route to our server's router in `src/SimpleService/Server.purs` to make the functionality available:
 
@@ -797,9 +806,9 @@ X-Powered-By: Express
 }
 ```
 
-### Listing Users
+### Listing all Users
 
-Listing users is quite simple since it doesn't require us to take any request parameter.
+Listing all users is quite simple since it doesn't require us to take any request parameter.
 
 We add the handler to the `src/SimpleService/Handler.purs` file:
 
@@ -862,7 +871,7 @@ X-Powered-By: Express
 
 ## Conclusion
 
-That concludes the first part of the two part tutorial. We learned how to set up a Purescript project, how to access a postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in [github][10]. In the next part, we'll learn how to do API validation, logging, database migrations and application configuration.
+That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in [github][10]. In the next part, we'll learn how to do API validation, logging, database migrations and application configuration.
 
 [Nilenso]: https://nilenso.com
 [Purescript]: http://purescript.org
@@ -873,6 +882,8 @@ That concludes the first part of the two part tutorial. We learned how to set up
 [node]: https://nodejs.org
 [npm]: https://www.npmjs.com
 [purescript-express]: https://pursuit.purescript.org/packages/purescript-express
+[REST]: https://en.wikipedia.org/wiki/REST
+[FFI]: https://github.com/purescript/documentation/blob/master/guides/FFI.md
 [1]: https://pursuit.purescript.org/packages/purescript-foreign-generic
 [2]: https://pursuit.purescript.org/packages/purescript-generics-rep
 [3]: https://pursuit.purescript.org/packages/purescript-postgresql-client
@@ -882,4 +893,5 @@ That concludes the first part of the two part tutorial. We learned how to set up
 [7]: https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff
 [8]: https://github.com/expressjs/body-parser
 [9]: https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody
-[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/a455268226ed072a3755ddda1f52d7cc5f8dd194
+[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc
+[11]: https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined
