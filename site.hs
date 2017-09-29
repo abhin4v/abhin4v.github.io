@@ -112,8 +112,8 @@ main = hakyll $ do
     compile $ do
       posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       let indexCtx =
-            listField "posts" postCtx (return posts) <>
-            constField "title" "Home"                <>
+            listField "posts" (teaserField "teaser" "content" <> postCtx) (return posts) <>
+            constField "title" "Home"                                                    <>
             defaultContext
 
       getResourceBody

@@ -1,5 +1,23 @@
 <h1>abhinavsarkar.net</h1>
-<h2>Recent Posts</h2>
-$partial("templates/post-list.html")$
 
-<p>…or you can find more in the <a href="/archive/">archive</a>.</p>
+$for(posts)$
+<article>
+    <header>
+        <h3><a href="$url$">$title$</a><h3>
+    </header>
+    <section class="header">
+        Posted on $date$
+        $if(author)$
+            by $author$
+        $endif$
+    </section>
+    <section>
+      $if(teaser)$
+        $teaser$
+      $else$
+        $body$
+      $endif$
+    </section>
+    <a href="$url$">Read more</a>
+</article>
+$endfor$
