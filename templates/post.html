@@ -1,0 +1,20 @@
+<article>
+    <header>
+        <h1>$title$<h1>
+    </header>
+    <section class="header">
+        Posted on $date$
+        $if(author)$
+            by $author$
+        $endif$
+    </section>
+    <section class="header">
+        $if(tags)$
+        Tags: $tags$
+        $endif$
+    </section>
+    <section>
+        $body$
+    </section>
+    <a href="/$path$" style="font-size: 0.8em">Source</a>
+</article>

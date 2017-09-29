@@ -1,0 +1,169 @@
+--------------------------------------------------------------------------------
+{-# LANGUAGE OverloadedStrings #-}
+
+module Main where
+
+import Data.List (sortBy, isInfixOf)
+import Data.Maybe (fromMaybe)
+import Data.Monoid ((<>))
+import Hakyll
+import Site.TOC
+import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
+import Text.Pandoc.Options
+
+--------------------------------------------------------------------------------
+main :: IO ()
+main = hakyll $ do
+  match "CNAME" $ do
+    route   idRoute
+    compile copyFileCompiler
+
+  match "images/*" $ do
+    route   idRoute
+    compile copyFileCompiler
+
+  match "css/*" $ do
+    route   idRoute
+    compile compressCssCompiler
+
+  match (fromList ["about.md"]) $ do
+    route indexHTMLRoute
+    compile $ contentCompiler "left"
+      >>= loadAndApplyTemplate "templates/default.html" defaultContext
+      >>= relativizeUrls
+
+  match "404.html" $ do
+    route idRoute
+    compile $ pandocCompiler
+      >>= loadAndApplyTemplate "templates/default.html" defaultContext
+
+  tags <- buildTags "posts/*" (fromCapture "tags/*.html")
+
+  match "posts/*" $ do
+    route indexHTMLRoute
+    compile $ do
+      alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
+      contentCompiler alignment
+        >>= saveSnapshot "content"
+        >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags)
+        >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
+        >>= relativizeUrls
+        >>= removeIndexHtml
+
+  match "posts/*" $ version "raw" $ do
+    route   idRoute
+    compile getResourceBody
+
+  tagsRules tags $ \tag pattern -> do
+    let title = "Posts tagged \"" ++ tag ++ "\""
+    route indexHTMLRoute
+    compile $ do
+      posts <- recentFirst =<< loadAll pattern
+      let ctx = constField "title" title <> listField "posts" postCtx (return posts) <> defaultContext
+
+      makeItem ""
+          >>= loadAndApplyTemplate "templates/tag.html" ctx
+          >>= loadAndApplyTemplate "templates/default.html" ctx
+          >>= relativizeUrls
+          >>= removeIndexHtml
+
+  create ["archive.html"] $ do
+    route indexHTMLRoute
+    compile $ do
+      posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      let archiveCtx =
+            listField "posts" postCtx (return posts) <>
+            constField "title" "Archives"            <>
+            defaultContext
+
+      makeItem ""
+        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+        >>= relativizeUrls
+        >>= removeIndexHtml
+
+  create ["tags.html"] $ do
+    route indexHTMLRoute
+    compile $ do
+      let tagsCtx = field "taglist" (\_ -> renderTagList $ sortTagsBy caseInsensitiveTags tags) <>
+                    constField "title" "Tags" <>
+                    defaultContext
+      makeItem ""
+        >>= loadAndApplyTemplate "templates/tag-list.html" tagsCtx
+        >>= loadAndApplyTemplate "templates/default.html" tagsCtx
+        >>= relativizeUrls
+        >>= removeIndexHtml
+
+  create ["feed.xml"] $ do
+    route idRoute
+    compile $
+      loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      >>= fmap (take 10) . recentFirst
+      >>= renderAtom feedConfiguration feedCtx
+
+  match "index.html" $ do
+    route idRoute
+    compile $ do
+      posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      let indexCtx =
+            listField "posts" postCtx (return posts) <>
+            constField "title" "Home"                <>
+            defaultContext
+
+      getResourceBody
+        >>= applyAsTemplate indexCtx
+        >>= loadAndApplyTemplate "templates/default.html" indexCtx
+        >>= relativizeUrls
+        >>= removeIndexHtml
+
+  match "templates/*" $ compile templateBodyCompiler
+
+--------------------------------------------------------------------------------
+contentCompiler :: String -> Compiler (Item String)
+contentCompiler alignment =
+  pandocCompilerWithTransformM
+    defaultHakyllReaderOptions
+    (defaultHakyllWriterOptions { writerHtml5 = True
+                                , writerEmailObfuscation = ReferenceObfuscation
+                                })
+    (return . tableOfContents alignment)
+
+postCtx :: Context String
+postCtx =
+  dateField "date" "%B %e, %Y" <>
+  defaultContext
+
+postCtxWithTags :: Tags -> Context String
+postCtxWithTags tags = tagsField "tags" tags <> postCtx
+
+feedCtx :: Context String
+feedCtx =  defaultContext <>
+           -- $description$ will render as the post body
+           bodyField "description"
+
+feedConfiguration :: FeedConfiguration
+feedConfiguration = FeedConfiguration
+  { feedTitle = "abhinavsarkar.net"
+  , feedDescription = ""
+  , feedAuthorName = "Abhinv Sarkar"
+  , feedAuthorEmail = "abhinav@abhinavsarkar.net"
+  , feedRoot = "http://abhinavsarkar.net"
+  }
+
+-- replace a foo/bar.md by foo/bar/index.html
+-- this way the url looks like: foo/bar in most browsers
+indexHTMLRoute :: Routes
+indexHTMLRoute = customRoute createIndexRoute
+  where
+    createIndexRoute ident = let p = toFilePath ident
+      in takeDirectory p </> takeBaseName p </> "index.html"
+
+-- replace url of the form foo/bar/index.html by foo/bar
+removeIndexHtml :: Item String -> Compiler (Item String)
+removeIndexHtml item = return $ fmap (withUrls removeIndexStr) item
+  where
+  removeIndexStr :: String -> String
+  removeIndexStr url = case splitFileName url of
+    (dir, "index.html") | isLocal dir -> dir
+    _                                 -> url
+    where isLocal uri = not ("://" `isInfixOf` uri)
