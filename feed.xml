@@ -10,7 +10,7 @@
     </author>
     <updated>2017-09-29T00:00:00Z</updated>
     <entry>
-    <title>Writing a Simple REST Service in Purescript</title>
+    <title>Writing a Simple REST Service in Purescript - Part 1</title>
     <link href="http://abhinavsarkar.net/posts/ps-simple-rest-service/index.html" />
     <id>http://abhinavsarkar.net/posts/ps-simple-rest-service/index.html</id>
     <published>2017-09-29T00:00:00Z</published>
@@ -712,7 +712,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion">Conclusion</h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc">github</a>. In the next part, we’ll learn how to do API validation, logging, database migrations and application configuration.</p>]]></summary>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc">github</a>. In the next part, we’ll learn how to do API validation, logging, database migrations and application configuration. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/">r/purescript</a>.</p>]]></summary>
 </entry>
 
 </feed>

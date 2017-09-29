@@ -871,7 +871,7 @@ X-Powered-By: Express
 
 ## Conclusion
 
-That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in [github][10]. In the next part, we'll learn how to do API validation, logging, database migrations and application configuration.
+That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in [github][10]. In the next part, we'll learn how to do API validation, logging, database migrations and application configuration. This post can be discussed on [r/purescript][12].
 
 [Nilenso]: https://nilenso.com
 [Purescript]: http://purescript.org
@@ -895,3 +895,4 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [9]: https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody
 [10]: https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc
 [11]: https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined
+[12]: https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/
