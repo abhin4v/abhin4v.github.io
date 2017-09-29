@@ -42,7 +42,7 @@
         <h1>Writing a Simple REST Service in Purescript<h1>
     </header>
     <section class="header">
-        Posted on September  9, 2017
+        Posted on September 29, 2017
         
     </section>
     <section class="header">
@@ -61,7 +61,7 @@
 <li>running database migrations automatically.</li>
 <li>reading the server and database configs from environment variables.</li>
 </ol>
-<nav id="toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-user">Getting User</a></li><li><a href="#deleting-user">Deleting User</a></li><li><a href="#creating-user">Creating User</a></li><li><a href="#updating-user">Updating User</a></li><li><a href="#listing-users">Listing users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
+<nav id="toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-user">Getting User</a></li><li><a href="#deleting-user">Deleting User</a></li><li><a href="#creating-user">Creating User</a></li><li><a href="#updating-user">Updating User</a></li><li><a href="#listing-users">Listing Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up">Setting Up</h2>
 <p>We start with installing purescript and the required tools. This assumes that we have <a href="https://nodejs.org">node</a> and <a href="https://www.npmjs.com">npm</a> installed on our machine.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="fu">mkdir</span> -p ~/.local/
@@ -123,7 +123,7 @@ derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <
   encode <span class="fu">=</span> genericEncode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</code></pre></div>
 <p>We are using the generic support for purescript types from the <a href="https://pursuit.purescript.org/packages/purescript-generics-rep"><code>purescript-generics-rep</code></a> and <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic"><code>purescript-foreign-generic</code></a> libraries to encode and decode the <code>User</code> type to JSON. We install the library by running the following command:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash"><span class="ex">bower</span> install purescript-foreign-generic --save</code></pre></div>
-<p>Now we can load up the module in the purescript repl and try out the JSON conversion features:</p>
+<p>Now we can load up the module in the purescript REPL and try out the JSON conversion features:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span> pulp repl
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleServer.Types</span>
 <span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span>}
@@ -184,7 +184,7 @@ Indexes:
 
 <span class="kw">instance</span><span class="ot"> userToSQLRow ::</span> <span class="dt">ToSQLRow</span> <span class="dt">User</span> <span class="kw">where</span>
   toSQLRow (<span class="dt">User</span> {id, name}) <span class="fu">=</span> [toSQLValue id, toSQLValue name]</code></pre></div>
-<p>We can try out the persistence in the repl:</p>
+<p>We can try out the persistence in the REPL:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span> pulp repl
 <span class="dt">PSCi</span>, version <span class="fl">0.11</span><span class="fu">.</span><span class="dv">6</span>
 <span class="dt">Type</span> <span class="fu">:?</span> for help
@@ -216,7 +216,7 @@ unit
 …
 unit
 (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</code></pre></div>
-<p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using it we create a new postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
+<p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using the recond, we create a new postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
 <p>Similarly, in the second part, we query the table using <code>PG.query</code> function by calling it with a connection, the SQL select query and the <code>User</code> ID as the query parameter. It returns an <code>Array</code> of users which we log to the console using the <code>logShow</code> function.</p>
 <p>We use this experiment to write the persistence related code in the <code>src/SimpleServer/Persistence.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleServer.Persistence</span>
@@ -528,7 +528,7 @@ createUser pool <span class="fu">=</span> getBody <span class="fu">&gt;&gt;=</sp
         <span class="kw">else</span> <span class="kw">do</span>
           liftAff (PG.withConnection pool <span class="fu">$</span> flip P.insertUser u)
           respondNoContent <span class="dv">201</span></code></pre></div>
-<p><code>createUser</code> calls <a href="https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody"><code>getBody</code></a> which has type signature <code>forall e a. (Decode a) =&gt; HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)</code>. It returns either a list of parsing errors or a parsed instance, which in our case is a <code>User</code>. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed <code>User</code> instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling <code>insertUser</code> from the persistence layer and respond with a status 201.</p>
+<p><code>createUser</code> calls <a href="https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody"><code>getBody</code></a> which has type signature <code>forall e a. (Decode a) =&gt; HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)</code>. It returns either a list of parsing errors or a parsed instance, which in our case, is a <code>User</code>. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed <code>User</code> instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling <code>insertUser</code> from the persistence layer and respond with a status 201.</p>
 <p>We can try it out:</p>
 <pre class="http"><code>$ http POST http://localhost:4000/v1/users name=&quot;abhinav&quot;
 HTTP/1.1 422 Unprocessable Entity
@@ -689,8 +689,8 @@ X-Powered-By: Express
 {
     &quot;error&quot;: &quot;User name must not be empty&quot;
 }</code></pre>
-<h3 id="listing-users">Listing users</h3>
-<p>Listing users is quite simple since it doesn’t require us to take any request parameters.</p>
+<h3 id="listing-users">Listing Users</h3>
+<p>Listing users is quite simple since it doesn’t require us to take any request parameter.</p>
 <p>We add the handler to the <code>src/SimpleService/Handler.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
 <span class="ot">listUsers ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)
