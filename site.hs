@@ -153,7 +153,7 @@ feedConfiguration title = FeedConfiguration
   , feedDescription = title <> " on abhinavsarkar.net"
   , feedAuthorName = "Abhinv Sarkar"
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
-  , feedRoot = "http://abhinavsarkar.net"
+  , feedRoot = "https://abhinavsarkar.net"
   }
 
 -- replace a foo/bar.md by foo/bar/index.html
