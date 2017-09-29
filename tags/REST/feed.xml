@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Posts tagged "REST"</title>
-    <link href="http://abhinavsarkar.net/tags/REST/feed.xml" rel="self" />
-    <link href="http://abhinavsarkar.net" />
-    <id>http://abhinavsarkar.net/tags/REST/feed.xml</id>
+    <link href="https://abhinavsarkar.net/tags/REST/feed.xml" rel="self" />
+    <link href="https://abhinavsarkar.net" />
+    <id>https://abhinavsarkar.net/tags/REST/feed.xml</id>
     <author>
         <name>Abhinv Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
@@ -11,8 +11,8 @@
     <updated>2017-09-29T00:00:00Z</updated>
     <entry>
     <title>Writing a Simple REST Service in Purescript - Part 1</title>
-    <link href="http://abhinavsarkar.net/posts/ps-simple-rest-service/index.html" />
-    <id>http://abhinavsarkar.net/posts/ps-simple-rest-service/index.html</id>
+    <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service/index.html" />
+    <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/index.html</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
     <summary type="html"><![CDATA[<p>At <a href="https://nilenso.com">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org">Purescript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
