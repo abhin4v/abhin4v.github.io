@@ -9,6 +9,8 @@ The aim of this two-part tutorial is to create a simple JSON [REST] service writ
 5. running database migrations automatically.
 6. reading the server and database configs from environment variables.
 
+<!--more-->
+
 * toc
 
 ## Setting Up
