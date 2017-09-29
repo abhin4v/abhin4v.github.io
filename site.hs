@@ -67,6 +67,12 @@ main = hakyll $ do
           >>= relativizeUrls
           >>= removeIndexHtml
 
+    version "feed" $ do
+      route tagFeedRoute
+      compile $ loadAllSnapshots pattern "content"
+          >>= fmap (take 10) . recentFirst
+          >>= renderAtom (feedConfiguration title) feedCtx
+
   create ["archive.html"] $ do
     route indexHTMLRoute
     compile $ do
@@ -99,7 +105,7 @@ main = hakyll $ do
     compile $
       loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       >>= fmap (take 10) . recentFirst
-      >>= renderAtom feedConfiguration feedCtx
+      >>= renderAtom (feedConfiguration "All posts") feedCtx
 
   match "index.html" $ do
     route idRoute
@@ -141,10 +147,10 @@ feedCtx =  defaultContext <>
            -- $description$ will render as the post body
            bodyField "description"
 
-feedConfiguration :: FeedConfiguration
-feedConfiguration = FeedConfiguration
-  { feedTitle = "abhinavsarkar.net"
-  , feedDescription = ""
+feedConfiguration :: String -> FeedConfiguration
+feedConfiguration title = FeedConfiguration
+  { feedTitle = title
+  , feedDescription = title <> " on abhinavsarkar.net"
   , feedAuthorName = "Abhinv Sarkar"
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
   , feedRoot = "http://abhinavsarkar.net"
@@ -157,6 +163,12 @@ indexHTMLRoute = customRoute createIndexRoute
   where
     createIndexRoute ident = let p = toFilePath ident
       in takeDirectory p </> takeBaseName p </> "index.html"
+
+tagFeedRoute :: Routes
+tagFeedRoute = customRoute createIndexRoute
+  where
+    createIndexRoute ident = let p = toFilePath ident
+      in takeDirectory p </> takeBaseName p </> "feed.xml"
 
 -- replace url of the form foo/bar/index.html by foo/bar
 removeIndexHtml :: Item String -> Compiler (Item String)
