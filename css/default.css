@@ -16,10 +16,6 @@ h1, h2, h3, h4, h5, h6 {
 
 p {
     margin-bottom: 1.2em;
-    -webkit-hyphens: auto;
-    -moz-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
 }
 
 pre {
@@ -28,7 +24,7 @@ pre {
 }
 
 code, pre {
-    font-size: 0.9em;
+    font-size: 0.95em;
 }
 
 body>header h1 {
