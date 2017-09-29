@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>All posts</title>
-    <link href="http://abhinavsarkar.net/feed.xml" rel="self" />
+    <title>Posts tagged "REST"</title>
+    <link href="http://abhinavsarkar.net/tags/REST/feed.xml" rel="self" />
     <link href="http://abhinavsarkar.net" />
-    <id>http://abhinavsarkar.net/feed.xml</id>
+    <id>http://abhinavsarkar.net/tags/REST/feed.xml</id>
     <author>
         <name>Abhinv Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
