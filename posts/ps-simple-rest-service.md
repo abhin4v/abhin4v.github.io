@@ -1,6 +1,6 @@
 ---
 title: Writing a Simple REST Service in Purescript
-date: 2017-09-09
+date: 2017-09-29
 tags: purescript, REST
 ---
 
@@ -98,7 +98,7 @@ We are using the generic support for purescript types from the [`purescript-gene
 bower install purescript-foreign-generic --save
 ```
 
-Now we can load up the module in the purescript repl and try out the JSON conversion features:
+Now we can load up the module in the purescript REPL and try out the JSON conversion features:
 
 ```haskell
 $ pulp repl
@@ -176,7 +176,7 @@ instance userToSQLRow :: ToSQLRow User where
   toSQLRow (User {id, name}) = [toSQLValue id, toSQLValue name]
 ```
 
-We can try out the persistence in the repl:
+We can try out the persistence in the REPL:
 
 ```haskell
 $ pulp repl
@@ -212,7 +212,7 @@ unit
 (User { id: 1, name: "Abhinav" })
 ```
 
-We create the `databaseConfig` record with the configs needed to connect to the database. Using it we create a new postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
+We create the `databaseConfig` record with the configs needed to connect to the database. Using the recond, we create a new postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
 
 Similarly, in the second part, we query the table using `PG.query` function by calling it with a connection, the SQL select query and the `User` ID as the query parameter. It returns an `Array` of users which we log to the console using the `logShow` function.
 
@@ -603,7 +603,7 @@ createUser pool = getBody >>= case _ of
           respondNoContent 201
 ```
 
-`createUser` calls [`getBody`][9] which has type signature `forall e a. (Decode a) => HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)`. It returns either a list of parsing errors or a parsed instance, which in our case is a `User`. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed `User` instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling `insertUser` from the persistence layer and respond with a status 201.
+`createUser` calls [`getBody`][9] which has type signature `forall e a. (Decode a) => HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)`. It returns either a list of parsing errors or a parsed instance, which in our case, is a `User`. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed `User` instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling `insertUser` from the persistence layer and respond with a status 201.
 
 We can try it out:
 
@@ -803,9 +803,9 @@ X-Powered-By: Express
 }
 ```
 
-### Listing users
+### Listing Users
 
-Listing users is quite simple since it doesn't require us to take any request parameters.
+Listing users is quite simple since it doesn't require us to take any request parameter.
 
 We add the handler to the `src/SimpleService/Handler.purs` file:
 
