@@ -2,6 +2,7 @@
 title: Writing a Simple REST Service in Purescript - Part 1
 date: 2017-09-29
 tags: purescript, REST, programming, nilenso
+toc: right
 ---
 
 At [Nilenso], we've been working with a client who has chosen [Purescript] as their primary programming language. Since I couldn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.

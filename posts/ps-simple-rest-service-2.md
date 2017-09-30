@@ -2,6 +2,7 @@
 title: Writing a Simple REST Service in Purescript - Part 2
 date: 2017-10-01
 tags: purescript, REST, programming, nilenso
+toc: right
 ---
 
 To recap, in the [first] part of this two-part tutorial, we built a simple JSON [REST] service in [Purescript] to create, update, get, list and delete users, backed by a Postgres database. In this part we'll work on the rest of the requirements:
