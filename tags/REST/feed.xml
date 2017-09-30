@@ -8,7 +8,7 @@
         <name>Abhinv Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
     </author>
-    <updated>2017-09-29T00:00:00Z</updated>
+    <updated>2017-10-01T00:00:00Z</updated>
     <entry>
     <title>Writing a Simple REST Service in Purescript - Part 1</title>
     <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service/index.html" />
@@ -24,9 +24,9 @@
 <li>persisting users into a Postgres database.</li>
 <li>API endpoints for creating, updating, getting, listing and deleting users.</li>
 <li>validation of API requests.</li>
+<li>reading the server and database configs from environment variables.</li>
 <li>logging HTTP requests and debugging info.</li>
 <li>running database migrations automatically.</li>
-<li>reading the server and database configs from environment variables.</li>
 </ol>
 <p>In this part we’ll work on setting up the project and on the first two requirements.</p>
 <!--more-->
@@ -123,13 +123,13 @@ $ <span class="ex">bower</span> install purescript-postgresql-client --save</cod
 psql (9.5.4)
 Type &quot;help&quot; for help.
 
-postgres=# create database simple_server;
+postgres=# create database simple_service;
 CREATE DATABASE
-postgres=# \c simple_server
-You are now connected to database &quot;simple_server&quot; as user &quot;abhinav&quot;.
-simple_server=# create table users (id int primary key, name varchar(100) not null);
+postgres=# \c simple_service
+You are now connected to database &quot;simple_service&quot; as user &quot;abhinav&quot;.
+simple_service=# create table users (id int primary key, name varchar(100) not null);
 CREATE TABLE
-simple_server=# \d users
+simple_service=# \d users
             Table &quot;public.users&quot;
  Column |          Type          | Modifiers
 --------+------------------------+-----------
@@ -164,7 +164,7 @@ Indexes:
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Control.Monad.Aff</span> (launchAff, liftEff&#39;)
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span>
 <span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }
-<span class="fu">&gt;</span> databaseConfig <span class="fu">=</span> {user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span>, password<span class="fu">:</span> <span class="st">&quot;&quot;</span>, host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>, port<span class="fu">:</span> <span class="dv">5432</span>, database<span class="fu">:</span> <span class="st">&quot;simple_server&quot;</span>, max<span class="fu">:</span> <span class="dv">10</span>, idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>}
+<span class="fu">&gt;</span> databaseConfig <span class="fu">=</span> {user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span>, password<span class="fu">:</span> <span class="st">&quot;&quot;</span>, host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>, port<span class="fu">:</span> <span class="dv">5432</span>, database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span>, max<span class="fu">:</span> <span class="dv">10</span>, idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>}
 
 <span class="fu">&gt;</span> <span class="fu">:</span>paste
 … void <span class="fu">$</span> launchAff <span class="kw">do</span>
@@ -244,7 +244,7 @@ deleteUser conn userID <span class="fu">=</span>
 listUsers conn <span class="fu">=</span>
   PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></code></pre></div>
 <h2 id="serving-it">Serving It</h2>
-<p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com">express</a> to provide CRUD functionality for users. Let’s install express and <a href="https://pursuit.purescript.org/packages/purescript-express">purescript-express</a>, the Purescript wrapper over it:</p>
+<p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express">purescript-express</a>, the Purescript wrapper over it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">npm</span> install express --save
 $ <span class="ex">bower</span> install purescript-express --save</code></pre></div>
 <h3 id="getting-a-user">Getting a User</h3>
@@ -270,7 +270,7 @@ main <span class="fu">=</span> runServer port databaseConfig
                      , password<span class="fu">:</span> <span class="st">&quot;&quot;</span>
                      , host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>
                      , port<span class="fu">:</span> <span class="dv">5432</span>
-                     , database<span class="fu">:</span> <span class="st">&quot;simple_server&quot;</span>
+                     , database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span>
                      , max<span class="fu">:</span> <span class="dv">10</span>
                      , idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>
                      }</code></pre></div>
@@ -303,7 +303,7 @@ runServer port databaseConfig <span class="fu">=</span>  void <span class="fu">$
   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig
   <span class="kw">let</span> app&#39; <span class="fu">=</span> app pool
   void <span class="fu">$</span> liftEff <span class="fu">$</span> listenHttp app&#39; port \_ <span class="ot">-&gt;</span> log <span class="fu">$</span> <span class="st">&quot;Server listening on :&quot;</span> <span class="fu">&lt;&gt;</span> show port</code></pre></div>
-<p><code>runServer</code> creates a PostgreSQL connection pool and passes it to the <code>app</code> function which creates the express application, which in turn, binds it to the handler <code>getUser</code>. Then it launches the HTTP server by calling <code>listenHttp</code>.</p>
+<p><code>runServer</code> creates a PostgreSQL connection pool and passes it to the <code>app</code> function which creates the Express application, which in turn, binds it to the handler <code>getUser</code>. Then it launches the HTTP server by calling <code>listenHttp</code>.</p>
 <p>Finally, we write the actual <code>getUser</code> handler in <code>src/SimpleService/Handler.purs</code>:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Handler</span> <span class="kw">where</span>
 
@@ -454,7 +454,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;User not found with id: 1&quot;
 }</code></pre>
 <h3 id="creating-a-user">Creating a User</h3>
-<p><code>createUser</code> handler is a bit more involved. First, we add an express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser"><code>body-parser</code></a> for this and access it through Purescript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
+<p><code>createUser</code> handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser"><code>body-parser</code></a> for this and access it through Purescript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
 <div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="st">&quot;use strict&quot;</span><span class="op">;</span>
 
 <span class="kw">var</span> bodyParser <span class="op">=</span> <span class="at">require</span>(<span class="st">&quot;body-parser&quot;</span>)<span class="op">;</span>
