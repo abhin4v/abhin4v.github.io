@@ -1,9 +1,10 @@
-<h1>abhinavsarkar.net</h1>
+<h1>Recent Posts</h1>
 
+<div id="home-posts">
 $for(posts)$
 <article>
     <header>
-        <h3><a href="$url$">$title$</a><h3>
+        <h3><a href="$url$">$title$</a></h3>
     </header>
     <section class="header">
         Posted on $date$
@@ -20,4 +21,6 @@ $for(posts)$
     </section>
     <a href="$url$">Read more</a>
 </article>
+<hr>
 $endfor$
+</div>

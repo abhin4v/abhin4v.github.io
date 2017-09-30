@@ -117,11 +117,27 @@ ins::before {
   line-height: normal;
 }
 
-.footnotes hr {
+hr {
   color: #ababab;
   background-color: #ababab;
   height: 1px;
   border: 0px;
+}
+
+#home-posts hr {
+  margin: 1em 30%;
+}
+
+#home-posts hr:last-child {
+  display: none;
+}
+
+#home-posts article header {
+    margin-bottom: 0px;
+}
+
+#home-posts h3 {
+    margin: 0.5em 0px;
 }
 
 @media screen and (max-width: 600px) {
