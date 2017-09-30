@@ -9,11 +9,11 @@ At [Nilenso], we've been working with a client who has chosen [Purescript] as th
 The aim of this two-part tutorial is to create a simple JSON [REST] service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
 
 1. persisting users into a Postgres database.
-2. API endpoints for creating, updating, getting, listing and deleting users.
-3. validation of API requests.
-4. logging HTTP requests and debugging info.
-5. running database migrations automatically.
-6. reading the server and database configs from environment variables.
+1. API endpoints for creating, updating, getting, listing and deleting users.
+1. validation of API requests.
+1. reading the server and database configs from environment variables.
+1. logging HTTP requests and debugging info.
+1. running database migrations automatically.
 
 In this part we'll work on setting up the project and on the first two requirements.
 
@@ -144,13 +144,13 @@ $ psql postgres
 psql (9.5.4)
 Type "help" for help.
 
-postgres=# create database simple_server;
+postgres=# create database simple_service;
 CREATE DATABASE
-postgres=# \c simple_server
-You are now connected to database "simple_server" as user "abhinav".
-simple_server=# create table users (id int primary key, name varchar(100) not null);
+postgres=# \c simple_service
+You are now connected to database "simple_service" as user "abhinav".
+simple_service=# create table users (id int primary key, name varchar(100) not null);
 CREATE TABLE
-simple_server=# \d users
+simple_service=# \d users
             Table "public.users"
  Column |          Type          | Modifiers
 --------+------------------------+-----------
@@ -193,7 +193,7 @@ import Prelude
 > import Control.Monad.Aff (launchAff, liftEff')
 > import Database.PostgreSQL as PG
 > user = User { id: 1, name: "Abhinav" }
-> databaseConfig = {user: "abhinav", password: "", host: "localhost", port: 5432, database: "simple_server", max: 10, idleTimeoutMillis: 1000}
+> databaseConfig = {user: "abhinav", password: "", host: "localhost", port: 5432, database: "simple_service", max: 10, idleTimeoutMillis: 1000}
 
 > :paste
 … void $ launchAff do
@@ -282,7 +282,7 @@ listUsers conn =
 
 ## Serving It
 
-We can now write a simple HTTP API over the persistence layer using [express] to provide CRUD functionality for users. Let's install express and [purescript-express], the Purescript wrapper over it:
+We can now write a simple HTTP API over the persistence layer using [Express] to provide CRUD functionality for users. Let's install Express and [purescript-express], the Purescript wrapper over it:
 
 ```bash
 $ npm install express --save
@@ -315,7 +315,7 @@ main = runServer port databaseConfig
                      , password: ""
                      , host: "localhost"
                      , port: 5432
-                     , database: "simple_server"
+                     , database: "simple_service"
                      , max: 10
                      , idleTimeoutMillis: 1000
                      }
@@ -354,7 +354,7 @@ runServer port databaseConfig =  void $ runAff logShow pure do
   void $ liftEff $ listenHttp app' port \_ -> log $ "Server listening on :" <> show port
 ```
 
-`runServer` creates a PostgreSQL connection pool and passes it to the `app` function which creates the express application, which in turn, binds it to the handler `getUser`. Then it launches the HTTP server by calling `listenHttp`.
+`runServer` creates a PostgreSQL connection pool and passes it to the `app` function which creates the Express application, which in turn, binds it to the handler `getUser`. Then it launches the HTTP server by calling `listenHttp`.
 
 Finally, we write the actual `getUser` handler in `src/SimpleService/Handler.purs`:
 
@@ -543,7 +543,7 @@ X-Powered-By: Express
 
 ### Creating a User
 
-`createUser` handler is a bit more involved. First, we add an express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through Purescript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
+`createUser` handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through Purescript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
 
 ```javascript
 "use strict";
@@ -886,7 +886,7 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [Nilenso]: https://nilenso.com
 [Purescript]: http://purescript.org
 [bower]: http://bower.io
-[express]: https://expressjs.com
+[Express]: https://expressjs.com
 [HTTPie]: https://httpie.org
 [Pulp]: https://github.com/purescript-contrib/pulp
 [node]: https://nodejs.org
