@@ -11,7 +11,9 @@ import Site.TOC
 import Site.ERT
 import Site.Sitemap
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
+import Text.Pandoc.Definition (Inline(Link))
 import Text.Pandoc.Options
+import Text.Pandoc.Walk
 
 --------------------------------------------------------------------------------
 
@@ -144,7 +146,22 @@ contentCompiler alignment ertEnabled =
     (defaultHakyllWriterOptions { writerHtml5 = True
                                 , writerEmailObfuscation = ReferenceObfuscation
                                 })
-    (return . estimatedReadingTime ertEnabled . tableOfContents alignment)
+    (return . estimatedReadingTime ertEnabled
+            . tableOfContents alignment
+            . walk blankTargetLinks)
+  where
+
+blankTargetLinks :: Inline -> Inline
+blankTargetLinks (Link (ident, classes, props) children (url, title)) =
+  Link (ident, classes, props') children (url, title)
+  where
+    localUrlStartChars :: String
+    localUrlStartChars = "/#.?"
+
+    props' = if (head url) `elem` localUrlStartChars
+      then props
+      else props <> [("target", "_blank")]
+blankTargetLinks x = x
 
 postCtx :: Context String
 postCtx =
