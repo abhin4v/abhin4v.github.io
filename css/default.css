@@ -211,3 +211,29 @@ p ~ #toc.right-toc h3 {
   content: counters(item,".") ". ";
   counter-increment: item;
 }
+
+@media print {
+  body {
+    font-size: 0.9em;
+  }
+  body header nav {
+    text-align: center;;
+  }
+  body header nav a {
+    display: none;
+  }
+  body header nav a :first-of-type {
+    display: block!important;
+    float: none!important;
+  }
+  #toc.right-toc {
+    float: none;
+    padding: 0;
+    margin-left: 0;
+    margin-top: 10px;
+  }
+  a {
+    text-decoration: none!important;
+    color: #333!important;
+  }
+}
