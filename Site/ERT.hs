@@ -8,7 +8,7 @@ estimatedReadingTime enabled p@(Pandoc meta blocks) =
   if enabled
     then Pandoc meta (ert:blocks)
     else Pandoc meta blocks
-  where ert = Div ("ert", ["ert"], []) [Plain [Str $ timeEstimateString p ++ " read"]]
+  where ert = Div ("", ["ert"], []) [Plain [Str $ timeEstimateString p ++ " read"]]
 
 timeEstimateString :: Pandoc -> String
 timeEstimateString = toClockString . timeEstimateSeconds

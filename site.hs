@@ -160,7 +160,7 @@ blankTargetLinks (Link (ident, classes, props) children (url, title)) =
 
     props' = if (head url) `elem` localUrlStartChars
       then props
-      else props <> [("target", "_blank")]
+      else props <> [("target", "_blank"), ("rel", "noopener")]
 blankTargetLinks x = x
 
 postCtx :: Context String
