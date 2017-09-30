@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>All posts</title>
+    <title>All posts on abhinavsarkar.net</title>
     <link href="https://abhinavsarkar.net/feed.xml" rel="self" />
     <link href="https://abhinavsarkar.net" />
     <id>https://abhinavsarkar.net/feed.xml</id>
