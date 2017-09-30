@@ -9,10 +9,15 @@ import Data.Monoid ((<>))
 import Hakyll
 import Site.TOC
 import Site.ERT
+import Site.Sitemap
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
 import Text.Pandoc.Options
 
 --------------------------------------------------------------------------------
+
+siteRoot :: String
+siteRoot = "https://abhinavsarkar.net"
+
 main :: IO ()
 main = hakyll $ do
   match "CNAME" $ do
@@ -108,6 +113,12 @@ main = hakyll $ do
       >>= fmap (take 10) . recentFirst
       >>= renderAtom (feedConfiguration "All posts") feedCtx
 
+  create ["sitemap.xml"] $ do
+    route idRoute
+    compile $ generateSitemap defaultSitemapConfig { sitemapBase     = siteRoot
+                                                   , sitemapRewriter = removeIndexURL
+                                                   }
+
   match "index.html" $ do
     route idRoute
     compile $ do
@@ -150,11 +161,11 @@ feedCtx =  defaultContext <>
 
 feedConfiguration :: String -> FeedConfiguration
 feedConfiguration title = FeedConfiguration
-  { feedTitle = title
+  { feedTitle = title <> " on abhinavsarkar.net"
   , feedDescription = title <> " on abhinavsarkar.net"
   , feedAuthorName = "Abhinv Sarkar"
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
-  , feedRoot = "https://abhinavsarkar.net"
+  , feedRoot = siteRoot
   }
 
 -- replace a foo/bar.md by foo/bar/index.html
@@ -173,10 +184,10 @@ tagFeedRoute = customRoute createIndexRoute
 
 -- replace url of the form foo/bar/index.html by foo/bar
 removeIndexHtml :: Item String -> Compiler (Item String)
-removeIndexHtml item = return $ fmap (withUrls removeIndexStr) item
-  where
-  removeIndexStr :: String -> String
-  removeIndexStr url = case splitFileName url of
-    (dir, "index.html") | isLocal dir -> dir
-    _                                 -> url
-    where isLocal uri = not ("://" `isInfixOf` uri)
+removeIndexHtml item = return $ fmap (withUrls removeIndexURL) item
+
+removeIndexURL :: String -> String
+removeIndexURL url = case splitFileName url of
+  (dir, "index.html") | isLocal dir -> dir
+  _                                 -> url
+  where isLocal uri = not ("://" `isInfixOf` uri)
