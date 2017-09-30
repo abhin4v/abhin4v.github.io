@@ -107,6 +107,19 @@ ins::before {
     content: ">> ";
 }
 
+.footnotes p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+  line-height: normal;
+}
+
+.footnotes hr {
+  color: #ababab;
+  background-color: #ababab;
+  height: 1px;
+  border: 0px;
+}
+
 @media screen and (max-width: 600px) {
    .hide-small {
       display: none;
