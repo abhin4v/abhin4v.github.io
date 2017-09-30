@@ -22,12 +22,13 @@
 <p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST">REST</a> service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:</p>
 <ol type="1">
 <li>persisting users into a Postgres database.</li>
-<li>API endpoints for creating, updating, reading, listing and deleting users.</li>
+<li>API endpoints for creating, updating, getting, listing and deleting users.</li>
 <li>validation of API requests.</li>
 <li>logging HTTP requests and debugging info.</li>
 <li>running database migrations automatically.</li>
 <li>reading the server and database configs from environment variables.</li>
 </ol>
+<p>In this part we’ll work on setting up the project and on the first two requirements.</p>
 <!--more-->
 <nav id="toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up">Setting Up</h2>
@@ -62,8 +63,8 @@ $ ls bower_components
 purescript-console  purescript-eff  purescript-prelude purescript-psci-support</code></pre></div>
 <p>Pulp creates the basic project structure for us. <code>src</code> directory will contain the source while the <code>test</code> directory will contain the tests. <code>bower.json</code> contains the Purescript libraries as dependencies which are downloaded and installed in the <code>bower_components</code> directory.</p>
 <h2 id="types-first">Types First</h2>
-<p>First, we create the types needed in <code>src/SimpleServer/Types.purs</code>:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleServer.Types</span> <span class="kw">where</span>
+<p>First, we create the types needed in <code>src/SimpleService/Types.purs</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Types</span> <span class="kw">where</span>
 
 <span class="kw">import </span><span class="dt">Prelude</span>
 
@@ -93,7 +94,7 @@ derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">bower</span> install purescript-foreign-generic --save</code></pre></div>
 <p>Now we can load up the module in the Purescript REPL and try out the JSON conversion features:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span> pulp repl
-<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleServer.Types</span>
+<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleService.Types</span>
 <span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span>}
 <span class="fu">&gt;</span> user
 (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })
@@ -136,7 +137,7 @@ simple_server=# \d users
  name   | character varying(100) | not null
 Indexes:
     &quot;users_pkey&quot; PRIMARY KEY, btree (id)</code></pre>
-<p>Now we add support for converting a <code>User</code> instance to-and-from an SQL row by adding the following code in the <code>src/SimpleServer/Types.purs</code> file:</p>
+<p>Now we add support for converting a <code>User</code> instance to-and-from an SQL row by adding the following code in the <code>src/SimpleService/Types.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span>
 <span class="kw">import </span><span class="dt">Data.Either</span> (<span class="dt">Either</span>(..))
 <span class="kw">import </span><span class="dt">Database.PostgreSQL</span> (class <span class="dt">FromSQLRow</span>, class <span class="dt">ToSQLRow</span>, fromSQLValue, toSQLValue)
@@ -159,7 +160,7 @@ Indexes:
 
 <span class="kw">import </span><span class="dt">Prelude</span>
 <span class="fu">&gt;</span>
-<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleServer.Types</span>
+<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleService.Types</span>
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Control.Monad.Aff</span> (launchAff, liftEff&#39;)
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span>
 <span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }
@@ -186,8 +187,8 @@ unit
 (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</code></pre></div>
 <p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using the recond, we create a new Postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
 <p>Similarly, in the second part, we query the table using <code>PG.query</code> function by calling it with a connection, the SQL select query and the <code>User</code> ID as the query parameter. It returns an <code>Array</code> of users which we log to the console using the <code>logShow</code> function.</p>
-<p>We use this experiment to write the persistence related code in the <code>src/SimpleServer/Persistence.purs</code> file:</p>
-<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleServer.Persistence</span>
+<p>We use this experiment to write the persistence related code in the <code>src/SimpleService/Persistence.purs</code> file:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Persistence</span>
   ( insertUser
   , findUser
   , updateUser
@@ -201,7 +202,7 @@ unit
 <span class="kw">import </span><span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span>
 <span class="kw">import </span><span class="dt">Data.Maybe</span> (<span class="dt">Maybe</span>)
 <span class="kw">import </span><span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span>
-<span class="kw">import </span><span class="dt">SimpleServer.Types</span> (<span class="dt">User</span>(..), <span class="dt">UserID</span>)
+<span class="kw">import </span><span class="dt">SimpleService.Types</span> (<span class="dt">User</span>(..), <span class="dt">UserID</span>)
 
 <span class="ot">insertUserQuery ::</span> <span class="dt">String</span>
 insertUserQuery <span class="fu">=</span> <span class="st">&quot;insert into users (id, name) values ($1, $2)&quot;</span>
@@ -316,7 +317,7 @@ runServer port databaseConfig <span class="fu">=</span>  void <span class="fu">$
 <span class="kw">import </span><span class="dt">Node.Express.Handler</span> (<span class="dt">Handler</span>)
 <span class="kw">import </span><span class="dt">Node.Express.Request</span> (getRouteParam)
 <span class="kw">import </span><span class="dt">Node.Express.Response</span> (end, sendJson, setStatus)
-<span class="kw">import </span><span class="dt">SimpleServer.Persistence</span> <span class="kw">as</span> <span class="dt">P</span>
+<span class="kw">import </span><span class="dt">SimpleService.Persistence</span> <span class="kw">as</span> <span class="dt">P</span>
 
 <span class="ot">getUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)
 getUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
@@ -492,7 +493,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
 <span class="kw">import </span><span class="dt">Data.Foldable</span> (intercalate)
 <span class="kw">import </span><span class="dt">Data.Foreign</span> (renderForeignError)
 <span class="kw">import </span><span class="dt">Node.Express.Request</span> (getBody, getRouteParam)
-<span class="kw">import </span><span class="dt">SimpleServer.Types</span>
+<span class="kw">import </span><span class="dt">SimpleService.Types</span>
 <span class="co">-- previous code</span>
 
 <span class="ot">createUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)
@@ -716,7 +717,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion">Conclusion</h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc">github</a>. In the next part, we’ll learn how to do API validation, logging, database migrations and application configuration. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/">r/purescript</a>.</p>]]></summary>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/1929eeee6be2b2b28f19a330cb5a2352512c52b3">github</a>. In the next part, we’ll learn how to do API validation, logging, database migrations and application configuration. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/">r/purescript</a>.</p>]]></summary>
 </entry>
 
 </feed>
