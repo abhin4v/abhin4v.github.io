@@ -13,5 +13,6 @@ executable site
                   , blaze-html
                   , filepath
   other-modules:    Site.TOC
+                  , Site.ERT
   ghc-options:      -threaded
   default-language: Haskell2010

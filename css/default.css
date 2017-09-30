@@ -87,6 +87,10 @@ article h2 {
   text-align: right;
 }
 
+.ert {
+  text-align: right;
+}
+
 body>footer {
     text-align: right;
     border-top: 1px solid #ababab;

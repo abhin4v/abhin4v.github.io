@@ -8,6 +8,7 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Hakyll
 import Site.TOC
+import Site.ERT
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
 import Text.Pandoc.Options
 
@@ -132,7 +133,7 @@ contentCompiler alignment =
     (defaultHakyllWriterOptions { writerHtml5 = True
                                 , writerEmailObfuscation = ReferenceObfuscation
                                 })
-    (return . tableOfContents alignment)
+    (return . estimatedReadingTime . tableOfContents alignment)
 
 postCtx :: Context String
 postCtx =
