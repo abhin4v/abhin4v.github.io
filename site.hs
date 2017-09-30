@@ -29,7 +29,7 @@ main = hakyll $ do
 
   match (fromList ["about.md"]) $ do
     route indexHTMLRoute
-    compile $ contentCompiler "left"
+    compile $ contentCompiler "left" False
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
       >>= relativizeUrls
 
@@ -44,7 +44,7 @@ main = hakyll $ do
     route indexHTMLRoute
     compile $ do
       alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
-      contentCompiler alignment
+      contentCompiler alignment True
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags)
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
@@ -126,14 +126,14 @@ main = hakyll $ do
   match "templates/*" $ compile templateBodyCompiler
 
 --------------------------------------------------------------------------------
-contentCompiler :: String -> Compiler (Item String)
-contentCompiler alignment =
+contentCompiler :: String -> Bool -> Compiler (Item String)
+contentCompiler alignment ertEnabled =
   pandocCompilerWithTransformM
     defaultHakyllReaderOptions
     (defaultHakyllWriterOptions { writerHtml5 = True
                                 , writerEmailObfuscation = ReferenceObfuscation
                                 })
-    (return . estimatedReadingTime . tableOfContents alignment)
+    (return . estimatedReadingTime ertEnabled . tableOfContents alignment)
 
 postCtx :: Context String
 postCtx =

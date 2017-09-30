@@ -3,8 +3,11 @@ module Site.ERT (estimatedReadingTime) where
 import Text.Pandoc.Definition
 import Text.Pandoc.Options
 
-estimatedReadingTime :: Pandoc -> Pandoc
-estimatedReadingTime p@(Pandoc meta blocks) = Pandoc meta (ert:blocks)
+estimatedReadingTime :: Bool -> Pandoc -> Pandoc
+estimatedReadingTime enabled p@(Pandoc meta blocks) =
+  if enabled
+    then Pandoc meta (ert:blocks)
+    else Pandoc meta blocks
   where ert = Div ("ert", ["ert"], []) [Plain [Str $ timeEstimateString p ++ " read"]]
 
 timeEstimateString :: Pandoc -> String
