@@ -9,11 +9,13 @@ At [Nilenso], we've been working with a client who has chosen [Purescript] as th
 The aim of this two-part tutorial is to create a simple JSON [REST] service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
 
 1. persisting users into a Postgres database.
-2. API endpoints for creating, updating, reading, listing and deleting users.
+2. API endpoints for creating, updating, getting, listing and deleting users.
 3. validation of API requests.
 4. logging HTTP requests and debugging info.
 5. running database migrations automatically.
 6. reading the server and database configs from environment variables.
+
+In this part we'll work on setting up the project and on the first two requirements.
 
 <!--more-->
 
@@ -63,10 +65,10 @@ Pulp creates the basic project structure for us. `src` directory will contain th
 
 ## Types First
 
-First, we create the types needed in `src/SimpleServer/Types.purs`:
+First, we create the types needed in `src/SimpleService/Types.purs`:
 
 ```haskell
-module SimpleServer.Types where
+module SimpleService.Types where
 
 import Prelude
 
@@ -104,7 +106,7 @@ Now we can load up the module in the Purescript REPL and try out the JSON conver
 
 ```haskell
 $ pulp repl
-> import SimpleServer.Types
+> import SimpleService.Types
 > user = User { id: 1, name: "Abhinav"}
 > user
 (User { id: 1, name: "Abhinav" })
@@ -158,7 +160,7 @@ Indexes:
     "users_pkey" PRIMARY KEY, btree (id)
 ```
 
-Now we add support for converting a `User` instance to-and-from an SQL row by adding the following code in the `src/SimpleServer/Types.purs` file:
+Now we add support for converting a `User` instance to-and-from an SQL row by adding the following code in the `src/SimpleService/Types.purs` file:
 
 ```haskell
 import Data.Array as Array
@@ -187,7 +189,7 @@ Type :? for help
 
 import Prelude
 >
-> import SimpleServer.Types
+> import SimpleService.Types
 > import Control.Monad.Aff (launchAff, liftEff')
 > import Database.PostgreSQL as PG
 > user = User { id: 1, name: "Abhinav" }
@@ -218,10 +220,10 @@ We create the `databaseConfig` record with the configs needed to connect to the 
 
 Similarly, in the second part, we query the table using `PG.query` function by calling it with a connection, the SQL select query and the `User` ID as the query parameter. It returns an `Array` of users which we log to the console using the `logShow` function.
 
-We use this experiment to write the persistence related code in the `src/SimpleServer/Persistence.purs` file:
+We use this experiment to write the persistence related code in the `src/SimpleService/Persistence.purs` file:
 
 ```haskell
-module SimpleServer.Persistence
+module SimpleService.Persistence
   ( insertUser
   , findUser
   , updateUser
@@ -235,7 +237,7 @@ import Control.Monad.Aff (Aff)
 import Data.Array as Array
 import Data.Maybe (Maybe)
 import Database.PostgreSQL as PG
-import SimpleServer.Types (User(..), UserID)
+import SimpleService.Types (User(..), UserID)
 
 insertUserQuery :: String
 insertUserQuery = "insert into users (id, name) values ($1, $2)"
@@ -369,7 +371,7 @@ import Database.PostgreSQL as PG
 import Node.Express.Handler (Handler)
 import Node.Express.Request (getRouteParam)
 import Node.Express.Response (end, sendJson, setStatus)
-import SimpleServer.Persistence as P
+import SimpleService.Persistence as P
 
 getUser :: forall eff. PG.Pool -> Handler (postgreSQL :: PG.POSTGRESQL | eff)
 getUser pool = getRouteParam "id" >>= case _ of
@@ -598,7 +600,7 @@ import Data.Either (Either(..))
 import Data.Foldable (intercalate)
 import Data.Foreign (renderForeignError)
 import Node.Express.Request (getBody, getRouteParam)
-import SimpleServer.Types
+import SimpleService.Types
 -- previous code
 
 createUser :: forall eff. PG.Pool -> Handler (postgreSQL :: PG.POSTGRESQL | eff)
@@ -901,6 +903,6 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [7]: https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff
 [8]: https://github.com/expressjs/body-parser
 [9]: https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody
-[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/4e3ba59b9ed1164574d05ac104521ea3ca1b7afc
+[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/1929eeee6be2b2b28f19a330cb5a2352512c52b3
 [11]: https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined
 [12]: https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/
