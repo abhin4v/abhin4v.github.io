@@ -64,8 +64,8 @@
         <div id="ert" class="ert">
 23 minute read
 </div>
-<p>At <a href="https://nilenso.com">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org">Purescript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
-<p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST">REST</a> service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:</p>
+<p>At <a href="https://nilenso.com" target="_blank">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank">Purescript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
+<p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank">REST</a> service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:</p>
 <ol type="1">
 <li>persisting users into a Postgres database.</li>
 <li>API endpoints for creating, updating, getting, listing and deleting users.</li>
@@ -77,10 +77,10 @@
 <!--more-->
 <nav id="toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up">Setting Up</h2>
-<p>We start with installing Purescript and the required tools. This assumes that we have <a href="https://nodejs.org">node</a> and <a href="https://www.npmjs.com">npm</a> installed on our machine.</p>
+<p>We start with installing Purescript and the required tools. This assumes that we have <a href="https://nodejs.org" target="_blank">node</a> and <a href="https://www.npmjs.com" target="_blank">npm</a> installed on our machine.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="fu">mkdir</span> -p ~/.local/
 $ <span class="ex">npm</span> install -g purescript pulp bower --prefix ~/.local/</code></pre></div>
-<p><a href="https://github.com/purescript-contrib/pulp">Pulp</a> is a build tool for Purescript projects and <a href="http://bower.io">bower</a> is a package manager used to get Purescript libraries. We’ll have to add <code>~/.local/bin</code> in our <code>$PATH</code> (if it is not already added) to access the binaries installed.</p>
+<p><a href="https://github.com/purescript-contrib/pulp" target="_blank">Pulp</a> is a build tool for Purescript projects and <a href="http://bower.io" target="_blank">bower</a> is a package manager used to get Purescript libraries. We’ll have to add <code>~/.local/bin</code> in our <code>$PATH</code> (if it is not already added) to access the binaries installed.</p>
 <p>Let’s create a directory for our project and make Pulp initialize it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="fu">mkdir</span> ps-simple-rest-service
 $ <span class="bu">cd</span> ps-simple-rest-service
@@ -135,7 +135,7 @@ derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <
 
 <span class="kw">instance</span><span class="ot"> encodeUser ::</span> <span class="dt">Encode</span> <span class="dt">User</span> <span class="kw">where</span>
   encode <span class="fu">=</span> genericEncode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</code></pre></div>
-<p>We are using the generic support for Purescript types from the <a href="https://pursuit.purescript.org/packages/purescript-generics-rep"><code>purescript-generics-rep</code></a> and <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic"><code>purescript-foreign-generic</code></a> libraries to encode and decode the <code>User</code> type to JSON. We install the library by running the following command:</p>
+<p>We are using the generic support for Purescript types from the <a href="https://pursuit.purescript.org/packages/purescript-generics-rep" target="_blank"><code>purescript-generics-rep</code></a> and <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic" target="_blank"><code>purescript-foreign-generic</code></a> libraries to encode and decode the <code>User</code> type to JSON. We install the library by running the following command:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">bower</span> install purescript-foreign-generic --save</code></pre></div>
 <p>Now we can load up the module in the Purescript REPL and try out the JSON conversion features:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="fu">$</span> pulp repl
@@ -156,9 +156,9 @@ derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <
 <span class="fu">&gt;</span> eUser <span class="fu">=</span> <span class="kw">let</span> (<span class="dt">Identity</span> eUser) <span class="fu">=</span> runExceptT <span class="fu">$</span> dUser <span class="kw">in</span> eUser
 <span class="fu">&gt;</span> eUser
 (<span class="dt">Right</span> (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }))</code></pre></div>
-<p>We use <code>encodeJSON</code> and <code>decodeJSON</code> functions from the <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.Generic"><code>Data.Foreign.Generic</code></a> module to encode and decode the <code>User</code> instance to JSON. The return type of <code>decodeJSON</code> is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a <code>Right</code> with the correctly parsed <code>User</code> instance.</p>
+<p>We use <code>encodeJSON</code> and <code>decodeJSON</code> functions from the <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.Generic" target="_blank"><code>Data.Foreign.Generic</code></a> module to encode and decode the <code>User</code> instance to JSON. The return type of <code>decodeJSON</code> is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a <code>Right</code> with the correctly parsed <code>User</code> instance.</p>
 <h2 id="persisting-it">Persisting It</h2>
-<p>Next, we add the support for saving a <code>User</code> instance to a Postgres DB. First, we install the required libraries using bower and npm: <a href="https://github.com/brianc/node-postgres"><code>pg</code></a> for Javascript bindings to call Postgres, <a href="https://pursuit.purescript.org/packages/purescript-aff"><code>purescript-aff</code></a> for asynchronous processing and <a href="https://pursuit.purescript.org/packages/purescript-postgresql-client"><code>purescript-postgresql-client</code></a> for Purescript wrapper over <code>pg</code>:</p>
+<p>Next, we add the support for saving a <code>User</code> instance to a Postgres DB. First, we install the required libraries using bower and npm: <a href="https://github.com/brianc/node-postgres" target="_blank"><code>pg</code></a> for Javascript bindings to call Postgres, <a href="https://pursuit.purescript.org/packages/purescript-aff" target="_blank"><code>purescript-aff</code></a> for asynchronous processing and <a href="https://pursuit.purescript.org/packages/purescript-postgresql-client" target="_blank"><code>purescript-postgresql-client</code></a> for Purescript wrapper over <code>pg</code>:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">npm</span> init -y
 $ <span class="ex">npm</span> install pg@6.4.0 --save
 $ <span class="ex">bower</span> install purescript-aff --save
@@ -230,7 +230,7 @@ unit
 …
 unit
 (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</code></pre></div>
-<p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using the recond, we create a new Postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
+<p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using the recond, we create a new Postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff" target="_blank"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
 <p>Similarly, in the second part, we query the table using <code>PG.query</code> function by calling it with a connection, the SQL select query and the <code>User</code> ID as the query parameter. It returns an <code>Array</code> of users which we log to the console using the <code>logShow</code> function.</p>
 <p>We use this experiment to write the persistence related code in the <code>src/SimpleService/Persistence.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Persistence</span>
@@ -289,7 +289,7 @@ deleteUser conn userID <span class="fu">=</span>
 listUsers conn <span class="fu">=</span>
   PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></code></pre></div>
 <h2 id="serving-it">Serving It</h2>
-<p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express">purescript-express</a>, the Purescript wrapper over it:</p>
+<p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com" target="_blank">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank">purescript-express</a>, the Purescript wrapper over it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">npm</span> install express --save
 $ <span class="ex">bower</span> install purescript-express --save</code></pre></div>
 <h3 id="getting-a-user">Getting a User</h3>
@@ -383,7 +383,7 @@ respondNoContent status <span class="fu">=</span> <span class="kw">do</span>
   setStatus status
   end</code></pre></div>
 <p><code>getUser</code> validates the route parameter for valid user ID, sending error HTTP responses in case of failures. It then calls <code>findUser</code> to find the user and returns appropriate response.</p>
-<p>We can test this on the command-line using <a href="https://httpie.org">HTTPie</a>. We run <code>pulp --watch run</code> in one terminal to start the server with file watching, and test it from another terminal:</p>
+<p>We can test this on the command-line using <a href="https://httpie.org" target="_blank">HTTPie</a>. We run <code>pulp --watch run</code> in one terminal to start the server with file watching, and test it from another terminal:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">pulp</span> --watch run
 <span class="ex">*</span> Building project in ps-simple-rest-service
 <span class="ex">*</span> Build successful.
@@ -499,7 +499,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;User not found with id: 1&quot;
 }</code></pre>
 <h3 id="creating-a-user">Creating a User</h3>
-<p><code>createUser</code> handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser"><code>body-parser</code></a> for this and access it through Purescript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
+<p><code>createUser</code> handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser" target="_blank"><code>body-parser</code></a> for this and access it through Purescript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md" target="_blank">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
 <div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="st">&quot;use strict&quot;</span><span class="op">;</span>
 
 <span class="kw">var</span> bodyParser <span class="op">=</span> <span class="at">require</span>(<span class="st">&quot;body-parser&quot;</span>)<span class="op">;</span>
@@ -552,7 +552,7 @@ createUser pool <span class="fu">=</span> getBody <span class="fu">&gt;&gt;=</sp
         <span class="kw">else</span> <span class="kw">do</span>
           liftAff (PG.withConnection pool <span class="fu">$</span> flip P.insertUser u)
           respondNoContent <span class="dv">201</span></code></pre></div>
-<p><code>createUser</code> calls <a href="https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody"><code>getBody</code></a> which has type signature <code>forall e a. (Decode a) =&gt; HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)</code>. It returns either a list of parsing errors or a parsed instance, which in our case, is a <code>User</code>. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed <code>User</code> instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling <code>insertUser</code> from the persistence layer and respond with a status 201.</p>
+<p><code>createUser</code> calls <a href="https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody" target="_blank"><code>getBody</code></a> which has type signature <code>forall e a. (Decode a) =&gt; HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)</code>. It returns either a list of parsing errors or a parsed instance, which in our case, is a <code>User</code>. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed <code>User</code> instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling <code>insertUser</code> from the persistence layer and respond with a status 201.</p>
 <p>We can try it out:</p>
 <pre class="http"><code>$ http POST http://localhost:4000/v1/users name=&quot;abhinav&quot;
 HTTP/1.1 422 Unprocessable Entity
@@ -610,7 +610,7 @@ derive <span class="kw">instance</span><span class="ot"> genericUserPatch ::</sp
 
 <span class="kw">instance</span><span class="ot"> decodeUserPatch ::</span> <span class="dt">Decode</span> <span class="dt">UserPatch</span> <span class="kw">where</span>
   decode <span class="fu">=</span> genericDecode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</code></pre></div>
-<p><a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined"><code>NullOrUndefined</code></a> is a wrapper over <code>Maybe</code> with added support for Javascript <code>null</code> and <code>undefined</code> values. We define <code>UserPatch</code> as having a possibly null (or undefined) <code>name</code> field.</p>
+<p><a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined" target="_blank"><code>NullOrUndefined</code></a> is a wrapper over <code>Maybe</code> with added support for Javascript <code>null</code> and <code>undefined</code> values. We define <code>UserPatch</code> as having a possibly null (or undefined) <code>name</code> field.</p>
 <p>Now we can add the corresponding handler in <code>src/SimpleService/Handlers.purs</code>:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
 <span class="kw">import </span><span class="dt">Data.Foreign.NullOrUndefined</span> (unNullOrUndefined)
@@ -762,7 +762,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion">Conclusion</h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678">github</a>. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/">r/purescript</a>.</p>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank">github</a>. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank">r/purescript</a>.</p>
     </section>
     <a href="../../posts/ps-simple-rest-service.md" style="font-size: 0.8em">Source</a>
 </article>
@@ -771,19 +771,12 @@ X-Powered-By: Express
 
         <footer>
             <span style="float: left">© 2017, Abhinav Sarkar</span>
-            Generated by <a href="http://jaspervdj.be/hakyll">Hakyll</a> | <a href="https://github.com/abhin4v/abhin4v.github.io">Source</a>
+            Generated by <a href="http://jaspervdj.be/hakyll" target="_blank">Hakyll</a> |
+            <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank">Source</a>
         </footer>
     </body>
     <script>
 document.documentElement.className = document.documentElement.className.replace("no-js","js");
-
 hljs.initHighlightingOnLoad();
-
-var links = document.links;
-for (var i = 0, linksLength = links.length; i < linksLength; i++) {
-   if (links[i].hostname != window.location.hostname) {
-       links[i].target = '_blank';
-   }
-}
     </script>
 </html>
