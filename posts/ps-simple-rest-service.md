@@ -7,9 +7,8 @@ The aim of this two-part tutorial is to create a simple JSON [REST] service writ
 1. validation of API requests.
 1. reading the server and database configs from environment variables.
 1. logging HTTP requests and debugging info.
-1. running database migrations automatically.
 
-In this part we'll work on setting up the project and on the first two requirements.
+In this part we'll work on setting up the project and on the first two requirements. In the [next] part we'll work on the rest of the requirements.
 
 <!--more-->
 
@@ -875,7 +874,7 @@ X-Powered-By: Express
 
 ## Conclusion
 
-That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be seen in [github][10]. In the next part, we'll learn how to do API validation, logging, database migrations and application configuration. This post can be discussed on [r/purescript][12].
+That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in [github][10]. In the [next] part, we'll learn how to do API validation, application configuration and logging. This post can be discussed on [r/purescript][12].
 
 [Nilenso]: https://nilenso.com
 [Purescript]: http://purescript.org
@@ -888,6 +887,7 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [purescript-express]: https://pursuit.purescript.org/packages/purescript-express
 [REST]: https://en.wikipedia.org/wiki/REST
 [FFI]: https://github.com/purescript/documentation/blob/master/guides/FFI.md
+[next]: /posts/ps-simple-rest-service-2/
 [1]: https://pursuit.purescript.org/packages/purescript-foreign-generic
 [2]: https://pursuit.purescript.org/packages/purescript-generics-rep
 [3]: https://pursuit.purescript.org/packages/purescript-postgresql-client
@@ -897,6 +897,6 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [7]: https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff
 [8]: https://github.com/expressjs/body-parser
 [9]: https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody
-[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/1929eeee6be2b2b28f19a330cb5a2352512c52b3
+[10]: https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678
 [11]: https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined
 [12]: https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/
