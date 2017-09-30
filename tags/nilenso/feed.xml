@@ -10,7 +10,7 @@
     </author>
     <updated>2017-10-01T00:00:00Z</updated>
     <entry>
-    <title>Writing a Simple REST Service in Purescript - Part 2</title>
+    <title>Writing a Simple REST Web Service in Purescript - Part 2</title>
     <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/index.html" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/index.html</id>
     <published>2017-10-01T00:00:00Z</published>
@@ -18,7 +18,7 @@
     <summary type="html"><![CDATA[<div class="ert">
 21 minute read
 </div>
-<p>To recap, in the <a href="/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> service in <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
+<p>To recap, in the <a href="/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service in <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
 <ol type="1">
 <li>validation of API requests.</li>
 <li>reading the server and database configs from environment variables.</li>
@@ -630,7 +630,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 <p>In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p>]]></summary>
 </entry>
 <entry>
-    <title>Writing a Simple REST Service in Purescript - Part 1</title>
+    <title>Writing a Simple REST Web Service in Purescript - Part 1</title>
     <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service/index.html" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/index.html</id>
     <published>2017-09-29T00:00:00Z</published>
@@ -639,7 +639,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 23 minute read
 </div>
 <p>At <a href="https://nilenso.com" target="_blank" rel="noopener">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
-<p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:</p>
+<p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:</p>
 <ol type="1">
 <li>persisting users into a Postgres database.</li>
 <li>API endpoints for creating, updating, getting, listing and deleting users.</li>

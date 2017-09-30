@@ -1,6 +1,6 @@
 At [Nilenso], we've been working with a client who has chosen [Purescript] as their primary programming language. Since I couldn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.
 
-The aim of this two-part tutorial is to create a simple JSON [REST] service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
+The aim of this two-part tutorial is to create a simple JSON [REST] web service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
 
 1. persisting users into a Postgres database.
 1. API endpoints for creating, updating, getting, listing and deleting users.
