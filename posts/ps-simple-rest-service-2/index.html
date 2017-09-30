@@ -22,8 +22,6 @@
         <link rel="stylesheet" href="../../css/default.css">
         <link rel="stylesheet" href="../../css/syntax.css">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
 
         <!-- Global Site Tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109237-6"></script>
@@ -61,10 +59,10 @@
         
     </section>
     <section>
-        <div id="ert" class="ert">
+        <div class="ert">
 21 minute read
 </div>
-<p>To recap, in the <a href="../../posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank">REST</a> service in <a href="http://purescript.org" target="_blank">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
+<p>To recap, in the <a href="../../posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> service in <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
 <ol type="1">
 <li>validation of API requests.</li>
 <li>reading the server and database configs from environment variables.</li>
@@ -96,7 +94,7 @@ X-Powered-By: Express
 &lt;pre&gt;Cannot GET /v1/random&lt;/pre&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-<p>We get back a default HTML response with a 404 status from <a href="https://expressjs.com" target="_blank">Express</a>. Since we are writing a JSON API, we should return a JSON response in this case too. We add the following code in the <code>src/SimpleService/Server.purs</code> file to add a catch-all route and send a 404 status with a JSON error message:</p>
+<p>We get back a default HTML response with a 404 status from <a href="https://expressjs.com" target="_blank" rel="noopener">Express</a>. Since we are writing a JSON API, we should return a JSON response in this case too. We add the following code in the <code>src/SimpleService/Server.purs</code> file to add a catch-all route and send a 404 status with a JSON error message:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
 <span class="kw">import </span><span class="dt">Data.Either</span> (fromRight)
 <span class="kw">import </span><span class="dt">Data.String.Regex</span> (<span class="dt">Regex</span>, regex) <span class="kw">as</span> <span class="dt">Re</span>
@@ -124,7 +122,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
     sendJson {error<span class="fu">:</span> <span class="st">&quot;Route not found&quot;</span>}
   <span class="kw">where</span>
     patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</code></pre></div>
-<p><code>allRoutePattern</code> matches all routes because it uses a <code>&quot;/.*&quot;</code> <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank">regular expression</a>. We place it as the last route to match all the otherwise unrouted requests. Let’s see what is the result:</p>
+<p><code>allRoutePattern</code> matches all routes because it uses a <code>&quot;/.*&quot;</code> <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="noopener">regular expression</a>. We place it as the last route to match all the otherwise unrouted requests. Let’s see what is the result:</p>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/random
 HTTP/1.1 404 Not Found
 Connection: keep-alive
@@ -173,7 +171,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
     sendJson {error<span class="fu">:</span> message err}
   <span class="kw">where</span>
     patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</code></pre></div>
-<p>We add the <code>useOnError</code> handler which comes with <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank"><code>purescript-express</code></a> to return the error message as a JSON response. Back on the command-line:</p>
+<p>We add the <code>useOnError</code> handler which comes with <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank" rel="noopener"><code>purescript-express</code></a> to return the error message as a JSON response. Back on the command-line:</p>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/users
 HTTP/1.1 500 Internal Server Error
 Connection: keep-alive
@@ -211,7 +209,7 @@ updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;i
             <span class="kw">case</span> savedUser <span class="kw">of</span>
               <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }
               <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</code></pre></div>
-<p>As we can see, the actual request handling logic is obfuscated by the request validation logic for the user id and the user name patch parameters. We also notice that we are using three constructs for validation here: <code>Maybe</code>, <code>Either</code> and <code>if-then-else</code>. However, we can use just <code>Either</code> to subsume all these cases as it can “carry” a failure as well as a success case. <code>Either</code> also comes with a nice monad transformer <a href="https://pursuit.purescript.org/packages/purescript-transformers/3.4.0/docs/Control.Monad.Except.Trans#t:ExceptT" target="_blank"><code>ExceptT</code></a> which provides the <code>do</code> syntax for failure propagation. So we choose <code>ExceptT</code> as the base construct for our validation framework and write functions to upgrade <code>Maybe</code> and <code>if-then-else</code> to it. We add the following code to the <code>src/SimpleService/Validation.purs</code> file:</p>
+<p>As we can see, the actual request handling logic is obfuscated by the request validation logic for the user id and the user name patch parameters. We also notice that we are using three constructs for validation here: <code>Maybe</code>, <code>Either</code> and <code>if-then-else</code>. However, we can use just <code>Either</code> to subsume all these cases as it can “carry” a failure as well as a success case. <code>Either</code> also comes with a nice monad transformer <a href="https://pursuit.purescript.org/packages/purescript-transformers/3.4.0/docs/Control.Monad.Except.Trans#t:ExceptT" target="_blank" rel="noopener"><code>ExceptT</code></a> which provides the <code>do</code> syntax for failure propagation. So we choose <code>ExceptT</code> as the base construct for our validation framework and write functions to upgrade <code>Maybe</code> and <code>if-then-else</code> to it. We add the following code to the <code>src/SimpleService/Validation.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Validation</span>
   (<span class="kw">module</span> <span class="dt">MoreExports</span>, <span class="kw">module</span> <span class="dt">SimpleService.Validation</span>) <span class="kw">where</span>
 
@@ -280,7 +278,7 @@ updateUser pool <span class="fu">=</span> V.withValidation (<span class="dt">Tup
     getUserPatch <span class="fu">=</span> lift getBody <span class="fu">&gt;&gt;=</span> V.except <span class="fu">&lt;&lt;&lt;</span> renderForeignErrors
 
     getUserName <span class="fu">=</span> V.exceptCond <span class="st">&quot;User name must not be empty&quot;</span> (_ <span class="fu">==</span> <span class="st">&quot;&quot;</span>)</code></pre></div>
-<p>The validation logic has been extracted out in separate functions now which are composed using <a href="https://pursuit.purescript.org/packages/purescript-prelude/3.0.0/docs/Control.Applicative#t:Applicative" target="_blank">Applicative</a>. The validation steps are composed using the <code>ExceptT</code> monad. We are now free to express the core logic of the function clearly. We rewrite the <code>src/SimpleService/Handler.purs</code> file using the validations:</p>
+<p>The validation logic has been extracted out in separate functions now which are composed using <a href="https://pursuit.purescript.org/packages/purescript-prelude/3.0.0/docs/Control.Applicative#t:Applicative" target="_blank" rel="noopener">Applicative</a>. The validation steps are composed using the <code>ExceptT</code> monad. We are now free to express the core logic of the function clearly. We rewrite the <code>src/SimpleService/Handler.purs</code> file using the validations:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Handler</span> <span class="kw">where</span>
 
 <span class="kw">import </span><span class="dt">Prelude</span>
@@ -469,7 +467,7 @@ X-Powered-By: Express
                      , max<span class="fu">:</span> <span class="dv">10</span>
                      , idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>
                      }</code></pre></div>
-<p>We are going to extract it out of the code and read it from the environment variables using the <a href="https://pursuit.purescript.org/packages/purescript-config" target="_blank"><code>purescript-config</code></a> package. First, we install the required packages using <a href="http://bower.io" target="_blank">bower</a>.</p>
+<p>We are going to extract it out of the code and read it from the environment variables using the <a href="https://pursuit.purescript.org/packages/purescript-config" target="_blank" rel="noopener"><code>purescript-config</code></a> package. First, we install the required packages using <a href="http://bower.io" target="_blank" rel="noopener">bower</a>.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">bower</span> install --save purescript-node-process purescript-config</code></pre></div>
 <p>Now, we write the following code in the <code>src/SimpleService/Config.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Config</span> <span class="kw">where</span>
@@ -568,7 +566,7 @@ $ <span class="ex">pulp</span> --watch run
 <span class="ex">*</span> ERROR: Subcommand terminated with exit code 1</code></pre></div>
 <p>Up next, we add logging to our application.</p>
 <h2 id="logging">Logging</h2>
-<p>For logging, we use the <a href="https://pursuit.purescript.org/packages/purescript-logging" target="_blank"><code>purescript-logging</code></a> package. We write a logger which logs to <code>stdout</code>; in the <code>src/SimpleService/Logger.purs</code> file:</p>
+<p>For logging, we use the <a href="https://pursuit.purescript.org/packages/purescript-logging" target="_blank" rel="noopener"><code>purescript-logging</code></a> package. We write a logger which logs to <code>stdout</code>; in the <code>src/SimpleService/Logger.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Logger</span>
   ( debug
   , info
@@ -673,7 +671,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 [<span class="ex">2017-09-30</span> 16:03:46.635] DEBUG Deleted user 3
 [<span class="ex">2017-09-30</span> 16:05:03.805] DEBUG HTTP: GET /v1/users</code></pre></div>
 <h2 id="conclusion">Conclusion</h2>
-<p>In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank">r/purescript</a>.</p>
+<p>In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
     <a href="../../posts/ps-simple-rest-service-2.md" style="font-size: 0.8em">Source</a>
 </article>
@@ -682,12 +680,14 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 
         <footer>
             <span style="float: left">© 2017, Abhinav Sarkar</span>
-            Generated by <a href="http://jaspervdj.be/hakyll" target="_blank">Hakyll</a> |
-            <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank">Source</a>
+            Generated by <a href="http://jaspervdj.be/hakyll" target="_blank" rel="noopener">Hakyll</a> |
+            <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank" rel="noopener">Source</a>
         </footer>
     </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
     <script>
-document.documentElement.className = document.documentElement.className.replace("no-js","js");
-hljs.initHighlightingOnLoad();
+      document.documentElement.className = document.documentElement.className.replace("no-js","js");
+      hljs.initHighlightingOnLoad();
     </script>
 </html>
