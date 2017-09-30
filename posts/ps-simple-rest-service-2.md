@@ -726,7 +726,7 @@ $ pulp --watch run
 
 ## Conclusion
 
-In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in [github][1].
+In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in [github][1]. This post can be discussed on [r/purescript][2].
 
 [first]: /posts/ps-simple-rest-service/
 [REST]: https://en.wikipedia.org/wiki/REST
@@ -740,3 +740,4 @@ In this tutorial we learned how to create a simple JSON REST web service written
 [bower]: http://bower.io
 [`purescript-logging`]: https://pursuit.purescript.org/packages/purescript-logging
 [1]: https://github.com/abhin4v/ps-simple-rest-service
+[2]: https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/
