@@ -131,20 +131,6 @@ ins::before {
   line-height: normal;
 }
 
-.fa-events-icons-ready .post .body a[href^="http://"]:not([href*="abhinavsarkar.net"]):after,
-.fa-events-icons-ready .post .body a[href^="https://"]:not([href*="abhinavsarkar.net"]):after {
-  content: "\f14c";
-  display: inline-block;
-  margin: 0px .3em;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: small;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  transform: translate(0, 0);
-  vertical-align: middle;
-}
-
 .fa-events-icons-ready .post .body h2 a.ref-link:after,
 .fa-events-icons-ready .post .body h3 a.ref-link:after {
   content: "\f0c1";
