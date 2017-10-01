@@ -11,7 +11,7 @@ import Site.TOC
 import Site.ERT
 import Site.Sitemap
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
-import Text.Pandoc.Definition (Inline(Link))
+import Text.Pandoc.Definition (Inline(Link), Block(Header))
 import Text.Pandoc.Options
 import Text.Pandoc.Walk
 
@@ -149,6 +149,7 @@ contentCompiler alignment ertEnabled =
                                 , writerEmailObfuscation = ReferenceObfuscation
                                 })
     (return . estimatedReadingTime ertEnabled
+            . walk linkHeaders
             . tableOfContents alignment
             . walk blankTargetLinks)
 
@@ -163,6 +164,14 @@ blankTargetLinks (Link (ident, classes, props) children (url, title)) =
       then props
       else props <> [("target", "_blank"), ("rel", "noopener")]
 blankTargetLinks x = x
+
+linkHeaders :: Block -> Block
+linkHeaders (Header level attr@(ident, _, _) content) =
+  Header level attr $ content <>
+                      [ Link ("", ["ref-link"], []) [] ("#" <> ident, "")
+                      , Link ("", ["top-link"], []) [] ("#top", "Back to top")
+                      ]
+linkHeaders x = x
 
 postCtx :: Context String
 postCtx =

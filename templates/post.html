@@ -1,8 +1,9 @@
-<article itemscope itemtype="http://schema.org/Article">
+<article itemscope itemtype="http://schema.org/Article" class="post">
     <header>
-        <h1 itemprop="name">$title$</h1>
+        <h1 itemprop="name" id="#top">$title$</h1>
     </header>
     <section class="header">
+        <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
         Posted on <span itemprop="datePublished" content="$date_num$">$date$</span>
         $if(author)$
             by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">$author$</span></span>
@@ -10,12 +11,12 @@
     </section>
     <section class="header">
         $if(tags)$
-        Tags: $tags$
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: $tags$
         $endif$
     </section>
-    <section itemprop="articleBody">
+    <section itemprop="articleBody" class="body">
         $body$
     </section>
-    <a href="/$path$" style="font-size: 0.8em">Source</a>
+    <a href="/$path$" class="source">Source</a>
 </article>
 <meta itemprop="url" content="$full_url$">

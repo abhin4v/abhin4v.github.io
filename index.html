@@ -2,24 +2,32 @@
 
 <div id="home-posts">
 $for(posts)$
-<article>
+<article class="post">
     <header>
         <h3><a href="$url$">$title$</a></h3>
     </header>
     <section class="header">
+        <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
         Posted on $date$
         $if(author)$
             by $author$
         $endif$
     </section>
-    <section>
+    <section class="header">
+        $if(tags)$
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: $tags$
+        $endif$
+    </section>
+    <section class="body">
       $if(teaser)$
         $teaser$
       $else$
         $body$
       $endif$
     </section>
-    <a href="$url$">Read more</a>
+    <a href="$url$">Read more
+      <span class="fa fa-arrow-right" aria-hidden="true"></span>
+    </a>
 </article>
 <hr>
 $endfor$
