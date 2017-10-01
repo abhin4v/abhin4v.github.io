@@ -294,6 +294,7 @@ p ~ #toc.right-toc h3 {
 
 #comment-form {
   border-top: 1px solid #ababab;
+  display: none;
 }
 
 #comment-form h3 {
