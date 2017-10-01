@@ -2,6 +2,7 @@
 title: Writing a Simple REST Web Service in Purescript - Part 1
 date: 2017-09-29
 tags: purescript, REST, programming, nilenso
+author: Abhinav Sarkar
 toc: right
 ---
 

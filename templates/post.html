@@ -1,11 +1,11 @@
-<article>
+<article itemscope itemtype="http://schema.org/Article">
     <header>
-        <h1>$title$<h1>
+        <h1 itemprop="name">$title$</h1>
     </header>
     <section class="header">
-        Posted on $date$
+        Posted on <span itemprop="datePublished" content="$date_num$">$date$</span>
         $if(author)$
-            by $author$
+            by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">$author$</span></span>
         $endif$
     </section>
     <section class="header">
@@ -13,8 +13,9 @@
         Tags: $tags$
         $endif$
     </section>
-    <section>
+    <section itemprop="articleBody">
         $body$
     </section>
     <a href="/$path$" style="font-size: 0.8em">Source</a>
 </article>
+<meta itemprop="url" content="$full_url$">

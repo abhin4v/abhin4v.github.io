@@ -51,9 +51,11 @@ main = hakyll $ do
     route indexHTMLRoute
     compile $ do
       alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
+      path <- getResourceFilePath
+      let fullUrl = siteRoot <> drop 1 (takeDirectory path </> takeBaseName path </> "")
       contentCompiler alignment True
         >>= saveSnapshot "content"
-        >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags)
+        >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags <> constField "full_url" fullUrl)
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
         >>= relativizeUrls
         >>= removeIndexHtml
@@ -149,7 +151,6 @@ contentCompiler alignment ertEnabled =
     (return . estimatedReadingTime ertEnabled
             . tableOfContents alignment
             . walk blankTargetLinks)
-  where
 
 blankTargetLinks :: Inline -> Inline
 blankTargetLinks (Link (ident, classes, props) children (url, title)) =
@@ -166,6 +167,7 @@ blankTargetLinks x = x
 postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y" <>
+  dateField "date_num" "%Y-%m-%d" <>
   defaultContext
 
 postCtxWithTags :: Tags -> Context String
