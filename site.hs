@@ -22,7 +22,7 @@ siteRoot = "https://abhinavsarkar.net"
 
 main :: IO ()
 main = hakyll $ do
-  match "CNAME" $ do
+  match (fromList ["CNAME", "robots.txt"]) $ do
     route   idRoute
     compile copyFileCompiler
 
