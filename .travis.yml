@@ -1,0 +1,37 @@
+sudo: false
+language: c
+branches:
+  only:
+    - source
+addons:
+  apt:
+    packages:
+    - libgmp-dev
+env:
+  global:
+    - secure: "kWL+j1s5SnmxdA1pIh+GefnrWEcxlhJc+TTvB9X6w+1c1vpnsfWKKNNMluFuvzHij48XM5KfsusFQ5Rmo16spEI9trlJhCf5o10m5551JaFGSAOOgvvsDEWkA/CP9cCEuPjSsPAG9wzLZM6QWrPuy+Egg9P2uQLDxdX49vb8C9UDTIbKQUm3yKhtflGgPxTokxzc42F76HR7BlphQRXQ/HEoPCJ3rsBFGkwdajjq41ehAcO+AkK197mhu3VV71i6eGXaG3RdfHB+HpAUPRes3qvb+4byibUbguegZ3FUhwyUCfnGJGpfoHiGRTaQRp5EzzuwKY8dWiIaZEFPqaYEx/+LYtGwA4Ojirk6hZtukwkzP3xBtEaArL3G37Zd8c64Ybd9YF4QBPK9LBXjIHYyCeRpfi3phQcTXd+pE/EXgZs4MrfHpzN/QqOz/Lh/EiZnoDvgk4ZqAvJarnS9z5kk53WOne8ydoP3yDhYENXwcHUR7nhaEq50ZVEVbpAtR0Kd+AHmizYpS+4vX/Q7JXvZ1IvSbsRMBD8CvFPFkpiat/y6MV/oTKzllAZgoqLAiJZIgZlWhN5MObjWhBkSgDUybqR2ixg67OX2zM9aij+xziCykMQQ6O6r+IaZCD2heYOXz44poPRCUgpwejLs7DOU+0ln8wV0nxuarevO6S+tPP4="
+install:
+- mkdir -p ~/.local/bin
+- export PATH=$HOME/.local/bin:$PATH
+- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+- stack --resolver lts --no-terminal --install-ghc install cabal-install happy alex
+- stack --resolver lts --no-terminal install --fast
+before_script:
+  - cd _site
+  - git checkout master
+  - git pull origin master
+  - git ls-files | xargs -r git rm
+  - cd ..
+script:
+  - $HOME/.local/bin/site build
+  - cd _site
+  - git status
+  - git add --all
+  - git config --global user.email "abhinav@abhinavsarkar.net"
+  - git config --global user.name "Travis"
+  - git commit -m "$TRAVIS_COMMIT_MESSAGE"
+  - git push "$REPO_URL" master
+cache:
+  directories:
+  - $HOME/.stack
+  - $HOME/.cabal
