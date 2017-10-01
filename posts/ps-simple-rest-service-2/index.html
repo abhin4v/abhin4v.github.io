@@ -45,12 +45,14 @@
         </header>
 
         <main role="main">
-            <article>
+            <article itemscope itemtype="http://schema.org/Article">
     <header>
-        <h1>Writing a Simple REST Web Service in Purescript - Part 2<h1>
+        <h1 itemprop="name">Writing a Simple REST Web Service in Purescript - Part 2</h1>
     </header>
     <section class="header">
-        Posted on October  1, 2017
+        Posted on <span itemprop="datePublished" content="2017-10-01">October  1, 2017</span>
+        
+            by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
         
     </section>
     <section class="header">
@@ -58,7 +60,7 @@
         Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
         
     </section>
-    <section>
+    <section itemprop="articleBody">
         <div class="ert">
 21 minute read
 </div>
@@ -675,6 +677,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
     </section>
     <a href="../../posts/ps-simple-rest-service-2.md" style="font-size: 0.8em">Source</a>
 </article>
+<meta itemprop="url" content="https://abhinavsarkar.net/posts/ps-simple-rest-service-2">
 
         </main>
 
