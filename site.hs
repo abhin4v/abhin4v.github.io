@@ -22,11 +22,15 @@ siteRoot = "https://abhinavsarkar.net"
 
 main :: IO ()
 main = hakyll $ do
-  match (fromList ["CNAME", "robots.txt"]) $ do
+  match (fromList ["CNAME", "robots.txt", "staticman.yml"]) $ do
     route   idRoute
     compile copyFileCompiler
 
   match "images/*" $ do
+    route   idRoute
+    compile copyFileCompiler
+
+  match "js/*" $ do
     route   idRoute
     compile copyFileCompiler
 
@@ -52,10 +56,13 @@ main = hakyll $ do
     compile $ do
       alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
       path <- getResourceFilePath
-      let fullUrl = siteRoot <> drop 1 (takeDirectory path </> takeBaseName path </> "")
+      let postSlug = takeBaseName path
+      let fullUrl = siteRoot <> drop 1 (takeDirectory path </> postSlug <> "/")
       contentCompiler alignment True
         >>= saveSnapshot "content"
-        >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags <> constField "full_url" fullUrl)
+        >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags <>
+                                                           constField "full_url" fullUrl <>
+                                                           constField "post_slug" postSlug)
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
         >>= relativizeUrls
         >>= removeIndexHtml

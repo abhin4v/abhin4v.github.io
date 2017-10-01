@@ -1,0 +1,17 @@
+comments:
+  allowedFields     : ['name', 'email', 'message']
+  branch            : "source"
+  commitMessage     : "New comment."
+  filename          : "{@id}"
+  extension         : "md"
+  format            : "frontmatter"
+  moderation        : true
+  path              : "comments/{options.slug}"
+  requiredFields    : ['name', 'email', 'message']
+  transforms:
+    email           : md5
+  generatedFields:
+    date:
+      type          : "date"
+      options:
+        format      : "iso8601"

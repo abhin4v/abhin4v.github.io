@@ -291,3 +291,48 @@ p ~ #toc.right-toc h3 {
     display: none!important;
   }
 }
+
+#comment-form {
+  border-top: 1px solid #ababab;
+}
+
+#comment-form h3 {
+  margin-bottom: 0.2em;
+}
+
+#comment-form fieldset {
+  border: none;
+}
+
+#comment-form input, #comment-form textarea {
+  display: block;
+  margin: 1em 0px;
+  padding: 0.2em;
+}
+
+#comment-form textarea {
+  width: 80%;
+  height: 5em;
+  margin-bottom: 0px;
+}
+
+#comment-form input {
+  width: 50%;
+}
+
+#comment-form input[type="submit"] {
+  width: 20%;
+  background-color: #7724bd;
+  color: #eee;
+  border: none;
+  padding: 0.3em;
+  cursor: pointer;
+}
+
+#comment-form input[type="submit"]:hover {
+  background-color: #bd24bb;
+}
+
+#comment-form fieldset[disabled="disabled"] input[type="submit"] {
+  background-color: #777;
+}
