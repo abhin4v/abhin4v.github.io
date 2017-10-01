@@ -45,11 +45,12 @@
         </header>
 
         <main role="main">
-            <article itemscope itemtype="http://schema.org/Article">
+            <article itemscope itemtype="http://schema.org/Article" class="post">
     <header>
-        <h1 itemprop="name">Writing a Simple REST Web Service in Purescript - Part 1</h1>
+        <h1 itemprop="name" id="#top">Writing a Simple REST Web Service in Purescript - Part 1</h1>
     </header>
     <section class="header">
+        <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
         Posted on <span itemprop="datePublished" content="2017-09-29">September 29, 2017</span>
         
             by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
@@ -57,10 +58,10 @@
     </section>
     <section class="header">
         
-        Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
         
     </section>
-    <section itemprop="articleBody">
+    <section itemprop="articleBody" class="body">
         <div class="ert">
 23 minute read
 </div>
@@ -76,7 +77,7 @@
 <p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
 <!--more-->
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
-<h2 id="setting-up">Setting Up</h2>
+<h2 id="setting-up">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with installing Purescript and the required tools. This assumes that we have <a href="https://nodejs.org" target="_blank" rel="noopener">node</a> and <a href="https://www.npmjs.com" target="_blank" rel="noopener">npm</a> installed on our machine.</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="fu">mkdir</span> -p ~/.local/
 $ <span class="ex">npm</span> install -g purescript pulp bower --prefix ~/.local/</code></pre></div>
@@ -107,7 +108,7 @@ $ <span class="fu">cat</span> bower.json
 $ ls bower_components
 purescript-console  purescript-eff  purescript-prelude purescript-psci-support</code></pre></div>
 <p>Pulp creates the basic project structure for us. <code>src</code> directory will contain the source while the <code>test</code> directory will contain the tests. <code>bower.json</code> contains the Purescript libraries as dependencies which are downloaded and installed in the <code>bower_components</code> directory.</p>
-<h2 id="types-first">Types First</h2>
+<h2 id="types-first">Types First<a href="#types-first" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>First, we create the types needed in <code>src/SimpleService/Types.purs</code>:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Types</span> <span class="kw">where</span>
 
@@ -157,7 +158,7 @@ derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <
 <span class="fu">&gt;</span> eUser
 (<span class="dt">Right</span> (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }))</code></pre></div>
 <p>We use <code>encodeJSON</code> and <code>decodeJSON</code> functions from the <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.Generic" target="_blank" rel="noopener"><code>Data.Foreign.Generic</code></a> module to encode and decode the <code>User</code> instance to JSON. The return type of <code>decodeJSON</code> is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a <code>Right</code> with the correctly parsed <code>User</code> instance.</p>
-<h2 id="persisting-it">Persisting It</h2>
+<h2 id="persisting-it">Persisting It<a href="#persisting-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Next, we add the support for saving a <code>User</code> instance to a Postgres DB. First, we install the required libraries using bower and npm: <a href="https://github.com/brianc/node-postgres" target="_blank" rel="noopener"><code>pg</code></a> for Javascript bindings to call Postgres, <a href="https://pursuit.purescript.org/packages/purescript-aff" target="_blank" rel="noopener"><code>purescript-aff</code></a> for asynchronous processing and <a href="https://pursuit.purescript.org/packages/purescript-postgresql-client" target="_blank" rel="noopener"><code>purescript-postgresql-client</code></a> for Purescript wrapper over <code>pg</code>:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">npm</span> init -y
 $ <span class="ex">npm</span> install pg@6.4.0 --save
@@ -288,11 +289,11 @@ deleteUser conn userID <span class="fu">=</span>
           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Array</span> <span class="dt">User</span>)
 listUsers conn <span class="fu">=</span>
   PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></code></pre></div>
-<h2 id="serving-it">Serving It</h2>
+<h2 id="serving-it">Serving It<a href="#serving-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com" target="_blank" rel="noopener">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank" rel="noopener">purescript-express</a>, the Purescript wrapper over it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">npm</span> install express --save
 $ <span class="ex">bower</span> install purescript-express --save</code></pre></div>
-<h3 id="getting-a-user">Getting a User</h3>
+<h3 id="getting-a-user">Getting a User<a href="#getting-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>We do this top-down. First, we change <code>src/Main.purs</code> to run the HTTP server by providing the server port and database configuration:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>
 
@@ -425,7 +426,7 @@ X-Powered-By: Express
 {
     &quot;error&quot;: &quot;User not found with id: 2&quot;
 }</code></pre>
-<h3 id="deleting-a-user">Deleting a User</h3>
+<h3 id="deleting-a-user">Deleting a User<a href="#deleting-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p><code>deleteUser</code> handler is similar. We add the route in the <code>app</code> function in the <code>src/SimpleService/Server.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
 <span class="kw">import </span><span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, listenHttp)
@@ -498,7 +499,7 @@ X-Powered-By: Express
 {
     &quot;error&quot;: &quot;User not found with id: 1&quot;
 }</code></pre>
-<h3 id="creating-a-user">Creating a User</h3>
+<h3 id="creating-a-user">Creating a User<a href="#creating-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p><code>createUser</code> handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser" target="_blank" rel="noopener"><code>body-parser</code></a> for this and access it through Purescript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md" target="_blank" rel="noopener">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
 <div class="sourceCode"><pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="st">&quot;use strict&quot;</span><span class="op">;</span>
 
@@ -598,7 +599,7 @@ X-Powered-By: Express
     &quot;name&quot;: &quot;abhinav&quot;
 }</code></pre>
 <p>First try returns a parsing failure because we didn’t provide the <code>id</code> field. Second try is a validation failure because the name was empty. Third try is a success which we check by doing a <code>GET</code> request next.</p>
-<h3 id="updating-a-user">Updating a User</h3>
+<h3 id="updating-a-user">Updating a User<a href="#updating-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>We want to allow a user’s name to be updated through the API, but not the user’s id. So we add a new type to <code>src/SimpleService/Types.purs</code> to represent a possible change in user’s name:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
 <span class="kw">import </span><span class="dt">Data.Foreign.NullOrUndefined</span> (<span class="dt">NullOrUndefined</span>)
@@ -713,7 +714,7 @@ X-Powered-By: Express
 {
     &quot;error&quot;: &quot;User name must not be empty&quot;
 }</code></pre>
-<h3 id="listing-all-users">Listing all Users</h3>
+<h3 id="listing-all-users">Listing all Users<a href="#listing-all-users" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>Listing all users is quite simple since it doesn’t require us to take any request parameter.</p>
 <p>We add the handler to the <code>src/SimpleService/Handler.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- previous code</span>
@@ -761,10 +762,10 @@ X-Powered-By: Express
         &quot;name&quot;: &quot;sarkarabhinav&quot;
     }
 ]</code></pre>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
-    <a href="../../posts/ps-simple-rest-service.md" style="font-size: 0.8em">Source</a>
+    <a href="../../posts/ps-simple-rest-service.md" class="source">Source</a>
 </article>
 <meta itemprop="url" content="https://abhinavsarkar.net/posts/ps-simple-rest-service">
 
@@ -778,6 +779,7 @@ X-Powered-By: Express
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
       hljs.initHighlightingOnLoad();

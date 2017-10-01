@@ -45,11 +45,12 @@
         </header>
 
         <main role="main">
-            <article itemscope itemtype="http://schema.org/Article">
+            <article itemscope itemtype="http://schema.org/Article" class="post">
     <header>
-        <h1 itemprop="name">Writing a Simple REST Web Service in Purescript - Part 2</h1>
+        <h1 itemprop="name" id="#top">Writing a Simple REST Web Service in Purescript - Part 2</h1>
     </header>
     <section class="header">
+        <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
         Posted on <span itemprop="datePublished" content="2017-10-01">October  1, 2017</span>
         
             by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
@@ -57,10 +58,10 @@
     </section>
     <section class="header">
         
-        Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
         
     </section>
-    <section itemprop="articleBody">
+    <section itemprop="articleBody" class="body">
         <div class="ert">
 21 minute read
 </div>
@@ -73,7 +74,7 @@
 <!--more-->
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#bugs">Bugs!</a></li><li><a href="#validation">Validation</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#logging">Logging</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <p>But first,</p>
-<h2 id="bugs">Bugs!</h2>
+<h2 id="bugs">Bugs!<a href="#bugs" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>What happens if we hit a URL on our server which does not exist? Let’s fire up the server and test it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">pulp</span> --watch run</code></pre></div>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/random
@@ -187,7 +188,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;connect ECONNREFUSED 127.0.0.1:5432&quot;
 }</code></pre>
 <p>It works! Bugs are fixed now. We proceed to add next features.</p>
-<h2 id="validation">Validation</h2>
+<h2 id="validation">Validation<a href="#validation" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s recall the code to update a user from the <code>src/SimpleService/Handler.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">updateUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)
 updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
@@ -456,7 +457,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;User ID must be positive&quot;
 }</code></pre>
 <p>It works as expected.</p>
-<h2 id="configuration">Configuration</h2>
+<h2 id="configuration">Configuration<a href="#configuration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Right now our application configuration resides in the <code>main</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">main <span class="fu">=</span> runServer port databaseConfig
   <span class="kw">where</span>
@@ -567,7 +568,7 @@ $ <span class="ex">pulp</span> --watch run
 <span class="ex">Unable</span> to start. Missing Env keys: SS_DB_DATABASE, SS_DB_HOST, SS_DB_IDLE_CONN_TIMEOUT_MILLIS, SS_DB_PASSWORD, SS_DB_POOL_SIZE, SS_DB_PORT, SS_DB_USER, SS_PORT
 <span class="ex">*</span> ERROR: Subcommand terminated with exit code 1</code></pre></div>
 <p>Up next, we add logging to our application.</p>
-<h2 id="logging">Logging</h2>
+<h2 id="logging">Logging<a href="#logging" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>For logging, we use the <a href="https://pursuit.purescript.org/packages/purescript-logging" target="_blank" rel="noopener"><code>purescript-logging</code></a> package. We write a logger which logs to <code>stdout</code>; in the <code>src/SimpleService/Logger.purs</code> file:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Logger</span>
   ( debug
@@ -672,10 +673,10 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 [<span class="ex">2017-09-30</span> 16:03:46.615] DEBUG HTTP: DELETE /v1/user/3
 [<span class="ex">2017-09-30</span> 16:03:46.635] DEBUG Deleted user 3
 [<span class="ex">2017-09-30</span> 16:05:03.805] DEBUG HTTP: GET /v1/users</code></pre></div>
-<h2 id="conclusion">Conclusion</h2>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
-    <a href="../../posts/ps-simple-rest-service-2.md" style="font-size: 0.8em">Source</a>
+    <a href="../../posts/ps-simple-rest-service-2.md" class="source">Source</a>
 </article>
 <meta itemprop="url" content="https://abhinavsarkar.net/posts/ps-simple-rest-service-2">
 
@@ -689,6 +690,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+    <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
       hljs.initHighlightingOnLoad();
