@@ -708,13 +708,13 @@ requestLogger = do
   Log.debug $ "HTTP: " <> maybe "" id ((toUpper <<< show) <$> method) <> " " <> path
   next
 
-  app :: forall eff.
-         PG.Pool
-      -> App (postgreSQL :: PG.POSTGRESQL, console :: CONSOLE, now :: NOW | eff)
-  app pool = do
-    useExternal jsonBodyParser
-    use requestLogger
-    -- previous code
+app :: forall eff.
+       PG.Pool
+    -> App (postgreSQL :: PG.POSTGRESQL, console :: CONSOLE, now :: NOW | eff)
+app pool = do
+  useExternal jsonBodyParser
+  use requestLogger
+  -- previous code
 
 ```
 
