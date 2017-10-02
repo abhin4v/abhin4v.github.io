@@ -292,10 +292,6 @@ p ~ #toc.right-toc h3 {
   }
 }
 
-#comment-form {
-  display: none;
-}
-
 #comment-form h3 {
   margin-bottom: 0.2em;
 }
