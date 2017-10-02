@@ -1,11 +1,15 @@
 --------------------------------------------------------------------------------
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables, TupleSections #-}
 
 module Main where
 
+import Control.Monad (liftM)
 import Data.List (sortBy, isInfixOf)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 import Data.Monoid ((<>))
+import Data.Ord (comparing)
+import Data.Time.Clock (UTCTime)
+import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
 import Site.TOC
 import Site.ERT
@@ -49,6 +53,17 @@ main = hakyll $ do
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
+  match "comments/*/*" $ do
+    compile $ do
+      ident <- getUnderlying
+      tss <- getMetadataField' ident "date"
+      date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
+      let dateS = formatTime defaultTimeLocale "%B %e, %Y" date
+      email <- getMetadataField' ident "email"
+      commentCompiler
+        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx dateS email)
+        >>= saveSnapshot "comment"
+
   tags <- buildTags "posts/*" (fromCapture "tags/*.html")
 
   match "posts/*" $ do
@@ -58,11 +73,15 @@ main = hakyll $ do
       path <- getResourceFilePath
       let postSlug = takeBaseName path
       let fullUrl = siteRoot <> drop 1 (takeDirectory path </> postSlug <> "/")
+
+      comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
       contentCompiler alignment True
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/post.html"    (postCtxWithTags tags <>
                                                            constField "full_url" fullUrl <>
-                                                           constField "post_slug" postSlug)
+                                                           constField "post_slug" postSlug <>
+                                                           constField "comment_count" (show $ length comments) <>
+                                                           listField "comments" defaultContext (return comments))
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
         >>= relativizeUrls
         >>= removeIndexHtml
@@ -148,6 +167,13 @@ main = hakyll $ do
   match "templates/*" $ compile templateBodyCompiler
 
 --------------------------------------------------------------------------------
+commentCompiler :: Compiler (Item String)
+commentCompiler =
+  pandocCompilerWith defaultHakyllReaderOptions $
+                     defaultHakyllWriterOptions { writerHtml5 = True
+                                                , writerEmailObfuscation = ReferenceObfuscation
+                                                }
+
 contentCompiler :: String -> Bool -> Compiler (Item String)
 contentCompiler alignment ertEnabled =
   pandocCompilerWithTransformM
@@ -189,6 +215,12 @@ postCtx =
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
 
+commentCtx :: String -> String -> Context String
+commentCtx date email =
+  constField "date" date <>
+  constField "email" email <>
+  defaultContext
+
 feedCtx :: Context String
 feedCtx =  defaultContext <>
            -- $description$ will render as the post body
@@ -226,3 +258,9 @@ removeIndexURL url = case splitFileName url of
   (dir, "index.html") | isLocal dir -> dir
   _                                 -> url
   where isLocal uri = not ("://" `isInfixOf` uri)
+
+sortComments :: MonadMetadata m => [Item a] -> m [Item a]
+sortComments = sortByM $ flip getMetadataField' "date" . itemIdentifier
+  where
+    sortByM f xs = liftM (map fst . sortBy (comparing snd)) $
+                   mapM (\x -> liftM (x,) (f x)) xs
