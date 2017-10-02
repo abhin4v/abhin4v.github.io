@@ -293,7 +293,6 @@ p ~ #toc.right-toc h3 {
 }
 
 #comment-form {
-  border-top: 1px solid #ababab;
   display: none;
 }
 
@@ -336,4 +335,38 @@ p ~ #toc.right-toc h3 {
 
 #comment-form fieldset[disabled="disabled"] input[type="submit"] {
   background-color: #777;
+}
+
+.comments {
+  width: 80%;
+}
+
+.comments hr {
+  width: 50%;
+}
+
+.comments hr:last-child {
+  display: none;
+}
+
+.comment {
+  margin: 2em;
+}
+
+.comment .avatar {
+  width: 3.25em;
+  height: 3.25em;
+  float: left;
+  margin-right: 1em;
+}
+
+.comment .date {
+  font-size: .8em;
+}
+
+.comment .author {
+  display: inline-block;
+  margin: 0 0 .25em;
+  font-size: 1.25em;
+  line-height: 1;
 }

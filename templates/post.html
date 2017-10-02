@@ -20,20 +20,27 @@
     <a href="/$path$" class="source">Source</a>
 </article>
 <meta itemprop="url" content="$full_url$">
-
-<form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments"
-      id="comment-form">
-  <h3>Leave a comment</h3>
-  <fieldset>
-    <input name="options[redirect]" type="hidden" value="$full_url$">
-    <input name="options[slug]" type="hidden" value="$post_slug$">
-    <textarea name="fields[message]" required placeholder="Comment"></textarea>
-    <span style="font-size: small"><a href="https://kramdown.gettalong.org/quickref.html">Markdown</a> is allowed</span>
-    <input name="fields[name]" type="text" required placeholder="Name">
-    <input name="fields[email]" type="email" required placeholder="Email">
-    <input id="comment-form-submit" type="submit" value="Post Comment">
-  </fieldset>
-</form>
+<div style="border-top: 1px solid #ababab;">
+  <h3>$comment_count$ comments</h3>
+  <div class="comments">
+  $for(comments)$
+      $body$
+      <hr>
+  $endfor$
+  </div>
+  <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments"
+        id="comment-form">
+    <h3>Leave a comment</h3>
+    <fieldset>
+      <input name="options[slug]" type="hidden" value="$post_slug$">
+      <textarea name="fields[message]" required placeholder="Comment"></textarea>
+      <span style="font-size: small"><a href="https://kramdown.gettalong.org/quickref.html">Markdown</a> is allowed</span>
+      <input name="fields[name]" type="text" required placeholder="Name">
+      <input name="fields[email]" type="email" required placeholder="Email">
+      <input id="comment-form-submit" type="submit" value="Post Comment">
+    </fieldset>
+  </form>
+</div>
 
 <script>
 (function() {
@@ -49,7 +56,6 @@
         var origWidth = formMessage.css("width");
         formMessage.val("Submitting ...");
 
-        alert(reqBody);
         fetch(form.attr("action"), {
           method: form.attr("method"),
           body: reqBody,
@@ -61,6 +67,7 @@
           if (!response.ok) {
             formMessage.val("Sorry, there was an error in submitting the comment.");
           } else {
+            form.not(":button, :submit, :reset, :hidden").val('');
             formMessage.val("Thanks for your comment. It will show on the site once it has been approved.");
           }
           window.setTimeout(function() {
