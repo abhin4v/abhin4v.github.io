@@ -656,13 +656,13 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
   Log.debug <span class="fu">$</span> <span class="st">&quot;HTTP: &quot;</span> <span class="fu">&lt;&gt;</span> maybe <span class="st">&quot;&quot;</span> id ((toUpper <span class="fu">&lt;&lt;&lt;</span> show) <span class="fu">&lt;$&gt;</span> method) <span class="fu">&lt;&gt;</span> <span class="st">&quot; &quot;</span> <span class="fu">&lt;&gt;</span> path
   next
 
-<span class="ot">  app ::</span> forall eff<span class="fu">.</span>
-         <span class="dt">PG.Pool</span>
-      <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span>,<span class="ot"> console ::</span> <span class="dt">CONSOLE</span>,<span class="ot"> now ::</span> <span class="dt">NOW</span> <span class="fu">|</span> eff)
-  app pool <span class="fu">=</span> <span class="kw">do</span>
-    useExternal jsonBodyParser
-    use requestLogger
-    <span class="co">-- previous code</span></code></pre></div>
+<span class="ot">app ::</span> forall eff<span class="fu">.</span>
+       <span class="dt">PG.Pool</span>
+    <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span>,<span class="ot"> console ::</span> <span class="dt">CONSOLE</span>,<span class="ot"> now ::</span> <span class="dt">NOW</span> <span class="fu">|</span> eff)
+app pool <span class="fu">=</span> <span class="kw">do</span>
+  useExternal jsonBodyParser
+  use requestLogger
+  <span class="co">-- previous code</span></code></pre></div>
 <p>We also convert all our previous logging statements which used <code>Console.log</code> to use <code>SimpleService.Logger</code> and add logs in our handlers. We can see logging in effect by restarting the server and hitting it:</p>
 <div class="sourceCode"><pre class="sourceCode bash"><code class="sourceCode bash">$ <span class="ex">pulp</span> --watch run
 <span class="ex">*</span> Building project in /Users/abhinav/ps-simple-rest-service
