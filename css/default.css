@@ -317,7 +317,6 @@ p ~ #toc.right-toc h3 {
 }
 
 #comment-form input[type="submit"] {
-  width: 20%;
   background-color: #7724bd;
   color: #eee;
   border: none;
@@ -331,6 +330,12 @@ p ~ #toc.right-toc h3 {
 
 #comment-form fieldset[disabled="disabled"] input[type="submit"] {
   background-color: #777;
+}
+
+#comment-form-message {
+  background-color: #faffac;
+  padding: 0.3em;
+  display: none;
 }
 
 .comments {
