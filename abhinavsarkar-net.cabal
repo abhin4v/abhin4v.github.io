@@ -16,8 +16,12 @@ executable site
                   , time
                   , directory
                   , xml
-  other-modules:    Site.TOC
+  other-modules:    Site.Collections
                   , Site.ERT
+                  , Site.Posts
+                  , Site.Assets
                   , Site.Sitemap
+                  , Site.TOC
+                  , Site.Util
   ghc-options:      -threaded
   default-language: Haskell2010
