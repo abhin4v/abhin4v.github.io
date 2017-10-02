@@ -1,0 +1,54 @@
+%ref-link {
+  content: "\f0c1";
+  display: inline-block;
+  margin-left: .2em;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: large;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
+}
+
+%top-link {
+  content: "\f062";
+  display: inline-block;
+  float: right;
+  font: normal normal normal 14px/1 FontAwesome;
+  font-size: large;
+  text-rendering: auto;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  position: relative;
+  top: 0.3em;
+}
+
+.fa-events-icons-ready {
+  .ert ::before {
+    content: "\f017";
+    display: inline-block;
+    margin-right: .2em;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    transform: translate(0, 0);
+    vertical-align: middle;
+    width: 19px;
+  }
+  .post .body {
+    h2, h3 {
+      a {
+        &.ref-link:after {
+          @extend %ref-link;
+        }
+        &.top-link:after {
+          @extend %top-link;
+        }
+      }
+    }
+  }
+}

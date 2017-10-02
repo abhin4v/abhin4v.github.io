@@ -12,6 +12,7 @@ import qualified Data.Set as Set
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
+import Hakyll.Web.Sass
 import Site.TOC
 import Site.ERT
 import Site.Sitemap
@@ -31,17 +32,19 @@ main = hakyll $ do
     route   idRoute
     compile copyFileCompiler
 
-  match "images/*" $ do
+  match ("images/*" .||. "js/*") $ do
     route   idRoute
     compile copyFileCompiler
 
-  match "js/*" $ do
-    route   idRoute
-    compile copyFileCompiler
-
-  match "css/*" $ do
+  match "css/*.css" $ do
     route   idRoute
     compile compressCssCompiler
+
+  scssDependencies <- makePatternDependency "css/_*.scss"
+  rulesExtraDependencies [scssDependencies] $ do
+    match "css/default.scss" $ do
+      route $ setExtension "css"
+      compile (fmap compressCss <$> sassCompiler)
 
   match (fromList ["about.md"]) $ do
     route indexHTMLRoute
