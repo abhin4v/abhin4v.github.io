@@ -20,7 +20,7 @@
     <a href="/$path$" class="source">Source</a>
 </article>
 <meta itemprop="url" content="$full_url$">
-<div style="border-top: 1px solid #ababab;">
+<div id="comment-container">
   <h3>$comment_count$ comments</h3>
   <div class="comments">
   $for(comments)$
@@ -34,7 +34,9 @@
     <fieldset>
       <input name="options[slug]" type="hidden" value="$post_slug$">
       <textarea name="fields[message]" required placeholder="Comment"></textarea>
-      <span style="font-size: small"><a href="https://kramdown.gettalong.org/quickref.html">Markdown</a> is allowed</span>
+      <span style="font-size: small">
+        <a href="https://kramdown.gettalong.org/quickref.html" target="_blank" rel="noopener">Markdown</a> is allowed
+      </span>
       <input name="fields[name]" type="text" required placeholder="Name">
       <input name="fields[email]" type="email" required placeholder="Email">
       <input id="comment-form-submit" type="submit" value="Post Comment">

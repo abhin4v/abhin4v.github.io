@@ -290,6 +290,14 @@ p ~ #toc.right-toc h3 {
   .post .body a:after, .post .source {
     display: none!important;
   }
+
+  #comment-container {
+    display: none!important;
+  }
+}
+
+#comment-container {
+  border-top: 1px solid #ababab;
 }
 
 #comment-form h3 {
@@ -304,6 +312,12 @@ p ~ #toc.right-toc h3 {
   display: block;
   margin: 1em 0px;
   padding: 0.2em;
+  border: 1px solid #ababab;
+}
+@media screen and (max-width: 600px) {
+  #comment-form input, #comment-form textarea {
+    width: 100%!important;
+  }
 }
 
 #comment-form textarea {
@@ -322,6 +336,7 @@ p ~ #toc.right-toc h3 {
   border: none;
   padding: 0.3em;
   cursor: pointer;
+  width: 15em;
 }
 
 #comment-form input[type="submit"]:hover {
