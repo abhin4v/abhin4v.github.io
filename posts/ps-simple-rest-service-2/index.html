@@ -711,7 +711,6 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
         var origWidth = formMessage.css("width");
         formMessage.val("Submitting ...");
 
-        alert(reqBody);
         fetch(form.attr("action"), {
           method: form.attr("method"),
           body: reqBody,

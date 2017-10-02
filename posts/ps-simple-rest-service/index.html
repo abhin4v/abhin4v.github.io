@@ -800,7 +800,6 @@ X-Powered-By: Express
         var origWidth = formMessage.css("width");
         formMessage.val("Submitting ...");
 
-        alert(reqBody);
         fetch(form.attr("action"), {
           method: form.attr("method"),
           body: reqBody,
