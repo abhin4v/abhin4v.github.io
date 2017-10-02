@@ -1,7 +1,7 @@
 comments:
   allowedFields     : ['name', 'email', 'message']
   branch            : "source"
-  commitMessage     : "New comment."
+  commitMessage     : "New comment by {fields.name}"
   filename          : "{@id}"
   extension         : "md"
   format            : "frontmatter"
