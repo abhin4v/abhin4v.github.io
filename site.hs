@@ -8,6 +8,7 @@ import Data.List (sortBy, isInfixOf)
 import Data.Maybe (fromMaybe, fromJust)
 import Data.Monoid ((<>))
 import Data.Ord (comparing)
+import qualified Data.Set as Set
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
@@ -60,7 +61,12 @@ main = hakyll $ do
       date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
       let dateS = formatTime defaultTimeLocale "%B %e, %Y" date
       email <- getMetadataField' ident "email"
-      commentCompiler
+      message <- getMetadataField' ident "message"
+
+      (itemSetBody message <$> makeItem "")
+        >>= renderPandocWith
+              (defaultHakyllReaderOptions { readerExtensions = Set.delete Ext_raw_html (writerExtensions writerOptions) })
+              writerOptions
         >>= loadAndApplyTemplate "templates/comment.html" (commentCtx dateS email)
         >>= saveSnapshot "comment"
 
@@ -167,20 +173,13 @@ main = hakyll $ do
   match "templates/*" $ compile templateBodyCompiler
 
 --------------------------------------------------------------------------------
-commentCompiler :: Compiler (Item String)
-commentCompiler =
-  pandocCompilerWith defaultHakyllReaderOptions $
-                     defaultHakyllWriterOptions { writerHtml5 = True
-                                                , writerEmailObfuscation = ReferenceObfuscation
-                                                }
+writerOptions = defaultHakyllWriterOptions { writerHtml5 = True
+                                           , writerEmailObfuscation = ReferenceObfuscation
+                                           }
 
 contentCompiler :: String -> Bool -> Compiler (Item String)
 contentCompiler alignment ertEnabled =
-  pandocCompilerWithTransformM
-    defaultHakyllReaderOptions
-    (defaultHakyllWriterOptions { writerHtml5 = True
-                                , writerEmailObfuscation = ReferenceObfuscation
-                                })
+  pandocCompilerWithTransformM defaultHakyllReaderOptions writerOptions
     (return . estimatedReadingTime ertEnabled
             . walk linkHeaders
             . tableOfContents alignment
