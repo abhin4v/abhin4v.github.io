@@ -693,6 +693,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
       <input name="fields[name]" type="text" required placeholder="Name">
       <input name="fields[email]" type="email" required placeholder="Email">
       <input id="comment-form-submit" type="submit" value="Post Comment">
+      <span id="comment-form-message"></span>
     </fieldset>
   </form>
 </div>
@@ -701,15 +702,16 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
 (function() {
   function addCommentSubmitHandler() {
     if (typeof jQuery !== 'undefined') {
-      jQuery("#comment-form").on("submit", function(event) {
+      var jq = jQuery;
+      jq("#comment-form").on("submit", function(event) {
         event.preventDefault();
-        var form = jQuery(this);
+        var form = jq(this);
         var reqBody = form.serialize();
-        jQuery("#comment-form fieldset").attr("disabled", "disabled");
-        var formMessage = jQuery("#comment-form-submit");
-        var origVal = formMessage.val();
-        var origWidth = formMessage.css("width");
-        formMessage.val("Submitting ...");
+        jq("#comment-form fieldset").attr("disabled", "disabled");
+
+        var formSubmit = jq("#comment-form-submit");
+        var origVal = formSubmit.val();
+        formSubmit.val("Posting ...");
 
         fetch(form.attr("action"), {
           method: form.attr("method"),
@@ -718,19 +720,19 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
             "Content-Type": "application/x-www-form-urlencoded"
           }})
         .then(function(response) {
-          formMessage.css("width", "80%");
+          var formMessage = jq("#comment-form-message");
+          formSubmit.val(origVal);
+          jq("#comment-form fieldset").removeAttr("disabled");
+
           if (!response.ok) {
-            formMessage.val("Sorry, there was an error in submitting the comment.");
+            formMessage.html("Sorry, there was an error in submitting the comment.").fadeIn("slow");
           } else {
             form.trigger("reset");
-            formMessage.val("Thanks for your comment. It will show on the site once it has been approved.");
+            formMessage.html("Thanks for your comment. It will show on the site once it has been approved.").fadeIn("slow");
           }
-          window.setTimeout(function() {
-            formMessage.val(origVal);
-            formMessage.css("width", origWidth);
-            jQuery("#comment-form fieldset").removeAttr("disabled");
-          }, 3000);
+          window.setTimeout(function() { formMessage.fadeOut("slow"); }, 5000);
         });
+        return false;
       });
     } else {
       window.setTimeout(addCommentSubmitHandler, 1000);
@@ -752,7 +754,7 @@ requestLogger <span class="fu">=</span> <span class="kw">do</span>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
     <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
     <script src="../../js/Promise.min.js"></script>
     <script>
