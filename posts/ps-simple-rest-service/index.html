@@ -811,7 +811,7 @@ X-Powered-By: Express
           if (!response.ok) {
             formMessage.val("Sorry, there was an error in submitting the comment.");
           } else {
-            form.not(":button, :submit, :reset, :hidden").val('');
+            form.trigger("reset");
             formMessage.val("Thanks for your comment. It will show on the site once it has been approved.");
           }
           window.setTimeout(function() {
