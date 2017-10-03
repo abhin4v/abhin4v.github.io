@@ -7,7 +7,7 @@ import Hakyll.Web.Sass
 assets :: Rules ()
 assets = do
   -- static files
-  match (fromList ["CNAME", "robots.txt", "staticman.yml"]) $ do
+  match (fromList ["CNAME", "robots.txt", "staticman.yml", "README.md"]) $ do
     route   idRoute
     compile copyFileCompiler
 
