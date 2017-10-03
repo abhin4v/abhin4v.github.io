@@ -2,6 +2,9 @@
   border-top: 1px solid #ababab;
 }
 #comment-form {
+  > p {
+    margin: 0.5em 0px;
+  }
   h3 {
     margin-bottom: 0.2em;
   }
