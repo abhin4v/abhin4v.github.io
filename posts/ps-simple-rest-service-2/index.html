@@ -689,7 +689,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
     <p>Comments are moderated. They will appear here after they are approved.</p>
     <fieldset>
       <input name="options[slug]" type="hidden" value="ps-simple-rest-service-2">
-      <input name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">
+      <input id="comment-redirect" name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">
       <textarea name="fields[message]" required placeholder="Comment"></textarea>
       <span style="font-size: small">
         <a href="https://kramdown.gettalong.org/quickref.html" target="_blank" rel="noopener">Markdown</a> is allowed
@@ -707,6 +707,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
   function addCommentSubmitHandler() {
     if (typeof jQuery !== 'undefined') {
       var jq = jQuery;
+      jq("#comment-redirect").remove();
       jq("#comment-form").on("submit", function(event) {
         event.preventDefault();
         var form = jq(this);
