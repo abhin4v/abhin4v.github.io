@@ -775,8 +775,10 @@ X-Powered-By: Express
   </div>
   <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments" id="comment-form">
     <h3>Leave a comment</h3>
+    <p>Comments are moderated. They will appear here after they are approved.</p>
     <fieldset>
       <input name="options[slug]" type="hidden" value="ps-simple-rest-service">
+      <input name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/ps-simple-rest-service/">
       <textarea name="fields[message]" required placeholder="Comment"></textarea>
       <span style="font-size: small">
         <a href="https://kramdown.gettalong.org/quickref.html" target="_blank" rel="noopener">Markdown</a> is allowed
@@ -816,7 +818,7 @@ X-Powered-By: Express
           jq("#comment-form fieldset").removeAttr("disabled");
 
           if (!response.ok) {
-            formMessage.html("Sorry, there was an error in submitting the comment.").fadeIn("slow");
+            formMessage.html("Sorry, there was an error in posting the comment.").fadeIn("slow");
           } else {
             form.trigger("reset");
             formMessage.html("Thanks for your comment. It will show on the site once it has been approved.").fadeIn("slow");
@@ -844,10 +846,10 @@ X-Powered-By: Express
     </body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
-    <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
-    <script src="../../js/Promise.min.js"></script>
+    <script src="https://cdn.rawgit.com/taylorhakes/promise-polyfill/master/promise.min.js"></script>
+    <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
       hljs.initHighlightingOnLoad();
