@@ -1,4 +1,4 @@
-name:               abhinavsarkar-net
+name:               site
 version:            0.1.0.0
 build-type:         Simple
 cabal-version:      >= 1.10
@@ -16,10 +16,11 @@ executable site
                   , time
                   , directory
                   , xml
-  other-modules:    Site.Collections
+  other-modules:    Site.Assets
+                  , Site.Collections
                   , Site.ERT
+                  , Site.Pages
                   , Site.Posts
-                  , Site.Assets
                   , Site.Sitemap
                   , Site.TOC
                   , Site.Util

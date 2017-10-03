@@ -1,15 +1,11 @@
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
-
+{-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Hakyll
-import Site.Collections
-import Site.ERT
-import Site.Posts
 import Site.Assets
-import Site.Sitemap
-import Site.TOC
-import Site.Util
+import Site.Collections
+import Site.Pages
+import Site.Posts
 
 siteRoot :: String
 siteRoot = "https://abhinavsarkar.net"
@@ -19,6 +15,7 @@ main = hakyll $ do
   tags <- buildTags "posts/*" (fromCapture "tags/*.html")
 
   assets
+  pages
   posts siteRoot tags
   collections siteRoot tags
 

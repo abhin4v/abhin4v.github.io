@@ -19,13 +19,6 @@ import Text.Pandoc.Walk (walk)
 
 posts :: String -> Tags -> Rules ()
 posts siteRoot tags = do
-  -- about page
-  match (fromList ["about.md"]) $ do
-    route indexHTMLRoute
-    compile $ contentCompiler "left" False
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
-      >>= relativizeUrls
-
   -- post comments
   match "comments/*/*" $
     compile $ do
