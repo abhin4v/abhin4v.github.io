@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-    <title>Posts tagged "programming" on abhinavsarkar.net</title>
+    <title>Posts tagged ‘programming’ on abhinavsarkar.net</title>
     <link href="https://abhinavsarkar.net/tags/programming/feed.xml" rel="self" />
     <link href="https://abhinavsarkar.net" />
     <id>https://abhinavsarkar.net/tags/programming/feed.xml</id>
@@ -18,7 +18,7 @@
     <summary type="html"><![CDATA[<div class="ert">
 21 minute read
 </div>
-<p>To recap, in the <a href="/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service in <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
+<p>To recap, in the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service in <a href="http://purescript.org" target="_blank" rel="noopener">Purescript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the requirements:</p>
 <ol type="1">
 <li>validation of API requests.</li>
 <li>reading the server and database configs from environment variables.</li>
@@ -34,7 +34,7 @@
 HTTP/1.1 404 Not Found
 Connection: keep-alive
 Content-Length: 148
-Content-Security-Policy: default-src &#39;self&#39;
+Content-Security-Policy: default-src 'self'
 Content-Type: text/html; charset=utf-8
 Date: Sat, 30 Sep 2017 08:23:20 GMT
 X-Content-Type-Options: nosniff
@@ -97,7 +97,7 @@ X-Powered-By: Express
 HTTP/1.1 500 Internal Server Error
 Connection: keep-alive
 Content-Length: 372
-Content-Security-Policy: default-src &#39;self&#39;
+Content-Security-Policy: default-src 'self'
 Content-Type: text/html; charset=utf-8
 Date: Sat, 30 Sep 2017 08:53:40 GMT
 X-Content-Type-Options: nosniff
@@ -159,9 +159,9 @@ updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;i
               P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
                 <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure <span class="dt">Nothing</span>
                 <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span>
-                  <span class="kw">let</span> user&#39; <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
-                  P.updateUser conn user&#39;
-                  pure <span class="fu">$</span> <span class="dt">Just</span> user&#39;
+                  <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
+                  P.updateUser conn user'
+                  pure <span class="fu">$</span> <span class="dt">Just</span> user'
             <span class="kw">case</span> savedUser <span class="kw">of</span>
               <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }
               <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</code></pre></div>
@@ -220,9 +220,9 @@ updateUser pool <span class="fu">=</span> V.withValidation (<span class="dt">Tup
           P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
             <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure <span class="dt">Nothing</span>
             <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span>
-              <span class="kw">let</span> user&#39; <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
-              P.updateUser conn user&#39;
-              pure <span class="fu">$</span> <span class="dt">Just</span> user&#39;
+              <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
+              P.updateUser conn user'
+              pure <span class="fu">$</span> <span class="dt">Just</span> user'
         <span class="kw">case</span> savedUser <span class="kw">of</span>
           <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> show userId }
           <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)
@@ -298,9 +298,9 @@ updateUser pool <span class="fu">=</span> V.withValidation (<span class="dt">Tup
           P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
             <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure <span class="dt">Nothing</span>
             <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span>
-              <span class="kw">let</span> user&#39; <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
-              P.updateUser conn user&#39;
-              pure <span class="fu">$</span> <span class="dt">Just</span> user&#39;
+              <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
+              P.updateUser conn user'
+              pure <span class="fu">$</span> <span class="dt">Just</span> user'
         <span class="kw">case</span> savedUser <span class="kw">of</span>
           <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> show userId }
           <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)
@@ -647,7 +647,7 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
 <li>reading the server and database configs from environment variables.</li>
 <li>logging HTTP requests and debugging info.</li>
 </ol>
-<p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="/posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
+<p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
 <!--more-->
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
@@ -780,7 +780,7 @@ Indexes:
 <span class="kw">import </span><span class="dt">Prelude</span>
 <span class="fu">&gt;</span>
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">SimpleService.Types</span>
-<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Control.Monad.Aff</span> (launchAff, liftEff&#39;)
+<span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Control.Monad.Aff</span> (launchAff, liftEff')
 <span class="fu">&gt;</span> <span class="kw">import </span><span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span>
 <span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }
 <span class="fu">&gt;</span> databaseConfig <span class="fu">=</span> {user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span>, password<span class="fu">:</span> <span class="st">&quot;&quot;</span>, host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>, port<span class="fu">:</span> <span class="dv">5432</span>, database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span>, max<span class="fu">:</span> <span class="dv">10</span>, idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>}
@@ -800,7 +800,7 @@ unit
 …   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig
 …   PG.withConnection pool <span class="fu">$</span> \conn <span class="ot">-&gt;</span> <span class="kw">do</span>
 …<span class="ot">     users ::</span> <span class="dt">Array</span> <span class="dt">User</span> <span class="ot">&lt;-</span> PG.query conn (<span class="dt">PG.Query</span> <span class="st">&quot;select id, name from users where id = $1&quot;</span>) (<span class="dt">PG.Row1</span> <span class="dv">1</span>)
-…     liftEff&#39; <span class="fu">$</span> void <span class="fu">$</span> for_ users logShow
+…     liftEff' <span class="fu">$</span> void <span class="fu">$</span> for_ users logShow
 …
 unit
 (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</code></pre></div>
@@ -920,8 +920,8 @@ app pool <span class="fu">=</span> <span class="kw">do</span>
                  <span class="fu">|</span> eff ) <span class="dt">Unit</span>
 runServer port databaseConfig <span class="fu">=</span>  void <span class="fu">$</span> runAff logShow pure <span class="kw">do</span>
   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig
-  <span class="kw">let</span> app&#39; <span class="fu">=</span> app pool
-  void <span class="fu">$</span> liftEff <span class="fu">$</span> listenHttp app&#39; port \_ <span class="ot">-&gt;</span> log <span class="fu">$</span> <span class="st">&quot;Server listening on :&quot;</span> <span class="fu">&lt;&gt;</span> show port</code></pre></div>
+  <span class="kw">let</span> app' <span class="fu">=</span> app pool
+  void <span class="fu">$</span> liftEff <span class="fu">$</span> listenHttp app' port \_ <span class="ot">-&gt;</span> log <span class="fu">$</span> <span class="st">&quot;Server listening on :&quot;</span> <span class="fu">&lt;&gt;</span> show port</code></pre></div>
 <p><code>runServer</code> creates a PostgreSQL connection pool and passes it to the <code>app</code> function which creates the Express application, which in turn, binds it to the handler <code>getUser</code>. Then it launches the HTTP server by calling <code>listenHttp</code>.</p>
 <p>Finally, we write the actual <code>getUser</code> handler in <code>src/SimpleService/Handler.purs</code>:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">SimpleService.Handler</span> <span class="kw">where</span>
@@ -1206,9 +1206,9 @@ updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;i
               P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span>
                 <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure <span class="dt">Nothing</span>
                 <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span>
-                  <span class="kw">let</span> user&#39; <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
-                  P.updateUser conn user&#39;
-                  pure <span class="fu">$</span> <span class="dt">Just</span> user&#39;
+                  <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })
+                  P.updateUser conn user'
+                  pure <span class="fu">$</span> <span class="dt">Just</span> user'
             <span class="kw">case</span> savedUser <span class="kw">of</span>
               <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }
               <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</code></pre></div>
@@ -1336,7 +1336,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>]]></summary>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>]]></summary>
 </entry>
 
 </feed>
