@@ -31,7 +31,7 @@ ignoreTOC (Header level (ident, classes, params) inline) =
 ignoreTOC x = x
 
 removeTOCMarker :: Block -> Block
-removeTOCMarker (BulletList (( (( Plain ((Str "toc"):_)):_)):_)) = Null
+removeTOCMarker (BulletList ((Plain (Str "toc":_):_):_)) = Null
 removeTOCMarker x = x
 
 collectHeaders :: Block -> [Block]
@@ -46,9 +46,9 @@ groupByHierarchy = map (\(x:xs) -> Node x (groupByHierarchy xs)) . groupBy ((<) 
 
 markupHeader :: Tree Block -> H.Html
 markupHeader (Node (Header _ (ident, _, keyvals) inline) headers)
-  | headers == [] = H.li $ link
-  | otherwise     = H.li $ link <> (H.ol $ markupHeaders headers)
-  where render x  = writeHtmlString def (Pandoc nullMeta [(Plain x)])
+  | null headers  = H.li link
+  | otherwise     = H.li $ link <> H.ol (markupHeaders headers)
+  where render x  = writeHtmlString def (Pandoc nullMeta [Plain x])
         section   = fromMaybe (render inline) (lookup "toc" keyvals)
         link      = H.a ! A.href (H.toValue $ "#" ++ ident) $ preEscapedToHtml section
 markupHeader _ = error "what"
@@ -64,11 +64,11 @@ createTable headers =
 
 generateTOC :: [Block] -> String -> Block -> Block
 generateTOC [] _     x = x
-generateTOC headers alignment x@(BulletList (( (( Plain ((Str "toc"):_)):_)):_))
+generateTOC headers alignment x@(BulletList ((Plain (Str "toc":_):_):_))
   | alignment == "right" = render . (! A.class_ "right-toc") . table $ headers
   | alignment == "left"  = render . table $ headers
   | otherwise            = x
-  where render = (RawBlock "html") . renderHtml
+  where render = RawBlock "html" . renderHtml
         table  = createTable . groupByHierarchy
 generateTOC _ _ x = x
 

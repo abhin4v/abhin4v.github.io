@@ -41,18 +41,21 @@ posts siteRoot tags = do
     route indexHTMLRoute
     compile $ do
       alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
+
       path <- getResourceFilePath
       let postSlug = takeBaseName path
       let fullUrl = siteRoot <> drop 1 (takeDirectory path </> postSlug <> "/")
 
       comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
+      let extendedPostCtx = postCtxWithTags tags <>
+                            constField "full_url" fullUrl <>
+                            constField "post_slug" postSlug <>
+                            constField "comment_count" (show $ length comments) <>
+                            listField "comments" defaultContext (return comments)
+
       contentCompiler alignment True
         >>= saveSnapshot "content"
-        >>= loadAndApplyTemplate "templates/post.html" (postCtxWithTags tags <>
-                                                        constField "full_url" fullUrl <>
-                                                        constField "post_slug" postSlug <>
-                                                        constField "comment_count" (show $ length comments) <>
-                                                        listField "comments" defaultContext (return comments))
+        >>= loadAndApplyTemplate "templates/post.html" extendedPostCtx
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
         >>= relativizeUrls
         >>= removeIndexHtml
