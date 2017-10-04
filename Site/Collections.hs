@@ -12,11 +12,14 @@ collections :: String -> Tags -> Rules ()
 collections siteRoot tags = do
   -- tag pages
   tagsRules tags $ \tag pattrn -> do
-    let title = "Posts tagged \"" ++ tag ++ "\""
+    let title = "Posts tagged ‘" ++ tag ++ "’"
     route indexHTMLRoute
     compile $ do
       posts <- recentFirst =<< loadAll pattrn
-      let ctx = constField "title" title <> listField "posts" postCtx (return posts) <> defaultContext
+      let ctx = constField "title" title <>
+                constField "tag" tag <>
+                listField "posts" postCtx (return posts) <>
+                defaultContext
 
       makeItem ""
           >>= loadAndApplyTemplate "templates/tag.html" ctx

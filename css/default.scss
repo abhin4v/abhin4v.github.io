@@ -168,3 +168,12 @@ article {
 .post .source {
   font-size: 0.8em;
 }
+
+.feed-icon {
+  float: right;
+  color: #333;
+  > span {
+    position: relative;
+    bottom: -0.1em;
+  }
+}
