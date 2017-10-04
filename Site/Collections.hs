@@ -32,6 +32,7 @@ collections siteRoot tags = do
       route tagFeedRoute
       compile $ loadAllSnapshots pattrn "content"
           >>= fmap (take 10) . recentFirst
+          >>= return . map (fmap (relativizeUrlsWith siteRoot))
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
   -- tags page
@@ -69,6 +70,7 @@ collections siteRoot tags = do
     compile $
       loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       >>= fmap (take 10) . recentFirst
+      >>= return . map (fmap (relativizeUrlsWith siteRoot))
       >>= renderAtom (feedConfiguration siteRoot "All posts") feedCtx
 
   -- sitemap
