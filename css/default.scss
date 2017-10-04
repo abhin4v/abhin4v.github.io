@@ -7,7 +7,7 @@ body {
   min-width: 20em;
   margin: auto;
   padding: 1em;
-  font-family: 'Merriweather', 'Georgia', 'serif';
+  font-family: 'Noto Serif', 'Georgia', serif;
   font-size: 1.1em;
   line-height: 1.4em;
   background-color: #fdfdfd;
@@ -45,6 +45,7 @@ pre {
 }
 code {
   font-size: 0.95em;
+  font-family: 'Fira Mono', monospace;
 }
 menu {
   padding: 0;
@@ -124,7 +125,7 @@ article {
     display: none;
   }
   body {
-    font-family: 'Trebuchet MS', 'Helvetica', 'sans-serif';
+    font-family: 'Lato', 'Helvetica', sans-serif;
   }
 }
 
