@@ -1,8 +1,10 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Site.Assets where
 
+import qualified Data.ByteString.Lazy.Char8 as C
 import Hakyll
 import Hakyll.Web.Sass
+import Text.Jasmine
 
 assets :: Rules ()
 assets = do
@@ -17,10 +19,15 @@ assets = do
     compile $ pandocCompiler
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
-  -- images and js
-  match ("images/*" .||. "js/*") $ do
+  -- images
+  match "images/*" $ do
     route   idRoute
     compile copyFileCompiler
+
+  -- js
+  match "js/*" $ do
+   route   idRoute
+   compile compressJsCompiler
 
   -- css files
   match "css/*.css" $ do
@@ -33,3 +40,9 @@ assets = do
     match "css/default.scss" $ do
       route $ setExtension "css"
       compile (fmap compressCss <$> sassCompiler)
+
+compressJsCompiler :: Compiler (Item String)
+compressJsCompiler = do
+  let minifyJS = C.unpack . minify . C.pack . itemBody
+  s <- getResourceString
+  return $ itemSetBody (minifyJS s) s

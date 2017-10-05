@@ -16,6 +16,8 @@ executable site
                   , time
                   , directory
                   , xml
+                  , hjsmin
+                  , bytestring
   other-modules:    Site.Assets
                   , Site.Collections
                   , Site.ERT
