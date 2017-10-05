@@ -6,18 +6,13 @@ import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Data.Ord (comparing)
 import qualified Data.Set as Set
-import Data.String (fromString)
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
 import Site.ERT
 import Site.TOC
 import Site.Util
-import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>))
-import Text.Blaze.Html ((!))
-import qualified Text.Blaze.Html5 as H
-import qualified Text.Blaze.Html5.Attributes as A
-import Text.Blaze.Html.Renderer.String (renderHtml)
+import System.FilePath.Posix (takeBaseName, takeDirectory, (</>))
 import Text.Pandoc.Definition (Inline(Link), Block(Header))
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
@@ -51,10 +46,6 @@ posts siteRoot tags = do
       let postSlug = takeBaseName path
       let postUrl = drop 1 (takeDirectory path </> postSlug <> "/")
       let fullUrl = siteRoot <> postUrl
-      let pleaseComment = renderHtml $ H.p $ do
-            H.text "If you liked this post, please "
-            H.a ! A.href (fromString $ postUrl <> "#comment-container") $ "leave a comment"
-            H.text "."
 
       comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
       let ctx = postCtxWithTags tags <>
@@ -64,7 +55,6 @@ posts siteRoot tags = do
                 listField "comments" defaultContext (return comments)
 
       contentCompiler alignment True
-        >>= withItemBody (\x -> return (x <> pleaseComment))
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/post.html" ctx
         >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)

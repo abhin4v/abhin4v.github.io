@@ -2,11 +2,16 @@
 module Site.Collections where
 
 import Data.Monoid ((<>))
+import Data.String (fromString)
 import Hakyll
 import Site.Posts
 import Site.Sitemap
 import Site.Util
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>))
+import Text.Blaze.Html ((!))
+import qualified Text.Blaze.Html5 as H
+import qualified Text.Blaze.Html5.Attributes as A
+import Text.Blaze.Html.Renderer.String (renderHtml)
 
 collections :: String -> Tags -> Rules ()
 collections siteRoot tags = do
@@ -32,7 +37,7 @@ collections siteRoot tags = do
       route tagFeedRoute
       compile $ loadAllSnapshots pattrn "content"
           >>= fmap (take 10) . recentFirst
-          >>= return . map (fmap (relativizeUrlsWith siteRoot))
+          >>= return . map (fmap (relativizeUrlsWith siteRoot) . addPostLink)
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
   -- tags page
@@ -70,7 +75,7 @@ collections siteRoot tags = do
     compile $
       loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       >>= fmap (take 10) . recentFirst
-      >>= return . map (fmap (relativizeUrlsWith siteRoot))
+      >>= return . map (fmap (relativizeUrlsWith siteRoot) . addPostLink)
       >>= renderAtom (feedConfiguration siteRoot "All posts") feedCtx
 
   -- sitemap
@@ -115,3 +120,13 @@ tagFeedRoute = customRoute createIndexRoute
   where
     createIndexRoute ident = let p = toFilePath ident
       in takeDirectory p </> takeBaseName p </> "feed.xml"
+
+addPostLink :: Item String -> Item String
+addPostLink item = let
+    p = toFilePath (itemIdentifier item)
+    postUrl = "/" <> takeDirectory p </> takeBaseName p <> "/"
+    postLink = renderHtml $ H.p $ do
+      H.text "If you liked this post, please "
+      H.a ! A.href (fromString $ postUrl <> "#comment-container") $ "leave a comment"
+      H.text "."
+  in itemSetBody (itemBody item <> postLink) item
