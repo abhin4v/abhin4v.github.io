@@ -21,9 +21,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
         <link rel="stylesheet" href="../css/default.css">
         <link rel="stylesheet" href="../css/syntax.css">
-        <noscript>
-          <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif">
-        </noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif">
 
         <!-- Global Site Tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-109237-6"></script>
@@ -80,14 +78,14 @@
 
       function loadStyleSheet(src) {
         if (document.createStyleSheet){
-            document.createStyleSheet(src);
+          document.createStyleSheet(src);
+        } else {
+          jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
         }
-        else {
-            jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css' />"));
-        }
-      };
+      }
 
-      loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
-      loadStyleSheet("https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif");
+      jQuery(document).ready(function() {
+        loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
+      });
     </script>
 </html>
