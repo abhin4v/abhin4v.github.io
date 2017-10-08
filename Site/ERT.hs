@@ -65,6 +65,7 @@ nrLetters (Pandoc _ bs) = sum $ map cb bs
     ci (Quoted _ is) = cis is
     ci (Cite _ is) = cis is
     ci (Code _ s) = length s
+    ci (Span _ s) = length s
     ci Space = 1
     ci SoftBreak = 1
     ci LineBreak = 1

@@ -20,7 +20,7 @@ assets = do
       >>= loadAndApplyTemplate "templates/default.html" defaultContext
 
   -- images
-  match "images/*" $ do
+  match "images/**" $ do
     route   idRoute
     compile copyFileCompiler
 

@@ -13,7 +13,7 @@ import Site.ERT
 import Site.TOC
 import Site.Util
 import System.FilePath.Posix (takeBaseName, takeDirectory, (</>))
-import Text.Pandoc.Definition (Inline(Link), Block(Header))
+import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAttr)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
@@ -75,6 +75,7 @@ contentCompiler alignment ertEnabled =
   pandocCompilerWithTransformM defaultHakyllReaderOptions writerOptions
     (return . estimatedReadingTime ertEnabled
             . walk linkHeaders
+            . walk linkImages
             . tableOfContents alignment
             . walk blankTargetLinks)
 
@@ -97,6 +98,11 @@ linkHeaders (Header level attr@(ident, _, _) content) =
                       , Link ("", ["top-link"], []) [] ("#top", "Back to top")
                       ]
 linkHeaders x = x
+
+linkImages :: Inline -> Inline
+linkImages (Image (_, _, _) elems (url, _)) =
+  Link ("", ["img-link"], []) [Image ("",[],[]) [] (url, ""), Span nullAttr elems] (url, "")
+linkImages x = x
 
 postCtx :: Context String
 postCtx =
