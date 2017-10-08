@@ -41,17 +41,19 @@ collections siteRoot tags = do
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
   -- tags page
-  create ["tags.html"] $ do
-    route indexHTMLRoute
-    compile $ do
-      let tagsCtx = field "taglist" (\_ -> renderTagList $ sortTagsBy caseInsensitiveTags tags) <>
-                    constField "title" "Tags" <>
-                    defaultContext
-      makeItem ""
-        >>= loadAndApplyTemplate "templates/tag-list.html" tagsCtx
-        >>= loadAndApplyTemplate "templates/default.html" tagsCtx
-        >>= relativizeUrls
-        >>= removeIndexHtml
+  tagsDependencies <- makePatternDependency "tags/*.html"
+  rulesExtraDependencies [tagsDependencies] $
+    create ["tags.html"] $ do
+      route indexHTMLRoute
+      compile $ do
+        let tagsCtx = tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
+                      constField "title" "Tags" <>
+                      defaultContext
+        makeItem ""
+          >>= loadAndApplyTemplate "templates/tag-list.html" tagsCtx
+          >>= loadAndApplyTemplate "templates/default.html" tagsCtx
+          >>= relativizeUrls
+          >>= removeIndexHtml
 
   -- post archive
   create ["archive.html"] $ do
