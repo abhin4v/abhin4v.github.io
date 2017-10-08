@@ -46,7 +46,7 @@
 
         <main role="main">
             <h1>Tags</h1>
-<a href="../tags/nilenso/">nilenso (2)</a>, <a href="../tags/programming/">programming (2)</a>, <a href="../tags/purescript/">purescript (2)</a>, <a href="../tags/REST/">REST (2)</a>
+<a style="font-size: 100%" href="../tags/nilenso/">nilenso</a> <a style="font-size: 100%" href="../tags/programming/">programming</a> <a style="font-size: 100%" href="../tags/purescript/">purescript</a> <a style="font-size: 100%" href="../tags/REST/">REST</a>
 
         </main>
 
@@ -62,6 +62,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
     <script src="https://cdn.rawgit.com/taylorhakes/promise-polyfill/master/promise.min.js"></script>
     <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
+    <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.js"></script>
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
       hljs.initHighlightingOnLoad();
@@ -76,6 +77,8 @@
 
       jQuery(document).ready(function() {
         loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
+        loadStyleSheet("https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.css");
+        jQuery("a.img-link").attr("data-featherlight", "image");
       });
     </script>
 </html>
