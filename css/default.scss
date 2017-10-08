@@ -134,6 +134,9 @@ article {
   article header {
     margin-bottom: 0;
   }
+  .footnoteRef {
+      display: none;
+  }
 }
 
 @media screen and(max-width: 600px) {

@@ -91,7 +91,7 @@ collections siteRoot tags = do
   match "index.html" $ do
     route idRoute
     compile $ do
-      posts <- fmap (take 10) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      posts <- fmap (take 5) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       let indexCtx =
             listField "posts" (teaserField "teaser" "content" <> postCtx) (return posts) <>
             constField "title" "Home"                                                    <>
