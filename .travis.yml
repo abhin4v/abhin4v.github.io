@@ -13,8 +13,9 @@ install:
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-- stack --resolver lts --no-terminal --install-ghc install cabal-install happy alex
-- stack --resolver lts --no-terminal install --fast
+- stack --resolver lts --no-terminal update
+- stack --resolver lts --no-terminal --install-ghc install --fast -j2 cabal-install happy alex
+- stack --resolver lts --no-terminal install --fast -j2
 before_script:
 - cd _site
 - git checkout master
@@ -37,4 +38,6 @@ cache:
   directories:
   - $HOME/.stack
   - $HOME/.cabal
-  - $HOME/build/abhin4v/abhin4v.github.io/.stack-work
+  - $HOME/.ghc
+  - .stack-work
+  apt: true
