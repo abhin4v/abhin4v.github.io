@@ -1,8 +1,12 @@
 module Site.Util where
 
+import Data.Monoid ((<>))
 import Data.List (isInfixOf)
 import Hakyll
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
+
+siteRoot :: String
+siteRoot = "https://abhinavsarkar.net"
 
 indexHTMLRoute :: Routes
 indexHTMLRoute = customRoute createIndexRoute
@@ -18,3 +22,9 @@ removeIndexURL url = case splitFileName url of
   (dir, "index.html") | isLocal dir -> dir
   _                                 -> url
   where isLocal uri = not ("://" `isInfixOf` uri)
+
+siteContext = defaultContext <> field "full_url" (const fullUrl)
+  where
+    fullUrl = do
+      path <- getResourceFilePath
+      return $ siteRoot <> drop 1 (takeDirectory path </> takeBaseName path <> "/")

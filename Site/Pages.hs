@@ -10,5 +10,5 @@ pages = do
   match (fromList ["about.md"]) $ do
     route indexHTMLRoute
     compile $ contentCompiler "left" False
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
+      >>= loadAndApplyTemplate "templates/default.html" siteContext
       >>= relativizeUrls

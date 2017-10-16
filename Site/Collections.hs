@@ -13,8 +13,8 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import Text.Blaze.Html.Renderer.String (renderHtml)
 
-collections :: String -> Tags -> Rules ()
-collections siteRoot tags = do
+collections :: Tags -> Rules ()
+collections tags = do
   -- tag pages
   tagsRules tags $ \tag pattrn -> do
     let title = "Posts tagged ‘" ++ tag ++ "’"
@@ -24,7 +24,7 @@ collections siteRoot tags = do
       let ctx = constField "title" title <>
                 constField "tag" tag <>
                 listField "posts" postCtx (return posts) <>
-                defaultContext
+                siteContext
 
       makeItem ""
           >>= loadAndApplyTemplate "templates/tag.html" ctx
@@ -48,7 +48,7 @@ collections siteRoot tags = do
       compile $ do
         let tagsCtx = tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
                       constField "title" "Tags" <>
-                      defaultContext
+                      siteContext
         makeItem ""
           >>= loadAndApplyTemplate "templates/tag-list.html" tagsCtx
           >>= loadAndApplyTemplate "templates/default.html" tagsCtx
@@ -63,7 +63,7 @@ collections siteRoot tags = do
       let archiveCtx =
             listField "posts" postCtx (return posts) <>
             constField "title" "Archives"            <>
-            defaultContext
+            siteContext
 
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
@@ -95,7 +95,7 @@ collections siteRoot tags = do
       let indexCtx =
             listField "posts" (teaserField "teaser" "content" <> postCtx) (return posts) <>
             constField "title" "Home"                                                    <>
-            defaultContext
+            siteContext
 
       getResourceBody
         >>= applyAsTemplate indexCtx
@@ -104,7 +104,7 @@ collections siteRoot tags = do
         >>= removeIndexHtml
 
 feedCtx :: Context String
-feedCtx =  defaultContext <>
+feedCtx =  siteContext <>
            -- $description$ will render as the post body
            bodyField "description"
 

@@ -4,6 +4,7 @@ module Site.Assets where
 import qualified Data.ByteString.Lazy.Char8 as C
 import Hakyll
 import Hakyll.Web.Sass
+import Site.Util
 import Text.Jasmine
 
 assets :: Rules ()
@@ -17,7 +18,7 @@ assets = do
   match "404.html" $ do
     route idRoute
     compile $ pandocCompiler
-      >>= loadAndApplyTemplate "templates/default.html" defaultContext
+      >>= loadAndApplyTemplate "templates/default.html" siteContext
 
   -- images
   match "images/**" $ do

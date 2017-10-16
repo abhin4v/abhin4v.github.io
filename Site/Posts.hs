@@ -17,8 +17,8 @@ import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAtt
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
-posts :: String -> Tags -> Rules ()
-posts siteRoot tags = do
+posts :: Tags -> Rules ()
+posts tags = do
   -- post comments
   match "comments/*/*" $
     compile $ do
@@ -44,15 +44,12 @@ posts siteRoot tags = do
 
       path <- getResourceFilePath
       let postSlug = takeBaseName path
-      let postUrl = drop 1 (takeDirectory path </> postSlug <> "/")
-      let fullUrl = siteRoot <> postUrl
 
       comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
       let ctx = postCtxWithTags tags <>
-                constField "full_url" fullUrl <>
                 constField "post_slug" postSlug <>
                 constField "comment_count" (show $ length comments) <>
-                listField "comments" defaultContext (return comments)
+                listField "comments" siteContext (return comments)
 
       contentCompiler alignment True
         >>= saveSnapshot "content"
@@ -108,7 +105,7 @@ postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y" <>
   dateField "date_num" "%Y-%m-%d" <>
-  defaultContext
+  siteContext
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
@@ -117,7 +114,7 @@ commentCtx :: String -> String -> Context String
 commentCtx date email =
   constField "date" date <>
   constField "email" email <>
-  defaultContext
+  siteContext
 
 sortComments :: MonadMetadata m => [Item a] -> m [Item a]
 sortComments = sortByM $ flip getMetadataField' "date" . itemIdentifier
