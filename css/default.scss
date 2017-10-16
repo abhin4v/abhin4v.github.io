@@ -4,8 +4,6 @@
 
 $text-color: #333;
 $border-color: #ababab;
-$link-color: #4078f2;
-$link-hover-color: #c18401;
 
 body {
   max-width: 50em;
@@ -82,12 +80,12 @@ nav {
   border-bottom: 1px solid $border-color;
   padding-top: 10px;
   padding-bottom: 10px;
-  a {
-    color: #000!important;
+  a, a:visited {
+    color: #000;
     text-decoration: none;
     padding: 0 0.5em;
     &:hover {
-      color: $link-color!important;
+      color: $link-color;
     }
   }
 }
@@ -156,6 +154,9 @@ article {
   }
   body {
     font-family: 'Lato', 'Helvetica', sans-serif;
+  }
+  .post h1 {
+    font-size: 2em;
   }
 }
 

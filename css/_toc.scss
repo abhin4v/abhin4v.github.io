@@ -1,3 +1,6 @@
+$link-color: #4078f2;
+$link-hover-color: #c18401;
+
 #toc {
   margin-top: 10px;
   text-align: left;
@@ -16,6 +19,10 @@
   }
   a {
     padding: 0;
+    color: $link-color;
+    &:hover {
+      color: $link-hover-color;
+    }
   }
   h3 {
     margin: 0.5em;
