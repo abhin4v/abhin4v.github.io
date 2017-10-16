@@ -62,7 +62,7 @@ collections tags = do
       posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       let archiveCtx =
             listField "posts" postCtx (return posts) <>
-            constField "title" "Archives"            <>
+            constField "title" "Archive"             <>
             siteContext
 
       makeItem ""
@@ -93,8 +93,8 @@ collections tags = do
     compile $ do
       posts <- fmap (take 5) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       let indexCtx =
-            listField "posts" (teaserField "teaser" "content" <> postCtx) (return posts) <>
-            constField "title" "Home"                                                    <>
+            listField "posts" (teaserField "teaser" "content" <> postCtxWithTags tags) (return posts) <>
+            constField "title" "Home"                                                                 <>
             siteContext
 
       getResourceBody
@@ -104,9 +104,7 @@ collections tags = do
         >>= removeIndexHtml
 
 feedCtx :: Context String
-feedCtx =  siteContext <>
-           -- $description$ will render as the post body
-           bodyField "description"
+feedCtx =  bodyField "description" <> siteContext
 
 feedConfiguration :: String -> String -> FeedConfiguration
 feedConfiguration siteRoot title = FeedConfiguration

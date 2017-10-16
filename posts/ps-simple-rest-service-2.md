@@ -1,6 +1,7 @@
 ---
 title: Writing a Simple REST Web Service in PureScript - Part 2
 date: 2017-10-01
+description: The aim of this two-part tutorial is to create a simple JSON REST web service written in PureScript, to run on a node.js server.
 tags: purescript, REST, programming, nilenso
 author: Abhinav Sarkar
 toc: right

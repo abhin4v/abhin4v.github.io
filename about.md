@@ -1,5 +1,6 @@
 ---
 title: About Me
+page_type: profile
 ---
 # About Me
 

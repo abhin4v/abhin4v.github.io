@@ -54,7 +54,7 @@ posts tags = do
       contentCompiler alignment True
         >>= saveSnapshot "content"
         >>= loadAndApplyTemplate "templates/post.html" ctx
-        >>= loadAndApplyTemplate "templates/default.html" (postCtxWithTags tags)
+        >>= loadAndApplyTemplate "templates/default.html" ctx
         >>= relativizeUrls
         >>= removeIndexHtml
 
@@ -105,7 +105,15 @@ postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y" <>
   dateField "date_num" "%Y-%m-%d" <>
+  field "ttags" ttags <>
+  constField "page_type" "article" <>
   siteContext
+  where
+    ttags item = do
+      mtags <- getMetadataField (itemIdentifier item) "tags"
+      case mtags of
+        Nothing -> fail "No tags found"
+        Just tags -> return tags
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
