@@ -2,6 +2,11 @@
 @import "fa";
 @import "toc";
 
+$text-color: #333;
+$border-color: #ababab;
+$link-color: #4078f2;
+$link-hover-color: #c18401;
+
 body {
   max-width: 50em;
   min-width: 20em;
@@ -11,7 +16,7 @@ body {
   font-size: 1.1em;
   line-height: 1.4em;
   background-color: #fdfdfd;
-  color: #333;
+  color: $text-color;
   > header {
     h1 {
       font-size: 2.2em;
@@ -27,7 +32,7 @@ body {
   }
   > footer {
     text-align: right;
-    border-top: 1px solid #ababab;
+    border-top: 1px solid $border-color;
     margin-top: 10px;
     font-size: 0.8em;
   }
@@ -59,24 +64,30 @@ ins::before {
   content: " > >";
 }
 hr {
-  color: #ababab;
-  background-color: #ababab;
+  color: $border-color;
+  background-color: $border-color;
   height: 1px;
   border: 0;
 }
+a, a:visited {
+  text-decoration: none;
+  color: $link-color;
+  &:hover {
+    color: $link-hover-color;
+  }
+}
 nav {
   text-align: right;
-  border-top: 1px solid #ababab;
-  border-bottom: 1px solid #ababab;
+  border-top: 1px solid $border-color;
+  border-bottom: 1px solid $border-color;
   padding-top: 10px;
   padding-bottom: 10px;
   a {
-    color: #000;
+    color: #000!important;
     text-decoration: none;
     padding: 0 0.5em;
     &:hover {
-      color: #7724bd;
-      text-decoration: none;
+      color: $link-color!important;
     }
   }
 }
@@ -164,7 +175,7 @@ article {
   }
   a {
     text-decoration: none!important;
-    color: #333!important;
+    color: $text-color!important;
   }
   .post {
     .source {
@@ -190,7 +201,10 @@ article {
 
 .feed-icon {
   float: right;
-  color: #333;
+  color: $text-color!important;
+  &:hover {
+    color: $link-color!important;
+  }
   > span {
     position: relative;
     bottom: -0.1em;
