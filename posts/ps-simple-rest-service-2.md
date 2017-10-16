@@ -1,4 +1,4 @@
-To recap, in the [first] part of this two-part tutorial, we built a simple JSON [REST] web service in [Purescript] to create, update, get, list and delete users, backed by a Postgres database. In this part we'll work on the rest of the requirements:
+To recap, in the [first] part of this two-part tutorial, we built a simple JSON [REST] web service in [PureScript] to create, update, get, list and delete users, backed by a Postgres database. In this part we'll work on the rest of the requirements:
 
 1. validation of API requests.
 1. reading the server and database configs from environment variables.
@@ -726,11 +726,11 @@ $ pulp --watch run
 
 ## Conclusion
 
-In this tutorial we learned how to create a simple JSON REST web service written in Purescript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in [github][1]. This post can be discussed on [r/purescript][2].
+In this tutorial we learned how to create a simple JSON REST web service written in PureScript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in [github][1]. This post can be discussed on [r/purescript][2].
 
 [first]: /posts/ps-simple-rest-service/
 [REST]: https://en.wikipedia.org/wiki/REST
-[Purescript]: http://purescript.org
+[PureScript]: http://purescript.org
 [Express]: https://expressjs.com
 [regular expression]: https://en.wikipedia.org/wiki/Regular_expression
 [`purescript-express`]: https://pursuit.purescript.org/packages/purescript-express

@@ -1,6 +1,6 @@
-At [Nilenso], we've been working with a client who has chosen [Purescript] as their primary programming language. Since I couldn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.
+At [Nilenso], we've been working with a client who has chosen [PureScript] as their primary programming language. Since I couldn't find any canonical documentation on writing a web service in PureScript, I thought I'd jot down the approach that we took.
 
-The aim of this two-part tutorial is to create a simple JSON [REST] web service written in Purescript, to run on a node.js server. This assumes that you have basic proficiency with Purescript. We have the following requirements:
+The aim of this two-part tutorial is to create a simple JSON [REST] web service written in PureScript, to run on a node.js server. This assumes that you have basic proficiency with PureScript. We have the following requirements:
 
 1. persisting users into a Postgres database.
 1. API endpoints for creating, updating, getting, listing and deleting users.
@@ -16,14 +16,14 @@ In this part we'll work on setting up the project and on the first two requireme
 
 ## Setting Up
 
-We start with installing Purescript and the required tools. This assumes that we have [node] and [npm] installed on our machine.
+We start with installing PureScript and the required tools. This assumes that we have [node] and [npm] installed on our machine.
 
 ```bash
 $ mkdir -p ~/.local/
 $ npm install -g purescript pulp bower --prefix ~/.local/
 ```
 
-[Pulp] is a build tool for Purescript projects and [bower] is a package manager used to get Purescript libraries. We'll have to add `~/.local/bin` in our `$PATH` (if it is not already added) to access the binaries installed.
+[Pulp] is a build tool for PureScript projects and [bower] is a package manager used to get PureScript libraries. We'll have to add `~/.local/bin` in our `$PATH` (if it is not already added) to access the binaries installed.
 
 Let's create a directory for our project and make Pulp initialize it:
 
@@ -54,7 +54,7 @@ $ ls bower_components
 purescript-console  purescript-eff  purescript-prelude purescript-psci-support
 ```
 
-Pulp creates the basic project structure for us. `src` directory will contain the source while the `test` directory will contain the tests. `bower.json` contains the Purescript libraries as dependencies which are downloaded and installed in the `bower_components` directory.
+Pulp creates the basic project structure for us. `src` directory will contain the source while the `test` directory will contain the tests. `bower.json` contains the PureScript libraries as dependencies which are downloaded and installed in the `bower_components` directory.
 
 ## Types First
 
@@ -89,13 +89,13 @@ instance encodeUser :: Encode User where
   encode = genericEncode $ defaultOptions { unwrapSingleConstructors = true }
 ```
 
-We are using the generic support for Purescript types from the [`purescript-generics-rep`][2] and [`purescript-foreign-generic`][1] libraries to encode and decode the `User` type to JSON. We install the library by running the following command:
+We are using the generic support for PureScript types from the [`purescript-generics-rep`][2] and [`purescript-foreign-generic`][1] libraries to encode and decode the `User` type to JSON. We install the library by running the following command:
 
 ```bash
 $ bower install purescript-foreign-generic --save
 ```
 
-Now we can load up the module in the Purescript REPL and try out the JSON conversion features:
+Now we can load up the module in the PureScript REPL and try out the JSON conversion features:
 
 ```haskell
 $ pulp repl
@@ -121,7 +121,7 @@ $ pulp repl
 We use `encodeJSON` and `decodeJSON` functions from the [`Data.Foreign.Generic`][6] module to encode and decode the `User` instance to JSON. The return type of `decodeJSON` is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a `Right` with the correctly parsed `User` instance.
 
 ## Persisting It
-Next, we add the support for saving a `User` instance to a Postgres DB. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call Postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for Purescript wrapper over `pg`:
+Next, we add the support for saving a `User` instance to a Postgres DB. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call Postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for PureScript wrapper over `pg`:
 
 ```bash
 $ npm init -y
@@ -275,7 +275,7 @@ listUsers conn =
 
 ## Serving It
 
-We can now write a simple HTTP API over the persistence layer using [Express] to provide CRUD functionality for users. Let's install Express and [purescript-express], the Purescript wrapper over it:
+We can now write a simple HTTP API over the persistence layer using [Express] to provide CRUD functionality for users. Let's install Express and [purescript-express], the PureScript wrapper over it:
 
 ```bash
 $ npm install express --save
@@ -536,7 +536,7 @@ X-Powered-By: Express
 
 ### Creating a User
 
-`createUser` handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through Purescript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
+`createUser` handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through PureScript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
 
 ```javascript
 "use strict";
@@ -874,10 +874,10 @@ X-Powered-By: Express
 
 ## Conclusion
 
-That concludes the first part of the two-part tutorial. We learned how to set up a Purescript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in [github][10]. In the [next] part, we'll learn how to do API validation, application configuration and logging. This post can be discussed on [r/purescript][12].
+That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in [github][10]. In the [next] part, we'll learn how to do API validation, application configuration and logging. This post can be discussed on [r/purescript][12].
 
 [Nilenso]: https://nilenso.com
-[Purescript]: http://purescript.org
+[PureScript]: http://purescript.org
 [bower]: http://bower.io
 [Express]: https://expressjs.com
 [HTTPie]: https://httpie.org
