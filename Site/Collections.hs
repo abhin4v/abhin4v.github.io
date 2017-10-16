@@ -104,15 +104,19 @@ collections tags = do
         >>= removeIndexHtml
 
 feedCtx :: Context String
-feedCtx =  bodyField "description" <> siteContext
+feedCtx =  bodyField "description" <> field "url" postUrl <> siteContext
+  where
+    postUrl item = do
+      let path = toFilePath (itemIdentifier item)
+      return $ ("/" <> takeDirectory path </> takeBaseName path <> "/")
 
 feedConfiguration :: String -> String -> FeedConfiguration
 feedConfiguration siteRoot title = FeedConfiguration
-  { feedTitle = title <> " on abhinavsarkar.net"
+  { feedTitle       = title <> " on abhinavsarkar.net"
   , feedDescription = title <> " on abhinavsarkar.net"
-  , feedAuthorName = "Abhinv Sarkar"
+  , feedAuthorName  = "Abhinv Sarkar"
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
-  , feedRoot = siteRoot
+  , feedRoot        = siteRoot
   }
 
 tagFeedRoute :: Routes

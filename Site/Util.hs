@@ -23,6 +23,7 @@ removeIndexURL url = case splitFileName url of
   _                                 -> url
   where isLocal uri = not ("://" `isInfixOf` uri)
 
+siteContext :: Context String
 siteContext = defaultContext <> field "full_url" (const fullUrl)
   where
     fullUrl = do
