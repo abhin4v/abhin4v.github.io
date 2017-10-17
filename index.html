@@ -161,7 +161,9 @@
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
       hljs.initHighlightingOnLoad();
-      hljs.initLineNumbersOnLoad();
+      hljs.initLineNumbersOnLoad({
+        singleLine: true
+      });
 
       function loadStyleSheet(src) {
         if (document.createStyleSheet){
