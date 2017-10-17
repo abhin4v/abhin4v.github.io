@@ -25,11 +25,6 @@ assets = do
     route   idRoute
     compile copyFileCompiler
 
-  -- pdfs
-  match "pdfs/**" $ do
-    route   idRoute
-    compile copyFileCompiler
-
   -- js
   match "js/*" $ do
    route   idRoute
