@@ -120,6 +120,20 @@ article {
       font-size: 0.8em;
     }
   }
+  td.hljs-ln-code {
+    padding-left: 0.5em;
+  }
+  td.hljs-ln-numbers {
+    color: brown;
+    vertical-align: top;
+    border-right: 1px solid #aaa;
+    padding-right: 0.5em;
+    font-size: smaller;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
 }
 .header {
   text-align: right;
@@ -154,6 +168,7 @@ article {
   }
   body {
     font-family: 'Lato', 'Helvetica', sans-serif;
+    font-size: inherit;
   }
   .post h1 {
     font-size: 2em;
@@ -184,6 +199,9 @@ article {
     }
     .body a:after {
       display: none!important;
+    }
+    td.hljs-ln-numbers {
+      border-right: none;
     }
   }
 }
