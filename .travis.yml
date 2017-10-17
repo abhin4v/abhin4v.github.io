@@ -33,7 +33,7 @@ script:
 - git push "$REPO_URL" master
 - cd ..
 after_script:
-- sh ./purge_cf_cache.sh
+- sh bin/purge_cf_cache.sh
 cache:
   directories:
   - $HOME/.stack
