@@ -135,11 +135,9 @@ article {
     word-wrap: break-word;
   }
 }
-.header {
+.header, .ert {
   text-align: right;
-}
-.ert {
-  text-align: right;
+  font-size: 0.9em;
 }
 #home-posts {
   hr {
@@ -150,9 +148,6 @@ article {
   }
   h3 {
     margin: 0.5em 0;
-  }
-  .header, .ert {
-    font-size: 0.9em;
   }
   article header {
     margin-bottom: 0;
