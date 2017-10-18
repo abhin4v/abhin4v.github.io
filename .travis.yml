@@ -34,14 +34,7 @@ script:
 - $HOME/.local/bin/site build
 - cd _site
 - git add --all
-- git status --short  | grep "posts/.*.html" | awk '{print $2}' | sed 's/\/index.html//' > ../changed-posts
-- cd ..
-- $HOME/.local/bin/site server &
-- mkdir -p _site/pdfs/posts
-- cat changed-posts | xargs -r -t -n1 sh bin/generate_pdf.sh
-- killall site
-- cd _site
-- git add --all pdfs
+- sh ../bin/generate_pdfs.sh
 - git status --short
 - git config --global user.email "abhinav@abhinavsarkar.net"
 - git config --global user.name "Travis"
