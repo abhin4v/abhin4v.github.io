@@ -14,16 +14,15 @@
         <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: $tags$
         $endif$
     </section>
-    <section class="header">
-        <a href="/pdfs/posts/$post_slug$.pdf" download class="post-download" rel="nofollow">
-          <span class="fa fa-download fa-fw" aria-hidden="true"></span> Download as PDF
-        </a>
+    <section class="header post-download">
+        <span class="fa fa-download fa-fw" aria-hidden="true"></span> Download as
+        <a href="/pdfs/posts/$post_slug$.pdf" download rel="nofollow">PDF</a> or
+        <a href="/$path$" download rel="nofollow">Markdown</a>
     </section>
     <section itemprop="articleBody" class="body">
         $body$
     </section>
     <section class="source">
-      <a href="/$path$">Source</a> |
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/$post_slug$.md" target="_blank" rel="noopener">Post history</a>
     </section>
 </article>
