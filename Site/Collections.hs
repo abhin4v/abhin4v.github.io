@@ -41,8 +41,8 @@ collections tags = do
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
   -- tags page
-  tagsDependencies <- makePatternDependency "tags/*.html"
-  rulesExtraDependencies [tagsDependencies] $
+  tagsDependency <- makePatternDependency "tags/*.html"
+  rulesExtraDependencies [tagsDependency] $
     create ["tags.html"] $ do
       route indexHTMLRoute
       compile $ do

@@ -18,7 +18,11 @@ executable site
                   , xml
                   , hjsmin
                   , bytestring
-  other-modules:    Site.Assets
+                  , http-conduit
+                  , feed
+                  , split
+  other-modules:    Site.Activities
+                  , Site.Assets
                   , Site.Collections
                   , Site.ERT
                   , Site.Pages

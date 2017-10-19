@@ -1,0 +1,38 @@
+.activity {
+  .link {
+    margin-bottom: 0.5em;
+  }
+  .date {
+    float: right;
+    font-size: smaller;
+  }
+  .desc {
+    font-size: smaller;
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      &:nth-child(2n+1) {
+        float: left;
+        width: 40%;
+
+        &:last-child {
+          float: none;
+        }
+      }
+      .key {
+        font-weight: bold;
+        padding-right: 0.3em;
+
+        &::after {
+          content: ":";
+        }
+      }
+    }
+  }
+}
+@media screen and(max-width: 600px) {
+  .activity .desc li:nth-child(2n+1) {
+    width: 50%!important;
+  }
+}
