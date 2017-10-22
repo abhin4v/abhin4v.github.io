@@ -3,7 +3,7 @@ module Site.Activities where
 
 import Control.Exception (try, SomeException)
 import Control.Monad (forM, forM_)
-import Data.List (find)
+import Data.List (find, isInfixOf)
 import Data.List.Split (endBy, splitOn)
 import Data.Maybe (fromJust)
 import Data.Monoid ((<>))
@@ -20,7 +20,8 @@ import Text.Feed.Types (Feed(..))
 import Text.RSS.Syntax (RSS(..), RSSChannel(..), RSSItem(..))
 
 data Activity = Activity { activityName :: String
-                         , activityURL :: String
+                         , activityType :: String
+                         , activityURL  :: String
                          , activityTime :: LocalTime
                          , activityDesc :: String
                          } deriving (Show)
@@ -34,17 +35,20 @@ getActivities feedURL =
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
         forM rssItems $ \RSSItem {..} -> do
           t <- parseTimeM True defaultTimeLocale rfc822DateFormat (fromJust rssItemPubDate)
-          let desc = renderDesc
-                . map (\x -> let [k, v] = splitOn ": " x in (k, v))
-                . splitOn ", "
-                . head
-                . endBy " (no power meter)"
-                . drop 2
-                . dropWhile (/= ':')
-                . fromJust
-                $ rssItemDescription
-          return Activity { activityName = fromJust rssItemTitle
-                          , activityURL = fromJust rssItemLink
+          let activityName = fromJust rssItemTitle
+              activityType = if "Ride" `isInfixOf` activityName then "ride" else "run"
+              desc = renderDesc
+                    . map (\x -> let [k, v] = splitOn ": " x in (k, v))
+                    . splitOn ", "
+                    . head
+                    . endBy " (no power meter)"
+                    . drop 2
+                    . dropWhile (/= ':')
+                    . fromJust
+                    $ rssItemDescription
+          return Activity { activityName = activityName
+                          , activityType = activityType
+                          , activityURL  = fromJust rssItemLink
                           , activityTime = t
                           , activityDesc = desc
                           }
@@ -56,8 +60,8 @@ getActivities feedURL =
 
     cleanVal k v = case k of
       "Moving Time" -> case splitOn ":" v of
-                          ["00", m, s] -> m <> "min " <> s <> "sec"
-                          [h, m, s] -> h <> "h " <> m <> "min " <> s <> "sec"
+                          ["00", m, _] -> m <> "min"
+                          [h, m, _]    -> h <> "h " <> m <> "min"
       "Pace" -> let [x, m] = splitOn "/" v in x <> "min" <> "/" <> m
       "Estimated Avg Power" -> v <> "W"
       _ -> v
@@ -68,7 +72,7 @@ activities = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities <- unsafeCompiler $ take 10 <$> getActivities "http://feedmyride.net/activities/3485865"
+        activities <- unsafeCompiler $ take 20 <$> getActivities "http://feedmyride.net/activities/3485865"
 
         let ctx = listField "activities" activityFields (mapM makeItem activities) <>
                   siteContext
@@ -84,6 +88,7 @@ activities = do
 
     activityFields =
       mconcat [ activityField "name" activityName
+              , activityField "type" activityType
               , activityField "url" activityURL
               , activityField "desc" activityDesc
               , activityField "date" (formatTime defaultTimeLocale "%b %e, %Y %I:%M %p" . activityTime)
