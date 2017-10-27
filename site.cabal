@@ -19,7 +19,7 @@ executable site
                   , hjsmin
                   , bytestring
                   , http-conduit
-                  , feed
+                  , feed < 1.0
                   , split
   other-modules:    Site.Activities
                   , Site.Assets
@@ -27,6 +27,7 @@ executable site
                   , Site.ERT
                   , Site.Pages
                   , Site.Posts
+                  , Site.Readings
                   , Site.Sitemap
                   , Site.TOC
                   , Site.Util

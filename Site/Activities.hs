@@ -1,5 +1,5 @@
 {-# LANGUAGE LambdaCase, ScopedTypeVariables, RecordWildCards, OverloadedStrings #-}
-module Site.Activities where
+module Site.Activities (activities) where
 
 import Control.Exception (try, SomeException)
 import Control.Monad (forM, forM_)
@@ -75,6 +75,7 @@ activities = do
         activities <- unsafeCompiler $ take 20 <$> getActivities "http://feedmyride.net/activities/3485865"
 
         let ctx = listField "activities" activityFields (mapM makeItem activities) <>
+                  constField "title" "Activities" <>
                   siteContext
 
         makeItem ""
@@ -82,7 +83,6 @@ activities = do
           >>= loadAndApplyTemplate "templates/default.html" ctx
           >>= relativizeUrls
           >>= removeIndexHtml
-
   where
     activityField name f = field name (return . f . itemBody)
 

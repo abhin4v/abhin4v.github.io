@@ -1,0 +1,53 @@
+<h1>$title$</h1>
+
+<section class="books">
+  <h2>Currently Reading</h2>
+  $for(books_reading)$
+  <section class="book reading">
+    <img src="$image_url$" />
+    <div>
+      <a href="$url$" target="_blank" rel="noopener">$name$</a>
+      <small>by</small> <span class="author">$author$</span>$if(has_published)$, <span class="published-date">$published$</span>$endif$
+    </div>
+  </section>
+  $endfor$
+  <hr />
+</section>
+
+<section class="books">
+  <h2>Read</h2>
+  $for(books_read)$
+  <section class="book read">
+    <img src="$image_url$" />
+    <div>
+      <a href="$url$" target="_blank" rel="noopener">$name$</a>
+      <small>by</small> <span class="author">$author$</span>$if(has_published)$, <span class="published-date">$published$</span>$endif$
+    </div>
+    <div class="read-date">
+      $if(has_read_date)$
+        Read in $read_date$
+      $else$
+        Added in $added_date$
+      $endif$
+    </div>
+    $if(has_rating)$
+      <div class="rating">Rated: $rating$/5</div>
+    $endif$
+  </section>
+  $endfor$
+  <hr />
+</section>
+
+<section class="books">
+  <h2>To Read</h2>
+  $for(books_to_read)$
+  <section class="book to-read">
+    <img src="$image_url$" />
+    <div>
+      <a href="$url$" target="_blank" rel="noopener">$name$</a>
+      <small>by</small> <span class="author">$author$</span>$if(has_published)$, <span class="published-date">$published$</span>$endif$
+    </div>
+  </section>
+  $endfor$
+  <hr style="visibility: hidden; clear: both;" />
+</section>

@@ -1,0 +1,35 @@
+$border-color: #ababab;
+
+.books {
+  .book {
+    padding-top: 1em;
+    clear: both;;
+
+    img {
+      margin-right: 0.3em;
+      margin-top: 0.2em;
+      border: 1px solid $border-color;
+      float: left;
+    }
+
+    div {
+      margin-left: 55px;
+    }
+
+    .read-date, .rating {
+      font-size: smaller;
+    }
+
+    .author {
+      font-variant: small-caps;
+    }
+  }
+
+  hr {
+    padding-top: 1.5em;
+    width: 50%;
+    clear: both;
+    background-color: transparent;
+    border-bottom: 1px solid $border-color;
+  }
+}
