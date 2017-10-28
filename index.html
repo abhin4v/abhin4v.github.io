@@ -46,13 +46,19 @@
     </head>
     <body>
         <header>
-            <nav>
-                <a href="./" style="float: left; font-weight: bold;">abhinavsarkar.net</a>
-                <a href="./about/">About Me</a>
-                <a href="./archive/">Archive</a>
-                <a href="./tags/" class="hide-small">Tags</a>
-                <a href="./activities/" class="hide-small">Activities</a>
-                <a href="./readings/" class="hide-small">Readings</a>
+            <nav id="topnav">
+                <span class="logo">
+                  <a href="./">abhinavsarkar.net</a>
+                  <label for="menu-toggle" class="label-toggle"></label>
+                </span>
+                <span class="links">
+                  <input type="checkbox" id="menu-toggle">
+                  <a href="./about/">About Me</a>
+                  <a href="./archive/">Archive</a>
+                  <a href="./tags/" class="hide-small">Tags</a>
+                  <a href="./activities/" class="hide-small">Activities</a>
+                  <a href="./readings/" class="hide-small">Readings</a>
+                </span>
             </nav>
         </header>
 
