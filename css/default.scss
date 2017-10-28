@@ -1,22 +1,26 @@
+@import "consts";
 @import "comments";
 @import "fa";
 @import "toc";
 @import "activities";
 @import "readings";
-
-$text-color: #333;
-$border-color: #ababab;
+@import "navigation";
 
 body {
   max-width: 50em;
   min-width: 20em;
   margin: auto;
   padding: 1em;
+  padding-top: 0.1px;
   font-family: 'Noto Serif', 'Georgia', serif;
   font-size: 1.1em;
   line-height: 1.4em;
-  background-color: #fdfdfd;
+  background-color: $background-color;
   color: $text-color;
+
+  > main {
+    margin-top: 4em;
+  }
   > header {
     h1 {
       font-size: 2.2em;
@@ -76,21 +80,7 @@ a, a:visited {
     color: $link-hover-color;
   }
 }
-nav {
-  text-align: right;
-  border-top: 1px solid $border-color;
-  border-bottom: 1px solid $border-color;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  a, a:visited {
-    color: #000;
-    text-decoration: none;
-    padding: 0 0.5em;
-    &:hover {
-      color: $link-color;
-    }
-  }
-}
+
 article {
   header {
     margin-bottom: 2em;

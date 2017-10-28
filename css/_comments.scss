@@ -1,6 +1,9 @@
+@import "consts";
+
 #comment-container {
-  border-top: 1px solid #ababab;
+  border-top: 1px solid $border-color;
 }
+
 #comment-form {
   > p {
     margin: 0.5em 0px;
@@ -15,14 +18,14 @@
     display: block;
     margin: 1em 0;
     padding: 0.2em;
-    border: 1px solid #ababab;
+    border: 1px solid $border-color;
     width: 50%;
   }
   textarea {
     display: block;
     margin: 1em 0;
     padding: 0.2em;
-    border: 1px solid #ababab;
+    border: 1px solid $border-color;
     width: 80%;
     height: 5em;
     margin-bottom: 0;
@@ -42,11 +45,13 @@
     background-color: #777;
   }
 }
+
 #comment-form-message {
   background-color: #faffac;
   padding: 0.3em;
   display: none;
 }
+
 .comments {
   width: 80%;
   hr {
@@ -56,6 +61,7 @@
     }
   }
 }
+
 .comment {
   margin: 2em;
   .avatar {
