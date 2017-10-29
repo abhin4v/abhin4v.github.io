@@ -165,14 +165,20 @@ article {
 @media print {
   body {
     font-size: 0.8em;
-    header nav {
-      text-align: center;
-      a {
+
+    main {
+      margin-top: 0px;
+    }
+
+    nav#topnav {
+      border-bottom: none;
+      position: relative;
+
+      .logo {
+        text-align: center;
+      }
+      .links {
         display: none;
-        :first-of-type {
-          display: block!important;
-          float: none!important;
-        }
       }
     }
   }
