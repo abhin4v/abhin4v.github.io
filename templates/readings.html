@@ -15,6 +15,20 @@
 </section>
 
 <section class="books">
+  <h2>On Hold</h2>
+  $for(books_on_hold)$
+  <section class="book to-read">
+    <img src="$image_url$" />
+    <div>
+      <a href="$url$" target="_blank" rel="noopener">$name$</a>
+      <small>by</small> <span class="author">$author$</span>$if(has_published)$, <span class="published-date">$published$</span>$endif$
+    </div>
+  </section>
+  $endfor$
+  <hr />
+</section>
+
+<section class="books">
   <h2>Read</h2>
   $for(books_read)$
   <section class="book read">

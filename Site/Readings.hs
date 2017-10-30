@@ -18,7 +18,7 @@ import Text.Feed.Types (Feed(..))
 import Text.XML.Light.Proc (strContent)
 import Text.XML.Light.Types (Element(..), QName(..))
 
-data Shelf = Read | ToRead | Reading deriving (Show, Eq)
+data Shelf = Read | ToRead | OnHold | Reading deriving (Show, Eq)
 
 data Book = Book { bookName          :: String
                  , bookURL           :: String
@@ -33,10 +33,11 @@ data Book = Book { bookName          :: String
 
 data Books = Books { booksRead    :: [Book]
                    , booksToRead  :: [Book]
+                   , booksOnHold  :: [Book]
                    , booksReading :: [Book]
                    } deriving (Show)
 
-noBooks = Books [] [] []
+noBooks = Books [] [] [] []
 
 getBooks :: String -> IO Books
 getBooks feedURL =
@@ -48,6 +49,7 @@ getBooks feedURL =
         let books        = map itemToBook rssItems
         in return Books { booksRead    = shelfBooks Read books
                         , booksToRead  = shelfBooks ToRead books
+                        , booksOnHold  = shelfBooks OnHold books
                         , booksReading = shelfBooks Reading books
                         }
   where
@@ -89,6 +91,7 @@ itemToBook RSSItem {..} =
     getAddedDate = parseTime $ getBookProp "user_date_created"
 
     getBookShelf = case getBookProp "user_shelves" of
+      x | "half-read" `isInfixOf` x         -> OnHold
       x | "currently-reading" `isInfixOf` x -> Reading
       x | "to-read" `isInfixOf` x           -> ToRead
       _                                     -> Read
@@ -103,6 +106,7 @@ readings = do
 
         let ctx = listField "books_read" bookFields (mapM makeItem booksRead) <>
                   listField "books_to_read" bookFields (mapM makeItem booksToRead) <>
+                  listField "books_on_hold" bookFields (mapM makeItem booksOnHold) <>
                   listField "books_reading" bookFields (mapM makeItem booksReading) <>
                   constField "title" "Readings" <>
                   siteContext
