@@ -39,6 +39,7 @@ body {
     border-top: 1px solid $border-color;
     margin-top: 10px;
     font-size: 0.8em;
+    clear: both;
   }
 }
 h1, h2, h3, h4, h5, h6 {
@@ -223,5 +224,50 @@ article {
   > span {
     position: relative;
     bottom: -0.1em;
+  }
+}
+
+.postlist {
+  padding-left: 0.2em;
+
+  li {
+    list-style: none;
+  }
+  .post-date {
+    font-size: smaller;
+    padding-left: 1.2em;
+  }
+}
+
+#archive {
+  .taglist {
+    float: right;
+    max-width: 28%;
+    padding-left: 2%;
+    position: relative;
+    top: -3.5em;
+
+    h2 {
+      margin: 0.3em auto;
+    }
+  }
+
+  .postlist {
+    margin-right: 30%;
+  }
+}
+
+@media screen and(max-width: 600px) {
+  #archive {
+    .taglist {
+      float: none;
+      max-width: none;
+      top: 0px;
+      padding-left: 0px;
+    }
+
+    .postlist {
+      margin-right: auto;
+    }
   }
 }

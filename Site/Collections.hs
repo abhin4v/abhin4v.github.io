@@ -40,36 +40,23 @@ collections tags = do
           >>= return . map (fmap (relativizeUrlsWith siteRoot) . addPostLink)
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
-  -- tags page
+  -- post archive
   tagsDependency <- makePatternDependency "tags/*.html"
   rulesExtraDependencies [tagsDependency] $
-    create ["tags.html"] $ do
+    create ["archive.html"] $ do
       route indexHTMLRoute
       compile $ do
-        let tagsCtx = tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
-                      constField "title" "Tags" <>
-                      siteContext
+        posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+        let archiveCtx = listField "posts" postCtx (return posts) <>
+                         tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
+                         constField "title" "Archive"             <>
+                         siteContext
+
         makeItem ""
-          >>= loadAndApplyTemplate "templates/tag-list.html" tagsCtx
-          >>= loadAndApplyTemplate "templates/default.html" tagsCtx
+          >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+          >>= loadAndApplyTemplate "templates/default.html" archiveCtx
           >>= relativizeUrls
           >>= removeIndexHtml
-
-  -- post archive
-  create ["archive.html"] $ do
-    route indexHTMLRoute
-    compile $ do
-      posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
-      let archiveCtx =
-            listField "posts" postCtx (return posts) <>
-            constField "title" "Archive"             <>
-            siteContext
-
-      makeItem ""
-        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls
-        >>= removeIndexHtml
 
   -- main feed
   create ["feed.xml"] $ do
