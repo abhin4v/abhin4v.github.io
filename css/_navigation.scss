@@ -34,16 +34,17 @@ nav#topnav {
   }
 
   .label-toggle {
-      background: linear-gradient(to bottom, $text-color 0%, $text-color 20%, transparent 20%, transparent 40%, $text-color 40%, $text-color 60%, transparent 60%, transparent 80%, $text-color 80%, $text-color 100%);
       cursor: pointer;
       display: block;
       float: right;
-      height: 1em;
       margin: 0.25em 1em auto 1em;
-      width: 1.2em;
 
-      &:hover {
-        background: linear-gradient(to bottom, $link-color 0%, $link-color 20%, transparent 20%, transparent 40%, $link-color 40%, $link-color 60%, transparent 60%, transparent 80%, $link-color 80%, $link-color 100%);
+      #hamburger-round {
+        fill: $text-color;
+      }
+
+      &:hover #hamburger-round {
+        fill: $link-color;
       }
     }
 
