@@ -4,6 +4,7 @@ nav#topnav {
   text-align: center;
   z-index: 999;
   border-bottom: 1px solid $border-color;
+  border-top: 0.2em solid $link-color;
   padding-bottom: 10px;
   padding-top: 10px;
   position: fixed;
@@ -89,6 +90,21 @@ nav#topnav {
 
     #menu-toggle:checked ~ a {
       display: block;
+    }
+  }
+}
+
+@media print {
+  nav#topnav {
+    border-top: 0px!important;
+    border-bottom: none;
+    position: relative;
+
+    .logo {
+      text-align: center;
+    }
+    .links {
+      display: none;
     }
   }
 }

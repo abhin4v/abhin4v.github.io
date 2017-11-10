@@ -1,0 +1,32 @@
+#archive {
+  .taglist {
+    float: right;
+    max-width: 28%;
+    padding-left: 2%;
+    position: relative;
+    top: -3.5em;
+
+    h2 {
+      margin: 0.3em auto;
+    }
+  }
+
+  .postlist {
+    margin-right: 30%;
+  }
+}
+
+@media screen and(max-width: 600px) {
+  #archive {
+    .taglist {
+      float: none;
+      max-width: none;
+      top: 0px;
+      padding-left: 0px;
+    }
+
+    .postlist {
+      margin-right: auto;
+    }
+  }
+}
