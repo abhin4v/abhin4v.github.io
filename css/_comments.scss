@@ -14,23 +14,23 @@
   fieldset {
     border: none;
   }
-  input {
+  input, textarea {
     display: block;
     margin: 1em 0;
     padding: 0.2em;
     border: 1px solid $border-color;
+    font-family: $text-ff;
+  }
+  input {
     width: 50%;
   }
   textarea {
-    display: block;
-    margin: 1em 0;
-    padding: 0.2em;
-    border: 1px solid $border-color;
     width: 80%;
     height: 5em;
     margin-bottom: 0;
   }
   input[type="submit"] {
+    font-family: $text-ss-ff;
     background-color: #3e97ed;
     color: #eee;
     border: none;
@@ -85,6 +85,7 @@
   #comment-form {
     input, textarea {
       width: 100%!important;
+      font-family: $text-ss-ff;
     }
   }
 }

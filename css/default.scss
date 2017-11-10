@@ -12,16 +12,22 @@ body {
   margin: auto;
   padding: 1em;
   padding-top: 0.1px;
-  font-family: 'Noto Serif', 'Georgia', serif;
+  font-family: $text-ff;
   font-size: 1.1em;
-  line-height: 1.4em;
+  line-height: 1.5em;
   background-color: $background-color;
   color: $text-color;
 
   > main {
     margin-top: 4em;
+    font-size: 1.1em;
+    h1, h2, h3, h4, h5, h6 {
+      font-family: $header-ff;
+    }
   }
   > header {
+    font-family: $header-ff;
+
     h1 {
       font-size: 2.2em;
     }
@@ -54,8 +60,8 @@ pre {
   font-size: 0.95em;
 }
 code {
-  font-size: 0.95em;
-  font-family: 'Fira Mono', monospace;
+  font-size: 0.85em;
+  font-family: $code-ff;
 }
 menu {
   padding: 0;
@@ -91,11 +97,11 @@ article {
     }
   }
   h1 {
-    font-size: 3em;
+    font-size: 2.7em;
     margin-bottom: 0.2em;
   }
   h2 {
-    font-size: 1.5em;
+    font-size: 1.4em;
   }
   a.img-link {
     text-decoration: none;
@@ -155,7 +161,7 @@ article {
     display: none;
   }
   body {
-    font-family: 'Lato', 'Helvetica', sans-serif;
+    font-family: $text-ss-ff;
     font-size: inherit;
   }
   .post h1 {
