@@ -16,7 +16,6 @@ import           System.FilePath     (takeExtensions)
 import           System.IO.Error
 import           Text.XML.Light
 
-
 data SitemapConfiguration = SitemapConfiguration {
     sitemapExtensions :: [String]
   , sitemapChangeFreq :: FilePath -> ChangeFrequency

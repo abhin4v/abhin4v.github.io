@@ -1,38 +1,62 @@
 .activity {
   .link {
-    margin-bottom: 0.5em;
+    display: inline-block;
+    width: 2em;
+    margin: auto;
   }
   .date {
-    float: right;
     font-size: smaller;
+    display: inline-block;
+    width: 6em;
+  }
+  .bar {
+    display: inline-block;
+    height: 0.8em;
+    vertical-align: middle;
   }
   .desc {
     font-size: smaller;
     list-style: none;
     padding-left: 0;
+    display: inline;
 
     li {
-      &:nth-child(2n+1) {
-        float: left;
-        width: 40%;
-
-        &:last-child {
-          float: none;
-        }
+      display: inline;
+      &::after {
+        content: " | ";
       }
-      .key {
-        font-weight: bold;
-        padding-right: 0.3em;
-
+      &:last-child {
         &::after {
-          content: ":";
+          content: "";
         }
       }
     }
   }
 }
+.ride {
+  .bar {
+    background-color: #FF8C61;
+  }
+  .link a {
+    color: #FF8C61;
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+}
+.run {
+  .bar {
+    background-color: #9E85D2;
+  }
+  .link a {
+    color: #9E85D2;
+    &:hover {
+      color: $link-hover-color;
+    }
+  }
+}
 @media screen and(max-width: 600px) {
-  .activity .desc li:nth-child(2n+1) {
-    width: 50%!important;
+  .bar {
+    display: none!important;
   }
 }

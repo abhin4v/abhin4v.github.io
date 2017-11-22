@@ -3,7 +3,8 @@ module Site.Activities (activities) where
 
 import Control.Exception (try, SomeException)
 import Control.Monad (forM, forM_)
-import Data.List (find, isInfixOf)
+import Data.Char (isAlpha)
+import Data.List (find, isInfixOf, dropWhileEnd)
 import Data.List.Split (endBy, splitOn)
 import Data.Maybe (fromJust)
 import Data.Monoid ((<>))
@@ -11,7 +12,7 @@ import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, fo
 import Hakyll
 import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody)
 import Site.Util
-import Text.Blaze.Html ((!))
+import Text.Blaze.Html ((!), toValue)
 import Text.Blaze.Html.Renderer.String (renderHtml)
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
@@ -19,11 +20,12 @@ import Text.Feed.Import (parseFeedSource)
 import Text.Feed.Types (Feed(..))
 import Text.RSS.Syntax (RSS(..), RSSChannel(..), RSSItem(..))
 
-data Activity = Activity { activityName :: String
-                         , activityType :: String
-                         , activityURL  :: String
-                         , activityTime :: LocalTime
-                         , activityDesc :: String
+data Activity = Activity { activityName   :: String
+                         , activityType   :: String
+                         , activityEffort :: Double
+                         , activityURL    :: String
+                         , activityTime   :: LocalTime
+                         , activityDesc   :: String
                          } deriving (Show)
 
 getActivities :: String -> IO [Activity]
@@ -37,26 +39,31 @@ getActivities feedURL =
           t <- parseTimeM True defaultTimeLocale rfc822DateFormat (fromJust rssItemPubDate)
           let activityName = fromJust rssItemTitle
               activityType = if "Ride" `isInfixOf` activityName then "ride" else "run"
-              desc = renderDesc
-                    . map (\x -> let [k, v] = splitOn ": " x in (k, v))
-                    . splitOn ", "
-                    . head
-                    . endBy " (no power meter)"
-                    . drop 2
-                    . dropWhile (/= ':')
-                    . fromJust
-                    $ rssItemDescription
-          return Activity { activityName = activityName
-                          , activityType = activityType
-                          , activityURL  = fromJust rssItemLink
-                          , activityTime = t
-                          , activityDesc = desc
+              desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
+                     . splitOn ", "
+                     . head
+                     . endBy " (no power meter)"
+                     . drop 2
+                     . dropWhile (/= ':')
+                     . fromJust
+                     $ rssItemDescription
+              rawEffort = read
+                          . dropWhileEnd isAlpha
+                          . fromJust
+                          . lookup "Distance"
+                          $ desc
+              activityEffort = if activityType == "ride" then rawEffort * 0.25 else rawEffort
+          return Activity { activityName   = activityName
+                          , activityType   = activityType
+                          , activityEffort = activityEffort
+                          , activityURL    = fromJust rssItemLink
+                          , activityTime   = t
+                          , activityDesc   = renderDesc desc
                           }
   where
     renderDesc :: [(String, String)] -> String
-    renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) -> H.li $ do
-      H.span ! A.class_ "key" $ H.toHtml k
-      H.span ! A.class_ "val" $ H.toHtml $ cleanVal k v
+    renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) ->
+      H.li ! A.title (toValue k) $ H.toHtml $ cleanVal k v
 
     cleanVal k v = case k of
       "Moving Time" -> case splitOn ":" v of
@@ -72,7 +79,7 @@ activities = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities <- unsafeCompiler $ take 20 <$> getActivities "http://feedmyride.net/activities/3485865"
+        activities <- unsafeCompiler $ getActivities "http://feedmyride.net/activities/3485865"
 
         let ctx = listField "activities" activityFields (mapM makeItem activities) <>
                   constField "title" "Activities" <>
@@ -89,7 +96,8 @@ activities = do
     activityFields =
       mconcat [ activityField "name" activityName
               , activityField "type" activityType
+              , activityField "eff" $ show . activityEffort
               , activityField "url" activityURL
               , activityField "desc" activityDesc
-              , activityField "date" (formatTime defaultTimeLocale "%b %e, %Y %I:%M %p" . activityTime)
+              , activityField "date" (formatTime defaultTimeLocale "%b %e, %Y" . activityTime)
               ]
