@@ -1,4 +1,14 @@
-<h1>Recent Activities</h1>
+<h1>Activities</h1>
+
+<div id="ride-calendar" style="display: none">
+  <h2 style="margin: 0px">Rides</h2>
+</div>
+
+<div id="run-calendar" style="display: none">
+  <h2 style="margin: 0px">Runs</h2>
+</div>
+
+<h2 style="margin-top: 0px;">Recent</h2>
 $for(activities)$
 <section class="activity $type$">
   <h3 class="link"><a href="$url$" target="_blank" rel="noopener">$type$</a></h3>
@@ -7,3 +17,8 @@ $for(activities)$
   <ul class="desc">$desc$</ul>
 </section>
 $endfor$
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>
+<script src="https://cdn.rawgit.com/DKirwan/calendar-heatmap/7d1b971f/src/calendar-heatmap.js"></script>
+<script src="/js/activities.js"></script>

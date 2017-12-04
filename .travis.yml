@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-  - "8.4"
+- '8.4'
 branches:
   only:
   - source
@@ -11,17 +11,17 @@ env:
   - secure: opMOZOmmHACRjDkOw5ftWSQfI2qOyzYiB1O+LCaHn5ZTRGTpfjpfXX4ldwxP/RRottEvs9XWkywvIpKOQJIENyYUebIXf7V+pGe8rBpdDBAN+9ZLGQHQ8WXEYNmCKxJ4Ewm+oN8ES75o65TfYY4CHlI25icUV5u0YcKBz+9EzTs4+/UgiE/OvNJX3xiZIwOOHk95imWVReKoilqV7hulfa+yer0wd6vWSISH7z4jikeMkcIyK9LPqYSrDvNK61PkutLJ5dZDX6aXxNuxSd5yaDtwHr28jJNlk9/b1WttrIhuYjoFXdS08BPmu+jiSx/ipvm0oTPs8deiiEdMFPxBfruaXiEAvzqBxP4x+rtLYaFsd2siUNYbT0cLdbCmlLhTa8JY+gn9K3dCfp8DYg5yjywR+dWtFQqcNQC9UB4VHXpVuFVHFfNZHKLgtxFRN7WxwzU76aXZWEzaEg2+gTzRneYOc3EdvsZmuJgpTXhJwX2lgne1lmwTt8C+cJDFvUQapZ+GvV0uLf8FLlUd21bVMxQ+a3gfKN7+YuOw3Oio5R28RKKFITY7z3MmFQIQ02wojeo1BsYpvt+Uy/A77MWZIHTWBIZpmdo79r+c6AuQT0AFVARponnxCFdOUW9729bVNC7tXrp7aLe1B4Yjg1a0qhaxEcJfSJfINjXVz3URZAs=
   - secure: Q65y2+mBJk8TGNURwhOTCgUEKkuDwykBZrn9WY/8/60grDjZh3HztsDTRZuwCn3dNVk+VKz1YGKUrPAPRKeluI+plmKNvEXHDV1U4DFNBlSbTGuaTO19En3aN/dQV4ob/eQv7s/5/eeqREYvTWSAvisMJEWV+HeV556L4KuKuADnBC2F8VAd0U2r6GAcUnHzfay6Qo1ONE3OqW3dS17v+eKRdupWxsAkLqWb0mTn3WhcmuQ+q586xK5LUDnoQR8WNBx4nGNT1CSpE1fJDMjL8XEym5ZuUDa76kiMjFOdy7dwCGGJIgwWBFgqavejgo1kZVLWMbFfoNheKDIlSrlPkvPFEBeup7+5+p61UDcrNjPcLjtQt3CPpss1efbvNzt+VHJe0l++vT/TCC5o/ZeSXvpuSOWvdJ95myrQ9Dl23xwCYt5V+CZejUz6JiWYRi2VFE2vfZOSm+uJpdnScBqtLx2H+9Zlf7oABafB547w2BPmv2fFbLvOdcGPLorFwrXxyd3hSxAFKxYyf1jjZpvx0RIP0KEEjCrA2gEVSNZATkeEMHrPCMYEc+N2hnzqOiZ6ZR/pKYC+dnLvknNkdMk6lgnJ+1+3nSdBKp4UwECGRXWSQ8dLhwQiuPRCBKmJqd051m0JI5cTZxxHik52oZDzt2qUkMg2w2Ch258mi04j8D4=
   - secure: ntjs5h6ztu5KtQzza3caqag9GLbt5Q8YDQYm7HI5mQA8NRcTvUHZQHdU0TqPYlg3dr3/Mj3wInadftzrqic6d5ddoT2pcxGQPSoit8k837TBNZ88cS/mBP/LE/BNGX0QzG8i9xbKabY0vYbIpbWp/e2ploXyYMMuEpxWgvTfNs77jAaWTihy1y6LNKlCn8buBgsEsOAzpoFFaHElD9vdeOIIuisE3sm8Ttx1p9PYvNi/Dd4Mmibfmq6MOHcI8UlxeTE9QkuboClBq6eGsd+Jce/C2DeG2Av/mA2Y8Wi9ttK9+s0pgfiraxnEJ76P4EkEkK3uBoBy8pMF9WjBRWXMMi9XOQ4xzz39a+ix5GFCkWAUUOHd6PEBH6FfX12x1OOZBipRAEfjIaMjUPSMygNSAHVTjzB3t5E2rsMwbHYtovljnvIA3sIXwN3v37TwWgQ7yfLkCCBgKftIyGLxDUpsLjTkqUeUg/+PmEBiF+80JrzEwgknTSfYLIoCySBEeYd9BEPrGUYZDQttQyAaHQWGiiAYnd1miFmNVZE3u2FZKUwL1Uo/gQmHghoquDA+YMPmn67x3FD3G8ykAgjP9JVaF6ap+A8gpu6XoF1w3toT7TzRk9NKJQxV9f1TKQe9KFH67Nohriz9SDpHUsGkJTdv8W2Vk/TMSabSJpUrVkB8nOk=
+  - secure: "Wa2/KQ355TrjaJoglzA3DZ7S8bZPvnW+6Q4AU0guWjqaRqgYHH3DquLqxMHerHwtX88GdGmJYQFHZayZmnnR0ShdKLCxfClgbfwdKa48RrdzZ6BZ1GRdL6j7/f5DqSrK0eHECLlIYa9WdbjN12pKcTk7vc9zQVEgXohsVhPkxgnBRGKyMDhn1D5UA68Xoga6v3MvphsA+/6mylWsAgRUAuyUncmH44L/T08s4HH8kMUNP+Pn0ozLGq3egV4ISc2NPXlk9xxbVyZDxPwqUvxO/JrsE9NLJoA9z7mkCdWBrvskZJbt/DVIqhAI2eM37bb1ZizcGlrU8NGEdcsecwRYepDSwTSNPwQF6XUClpBnP1WwHDM8x/bwK803CQtELUGjL+/ZBGJt3y/kNOa5Vj0SQC0LEYijVLPckQvqSeBouH2hrKS8pB81McHUu+WmpYVtDTc5uti3Mzk8jfkOPsES3VTJHt4C8awboPJrRyQtpkM+VXERz6AuiAl47ZLHmjzlIcCU13Ds8At/gZcccz3pVw/8ktTjHPcE9FSpqJHB7CZ4SxSLU/V7cvrJX9nZvHQCR0hMfliWEGW9Av7vIT9dLFztpDjuGaf65EC4DoGqFXVqtyyNx/csiNiu3qa9wOBGEfQ0aIlGBlq904I9RScEGdg1IxC3ygSSSjEEyMrbBWw="
 addons:
   apt:
     packages:
-      - google-chrome-stable
+    - google-chrome-stable
 install:
 - google-chrome --version
 - mkdir -p ~/.local/bin
 - export PATH=$HOME/.local/bin:$PATH
 - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-- stack --resolver lts --no-terminal update
-- stack --resolver lts --no-terminal install --fast -j2
+- stack --no-terminal install --fast -j2
 - npm init -y > /dev/null
 - npm install --save chrome-headless-render-pdf
 before_script:
@@ -35,6 +35,7 @@ script:
 - cd _site
 - git add --all
 - sh ../bin/generate_pdfs.sh
+- sh ../bin/gen_activities_json.sh
 - git status --short
 - git config --global user.email "abhinav@abhinavsarkar.net"
 - git config --global user.name "Travis"
