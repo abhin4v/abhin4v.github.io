@@ -45,6 +45,7 @@ script:
 after_script:
 - sh bin/purge_cf_cache.sh
 cache:
+  timeout: 360
   directories:
   - $HOME/.stack
   - $HOME/.cabal

@@ -6,12 +6,12 @@
         var i = -1;
         var lastDate = null;
         activities.forEach(function(a) {
-          if (a.type !== type) {
+          if (a.t !== type) {
             return;
           }
 
-          var date = moment(a.date).startOf("day").toDate();
-          var count = a.distance;
+          var date = moment(a.s).startOf("day").toDate();
+          var count = a.d;
 
           if ((lastDate != null) && (lastDate.getTime() === date.getTime())) {
             chartData[i].count += count;
