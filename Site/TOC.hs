@@ -11,6 +11,7 @@ import Text.Pandoc
 import Text.Pandoc.Walk (walk, query)
 
 import Data.List (groupBy)
+import qualified Data.Text as T
 import Data.Tree (Forest, Tree(Node))
 import Data.Monoid ((<>), mconcat)
 import Data.Function (on)
@@ -48,9 +49,12 @@ markupHeader :: Tree Block -> H.Html
 markupHeader (Node (Header _ (ident, _, keyvals) inline) headers)
   | null headers  = H.li link
   | otherwise     = H.li $ link <> H.ol (markupHeaders headers)
-  where render x  = writeHtmlString def (Pandoc nullMeta [Plain x])
-        section   = fromMaybe (render inline) (lookup "toc" keyvals)
-        link      = H.a ! A.href (H.toValue $ "#" ++ ident) $ preEscapedToHtml section
+  where
+    render x  = case runPure $ writeHtml5String def (Pandoc nullMeta [Plain x]) of
+                  Right h -> h
+                  Left err -> error (show err)
+    section   = fromMaybe (render inline) . fmap T.pack . lookup "toc" $ keyvals
+    link      = H.a ! A.href (H.toValue $ "#" ++ ident) $ preEscapedToHtml section
 markupHeader _ = error "what"
 
 markupHeaders :: Forest Block -> H.Html

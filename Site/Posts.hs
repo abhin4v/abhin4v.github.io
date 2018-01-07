@@ -14,6 +14,7 @@ import Site.TOC
 import Site.Util
 import System.FilePath.Posix (takeBaseName, takeDirectory, (</>))
 import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAttr)
+import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
@@ -30,9 +31,7 @@ posts tags = do
       message <- getMetadataField' ident "message"
 
       (itemSetBody message <$> makeItem "")
-        >>= renderPandocWith
-              (defaultHakyllReaderOptions { readerExtensions = Set.delete Ext_raw_html (writerExtensions writerOptions) })
-              writerOptions
+        >>= renderPandocWith readerOptions writerOptions
         >>= loadAndApplyTemplate "templates/comment.html" (commentCtx dateS email)
         >>= saveSnapshot "comment"
 
@@ -63,9 +62,11 @@ posts tags = do
     route   idRoute
     compile getResourceBody
 
-writerOptions = defaultHakyllWriterOptions { writerHtml5 = True
-                                           , writerEmailObfuscation = ReferenceObfuscation
-                                           }
+readerOptions = defaultHakyllReaderOptions {
+    readerExtensions = disableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
+  }
+
+writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceObfuscation }
 
 contentCompiler :: String -> Bool -> Compiler (Item String)
 contentCompiler alignment ertEnabled =
