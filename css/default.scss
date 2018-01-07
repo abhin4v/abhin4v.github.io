@@ -84,10 +84,12 @@ hr {
 a, a:visited {
   text-decoration: none;
   color: $link-color;
-  &:hover {
+  &:not(.no-js div.sourceCode):hover {
     color: $link-hover-color;
   }
 }
+
+.sourceCode a { color: inherit; }
 
 article {
   header {
