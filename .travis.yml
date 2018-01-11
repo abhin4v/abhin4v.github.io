@@ -28,13 +28,13 @@ before_script:
 - cd _site
 - git checkout master
 - git pull origin master
-- git ls-files | xargs -r git rm
+- git ls-files | grep -v 'pdfs/posts/' | xargs -r git rm
 - cd ..
 script:
 - $HOME/.local/bin/site build
 - cd _site
 - git add --all
-- sh ../bin/generate_pdfs.sh
+#- sh ../bin/generate_pdfs.sh
 - sh ../bin/gen_activities_json.sh
 - git status --short
 - git config --global user.email "abhinav@abhinavsarkar.net"
