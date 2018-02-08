@@ -1,7 +1,6 @@
 {-# LANGUAGE LambdaCase, ScopedTypeVariables, RecordWildCards, OverloadedStrings #-}
 module Site.Readings (readings) where
 
-import Control.Applicative ((<|>))
 import Control.Exception (try, SomeException)
 import Data.Functor.Identity (runIdentity)
 import Data.Maybe (fromJust, isJust, fromMaybe)
@@ -37,12 +36,13 @@ data Books = Books { booksRead    :: [Book]
                    , booksReading :: [Book]
                    } deriving (Show)
 
+noBooks :: Books
 noBooks = Books [] [] [] []
 
 getBooks :: String -> IO Books
 getBooks feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
-    Left (e :: SomeException) -> return noBooks
+    Left (_ :: SomeException) -> return noBooks
     Right resp -> case parseFeedSource $ getResponseBody resp of
       Nothing -> return noBooks
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
@@ -52,6 +52,7 @@ getBooks feedURL =
                         , booksOnHold  = shelfBooks OnHold books
                         , booksReading = shelfBooks Reading books
                         }
+      _ -> error "Impossible"
   where
     shelfBooks shelf =
       sortBy (flip (comparing bookDate) <> comparing bookName)
@@ -99,13 +100,14 @@ itemToBook RSSItem {..} =
       x | "to-read" `isInfixOf` x           -> ToRead
       _                                     -> Read
 
+readings :: Rules ()
 readings = do
   anyDependency <- makePatternDependency "**"
   rulesExtraDependencies [anyDependency] $
     create ["readings.html"] $ do
       route indexHTMLRoute
       compile $ do
-        books@Books {..} <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151"
+        Books {..} <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151"
 
         let ctx = listField "books_read" bookFields (mapM makeItem booksRead) <>
                   listField "books_to_read" bookFields (mapM makeItem booksToRead) <>

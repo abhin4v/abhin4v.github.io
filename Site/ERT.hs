@@ -1,7 +1,6 @@
 module Site.ERT (estimatedReadingTime) where
 
 import Text.Pandoc.Definition
-import Text.Pandoc.Options
 
 estimatedReadingTime :: Bool -> Pandoc -> Pandoc
 estimatedReadingTime enabled p@(Pandoc meta blocks) =
@@ -41,15 +40,17 @@ nrLetters (Pandoc _ bs) = sum $ map cb bs
     cb (Para is) = cis is
     cb (CodeBlock _ s) = length s
     cb (RawBlock _ s) = length s
-    cb (BlockQuote bs) = cbs bs
+    cb (LineBlock iss) = ciss iss
+    cb (BlockQuote bs') = cbs bs'
     cb (OrderedList _ bss) = cbss bss
     cb (BulletList bss) = cbss bss
     cb (DefinitionList ls) = sum $ map (\(is, bss) -> cis is + cbss bss) ls
     cb (Header _ _ is) = cis is
     cb HorizontalRule = 0
     cb (Table is _ _ tc tcs) = cis is + cbss tc + cbsss tcs
-    cb (Div _ bs) = cbs bs
+    cb (Div _ bs') = cbs bs'
     cb Null = 0
+
 
     cis = sum . map ci
     ciss = sum . map cis
@@ -73,4 +74,4 @@ nrLetters (Pandoc _ bs) = sum $ map cb bs
     ci (RawInline _ s) = length s
     ci (Link _ is (_, s)) = cis is + length s
     ci (Image _ is (_, s)) = cis is + length s
-    ci (Note bs) = cbs bs
+    ci (Note bs') = cbs bs'

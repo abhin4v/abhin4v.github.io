@@ -33,6 +33,7 @@ data ChangeFrequency = Always
                      | Never
                      deriving Show
 
+defaultSitemapConfig :: SitemapConfiguration
 defaultSitemapConfig = SitemapConfiguration {
     sitemapExtensions = [".html"]
   , sitemapChangeFreq = const Weekly

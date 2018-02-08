@@ -5,14 +5,13 @@ import Data.List (sortBy)
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Data.Ord (comparing)
-import qualified Data.Set as Set
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
 import Site.ERT
 import Site.TOC
 import Site.Util
-import System.FilePath.Posix (takeBaseName, takeDirectory, (</>))
+import System.FilePath.Posix (takeBaseName)
 import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
@@ -62,10 +61,12 @@ posts tags = do
     route   idRoute
     compile getResourceBody
 
+readerOptions :: ReaderOptions
 readerOptions = defaultHakyllReaderOptions {
     readerExtensions = disableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
   }
 
+writerOptions :: WriterOptions
 writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceObfuscation }
 
 contentCompiler :: String -> Bool -> Compiler (Item String)

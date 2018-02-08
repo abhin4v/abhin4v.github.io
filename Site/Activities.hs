@@ -4,7 +4,7 @@ module Site.Activities (activities) where
 import Control.Exception (try, SomeException)
 import Control.Monad (forM, forM_)
 import Data.Char (isAlpha)
-import Data.List (find, isInfixOf, dropWhileEnd)
+import Data.List (isInfixOf, dropWhileEnd)
 import Data.List.Split (endBy, splitOn)
 import Data.Maybe (fromJust)
 import Data.Monoid ((<>))
@@ -32,7 +32,7 @@ data Activity = Activity { activityName   :: String
 getActivities :: String -> IO [Activity]
 getActivities feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
-    Left (e :: SomeException) -> return []
+    Left (_ :: SomeException) -> return []
     Right resp -> case parseFeedSource $ getResponseBody resp of
       Nothing -> return []
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
@@ -62,6 +62,7 @@ getActivities feedURL =
                           , activityTime   = t
                           , activityDesc   = renderDesc desc
                           }
+      _ -> error "Impossible"
   where
     renderDesc :: [(String, String)] -> String
     renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) ->
@@ -71,19 +72,21 @@ getActivities feedURL =
       "Moving Time" -> case splitOn ":" v of
                           ["00", m, _] -> m <> "min"
                           [h, m, _]    -> h <> "h " <> m <> "min"
+                          _            -> error "Impossible"
       "Pace" -> let [x, m] = splitOn "/" v in x <> "min" <> "/" <> m
       "Estimated Avg Power" -> v <> "W"
       _ -> v
 
+activities :: Rules ()
 activities = do
   anyDependency <- makePatternDependency "**"
   rulesExtraDependencies [anyDependency] $
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities <- unsafeCompiler $ getActivities "http://feedmyride.net/activities/3485865"
+        activities' <- unsafeCompiler $ getActivities "http://feedmyride.net/activities/3485865"
 
-        let ctx = listField "activities" activityFields (mapM makeItem activities) <>
+        let ctx = listField "activities" activityFields (mapM makeItem activities') <>
                   constField "title" "Activities" <>
                   siteContext
 

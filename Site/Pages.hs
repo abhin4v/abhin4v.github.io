@@ -5,6 +5,7 @@ import Hakyll
 import Site.Util
 import Site.Posts
 
+pages :: Rules ()
 pages = do
   -- about page
   match (fromList ["about.md"]) $ do
