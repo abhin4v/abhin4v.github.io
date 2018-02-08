@@ -8,6 +8,7 @@ import Data.List (find, isInfixOf, dropWhileEnd)
 import Data.List.Split (endBy, splitOn)
 import Data.Maybe (fromJust)
 import Data.Monoid ((<>))
+import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
 import Hakyll
 import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody)
@@ -36,8 +37,8 @@ getActivities feedURL =
       Nothing -> return []
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
         forM rssItems $ \RSSItem {..} -> do
-          t <- parseTimeM True defaultTimeLocale rfc822DateFormat (fromJust rssItemPubDate)
-          let activityName = fromJust rssItemTitle
+          t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
+          let activityName = T.unpack $ fromJust rssItemTitle
               activityType = if "Ride" `isInfixOf` activityName then "ride" else "run"
               desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
                      . splitOn ", "
@@ -45,6 +46,7 @@ getActivities feedURL =
                      . endBy " (no power meter)"
                      . drop 2
                      . dropWhile (/= ':')
+                     . T.unpack
                      . fromJust
                      $ rssItemDescription
               rawEffort = read
@@ -56,7 +58,7 @@ getActivities feedURL =
           return Activity { activityName   = activityName
                           , activityType   = activityType
                           , activityEffort = activityEffort
-                          , activityURL    = fromJust rssItemLink
+                          , activityURL    = T.unpack $ fromJust rssItemLink
                           , activityTime   = t
                           , activityDesc   = renderDesc desc
                           }

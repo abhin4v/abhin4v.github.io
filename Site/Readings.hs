@@ -8,6 +8,7 @@ import Data.Maybe (fromJust, isJust, fromMaybe)
 import Data.Monoid ((<>))
 import Data.List (find, isInfixOf, sortBy)
 import Data.Ord (comparing)
+import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
 import Hakyll
 import Network.HTTP.Simple (httpLBS, getResponseBody, parseRequest)
@@ -15,8 +16,7 @@ import Site.Util
 import Text.RSS.Syntax (RSS(..), RSSChannel(..), RSSItem(..))
 import Text.Feed.Import (parseFeedSource)
 import Text.Feed.Types (Feed(..))
-import Text.XML.Light.Proc (strContent)
-import Text.XML.Light.Types (Element(..), QName(..))
+import Data.XML.Types (Element(..), Name(..), elementText)
 
 data Shelf = Read | ToRead | OnHold | Reading deriving (Show, Eq)
 
@@ -61,8 +61,8 @@ getBooks feedURL =
 
 itemToBook :: RSSItem -> Book
 itemToBook RSSItem {..} =
-  Book { bookName          = fromJust rssItemTitle
-       , bookURL           = "https://www.goodreads.com/book/show/" ++ getBookProp "book_id"
+  Book { bookName          = T.unpack $ fromJust rssItemTitle
+       , bookURL           = "https://www.goodreads.com/book/show/" <> getBookProp "book_id"
        , bookImageURL      = getBookProp "book_small_image_url"
        , bookAuthor        = getBookProp "author_name"
        , bookRating        = getBookRating
@@ -72,11 +72,14 @@ itemToBook RSSItem {..} =
        , bookShelf         = getBookShelf
        }
   where
+    getBookProp :: T.Text -> String
     getBookProp prop =
-      strContent
+      T.unpack
+      . T.intercalate " "
+      . elementText
       . fromJust
       . flip find rssItemOther
-      $ \Element {elName = QName{..}} -> qName == prop
+      $ \Element {elementName = Name{..}} -> nameLocalName == prop
 
     mGetBookProp prop = case getBookProp prop of
       "" -> Nothing

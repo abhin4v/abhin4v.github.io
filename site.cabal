@@ -16,10 +16,11 @@ executable site
                   , time
                   , directory
                   , xml
+                  , xml-types
                   , hjsmin
                   , bytestring
                   , http-conduit
-                  , feed < 1.0
+                  , feed
                   , split
                   , text
   other-modules:    Site.Activities
@@ -32,5 +33,5 @@ executable site
                   , Site.Sitemap
                   , Site.TOC
                   , Site.Util
-  ghc-options:      -threaded
+  ghc-options:      -threaded -Wall
   default-language: Haskell2010
