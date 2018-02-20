@@ -121,7 +121,7 @@ $ pulp repl
 We use `encodeJSON` and `decodeJSON` functions from the [`Data.Foreign.Generic`][6] module to encode and decode the `User` instance to JSON. The return type of `decodeJSON` is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a `Right` with the correctly parsed `User` instance.
 
 ## Persisting It
-Next, we add the support for saving a `User` instance to a Postgres DB. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call Postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for PureScript wrapper over `pg`:
+Next, we add the support for saving a `User` instance to a Postgres database. First, we install the required libraries using bower and npm: [`pg`][4] for Javascript bindings to call Postgres, [`purescript-aff`][5] for asynchronous processing and [`purescript-postgresql-client`][3] for PureScript wrapper over `pg`:
 
 ```bash
 $ npm init -y
@@ -609,7 +609,7 @@ createUser pool = getBody >>= case _ of
           respondNoContent 201
 ```
 
-`createUser` calls [`getBody`][9] which has type signature `forall e a. (Decode a) => HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)`. It returns either a list of parsing errors or a parsed instance, which in our case, is a `User`. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed `User` instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the DB by calling `insertUser` from the persistence layer and respond with a status 201.
+`createUser` calls [`getBody`][9] which has type signature `forall e a. (Decode a) => HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)`. It returns either a list of parsing errors or a parsed instance, which in our case is a `User`. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed `User` instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the database by calling `insertUser` from the persistence layer and respond with a status 201.
 
 We can try it out:
 
@@ -665,11 +665,11 @@ X-Powered-By: Express
 }
 ```
 
-First try returns a parsing failure because we didn't provide the `id` field. Second try is a validation failure because the name was empty. Third try is a success which we check by doing a `GET` request next.
+First try returns a parsing failure because we didn't provide the `id` field. Second try is a validation failure because the name was empty. Third try is a success which we confirm by doing a `GET` request next.
 
 ### Updating a User
 
-We want to allow a user's name to be updated through the API, but not the user's id. So we add a new type to `src/SimpleService/Types.purs` to represent a possible change in user's name:
+We want to allow a user's name to be updated through the API, but not the user's ID. So we add a new type to `src/SimpleService/Types.purs` to represent a possible change in user's name:
 
 ```haskell
 -- previous code
@@ -717,7 +717,7 @@ updateUser pool = getRouteParam "id" >>= case _ of
               Just user -> respond 200 (encode user)
 ```
 
-After checking for a valid user ID as before, we get the decoded request body as a `UserPatch` instance. If the path does not have the name field or has it as `null`, there is nothing to do and we respond with a 204 status. If the user name is present in the patch, we validate it for non-emptiness. Then, within a DB transaction, we try to find the user with the given ID, responding with a 404 status if the user is not found. If the user is found, we update the user's name in the database, and respond with a 200 status and the saved user encoded as the JSON response body.
+After checking for a valid user ID as before, we get the decoded request body as a `UserPatch` instance. If the path does not have the `name` field or has it as `null`, there is nothing to do and we respond with a 204 status. If the user's name is present in the patch, we validate it for non-emptiness. Then, within a database transaction, we try to find the user with the given ID, responding with a 404 status if the user is not found. If the user is found, we update the user's name in the database, and respond with a 200 status and the saved user encoded as the JSON response body.
 
 Finally, we can add the route to our server's router in `src/SimpleService/Server.purs` to make the functionality available:
 
