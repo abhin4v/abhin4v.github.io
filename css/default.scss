@@ -7,6 +7,10 @@
 @import "readings";
 @import "archive";
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   max-width: 50em;
   min-width: 20em;
@@ -135,6 +139,10 @@ article {
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
+    background-color: #fafafa;
+    border: solid #f3f3f3;
+    border-width: 2px 0;
+    position: relative;
   }
 }
 
@@ -198,6 +206,9 @@ article {
     td.hljs-ln-numbers {
       border-right: none;
     }
+  }
+  article pre {
+    border: none!important;
   }
   .post-download {
     display: none;
