@@ -209,7 +209,7 @@ unit
 (User { id: 1, name: "Abhinav" })
 ```
 
-We create the `databaseConfig` record with the configs needed to connect to the database. Using the recond, we create a new Postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
+We create the `databaseConfig` record with the configs needed to connect to the database. Using the record, we create a new Postgres connection pool (`PG.newPool`) and get a connection from it (`PG.withConnection`). We call `PG.execute` with the connection, the SQL insert query for the users table and the `User` instance, to insert the user into the table. All of this is done inside [`launchAff`][7] which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.
 
 Similarly, in the second part, we query the table using `PG.query` function by calling it with a connection, the SQL select query and the `User` ID as the query parameter. It returns an `Array` of users which we log to the console using the `logShow` function.
 
