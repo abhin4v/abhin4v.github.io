@@ -26,6 +26,6 @@ You can get in touch with me over Twitter[^twitter] or [email].
 [Nilenso Software]: https://nilenso.com
 [Moving People with Clojure]: https://www.youtube.com/watch?v=3y7xzH8jB8A
 [Introduction To Concurrency In Haskell]: https://www.youtube.com/watch?v=uVK3t-5wWew
-[1]: https://archive.is/5mEak
-[2]: https://archive.is/OOxMR
+[1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
+[2]: https://web.archive.org/web/20160629192412/https://metarefresh.talkfunnel.com/2015/1326-a-quick-and-hopefully-painless-ride-through-reactj
 [email]: mailto:abhinav@abhinavsarkar.net
