@@ -68,6 +68,11 @@ code {
   font-size: 0.85em;
   font-family: $code-ff;
 }
+pre {
+  code {
+    display: block;
+  }
+}
 menu {
   padding: 0;
   margin: 0;
