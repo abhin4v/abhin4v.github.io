@@ -1,8 +1,7 @@
-resolver: lts-10.4
+resolver: lts-11.13
 packages:
 - .
 extra-deps:
-  - https://github.com/jaspervdj/hakyll/archive/480da307d22aff8ab3817d1586710c5f4ff6d779.zip
   - hakyll-sass-0.2.3
 flags: {}
 extra-package-dbs: []
