@@ -149,6 +149,11 @@ article {
     border-width: 2px 0;
     position: relative;
   }
+  small {
+    pre {
+      white-space: pre;
+    }
+  }
 }
 
 .header, .ert {
