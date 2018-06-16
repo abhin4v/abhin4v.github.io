@@ -25,6 +25,11 @@ assets = do
     route   idRoute
     compile copyFileCompiler
 
+  -- files
+  match "files/**" $ do
+    route   idRoute
+    compile copyFileCompiler
+
   -- js
   match "js/*" $ do
    route   idRoute
