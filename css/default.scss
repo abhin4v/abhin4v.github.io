@@ -176,6 +176,9 @@ article {
   }
   article header {
     margin-bottom: 0;
+    a {
+      color: $text-color
+    }
   }
   .footnoteRef {
       display: none;
