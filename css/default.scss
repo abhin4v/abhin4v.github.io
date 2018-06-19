@@ -63,6 +63,9 @@ pre {
   padding: 0.2em;
   overflow-x: auto;
   font-size: 0.95em;
+  &.low-line-height {
+    line-height: 0.95em;
+  }
 }
 code {
   font-size: 0.85em;
