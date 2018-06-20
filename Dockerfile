@@ -1,4 +1,4 @@
-FROM abhin4v/abhinavsarkar.net-base:latest
+FROM abhin4v/abhinavsarkar.net-base:latest AS builder
 
 ARG REPO_URL
 ARG CF_ZONE_ID
@@ -25,3 +25,7 @@ RUN stack --no-terminal build --fast -j2 \
     && git commit -m "$TRAVIS_COMMIT_MESSAGE" \
     && git push "$REPO_URL" master \
     && (sh ../bin/purge_cf_cache.sh || true)
+
+FROM pierrezemb/gostatic:latest
+
+COPY --from=builder /opt/abhinavsarkar.net/_site /srv/http
