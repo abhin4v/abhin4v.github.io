@@ -33,5 +33,5 @@ executable site
                   , Site.Sitemap
                   , Site.TOC
                   , Site.Util
-  ghc-options:      -threaded -Wall
+  ghc-options:      -threaded -Wall -Wno-name-shadowing -Wno-type-defaults
   default-language: Haskell2010
