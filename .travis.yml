@@ -1,7 +1,6 @@
 sudo: false
-language: node_js
-node_js:
-- '10.4'
+services:
+  - docker
 branches:
   only:
   - source
@@ -12,44 +11,5 @@ env:
   - secure: Q65y2+mBJk8TGNURwhOTCgUEKkuDwykBZrn9WY/8/60grDjZh3HztsDTRZuwCn3dNVk+VKz1YGKUrPAPRKeluI+plmKNvEXHDV1U4DFNBlSbTGuaTO19En3aN/dQV4ob/eQv7s/5/eeqREYvTWSAvisMJEWV+HeV556L4KuKuADnBC2F8VAd0U2r6GAcUnHzfay6Qo1ONE3OqW3dS17v+eKRdupWxsAkLqWb0mTn3WhcmuQ+q586xK5LUDnoQR8WNBx4nGNT1CSpE1fJDMjL8XEym5ZuUDa76kiMjFOdy7dwCGGJIgwWBFgqavejgo1kZVLWMbFfoNheKDIlSrlPkvPFEBeup7+5+p61UDcrNjPcLjtQt3CPpss1efbvNzt+VHJe0l++vT/TCC5o/ZeSXvpuSOWvdJ95myrQ9Dl23xwCYt5V+CZejUz6JiWYRi2VFE2vfZOSm+uJpdnScBqtLx2H+9Zlf7oABafB547w2BPmv2fFbLvOdcGPLorFwrXxyd3hSxAFKxYyf1jjZpvx0RIP0KEEjCrA2gEVSNZATkeEMHrPCMYEc+N2hnzqOiZ6ZR/pKYC+dnLvknNkdMk6lgnJ+1+3nSdBKp4UwECGRXWSQ8dLhwQiuPRCBKmJqd051m0JI5cTZxxHik52oZDzt2qUkMg2w2Ch258mi04j8D4=
   - secure: ntjs5h6ztu5KtQzza3caqag9GLbt5Q8YDQYm7HI5mQA8NRcTvUHZQHdU0TqPYlg3dr3/Mj3wInadftzrqic6d5ddoT2pcxGQPSoit8k837TBNZ88cS/mBP/LE/BNGX0QzG8i9xbKabY0vYbIpbWp/e2ploXyYMMuEpxWgvTfNs77jAaWTihy1y6LNKlCn8buBgsEsOAzpoFFaHElD9vdeOIIuisE3sm8Ttx1p9PYvNi/Dd4Mmibfmq6MOHcI8UlxeTE9QkuboClBq6eGsd+Jce/C2DeG2Av/mA2Y8Wi9ttK9+s0pgfiraxnEJ76P4EkEkK3uBoBy8pMF9WjBRWXMMi9XOQ4xzz39a+ix5GFCkWAUUOHd6PEBH6FfX12x1OOZBipRAEfjIaMjUPSMygNSAHVTjzB3t5E2rsMwbHYtovljnvIA3sIXwN3v37TwWgQ7yfLkCCBgKftIyGLxDUpsLjTkqUeUg/+PmEBiF+80JrzEwgknTSfYLIoCySBEeYd9BEPrGUYZDQttQyAaHQWGiiAYnd1miFmNVZE3u2FZKUwL1Uo/gQmHghoquDA+YMPmn67x3FD3G8ykAgjP9JVaF6ap+A8gpu6XoF1w3toT7TzRk9NKJQxV9f1TKQe9KFH67Nohriz9SDpHUsGkJTdv8W2Vk/TMSabSJpUrVkB8nOk=
   - secure: "Wa2/KQ355TrjaJoglzA3DZ7S8bZPvnW+6Q4AU0guWjqaRqgYHH3DquLqxMHerHwtX88GdGmJYQFHZayZmnnR0ShdKLCxfClgbfwdKa48RrdzZ6BZ1GRdL6j7/f5DqSrK0eHECLlIYa9WdbjN12pKcTk7vc9zQVEgXohsVhPkxgnBRGKyMDhn1D5UA68Xoga6v3MvphsA+/6mylWsAgRUAuyUncmH44L/T08s4HH8kMUNP+Pn0ozLGq3egV4ISc2NPXlk9xxbVyZDxPwqUvxO/JrsE9NLJoA9z7mkCdWBrvskZJbt/DVIqhAI2eM37bb1ZizcGlrU8NGEdcsecwRYepDSwTSNPwQF6XUClpBnP1WwHDM8x/bwK803CQtELUGjL+/ZBGJt3y/kNOa5Vj0SQC0LEYijVLPckQvqSeBouH2hrKS8pB81McHUu+WmpYVtDTc5uti3Mzk8jfkOPsES3VTJHt4C8awboPJrRyQtpkM+VXERz6AuiAl47ZLHmjzlIcCU13Ds8At/gZcccz3pVw/8ktTjHPcE9FSpqJHB7CZ4SxSLU/V7cvrJX9nZvHQCR0hMfliWEGW9Av7vIT9dLFztpDjuGaf65EC4DoGqFXVqtyyNx/csiNiu3qa9wOBGEfQ0aIlGBlq904I9RScEGdg1IxC3ygSSSjEEyMrbBWw="
-addons:
-  apt:
-    packages:
-    - google-chrome-stable
-install:
-- google-chrome --version
-- mkdir -p ~/.local/bin
-- export PATH=$HOME/.local/bin:$PATH
-- travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-- stack --no-terminal install --fast -j2
-- npm init -y > /dev/null
-- npm install --save chrome-headless-render-pdf
-before_script:
-- cd _site
-- git checkout master
-- git pull origin master
-- git ls-files | grep -v 'pdfs/posts/' | xargs -r git rm
-- cd ..
 script:
-- $HOME/.local/bin/site build
-- cd _site
-- git add --all
-- sh ../bin/generate_pdfs.sh
-- sh ../bin/gen_activities_json.sh
-- git status --short
-- git config --global user.email "abhinav@abhinavsarkar.net"
-- git config --global user.name "Travis"
-- git commit -m "$TRAVIS_COMMIT_MESSAGE"
-- git push "$REPO_URL" master
-- cd ..
-after_script:
-- sh bin/purge_cf_cache.sh
-cache:
-  timeout: 360
-  directories:
-  - $HOME/.stack
-  - $HOME/.cabal
-  - $HOME/.ghc
-  - .stack-work
-  - node_modules
-  apt: true
+  - docker build --build-arg REPO_URL="$REPO_URL" --build-arg CF_ZONE_ID="$CF_ZONE_ID" --build-arg CF_API_KEY="$CF_API_KEY" --build-arg CF_EMAIL="$CF_EMAIL" --build-arg STRAVA_KEY="$STRAVA_KEY" --build-arg TRAVIS_COMMIT_MESSAGE="$TRAVIS_COMMIT_MESSAGE" .
