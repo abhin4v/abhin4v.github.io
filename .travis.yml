@@ -1,7 +1,7 @@
 sudo: false
 language: node_js
 node_js:
-- '8.4'
+- '10.4'
 branches:
   only:
   - source
@@ -34,7 +34,7 @@ script:
 - $HOME/.local/bin/site build
 - cd _site
 - git add --all
-#- sh ../bin/generate_pdfs.sh
+- sh ../bin/generate_pdfs.sh
 - sh ../bin/gen_activities_json.sh
 - git status --short
 - git config --global user.email "abhinav@abhinavsarkar.net"
