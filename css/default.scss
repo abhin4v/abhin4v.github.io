@@ -155,6 +155,10 @@ article {
   small {
     pre {
       white-space: pre;
+      code {
+        overflow-x: scroll;
+        overflow-y: hidden;
+      }
     }
   }
 }
