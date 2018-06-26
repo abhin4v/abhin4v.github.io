@@ -12,10 +12,12 @@ import Site.Readings
 main :: IO ()
 main = hakyll $ do
   tags <- buildTags "posts/*" (fromCapture "tags/*.html")
+  draftTags <- buildTags "drafts/*" (fromCapture "tags/*.html")
 
   assets
   pages
   posts tags
+  drafts draftTags
   collections tags
   activities
   readings

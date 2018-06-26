@@ -35,31 +35,39 @@ posts tags = do
         >>= saveSnapshot "comment"
 
   -- posts
-  match "posts/*" $ do
-    route indexHTMLRoute
-    compile $ do
-      alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
-
-      path <- getResourceFilePath
-      let postSlug = takeBaseName path
-
-      comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
-      let ctx = postCtxWithTags tags <>
-                constField "post_slug" postSlug <>
-                constField "comment_count" (show $ length comments) <>
-                listField "comments" siteContext (return comments)
-
-      contentCompiler alignment True
-        >>= saveSnapshot "content"
-        >>= loadAndApplyTemplate "templates/post.html" ctx
-        >>= loadAndApplyTemplate "templates/default.html" ctx
-        >>= relativizeUrls
-        >>= removeIndexHtml
+  match "posts/*" $ compilePosts tags True
 
   -- raw posts
   match "posts/*" $ version "raw" $ do
     route   idRoute
     compile getResourceBody
+
+drafts :: Tags -> Rules ()
+drafts tags = do
+  match "drafts/*" $ compilePosts tags False
+
+compilePosts :: Tags -> Bool -> Rules ()
+compilePosts tags published = do
+  route indexHTMLRoute
+  compile $ do
+    alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
+
+    path <- getResourceFilePath
+    let postSlug = takeBaseName path
+
+    comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
+    let ctx = postCtxWithTags tags <>
+              constField "post_slug" postSlug <>
+              constField "comment_count" (show $ length comments) <>
+              listField "comments" siteContext (return comments) <>
+              boolField "published" (const published)
+
+    contentCompiler alignment True
+      >>= saveSnapshot "content"
+      >>= loadAndApplyTemplate "templates/post.html" ctx
+      >>= loadAndApplyTemplate "templates/default.html" ctx
+      >>= relativizeUrls
+      >>= removeIndexHtml
 
 readerOptions :: ReaderOptions
 readerOptions = defaultHakyllReaderOptions {

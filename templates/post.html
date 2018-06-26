@@ -27,6 +27,7 @@
     </section>
 </article>
 <meta itemprop="url" content="$full_url$">
+$if(published)$
 <div id="comment-container">
   <h3>$comment_count$ comments</h3>
   <div class="comments">
@@ -57,5 +58,6 @@
   </form>
 </div>
 <script src="/js/comment-form.js" defer async></script>
-<script src="/js/code-styling.js" defer async></script>
 <script src="https://www.google.com/recaptcha/api.js" defer async></script>
+$endif$
+<script src="/js/code-styling.js" defer async></script>
