@@ -57,8 +57,7 @@ Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partial
 
 Each cell in the grid is a member of one row, one column and one sub-grid (called "block" in general). Digits in the pre-filled cells impose constraints on the row, column, and sub-grids they are part of. For example, if a cell contains "1" then no other cell in that cell's row, column or sub-grid can contain "1". Given these constraints, we can devise a simple algorithm to solve Sudoku:
 
-1. Each cell contains either a single digit or has a set of possible digits.
-
+1. Each cell contains either a single digit or has a set of possible digits. For example, a grid showing the possibilities of all non-filled cells for the sample puzzle above:
 <small>
 ``` {.plain .low-line-height}
 +-------------------------------------+-------------------------------------+-------------------------------------+
@@ -74,12 +73,11 @@ Each cell in the grid is a member of one row, one column and one sub-grid (calle
 | [123456789] 5           [123456789] | 1           [123456789] [123456789] | [123456789] [123456789] [123456789] |
 | [123456789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
-
-A grid showing possibilities of all non-filled cells.
 ```
 </small>
 
-2. If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells, where neighboring cells are defined as the other cells in the given cell's row, column and sub-grid.
+2. If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells, where neighboring cells are defined as the other cells in the given cell's row, column and sub-grid. For example, the grid after removing the fixed value "4" of the row-2-column-1 cell from its neighboring cells:
+
 <small>
 ``` {.plain .low-line-height}
 +-------------------------------------+-------------------------------------+-------------------------------------+
@@ -95,12 +93,10 @@ A grid showing possibilities of all non-filled cells.
 | [123 56789] 5           [123456789] | 1           [123456789] [123456789] | [123456789] [123456789] [123456789] |
 | [123 56789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
-
-Removing the fixed value "4" of the row-2-column-1 cell from its neighboring cells.
 ```
 </small>
 
-3. Repeat the previous step for all the cells that are have been solved (or "fixed"), either pre-filled or filled in the previous iteration of the solution.
+3. Repeat the previous step for all the cells that are have been solved (or "fixed"), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells:
 <small>
 ``` {.plain .low-line-height}
 +-------------------------------------+-------------------------------------+-------------------------------------+
@@ -116,12 +112,10 @@ Removing the fixed value "4" of the row-2-column-1 cell from its neighboring cel
 | [ 2   6789] 5           [ 2 4 67 9] | 1           [ 23   7  ] [ 23   7 9] | [     6789] [  34 6789] [  34 6 89] |
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23   7  ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
-
-Removing all fixed values from all non-fixed cells.
 ```
 </small>
 
-4. Continue till the grid "settles", that is, there are no more changes in the possibilities of any cells.
+4. Continue till the grid "settles", that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration:
 <small>
 ``` {.plain .low-line-height}
 +-------------------------------------+-------------------------------------+-------------------------------------+
@@ -137,8 +131,6 @@ Removing all fixed values from all non-fixed cells.
 | [ 2   6789] 5           [ 2 4 67 9] | 1           [ 23      ] [ 23     9] | [     6789] [  34 6789] [  34 6 89] |
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23      ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
-
-The settled grid for the current iteration.
 ```
 </small>
 
@@ -548,7 +540,7 @@ nextGrids grid =
     replace p f xs = [if i == p then f x else x | (x, i) <- zip xs [0..]]
 ```
 
-We choose the non-fixed cell with least count of possibilities. This strategy make sense intuitively as with a cell with fewest possibilities, we have most chance of being right when assuming one. Fixing a non-fixed cell leads to one of the two cases:
+We choose the non-fixed cell with least count of possibilities as the pivot. This strategy make sense intuitively as with a cell with fewest possibilities, we have most chance of being right when assuming one. Fixing a non-fixed cell leads to one of the two cases:
 
 a. the cell has only two possible values, resulting in two fixed cells, or,
 b. the cell has more than two possible values, resulting in one fixed and one non-fixed cell.
@@ -569,6 +561,8 @@ Then all we are left with is replacing the non-fixed cell with its fixed and fix
 3           [1    6 89] [     6  9] 4           7           [    5   9] 2           [    56 89] [1   56 89]
 [ 2    789] 5           [ 2 4 67 9] 1           [ 23      ] [ 23     9] [     6789] [  34 6789] [  34 6 89]
 [12    7 9] [1  4  7 9] [ 2 4  7 9] 8           [ 23      ] 6           [1   5 7 9] [  345 7 9] [1 345   9]
+*Main> -- the row-4-column-1 cell is the first cell with only two possibilities, [2, 9].
+*Main> -- it is chosen as the pivot cell to find the next grids.
 *Main> (grid1, grid2) = nextGrids grid'
 *Main> putStr $ showGridWithPossibilities grid1
 6           [  3   789] [  3 5 7 9] [ 23 5 7 9] [ 234   8 ] [ 2345 789] [    5 789] 1           [ 2345  89]
@@ -592,8 +586,6 @@ Then all we are left with is replacing the non-fixed cell with its fixed and fix
 [12    7 9] [1  4  7 9] [ 2 4  7 9] 8           [ 23      ] 6           [1   5 7 9] [  345 7 9] [1 345   9]
 ```
 </small>
-
-The row-4-column-1 cell is chosen and is split into the next two grids.
 
 ## Solving the Puzzle
 
