@@ -630,11 +630,11 @@ Writing the `solve` function is now almost trivial:
 solve :: Grid -> Maybe Grid
 solve grid = pruneGrid grid >>= solve'
   where
-    solve' grid'
-      | isGridInvalid grid = Nothing
-      | isGridFilled grid' = Just grid'
-      | otherwise          =
-          let (grid1, grid2) = nextGrids grid'
+    solve' g
+      | isGridInvalid g = Nothing
+      | isGridFilled g  = Just g
+      | otherwise       =
+          let (grid1, grid2) = nextGrids g
           in solve grid1 <|> solve grid2
 ```
 
@@ -657,14 +657,14 @@ Whew! That took us long. Let's put it to the final test now:
 *Main> Just grid' = solve grid
 *Main> putStr $ showGrid grid'
 6 9 3 7 8 4 5 1 2
-4 8 5 9 1 2 7 6 3
-1 2 7 5 6 3 8 4 9
-2 3 9 6 5 1 4 8 7
+4 8 7 5 1 2 9 3 6
+1 2 5 9 6 3 8 7 4
+9 3 2 6 5 1 4 8 7
 5 6 8 2 4 7 3 9 1
 7 4 1 3 9 8 6 2 5
-3 1 6 4 7 9 2 5 8
-8 5 4 1 3 2 9 7 6
-9 7 2 8 3 6 1 4 4
+3 1 9 4 7 5 2 6 8
+8 5 6 1 2 9 7 4 3
+2 7 4 8 3 6 1 5 9
 ```
 
 It works! Let's put a quick `main` wrapper around `solve` to call it from the command line:
@@ -685,15 +685,15 @@ And now, we can invoke it from the command line:
 
 ```plain
 $ echo ".......12.5.4............3.7..6..4....1..........8....92....8.....51.7.......3..." | stack exec sudoku
-4 9 9 8 3 6 5 1 2
-1 5 3 4 9 2 6 7 8
-2 6 8 1 7 5 9 3 4
-7 3 2 6 5 9 4 8 1
-6 8 1 3 4 7 2 9 5
-5 4 4 2 8 1 3 6 7
-9 2 5 7 6 4 8 5 3
-3 6 6 5 1 8 7 2 9
-8 7 7 9 2 3 1 4 6
+3 6 4 9 7 8 5 1 2
+1 5 2 4 3 6 9 7 8
+8 7 9 1 2 5 6 3 4
+7 3 8 6 5 1 4 2 9
+6 9 1 2 4 7 3 8 5
+2 4 5 3 8 9 1 6 7
+9 2 3 7 6 4 8 5 1
+4 8 6 5 1 2 7 9 3
+5 1 7 8 9 3 2 4 6
 ```
 
 And, we are done.
@@ -720,6 +720,6 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [4]: https://en.wikipedia.org/wiki/Algebraic_data_type
 [5]: https://en.wikipedia.org/wiki/Fixed_point_%28mathematics%29
 [6]: https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873
-[7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/33c706e71e24e9020a01898b8c75e546627baeaf
+[7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa
 [8]: /files/sudoku17.txt.bz2
 [9]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
