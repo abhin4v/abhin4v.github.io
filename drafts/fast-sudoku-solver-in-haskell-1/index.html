@@ -598,11 +598,11 @@ The settled grid for the current iteration.</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="ot">solve ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
 <a class="sourceLine" id="cb29-2" data-line-number="2">solve grid <span class="fu">=</span> pruneGrid grid <span class="fu">&gt;&gt;=</span> solve'</a>
 <a class="sourceLine" id="cb29-3" data-line-number="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb29-4" data-line-number="4">    solve' grid'</a>
-<a class="sourceLine" id="cb29-5" data-line-number="5">      <span class="fu">|</span> isGridInvalid grid <span class="fu">=</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb29-6" data-line-number="6">      <span class="fu">|</span> isGridFilled grid' <span class="fu">=</span> <span class="dt">Just</span> grid'</a>
-<a class="sourceLine" id="cb29-7" data-line-number="7">      <span class="fu">|</span> otherwise          <span class="fu">=</span></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8">          <span class="kw">let</span> (grid1, grid2) <span class="fu">=</span> nextGrids grid'</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">    solve' g</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">      <span class="fu">|</span> isGridInvalid g <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">      <span class="fu">|</span> isGridFilled g  <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">      <span class="fu">|</span> otherwise       <span class="fu">=</span></a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">          <span class="kw">let</span> (grid1, grid2) <span class="fu">=</span> nextGrids g</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">          <span class="kw">in</span> solve grid1 <span class="fu">&lt;|&gt;</span> solve grid2</a></code></pre></div>
 <p>We prune the grid as before and pipe it to the helper function <code>solve'</code>. <code>solve'</code> bails with a <code>Nothing</code> if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by calling the <code>solve</code> function. Backtracking here is implemented by the using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2" target="_blank" rel="noopener"><code>Alternative</code></a> (<code>&lt;|&gt;</code>) implementation of the <code>Maybe</code> type (<a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873" target="_blank" rel="noopener">source</a>), which takes the next branch in the computation if the first branch returns a <code>Nothing</code>.</p>
 <p>Whew! That took us long. Let’s put it to the final test now:</p>
@@ -620,14 +620,14 @@ The settled grid for the current iteration.</code></pre>
 <a class="sourceLine" id="cb30-12" data-line-number="12"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> solve grid</a>
 <a class="sourceLine" id="cb30-13" data-line-number="13"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid'</a>
 <a class="sourceLine" id="cb30-14" data-line-number="14"><span class="dv">6</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">7</span> <span class="dv">8</span> <span class="dv">4</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span></a>
-<a class="sourceLine" id="cb30-15" data-line-number="15"><span class="dv">4</span> <span class="dv">8</span> <span class="dv">5</span> <span class="dv">9</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">7</span> <span class="dv">6</span> <span class="dv">3</span></a>
-<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="dv">1</span> <span class="dv">2</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">6</span> <span class="dv">3</span> <span class="dv">8</span> <span class="dv">4</span> <span class="dv">9</span></a>
-<a class="sourceLine" id="cb30-17" data-line-number="17"><span class="dv">2</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">6</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb30-15" data-line-number="15"><span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">6</span></a>
+<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span> <span class="dv">9</span> <span class="dv">6</span> <span class="dv">3</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">4</span></a>
+<a class="sourceLine" id="cb30-17" data-line-number="17"><span class="dv">9</span> <span class="dv">3</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span></a>
 <a class="sourceLine" id="cb30-18" data-line-number="18"><span class="dv">5</span> <span class="dv">6</span> <span class="dv">8</span> <span class="dv">2</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">1</span></a>
 <a class="sourceLine" id="cb30-19" data-line-number="19"><span class="dv">7</span> <span class="dv">4</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">8</span> <span class="dv">6</span> <span class="dv">2</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb30-20" data-line-number="20"><span class="dv">3</span> <span class="dv">1</span> <span class="dv">6</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">9</span> <span class="dv">2</span> <span class="dv">5</span> <span class="dv">8</span></a>
-<a class="sourceLine" id="cb30-21" data-line-number="21"><span class="dv">8</span> <span class="dv">5</span> <span class="dv">4</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">7</span> <span class="dv">6</span></a>
-<a class="sourceLine" id="cb30-22" data-line-number="22"><span class="dv">9</span> <span class="dv">7</span> <span class="dv">2</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">4</span> <span class="dv">4</span></a></code></pre></div>
+<a class="sourceLine" id="cb30-20" data-line-number="20"><span class="dv">3</span> <span class="dv">1</span> <span class="dv">9</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">8</span></a>
+<a class="sourceLine" id="cb30-21" data-line-number="21"><span class="dv">8</span> <span class="dv">5</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb30-22" data-line-number="22"><span class="dv">2</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">5</span> <span class="dv">9</span></a></code></pre></div>
 <p>It works! Let’s put a quick <code>main</code> wrapper around <code>solve</code> to call it from the command line:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
 <a class="sourceLine" id="cb31-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
@@ -640,19 +640,19 @@ The settled grid for the current iteration.</code></pre>
 <a class="sourceLine" id="cb31-9" data-line-number="9">        <span class="dt">Just</span> grid' <span class="ot">-&gt;</span> putStrLn <span class="fu">$</span> showGrid grid'</a></code></pre></div>
 <p>And now, we can invoke it from the command line:</p>
 <pre class="plain"><code>$ echo &quot;.......12.5.4............3.7..6..4....1..........8....92....8.....51.7.......3...&quot; | stack exec sudoku
-4 9 9 8 3 6 5 1 2
-1 5 3 4 9 2 6 7 8
-2 6 8 1 7 5 9 3 4
-7 3 2 6 5 9 4 8 1
-6 8 1 3 4 7 2 9 5
-5 4 4 2 8 1 3 6 7
-9 2 5 7 6 4 8 5 3
-3 6 6 5 1 8 7 2 9
-8 7 7 9 2 3 1 4 6</code></pre>
+3 6 4 9 7 8 5 1 2
+1 5 2 4 3 6 9 7 8
+8 7 9 1 2 5 6 3 4
+7 3 8 6 5 1 4 2 9
+6 9 1 2 4 7 3 8 5
+2 4 5 3 8 9 1 6 7
+9 2 3 7 6 4 8 5 1
+4 8 6 5 1 2 7 9 3
+5 1 7 8 9 3 2 4 6</code></pre>
 <p>And, we are done.</p>
 <p>If you want to play with different puzzles, the file <a href="../../files/sudoku17.txt.bz2">here</a> lists some of the toughest ones. I encourage you to try them out and see if you can make improvements to the solution for the slow ones.</p>
 <h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/33c706e71e24e9020a01898b8c75e546627baeaf" target="_blank" rel="noopener">here</a>.</p>
+<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>.</p>
     </section>
     <section class="source">
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/fast-sudoku-solver-in-haskell-1.md" target="_blank" rel="noopener">Post history</a>
