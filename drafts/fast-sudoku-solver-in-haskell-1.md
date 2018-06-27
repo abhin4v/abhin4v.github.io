@@ -9,7 +9,7 @@ toc: right
 
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-[Haskell] is a purely functional programming language and it's a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Haskell Sudoku solver, so we'll focus on both implementing the solution and making it efficient, step-by-step.
+[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Haskell Sudoku solver, so we'll focus on both implementing the solution and making it efficient, step-by-step.
 
 <!--more-->
 
@@ -17,7 +17,7 @@ toc: right
 
 ## Constraint Satisfaction Problem
 
-Solving Sudoku is a [constraint satisfaction problem][1]. You are given a partially filled grid and you have to fill the rest of the cells such that each of the following constraints are satisfied:
+Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partially filled grid and we have to fill the rest of the cells such that each of the following constraints are satisfied:
 
 1. Each of the nine rows must have all of the digits, from 1 to 9.
 1. Each of the nine columns must have all of the digits, from 1 to 9.
@@ -55,9 +55,9 @@ Solving Sudoku is a [constraint satisfaction problem][1]. You are given a partia
     and it's solution
 ```
 
-Each cell in the grid is a member of one row, one column and one sub-grid (called "block" in general). Digits in the pre-filled cells impose constraints on the row, column, and sub-grids they are part of. For example, if a cell contains "1" then no other cell in the cell's row, column or sub-grid can contain "1". Given these constraints, we can devise a simple algorithm to solve Sudoku:
+Each cell in the grid is a member of one row, one column and one sub-grid (called "block" in general). Digits in the pre-filled cells impose constraints on the row, column, and sub-grids they are part of. For example, if a cell contains "1" then no other cell in that cell's row, column or sub-grid can contain "1". Given these constraints, we can devise a simple algorithm to solve Sudoku:
 
-1. Each cell either contains a single digit or has a set of possible digits.
+1. Each cell contains either a single digit or has a set of possible digits.
 
 <small>
 ``` {.plain .low-line-height}
@@ -159,9 +159,9 @@ type Row  = [Cell]
 type Grid = [Row]
 ```
 
-Since a cell is either fixed with a particular digit, or has a set of digits as possibilities, it's natural to represent it as a [sum type][4] with `Fixed` and `Possible` constructors. A row is a list of cells and a grid is a list of rows.
+Since a cell is either fixed with a particular digit or has a set of digits as possibilities, so it is natural to represent it as a [sum type][4] with `Fixed` and `Possible` constructors. A row is a list of cells and a grid is a list of rows.
 
-We'll take the input puzzle as a string of 81 characters representing the cells, left-to-right and top-to-bottom. An example is as follows:
+We'll take the input puzzle as a string of 81 characters representing the cells, left-to-right and top-to-bottom. An example is:
 
 ```plain
 .......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...
@@ -183,6 +183,7 @@ readGrid s
 
 `readGrid` return a `Just grid` if the input is correct, else it returns a `Nothing`. It parses a `.` to a `Possible` cell with all digits as possibilities, and a digit char to a `Fixed` cell with that digit. Let's try it out in the _REPL_:
 
+<small>
 ```haskell
 *Main> Just grid = readGrid ".......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> mapM_ print grid
@@ -196,6 +197,7 @@ readGrid s
 [Possible [1,2,3,4,5,6,7,8,9],Fixed 5,Possible [1,2,3,4,5,6,7,8,9],Fixed 1,Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9]]
 [Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Fixed 8,Possible [1,2,3,4,5,6,7,8,9],Fixed 6,Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9]]
 ```
+</small>
 
 The output is a bit unreadable but correct. We can write a few functions to clean it up:
 
@@ -246,11 +248,11 @@ Back to the _REPL_ again:
 ```
 </small>
 
-The output is more readable now. We see that, at the start, all non-filled cells have all digits as possible values. We'll use these functions for debugging as we go forward. We can now start solving the puzzle.
+The output is more readable now. We see that, at the start, all the non-filled cells have all digits as possible values. We'll use these functions for debugging as we go forward. We can now start solving the puzzle.
 
 ## Pruning the Cells
 
-Instead of removing fixed digits of a cell from its neighboring cells, one cell as a time, it is easier to find all the fixed digits in a row of cells and remove all of them from the possibilities all the non-fixed cells of the row. Then we can repeat this "pruning" step for all the rows of the grid (and columns and sub-grids too! We'll see how).
+Instead of removing fixed digits of a cell from its neighboring cells, one cell as a time, it is easier to find all the fixed digits in a row of cells and remove all of them from the possibilities of all the non-fixed cells of the row. Then we can repeat this "pruning" step for all the rows of the grid (and columns and sub-grids too! We'll see how).
 
 ```haskell
 pruneCells :: [Cell] -> Maybe [Cell]
@@ -267,10 +269,10 @@ pruneCells cells = traverse pruneCell cells
 
 `pruneCells` prunes a list of cells as described previously. We start with finding the fixed digits in the list of cells. Then we go over each non-fixed cells, removing the fixed digits we found from their possible values. Two special cases arise:
 
-- If the pruning results in a cell with no possible digits, it is a sign that this branch of search has no solution and hence, we return a `Nothing` in that case.
-- If only one possible digit remains, we turn that cell into a fixed cell with that digit.
+- If pruning results in a cell with no possible digits, it is a sign that this branch of search has no solution and hence, we return a `Nothing` in that case.
+- If only one possible digit remains after pruning, then we turn that cell into a fixed cell with that digit.
 
-We use the [`traverse`] function for pruning all cells so that a `Nothing` resulting from pruning one cell propagates to the entire list.
+We use the [`traverse`] function for pruning the cells so that a `Nothing` resulting from pruning one cell propagates to the entire list.
 
 Let's take it for a spin in the _REPL_:
 
@@ -307,7 +309,7 @@ Pruning a grid requires us to prune each row, each column and each sub-grid. Let
 ```
 </small>
 
-By `traverse`-ing the grid with `pruneCells`, we are able to prune each row, one-by-one. Since pruning a row doesn't affect another row, we don't have to pass the resulting rows between each pruning step. That is to say, `traverse` is enough for us, we don't need [`foldl`].
+By `traverse`-ing the grid with `pruneCells`, we are able to prune each row, one-by-one. Since pruning a row doesn't affect another row, we don't have to pass the resulting rows between each pruning step. That is to say, `traverse` is enough for us, we don't need [`foldl`] here.
 
 How do we do the same thing for columns now? Since our representation for the grid is rows-first, we first need to convert it to a columns-first representation. Luckily, that's what [`Data.List.transpose`] function does:
 
@@ -405,8 +407,7 @@ You can go over the code and the output and make yourself sure that it works. Al
 3 1 9 4 7 5 2 6 8
 8 5 6 1 2 9 7 4 3
 2 7 4 8 3 6 1 5 9
-*Main> grid' = subGridsToRows grid
-*Main> putStr $ showGrid $ subGridsToRows grid'
+*Main> putStr $ showGrid $ subGridsToRows $ subGridsToRows $ grid
 6 9 3 7 8 4 5 1 2
 4 8 7 5 1 2 9 3 6
 1 2 5 9 6 3 8 7 4
@@ -437,7 +438,7 @@ Nice! Now writing the sub-grid pruning function is easy:
 ```
 </small>
 
-It works well. Now we can string together these three steps to prune the entire grid. We also have to make sure that result of pruning each step is fed into the next step so that fixed cells created into one step cause more pruning in further steps. We use monadic bind for that. Here's the final code:
+It works well. Now we can string together these three steps to prune the entire grid. We also have to make sure that result of pruning each step is fed into the next step so that fixed cells created into one step cause more pruning in further steps. We use monadic bind ([`>>=`][9]) for that. Here's the final code:
 
 ```haskell
 pruneGrid' :: Grid -> Maybe Grid
@@ -513,11 +514,11 @@ The crux of this code is the `fixM` function which takes monadic function `f` an
 ```
 </small>
 
-We see that "7" in the row-7-column-5 cell is eliminated from all its neighboring cells. We cant' prune the grid anymore. Now it's time to make a choice.
+We see that "7" in the row-7-column-5 cell is eliminated from all its neighboring cells. We cant' prune the grid anymore. Now it's time to make the choice.
 
 ## Making the Choice
 
-One the grid is settled, we need to choose a non-fixed cell and make it fixed by assuming one of its possible values. This gives us two grids, next in the state-space of the solution search: one which has this chosen cell fixed to this chosen digit, and one in which the chosen cell has all the other possibilities except the one we chose. We call this function `nextGrids`:
+One the grid is settled, we need to choose a non-fixed cell and make it fixed by assuming one of its possible values. This gives us two grids, next in the state-space of the solution search: one which has this chosen cell fixed to this chosen digit, and the other in which the chosen cell has all the other possibilities except the one we chose to fix. We call this function `nextGrids`:
 
 ```haskell
 nextGrids :: Grid -> (Grid, Grid)
@@ -547,7 +548,12 @@ nextGrids grid =
     replace p f xs = [if i == p then f x else x | (x, i) <- zip xs [0..]]
 ```
 
-We choose the non-fixed cell with least count of possibilities. This strategy make sense intuitively as with a cell with fewest possibilities we have most chance of being right when assuming one. Fixing a non-fixed cells leads to two cases: a) the cell has only two possible values, resulting in two fixed cells, b)  the cell has more than two possible values, resulting in one fixed and one non-fixed cell. Then all we are left with is replacing the non-fixed cell with its fixed and fixed/non-fixed choices which we do with some math and some list traversal. A quick check on the _REPL_:
+We choose the non-fixed cell with least count of possibilities. This strategy make sense intuitively as with a cell with fewest possibilities, we have most chance of being right when assuming one. Fixing a non-fixed cell leads to one of the two cases:
+
+a. the cell has only two possible values, resulting in two fixed cells, or,
+b. the cell has more than two possible values, resulting in one fixed and one non-fixed cell.
+
+Then all we are left with is replacing the non-fixed cell with its fixed and fixed/non-fixed choices, which we do with some math and some list traversal. A quick check on the _REPL_:
 
 <small>
 ```haskell
@@ -591,7 +597,7 @@ The row-4-column-1 cell is chosen and is split into the next two grids.
 
 ## Solving the Puzzle
 
-We have implemented the constituent parts of our algorithm. Now we'll put everything together to solve the puzzle. First, we need to know if we are done or have messed up.
+We have implemented parts of our algorithm till now. Now we'll put everything together to solve the puzzle. First, we need to know if we are done or have messed up:
 
 ```haskell
 isGridFilled :: Grid -> Bool
@@ -632,7 +638,7 @@ solve grid = pruneGrid grid >>= solve'
           in solve grid1 <|> solve grid2
 ```
 
-We prune the grid as before and pipe it to the helper function `solve'`. `solve'` bails with `Nothing` if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by callin the `solve` function. Backtracking here is implemented by the using the [`Alternative`] (`<|>`) implementation of the `Maybe` type ([source][6]), which takes the next branch in the computation if the first branch returns a `Nothing`.
+We prune the grid as before and pipe it to the helper function `solve'`. `solve'` bails with a `Nothing` if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by calling the `solve` function. Backtracking here is implemented by the using the [`Alternative`] (`<|>`) implementation of the `Maybe` type ([source][6]), which takes the next branch in the computation if the first branch returns a `Nothing`.
 
 Whew! That took us long. Let's put it to the final test now:
 
@@ -690,6 +696,8 @@ $ echo ".......12.5.4............3.7..6..4....1..........8....92....8.....51.7..
 8 7 7 9 2 3 1 4 6
 ```
 
+And, we are done.
+
 If you want to play with different puzzles, the file [here][8] lists some of the toughest ones. I encourage you to try them out and see if you can make improvements to the solution for the slow ones.
 
 ## Conclusion
@@ -714,3 +722,4 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [6]: https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873
 [7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/33c706e71e24e9020a01898b8c75e546627baeaf
 [8]: /files/sudoku17.txt.bz2
+[9]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
