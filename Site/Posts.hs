@@ -11,7 +11,7 @@ import Hakyll
 import Site.ERT
 import Site.TOC
 import Site.Util
-import System.FilePath.Posix (takeBaseName)
+import System.FilePath.Posix (takeBaseName, splitExtension)
 import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
@@ -41,6 +41,12 @@ posts tags = do
   match "posts/*" $ version "raw" $ do
     route   idRoute
     compile getResourceBody
+
+  match "posts/*" $ version "draft-redirects" $ do
+    route (indexHTMLRoute `composeRoutes` gsubRoute "posts" (const "drafts"))
+    compile $ do
+      (path, _) <- splitExtension <$> getResourceFilePath
+      makeItem $ Redirect ("/" ++ path)
 
 drafts :: Tags -> Rules ()
 drafts tags = do
