@@ -43,7 +43,7 @@ Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partial
 | 8 5 6 | 1 2 9 | 7 4 3 |
 | 2 7 4 | 8 3 6 | 1 5 9 |
 +-------+-------+-------+
-    and it's solution
+    and its solution
 ```
 
 Each cell in the grid is a member of one row, one column and one sub-grid (called "block" in general). Digits in the pre-filled cells impose constraints on the row, column, and sub-grids they are part of. For example, if a cell contains "1" then no other cell in that cell's row, column or sub-grid can contain "1". Given these constraints, we can devise a simple algorithm to solve Sudoku:
