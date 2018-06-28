@@ -42,11 +42,12 @@ posts tags = do
     route   idRoute
     compile getResourceBody
 
+  -- redirects for drafts
   match "posts/*" $ version "draft-redirects" $ do
     route (indexHTMLRoute `composeRoutes` gsubRoute "posts" (const "drafts"))
     compile $ do
       (path, _) <- splitExtension <$> getResourceFilePath
-      makeItem $ Redirect ("/" ++ path)
+      makeItem $ Redirect ("/" ++ path ++ "/")
 
 drafts :: Tags -> Rules ()
 drafts tags = do
