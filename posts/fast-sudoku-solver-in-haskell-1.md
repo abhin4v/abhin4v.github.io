@@ -1,6 +1,6 @@
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Haskell Sudoku solver, so we'll focus on both implementing the solution and making it efficient, step-by-step.
+[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Haskell Sudoku solver, so we'll focus on both implementing the solution and making it efficient, step-by-step[^1].
 
 <!--more-->
 
@@ -685,7 +685,7 @@ If you want to play with different puzzles, the file [here][8] lists some of the
 
 ## Conclusion
 
-In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we'll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available [here][7].
+In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we'll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available [here][7]. This post can be discussed on [r/haskell].
 
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Haskell]: https://www.haskell.org/
@@ -696,6 +696,8 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [`Data.List.transpose`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-List.html#v:transpose
 [`fmap`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Prelude.html#v:fmap
 [`Alternative`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2
+[r/haskell]: https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/
+[nilenso]: https://nilenso.com
 
 [1]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [2]: https://en.wikipedia.org/wiki/State_space_search
@@ -706,3 +708,8 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa
 [8]: /files/sudoku17.txt.bz2
 [9]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
+[10]: https://github.com/ford-prefect/haskell-classes/
+[11]: https://github.com/bnvinay92/haskell-classes/
+[12]: https://github.com/pratul/haskell-classes/
+
+[^1]: This exercise was originally done as a part of [the][12] [Haskell][10] [classes][11] I taught at [nilenso].
