@@ -1,6 +1,6 @@
 ---
 title: "Fast Sudoku Solver in Haskell #1: A Simple Solution"
-date: 2018-06-26
+date: 2018-06-28
 description: We write a Sudoku Solver in Haskell and optimize it to be fast
 tags: haskell, sudoku, programming, puzzle
 author: Abhinav Sarkar
