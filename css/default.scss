@@ -235,6 +235,9 @@ article {
     small {
       pre {
         white-space: pre-wrap;
+        code {
+          overflow-x: hidden;
+        }
       }
     }
   }
