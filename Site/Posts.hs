@@ -52,6 +52,21 @@ drafts :: Tags -> Rules ()
 drafts tags = do
   match "drafts/*" $ compilePosts tags False
 
+  create ["drafts.html"] $ do
+    route indexHTMLRoute
+    compile $ do
+      posts <- recentFirst =<< loadAllSnapshots ("drafts/*" .&&. hasNoVersion) "content"
+      let archiveCtx = listField "posts" postCtx (return posts) <>
+                       tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
+                       constField "title" "Drafts"             <>
+                       siteContext
+
+      makeItem ""
+        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+        >>= relativizeUrls
+        >>= removeIndexHtml
+
 compilePosts :: Tags -> Bool -> Rules ()
 compilePosts tags published = do
   route indexHTMLRoute
