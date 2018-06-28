@@ -681,7 +681,15 @@ $ echo ".......12.5.4............3.7..6..4....1..........8....92....8.....51.7..
 
 And, we are done.
 
-If you want to play with different puzzles, the file [here][8] lists some of the toughest ones. I encourage you to try them out and see if you can make improvements to the solution for the slow ones.
+If you want to play with different puzzles, the file [here][8] lists some of the toughest ones. Let's run some of them through our program to see how fast it is:
+
+```plain
+$ head -n100 sudoku17.txt | time stack exec sudoku
+... output omitted ...
+      116.70 real       198.09 user        94.46 sys
+```
+
+It took about 292 seconds to solve a hundred puzzles, so, about 3 seconds per puzzle. This is pretty slow but we'll get around to making it faster in the subsequent posts.
 
 ## Conclusion
 
