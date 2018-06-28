@@ -227,8 +227,16 @@ article {
       border-right: none;
     }
   }
-  article pre {
-    border: none!important;
+  article {
+    pre {
+      border: none!important;
+      page-break-inside: avoid;
+    }
+    small {
+      pre {
+        white-space: pre-wrap;
+      }
+    }
   }
   .post-download {
     display: none;
