@@ -9,9 +9,11 @@ toc: right
 
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Haskell Sudoku solver, so we'll focus on both implementing the solution and making it efficient, step-by-step[^1].
+[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Sudoku solver in Haskell, so we'll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post[^1].
 
 <!--more-->
+
+This post can be discussed on [r/haskell].
 
 * toc
 
