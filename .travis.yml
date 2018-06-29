@@ -18,5 +18,5 @@ script:
   - docker build -t abhin4v/abhinavsarkar.net:latest --build-arg REPO_URL="$REPO_URL" --build-arg CF_ZONE_ID="$CF_ZONE_ID" --build-arg CF_API_KEY="$CF_API_KEY" --build-arg CF_EMAIL="$CF_EMAIL" --build-arg STRAVA_KEY="$STRAVA_KEY" --build-arg TRAVIS_COMMIT_MESSAGE="$TRAVIS_COMMIT_MESSAGE" .
 
 after_success:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-  - docker push abhin4v/abhinavsarkar.net:latest
+  - (echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin) && docker push abhin4v/abhinavsarkar.net:latest
+  - sh bin/purge_cf_cache.sh || true

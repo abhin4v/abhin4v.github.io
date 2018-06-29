@@ -6,6 +6,8 @@ python3 -m http.server &
 SERVER_PID=$!
 sleep 5
 
+git status --short
+
 CSS_CHANGED=`git status --short | grep "css/"`
 if [ -z "$CSS_CHANGED" -a "$CSS_CHANGED" == "" ]; then
   git status --short | \

@@ -23,8 +23,7 @@ RUN stack --no-terminal build --fast -j2 \
     && git config --global user.email "abhinav@abhinavsarkar.net" \
     && git config --global user.name "Travis" \
     && git commit -m "$TRAVIS_COMMIT_MESSAGE" \
-    && git push "$REPO_URL" master \
-    && (sh ../bin/purge_cf_cache.sh || true)
+    && git push "$REPO_URL" master
 
 FROM pierrezemb/gostatic:latest
 
