@@ -58,6 +58,16 @@ collections tags = do
           >>= relativizeUrls
           >>= removeIndexHtml
 
+  -- posts index
+  create ["posts.html"] $ do
+    route indexHTMLRoute
+    compile $ makeItem $ Redirect "/archive/"
+
+  -- tags index
+  create ["tags.html"] $ do
+    route indexHTMLRoute
+    compile $ makeItem $ Redirect "/archive/"
+
   -- main feed
   create ["feed.xml"] $ do
     route idRoute
