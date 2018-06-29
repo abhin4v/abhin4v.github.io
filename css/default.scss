@@ -118,6 +118,9 @@ article {
   h2 {
     font-size: 1.4em;
   }
+  section.twitter-button {
+    line-height: 0.8em;
+  }
   a.img-link {
     text-decoration: none;
     color: inherit;
@@ -166,6 +169,10 @@ article {
 .header, .ert {
   text-align: right;
   font-size: 0.9em;
+}
+
+.no-js section.twitter-button {
+  display: none;
 }
 
 #home-posts {
@@ -228,6 +235,9 @@ article {
     }
   }
   article {
+    .twitter-share-button {
+      display: none;
+    }
     pre {
       border: none!important;
       page-break-inside: avoid;
