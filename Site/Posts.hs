@@ -27,9 +27,8 @@ posts tags = do
       date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
       let dateS = formatTime defaultTimeLocale "%B %e, %Y" date
       email <- getMetadataField' ident "email"
-      message <- getMetadataField' ident "message"
 
-      (itemSetBody message <$> makeItem "")
+      getResourceBody
         >>= renderPandocWith readerOptions writerOptions
         >>= loadAndApplyTemplate "templates/comment.html" (commentCtx dateS email)
         >>= saveSnapshot "comment"
