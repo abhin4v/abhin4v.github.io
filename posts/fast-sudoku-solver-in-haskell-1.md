@@ -7,9 +7,9 @@ author: Abhinav Sarkar
 toc: right
 ---
 
-[Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
+[Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. In fact, a lot of people have solved Sudoku in Haskell already and some of those solutions are listed on the [Haskell Wiki]. The aim of this series of posts is to write a **fast** Sudoku solver in Haskell, so we'll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post[^1].
+[Haskell] is a purely functional programming language and is a good choice to solve Sudoku given the problem's [combinatorial] nature. The aim of this series of posts is to write a **fast** Sudoku solver in Haskell, so we'll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post[^1].
 
 <!--more-->
 
@@ -19,7 +19,7 @@ This post can be discussed on [r/haskell].
 
 ## Constraint Satisfaction Problem
 
-Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partially filled grid and we have to fill the rest of the cells such that each of the following constraints are satisfied:
+Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partially filled grid and we have to fill the rest of the grid such that each of the following constraints are satisfied:
 
 1. Each of the nine rows must have all of the digits, from 1 to 9.
 1. Each of the nine columns must have all of the digits, from 1 to 9.
@@ -709,7 +709,6 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Haskell]: https://www.haskell.org/
 [combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
-[Haskell Wiki]: https://wiki.haskell.org/Sudoku
 [`traverse`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse
 [`foldl`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Foldable.html#v:foldl
 [`Data.List.transpose`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-List.html#v:transpose
