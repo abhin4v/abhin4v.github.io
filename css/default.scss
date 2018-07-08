@@ -196,6 +196,23 @@ article {
   }
 }
 
+.post .body > table {
+  border-collapse: collapse;
+  min-width: 40%;
+  td, th {
+    padding: 0.2em 2em;
+  }
+  thead {
+    border-top: 2px solid lighten($text-color, 30%);
+    border-bottom: 2px solid lighten($text-color, 30%);
+  }
+  tbody {
+    tr {
+      border-bottom: 1px solid lighten($text-color, 30%);
+    }
+  }
+}
+
 @media screen and(max-width: 600px) {
   .hide-small {
     display: none;

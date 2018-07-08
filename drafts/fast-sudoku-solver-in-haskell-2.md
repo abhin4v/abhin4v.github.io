@@ -165,7 +165,47 @@ In this case, the triplet digits are `3`, `8` and `9`. And as before, we can pru
 
 Though we can extend this to "Quadruplets" scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.
 
-Now that we have discovered these new algorithms to prune cells, let's implement them in Haskell.
+Now that we have discovered these new strategies to prune cells, let's implement them in Haskell.
+
+## A Little Forward, a Little Backward
+
+We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the [combinatorial] nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we'll try to understand its working using tables. Let's take this sample row:
+
+<small>
+``` {.plain .low-line-height}
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+```
+</small>
+
+First, we make a table mapping the digits to the cells in which they occur, excluding the digits which have been fixed already:
+
+Digit      Cells
+------   -------
+2        6, 8, 9
+3        6, 8, 9
+4        1
+6        1, 4, 6, 7, 8, 9
+8        6, 8, 9
+9        1, 4, 6, 7, 8, 9
+
+Then, we flip this table and collect all the digits that occur in the same set of cells:
+
+Cells                 Digits
+-------             --------
+1                   4
+6, 8, 9             2, 3, 8
+1, 4, 6, 7, 8, 9    6, 9
+
+And finally, we remove the rows of the table in which the count of the cells is not the same as the count of the digits:
+
+Cells                 Digits
+-------             --------
+1                   4
+6, 8, 9             2, 3, 8
+
+Voilà! We have found a Single `4` and a set of Triplets `2`, `3` and `8`. You can go over the puzzle row and verify that this indeed is the case.
 
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
@@ -175,5 +215,6 @@ Now that we have discovered these new algorithms to prune cells, let's implement
 [Haskell]: https://www.haskell.org/
 [previous post]: /posts/fast-sudoku-solver-in-haskell-1/
 ["Single child"]: https://en.wikipedia.org/wiki/Single_child
+[combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
 
 [1]: /files/sudoku17.txt.bz2
