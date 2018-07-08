@@ -119,9 +119,53 @@ Let's have a look at this sample row captured from a solution in progress:
 ```
 </small> 
 
-Notice how the sixth cell is the only column with "1" as a possibility in it. It is obvious that the sixth cell should be fixed to "1" as it can never be placed in any other cell in the row. Let's call this the "Single" scenario ("Single" as in ["Single child"]).
+Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the "Singles" scenario ("Single" as in ["Single child"]).
 
-In our current solution, the sixth cell will not be fixed to "1" either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and "1" is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Single scenario and fix the cell to "1" right then, it will prune the search tree by a lot and make the solution much faster.
+In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario and fix the cell to `1` right then, it will prune the search tree by a lot and make the solution much faster.
+
+This pattern can be generalized. Let's check out this sample row from middle of a solution:
+
+<small>
+``` {.plain .low-line-height}
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+```
+</small>
+
+It's a bit difficult to notice with naked eyes but there's something special here too. The digits `5` and `7` occur only in the third and ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, `5` and `7` can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only `5` and `7` like this:
+
+<small>
+``` {.plain .low-line-height}
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+```
+</small>
+
+This is the "Twins" scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it's the "Triplets" scenario, as in the example below:
+
+<small>
+``` {.plain .low-line-height}
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+```
+</small>
+
+In this case, the triplet digits are `3`, `8` and `9`. And as before, we can prune the block by fixing these digits in their cells:
+
+<small>
+``` {.plain .low-line-height}
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+```
+</small>
+
+Though we can extend this to "Quadruplets" scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.
+
+Now that we have discovered these new algorithms to prune cells, let's implement them in Haskell.
 
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
