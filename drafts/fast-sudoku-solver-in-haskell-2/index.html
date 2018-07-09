@@ -116,11 +116,11 @@
     </section>
     <section itemprop="articleBody" class="body">
         <div class="ert">
-8 minute read
+11 minute read
 </div>
 <p>In the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">first part</a> of this series of posts, we wrote a simple <a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> solver in <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> which used a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction</a> algorithm with <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">backtracking</a>. The solution worked well but was found to be very slow. In this post, we are going to improve the solution to make it <strong>fast</strong>.</p>
 <!--more-->
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li><li><a href="#a-little-forward-a-little-backward">A Little Forward, a Little Backward</a></li></ol></nav>
 <h2 id="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of <a href="../../files/sudoku17.txt.bz2">17-clue puzzles</a> through our program to see how fast it was:</p>
@@ -129,7 +129,7 @@
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>So, it took about 117 seconds to solve one hundred puzzles. At this speed, it would take about 16 hours to solve all the 49151 puzzles contained in the file. This is just too slow. We need to find ways to make it faster. Let’s go back to the drawing board.</p>
 <h2 id="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called “blocks” in general) have all of the digits, from 1 to 9.</p>
+<p>In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called <em>blocks</em> in general) have all of the digits, from 1 to 9.</p>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
 | . . . | . . . | . 1 . |
 | 4 . . | . . . | . . . |
@@ -159,7 +159,7 @@
 | 2 7 4 | 8 3 6 | 1 5 9 |
 +-------+-------+-------+
     and its solution</code></pre>
-<p>Previously, we followed a simple pruning algorithm to remove all the solved (or “fixed”) digits from neighbours of the fixed cells and we repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid “settled”). Here’s an example of a grid before pruning:</p>
+<p>Previously, we followed a simple pruning algorithm to remove all the solved (or <em>fixed</em>) digits from neighbours of the fixed cells and we repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid <em>settled</em>). Here’s an example of a grid before pruning:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
@@ -200,7 +200,7 @@
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>Notice how the sixth cell is the only one with <code>1</code> as a possibility in it. It is obvious that the sixth cell should be fixed to <code>1</code> as <code>1</code> can not be placed in any other cell in the row. Let’s call this the “Singles” scenario (“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a>).</p>
+<p>Notice how the sixth cell is the only one with <code>1</code> as a possibility in it. It is obvious that the sixth cell should be fixed to <code>1</code> as <code>1</code> can not be placed in any other cell in the row. Let’s call this the <em>Singles</em> scenario (“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a>).</p>
 <p>In our current solution, the sixth cell will not be fixed to <code>1</code> either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the <code>nextGrids</code> function and <code>1</code> is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario and fix the cell to <code>1</code> right then, it will prune the search tree by a lot and make the solution much faster.</p>
 <p>This pattern can be generalized. Let’s check out this sample row from middle of a solution:</p>
 <p><small></p>
@@ -214,7 +214,7 @@
 | [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>This is the “Twins” scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it’s the “Triplets” scenario, as in the example below:</p>
+<p>This is the <em>Twins</em> scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it’s the <em>Triplets</em> scenario, as in the example below:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
@@ -226,8 +226,143 @@
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>Though we can extend this to “Quadruplets” scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.</p>
-<p>Now that we have discovered these new algorithms to prune cells, let’s implement them in Haskell.</p>
+<p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.</p>
+<p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
+<h2 id="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we’ll try to understand its working using tables. Let’s take this sample row:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>First, we make a table mapping the digits to the cells in which they occur, excluding the digits which have been fixed already:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Digit</th>
+<th style="text-align: right;">Cells</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1, 4, 6, 7, 8, 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">8</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">9</td>
+<td style="text-align: right;">1, 4, 6, 7, 8, 9</td>
+</tr>
+</tbody>
+</table>
+<p>Then, we flip this table and collect all the digits that occur in the same set of cells:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cells</th>
+<th style="text-align: right;">Digits</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6, 8, 9</td>
+<td style="text-align: right;">2, 3, 8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1, 4, 6, 7, 8, 9</td>
+<td style="text-align: right;">6, 9</td>
+</tr>
+</tbody>
+</table>
+<p>And finally, we remove the rows of the table in which the count of the cells is not the same as the count of the digits:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cells</th>
+<th style="text-align: right;">Digits</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6, 8, 9</td>
+<td style="text-align: right;">2, 3, 8</td>
+</tr>
+</tbody>
+</table>
+<p>Voilà! We have found a Single <code>4</code> and a set of Triplets <code>2</code>, <code>3</code> and <code>8</code>. You can go over the puzzle row and verify that this indeed is the case.</p>
+<p>Translating this logic to Haskell is quite easy now:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">isPossible ::</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">isPossible (<span class="dt">Possible</span> _) <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">isPossible _            <span class="fu">=</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]]</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">exclusivePossibilities row <span class="fu">=</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">  <span class="co">-- input</span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">  row</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9">  <span class="co">-- [Possible [4,6,9], Fixed 1, Fixed 5, Possible [6,9], Fixed 7, Possible [2,3,6,8,9],</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10">  <span class="co">-- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]</span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12">  <span class="co">-- step 1</span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13">  <span class="fu">&amp;</span> zip [<span class="dv">1</span><span class="fu">..</span>]</a>
+<a class="sourceLine" id="cb11-14" data-line-number="14">  <span class="co">-- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),</span></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15">  <span class="co">-- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16">  <span class="co">-- (9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb11-18" data-line-number="18">  <span class="co">-- step 2</span></a>
+<a class="sourceLine" id="cb11-19" data-line-number="19">  <span class="fu">&amp;</span> filter (isPossible <span class="fu">.</span> snd)</a>
+<a class="sourceLine" id="cb11-20" data-line-number="20">  <span class="co">-- [(1,Possible [4,6,9]),(4,Possible [6,9]),(6,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-21" data-line-number="21">  <span class="co">-- (7,Possible [6,9]), (8,Possible [2,3,6,8,9]),(9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb11-23" data-line-number="23">  <span class="co">-- step 3</span></a>
+<a class="sourceLine" id="cb11-24" data-line-number="24">  <span class="fu">&amp;</span> Data.List.foldl'</a>
+<a class="sourceLine" id="cb11-25" data-line-number="25">      (\acc <span class="fu">~</span>(i, <span class="dt">Possible</span> xs) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb11-26" data-line-number="26">        Data.List.foldl' (\acc' x <span class="ot">-&gt;</span> Map.insertWith prepend x [i] acc') acc xs)</a>
+<a class="sourceLine" id="cb11-27" data-line-number="27">      Map.empty</a>
+<a class="sourceLine" id="cb11-28" data-line-number="28">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(6,[9,8,7,6,4,1]),(8,[9,8,6]),</span></a>
+<a class="sourceLine" id="cb11-29" data-line-number="29">  <span class="co">-- (9,[9,8,7,6,4,1])]</span></a>
+<a class="sourceLine" id="cb11-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb11-31" data-line-number="31">  <span class="co">-- step 4</span></a>
+<a class="sourceLine" id="cb11-32" data-line-number="32">  <span class="fu">&amp;</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> length)</a>
+<a class="sourceLine" id="cb11-33" data-line-number="33">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(8,[9,8,6])]</span></a>
+<a class="sourceLine" id="cb11-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb11-35" data-line-number="35">  <span class="co">-- step 5</span></a>
+<a class="sourceLine" id="cb11-36" data-line-number="36">  <span class="fu">&amp;</span> Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb11-37" data-line-number="37">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb11-39" data-line-number="39">  <span class="co">-- step 6</span></a>
+<a class="sourceLine" id="cb11-40" data-line-number="40">  <span class="fu">&amp;</span> Map.filterWithKey (\is xs <span class="ot">-&gt;</span> length is <span class="fu">==</span> length xs)</a>
+<a class="sourceLine" id="cb11-41" data-line-number="41">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-42" data-line-number="42"></a>
+<a class="sourceLine" id="cb11-43" data-line-number="43">  <span class="co">-- step 7</span></a>
+<a class="sourceLine" id="cb11-44" data-line-number="44">  <span class="fu">&amp;</span> Map.elems</a>
+<a class="sourceLine" id="cb11-45" data-line-number="45">  <span class="co">-- [[4],[8,3,2]]</span></a>
+<a class="sourceLine" id="cb11-46" data-line-number="46">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
+<p>We extract the <code>isPossible</code> function to top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Singles, Twins and Triplets (called <em>Exclusives</em> in general) in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
+<p>The nub of the function lies in step 3 where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
     </section>
     <section class="source">
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/fast-sudoku-solver-in-haskell-2.md" target="_blank" rel="noopener">Post history</a>
