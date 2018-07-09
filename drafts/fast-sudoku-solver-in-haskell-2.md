@@ -29,7 +29,7 @@ So, it took about 117 seconds to solve one hundred puzzles. At this speed, it wo
 
 ## Constraints and Corollaries
 
-In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called "blocks" in general) have all of the digits, from 1 to 9.
+In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called _blocks_ in general) have all of the digits, from 1 to 9.
 
 ``` {.plain .low-line-height}
 +-------+-------+-------+
@@ -63,7 +63,7 @@ In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill
     and its solution
 ```
 
-Previously, we followed a simple pruning algorithm to remove all the solved (or "fixed") digits from neighbours of the fixed cells and we repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid "settled"). Here's an example of a grid before pruning:
+Previously, we followed a simple pruning algorithm to remove all the solved (or _fixed_) digits from neighbours of the fixed cells and we repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid _settled_). Here's an example of a grid before pruning:
 
 <small>
 ``` {.plain .low-line-height}
@@ -119,7 +119,7 @@ Let's have a look at this sample row captured from a solution in progress:
 ```
 </small> 
 
-Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the "Singles" scenario ("Single" as in ["Single child"]).
+Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the _Singles_ scenario ("Single" as in ["Single child"]).
 
 In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario and fix the cell to `1` right then, it will prune the search tree by a lot and make the solution much faster.
 
@@ -143,7 +143,7 @@ It's a bit difficult to notice with naked eyes but there's something special her
 ```
 </small>
 
-This is the "Twins" scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it's the "Triplets" scenario, as in the example below:
+This is the _Twins_ scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it's the _Triplets_ scenario, as in the example below:
 
 <small>
 ``` {.plain .low-line-height}
@@ -163,7 +163,7 @@ In this case, the triplet digits are `3`, `8` and `9`. And as before, we can pru
 ```
 </small>
 
-Though we can extend this to "Quadruplets" scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.
+Though we can extend this to _Quadruplets_ scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.
 
 Now that we have discovered these new strategies to prune cells, let's implement them in Haskell.
 
@@ -207,6 +207,62 @@ Cells                 Digits
 
 Voilà! We have found a Single `4` and a set of Triplets `2`, `3` and `8`. You can go over the puzzle row and verify that this indeed is the case.
 
+Translating this logic to Haskell is quite easy now:
+
+```haskell
+isPossible :: Cell -> Bool
+isPossible (Possible _) = True
+isPossible _            = False
+
+exclusivePossibilities :: [Cell] -> [[Int]]
+exclusivePossibilities row =
+  -- input
+  row
+  -- [Possible [4,6,9], Fixed 1, Fixed 5, Possible [6,9], Fixed 7, Possible [2,3,6,8,9],
+  -- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]
+
+  -- step 1
+  & zip [1..]
+  -- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),
+  -- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),
+  -- (9,Possible [2,3,6,8,9])]
+
+  -- step 2
+  & filter (isPossible . snd)
+  -- [(1,Possible [4,6,9]),(4,Possible [6,9]),(6,Possible [2,3,6,8,9]),
+  -- (7,Possible [6,9]), (8,Possible [2,3,6,8,9]),(9,Possible [2,3,6,8,9])]
+
+  -- step 3
+  & Data.List.foldl'
+      (\acc ~(i, Possible xs) ->
+        Data.List.foldl' (\acc' x -> Map.insertWith prepend x [i] acc') acc xs)
+      Map.empty
+  -- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(6,[9,8,7,6,4,1]),(8,[9,8,6]),
+  -- (9,[9,8,7,6,4,1])]
+
+  -- step 4
+  & Map.filter ((< 4) . length)
+  -- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(8,[9,8,6])]
+
+  -- step 5
+  & Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
+  -- fromList [([1],[4]),([9,8,6],[8,3,2])]
+
+  -- step 6
+  & Map.filterWithKey (\is xs -> length is == length xs)
+  -- fromList [([1],[4]),([9,8,6],[8,3,2])]
+
+  -- step 7
+  & Map.elems
+  -- [[4],[8,3,2]]
+  where
+    prepend ~[y] ys = y:ys
+```
+
+We extract the `isPossible` function to top level from the `nextGrids` function for reuse. Then we write the `exclusivePossibilities` function which finds the Singles, Twins and Triplets (called _Exclusives_ in general) in the input row. This function is written using the reverse application operator [`(&)`] instead of the usual `($)` operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.
+
+The nub of the function lies in step 3 where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row. 
+
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
@@ -216,5 +272,6 @@ Voilà! We have found a Single `4` and a set of Triplets `2`, `3` and `8`. You c
 [previous post]: /posts/fast-sudoku-solver-in-haskell-1/
 ["Single child"]: https://en.wikipedia.org/wiki/Single_child
 [combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
+[`(&)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-
 
 [1]: /files/sudoku17.txt.bz2
