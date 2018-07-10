@@ -1,21 +1,17 @@
-FROM haskell:8.2.2
+FROM haskell:8.4.3
 
 WORKDIR /opt/abhinavsarkar.net
 ADD site.cabal stack.yaml ./
 ADD Site ./Site
 
-RUN apt-get update \
+RUN apt-get update && apt-get upgrade -y \
     && apt-get install -y curl \
     && curl -sL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list \
     && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
     && apt-get -yq --no-install-suggests --no-install-recommends --force-yes install google-chrome-stable nodejs jq \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN npm init -y > /dev/null \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm init -y > /dev/null \
     && npm install --save chrome-headless-render-pdf@1.7.2 \
-    && stack --no-terminal install --fast --only-dependencies --dry-run
-
-RUN stack --no-terminal install --fast --only-dependencies -j2
-
-RUN rm -rf site.cabal stack.yaml Site
+    && stack --no-terminal install --fast --only-dependencies -j6 \
+    && rm -rf site.cabal stack.yaml Site
