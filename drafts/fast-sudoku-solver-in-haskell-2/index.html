@@ -123,7 +123,7 @@
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li><li><a href="#a-little-forward-a-little-backward">A Little Forward, a Little Backward</a></li></ol></nav>
 <h2 id="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
-<p>In the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of <a href="../../files/sudoku17.txt.bz2">17-clue puzzles</a> through our program to see how fast it was:</p>
+<p>In the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of <a href="../../files/sudoku17.txt.bz2">17-clue puzzles</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> through our program to see how fast it was:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
@@ -191,8 +191,8 @@
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23      ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>We can see how the possibilities conflicting with the fixed values are removed. We also see how some non-fixed cells turn into fixed ones as all of their other possible values are eliminated.</p>
-<p>This simple strategy followed directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?</p>
+<p>We see how the possibilities conflicting with the fixed values are removed. We also see how some non-fixed cells turn into fixed ones as all of their other possible values are eliminated.</p>
+<p>This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?</p>
 <h2 id="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s have a look at this sample row captured from a solution in progress:</p>
 <p><small></p>
@@ -200,8 +200,8 @@
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>Notice how the sixth cell is the only one with <code>1</code> as a possibility in it. It is obvious that the sixth cell should be fixed to <code>1</code> as <code>1</code> can not be placed in any other cell in the row. Let’s call this the <em>Singles</em> scenario (“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a>).</p>
-<p>In our current solution, the sixth cell will not be fixed to <code>1</code> either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the <code>nextGrids</code> function and <code>1</code> is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario and fix the cell to <code>1</code> right then, it will prune the search tree by a lot and make the solution much faster.</p>
+<p>Notice how the sixth cell is the only one with <code>1</code> as a possibility in it. It is obvious that the sixth cell should be fixed to <code>1</code> as <code>1</code> can not be placed in any other cell in the row. Let’s call this the <em>Singles</em><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> scenario.</p>
+<p>In our current solution, the sixth cell will not be fixed to <code>1</code> either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the <code>nextGrids</code> function and <code>1</code> is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario while pruning cells and fix the cell to <code>1</code> right then, it will prune the search tree by a lot and make the solution much faster.</p>
 <p>This pattern can be generalized. Let’s check out this sample row from middle of a solution:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -226,10 +226,10 @@
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.</p>
+<p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.</p>
 <p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
 <h2 id="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we’ll try to understand its working using tables. Let’s take this sample row:</p>
+<p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
@@ -362,7 +362,14 @@
 <a class="sourceLine" id="cb11-46" data-line-number="46">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
 <p>We extract the <code>isPossible</code> function to top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Singles, Twins and Triplets (called <em>Exclusives</em> in general) in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
-<p>The nub of the function lies in step 3 where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
+<p>The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>At least 17 cells must be pre-filled in a Sudoku puzzle for it to be solvable. So 17-clue puzzles are the most difficult of all puzzles. <a href="https://arxiv.org/pdf/1201.0749v2.pdf" target="_blank" rel="noopener">This paper</a> by McGuire, Tugemann and Civario gives the proof of the same.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
     </section>
     <section class="source">
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/fast-sudoku-solver-in-haskell-2.md" target="_blank" rel="noopener">Post history</a>
