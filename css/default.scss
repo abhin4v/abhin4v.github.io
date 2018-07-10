@@ -164,6 +164,17 @@ article {
       }
     }
   }
+  .footnotes {
+    p {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      line-height: normal;
+    }
+    ol::before {
+      content: "Footnotes";
+      margin-left: -2em;
+    }
+  }
 }
 
 .header, .ert {
@@ -275,11 +286,6 @@ article {
 
 .figure .caption {
   font-style: italic;
-}
-.footnotes p {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
-  line-height: normal;
 }
 .post .source {
   font-size: 0.8em;
