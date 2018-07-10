@@ -17,7 +17,7 @@ In the [first part] of this series of posts, we wrote a simple [Sudoku] solver i
 
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-In the [previous post], we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of [17-clue puzzles][1] through our program to see how fast it was:
+In the [previous post], we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of [17-clue puzzles][1][^17clue] through our program to see how fast it was:
 
 ```plain
 $ head -n100 sudoku17.txt | time stack exec sudoku
@@ -103,9 +103,9 @@ And here's the same grid when it settles after repeated pruning:
 ```
 </small>
 
-We can see how the possibilities conflicting with the fixed values are removed. We also see how some non-fixed cells turn into fixed ones as all of their other possible values are eliminated.
+We see how the possibilities conflicting with the fixed values are removed. We also see how some non-fixed cells turn into fixed ones as all of their other possible values are eliminated.
 
-This simple strategy followed directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?
+This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?
 
 ## Singles, Twins and Triplets
 
@@ -119,9 +119,9 @@ Let's have a look at this sample row captured from a solution in progress:
 ```
 </small> 
 
-Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the _Singles_ scenario ("Single" as in ["Single child"]).
+Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the _Singles_[^singles] scenario.
 
-In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario and fix the cell to `1` right then, it will prune the search tree by a lot and make the solution much faster.
+In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario while pruning cells and fix the cell to `1` right then, it will prune the search tree by a lot and make the solution much faster.
 
 This pattern can be generalized. Let's check out this sample row from middle of a solution:
 
@@ -163,13 +163,13 @@ In this case, the triplet digits are `3`, `8` and `9`. And as before, we can pru
 ```
 </small>
 
-Though we can extend this to _Quadruplets_ scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up to be more computationally expensive than the benefit we get in solution time speedup by finding them.
+Though we can extend this to _Quadruplets_ scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.
 
 Now that we have discovered these new strategies to prune cells, let's implement them in Haskell.
 
 ## A Little Forward, a Little Backward
 
-We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the [combinatorial] nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we'll try to understand its working using tables. Let's take this sample row:
+We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the [combinatorial] nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let's take this sample row:
 
 <small>
 ``` {.plain .low-line-height}
@@ -261,7 +261,7 @@ exclusivePossibilities row =
 
 We extract the `isPossible` function to top level from the `nextGrids` function for reuse. Then we write the `exclusivePossibilities` function which finds the Singles, Twins and Triplets (called _Exclusives_ in general) in the input row. This function is written using the reverse application operator [`(&)`] instead of the usual `($)` operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.
 
-The nub of the function lies in step 3 where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row. 
+The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
 
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
@@ -273,5 +273,9 @@ The nub of the function lies in step 3 where we do a nested fold over all the no
 ["Single child"]: https://en.wikipedia.org/wiki/Single_child
 [combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
 [`(&)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-
+[This paper]: https://arxiv.org/pdf/1201.0749v2.pdf
 
 [1]: /files/sudoku17.txt.bz2
+
+[^singles]: "Single" as in ["Single child"]
+[^17clue]: At least 17 cells must be pre-filled in a Sudoku puzzle for it to be solvable. So 17-clue puzzles are the most difficult of all puzzles. [This paper] by McGuire, Tugemann and Civario gives the proof of the same.

@@ -100,6 +100,9 @@ a, a:visited {
     color: $link-hover-color;
   }
 }
+em {
+  padding-right: 0.2em;
+}
 
 .sourceCode a { color: inherit; }
 
