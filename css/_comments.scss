@@ -53,7 +53,6 @@
 }
 
 .comments {
-  width: 80%;
   hr {
     width: 50%;
     &:last-child {
@@ -63,7 +62,8 @@
 }
 
 .comment {
-  margin: 2em;
+  margin: 1em;
+  font-size: 0.95em;
   .avatar {
     width: 3.25em;
     height: 3.25em;
