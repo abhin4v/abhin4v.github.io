@@ -8,8 +8,375 @@
         <name>Abhinv Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
     </author>
-    <updated>2018-06-28T00:00:00Z</updated>
+    <updated>2018-07-11T00:00:00Z</updated>
     <entry>
+    <title>Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</title>
+    <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/" />
+    <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</id>
+    <published>2018-07-11T00:00:00Z</published>
+    <updated>2018-07-11T00:00:00Z</updated>
+    <summary type="html"><![CDATA[<div class="ert">
+16 minute read
+</div>
+<p>In the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">first part</a> of this series of posts, we wrote a simple <a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> solver in <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> which used a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction</a> algorithm with <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">backtracking</a>. The solution worked well but was very slow. In this post, we are going to improve it and make it <strong>fast</strong>.</p>
+<!--more-->
+<p>This is the second post in a series of posts:</p>
+<ol type="1">
+<li><a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">Fast Sudoku Solver in Haskell #1: A Simple Solution</a></li>
+<li><a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/">Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</a></li>
+</ol>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li><li><a href="#a-little-forward-a-little-backward">A Little Forward, a Little Backward</a></li><li><a href="#pruning-the-cells-exclusively">Pruning the Cells, Exclusively</a></li><li><a href="#faster-than-a-speeding-bullet">Faster than a Speeding Bullet!</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
+<h2 id="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
+<p>In the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of <a href="https://abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> through our program to see how fast it was:</p>
+<pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
+... output omitted ...
+      116.70 real       198.09 user        94.46 sys</code></pre>
+<p>So, it took about 117 seconds to solve one hundred puzzles. At this speed, it would take about 16 hours to solve all the 49151 puzzles contained in the file. This is just too slow. We need to find ways to make it faster. Let’s go back to the drawing board.</p>
+<h2 id="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called <em>blocks</em> in general) have all of the digits, from 1 to 9.</p>
+<pre class="plain low-line-height"><code>+-------+-------+-------+
+| . . . | . . . | . 1 . |
+| 4 . . | . . . | . . . |
+| . 2 . | . . . | . . . |
++-------+-------+-------+
+| . . . | . 5 . | 4 . 7 |
+| . . 8 | . . . | 3 . . |
+| . . 1 | . 9 . | . . . |
++-------+-------+-------+
+| 3 . . | 4 . . | 2 . . |
+| . 5 . | 1 . . | . . . |
+| . . . | 8 . 6 | . . . |
++-------+-------+-------+
+    A sample puzzle
+
++-------+-------+-------+
+| 6 9 3 | 7 8 4 | 5 1 2 |
+| 4 8 7 | 5 1 2 | 9 3 6 |
+| 1 2 5 | 9 6 3 | 8 7 4 |
++-------+-------+-------+
+| 9 3 2 | 6 5 1 | 4 8 7 |
+| 5 6 8 | 2 4 7 | 3 9 1 |
+| 7 4 1 | 3 9 8 | 6 2 5 |
++-------+-------+-------+
+| 3 1 9 | 4 7 5 | 2 6 8 |
+| 8 5 6 | 1 2 9 | 7 4 3 |
+| 2 7 4 | 8 3 6 | 1 5 9 |
++-------+-------+-------+
+    and its solution</code></pre>
+<p>Previously, we followed a simple pruning algorithm to remove all the solved (or <em>fixed</em>) digits from neighbours of the fixed cells and we repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid <em>settled</em>). Here’s an example of a grid before pruning:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
+| 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
+| [123456789] 2           [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [123456789] [123456789] [123456789] | [123456789] 5           [123456789] | 4           [123456789] 7           |
+| [123456789] [123456789] 8           | [123456789] [123456789] [123456789] | 3           [123456789] [123456789] |
+| [123456789] [123456789] 1           | [123456789] 9           [123456789] | [123456789] [123456789] [123456789] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+| 3           [123456789] [123456789] | 4           [123456789] [123456789] | 2           [123456789] [123456789] |
+| [123456789] 5           [123456789] | 1           [123456789] [123456789] | [123456789] [123456789] [123456789] |
+| [123456789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>And here’s the same grid when it settles after repeated pruning:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
+| 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
+| [1   56789] 2           [  3 567 9] | [  3 567 9] [1 34 6 8 ] [1 345 789] | [    56789] [  3456789] [  3456 89] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+| [ 2   6  9] [  3  6  9] [ 23  6  9] | [ 23  6   ] 5           [123    8 ] | 4           [ 2   6 89] 7           |
+| [ 2  567 9] [   4 67 9] 8           | [ 2   67  ] [12 4 6   ] [12 4  7  ] | 3           [ 2  56  9] [12  56  9] |
+| [ 2  567  ] [  34 67  ] 1           | [ 23  67  ] 9           [ 234  78 ] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
++-------------------------------------+-------------------------------------+-------------------------------------+
+| 3           [1    6 89] [     6  9] | 4           7           [    5   9] | 2           [    56 89] [1   56 89] |
+| [ 2   6789] 5           [ 2 4 67 9] | 1           [ 23      ] [ 23     9] | [     6789] [  34 6789] [  34 6 89] |
+| [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23      ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all of their other possible values are eliminated.</p>
+<p>This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?</p>
+<h2 id="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Let’s have a look at this sample row captured from a solution in progress:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>Notice how the sixth cell is the only one with <code>1</code> as a possibility in it. It is obvious that the sixth cell should be fixed to <code>1</code> as <code>1</code> cannot be placed in any other cell in the row. Let’s call this the <em>Singles</em><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> scenario.</p>
+<p>In our current solution, the sixth cell will not be fixed to <code>1</code> either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the <code>nextGrids</code> function and <code>1</code> is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario while pruning cells and fix the cell to <code>1</code> right then, it will cut down the search tree by a lot and make the solution much faster.</p>
+<p>This pattern can be generalized. Let’s check out this sample row from middle of a solution:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>It is a bit difficult to notice with naked eyes but there’s something special here too. The digits <code>5</code> and <code>7</code> occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, <code>5</code> and <code>7</code> can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only <code>5</code> and <code>7</code> like this:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>This is the <em>Twins</em> scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it is the <em>Triplets</em> scenario, as in the example below:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>In this case, the triplet digits are <code>3</code>, <code>8</code> and <code>9</code>. And as before, we can prune the block by fixing these digits in their cells:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios occur rarely in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.</p>
+<p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
+<h2 id="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let’s take this sample row:</p>
+<p><small></p>
+<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+| [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
++-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
+<p></small></p>
+<p>First, we make a table mapping the digits to the cells in which they occur, excluding the digits which have been fixed already:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Digit</th>
+<th style="text-align: right;">Cells</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">2</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">3</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">4</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6</td>
+<td style="text-align: right;">1, 4, 6, 7, 8, 9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">8</td>
+<td style="text-align: right;">6, 8, 9</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">9</td>
+<td style="text-align: right;">1, 4, 6, 7, 8, 9</td>
+</tr>
+</tbody>
+</table>
+<p>Then, we flip this table and collect all the digits that occur in the same set of cells:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cells</th>
+<th style="text-align: right;">Digits</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6, 8, 9</td>
+<td style="text-align: right;">2, 3, 8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1, 4, 6, 7, 8, 9</td>
+<td style="text-align: right;">6, 9</td>
+</tr>
+</tbody>
+</table>
+<p>And finally, we remove the rows of the table in which the count of the cells is not the same as the count of the digits:</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cells</th>
+<th style="text-align: right;">Digits</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">1</td>
+<td style="text-align: right;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">6, 8, 9</td>
+<td style="text-align: right;">2, 3, 8</td>
+</tr>
+</tbody>
+</table>
+<p>Voilà! We have found a Single <code>4</code> and a set of Triplets <code>2</code>, <code>3</code> and <code>8</code>. You can go over the puzzle row and verify that this indeed is the case.</p>
+<p>Translating this logic to Haskell is quite easy now:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">isPossible ::</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb11-2" data-line-number="2">isPossible (<span class="dt">Possible</span> _) <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb11-3" data-line-number="3">isPossible _            <span class="fu">=</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]]</a>
+<a class="sourceLine" id="cb11-6" data-line-number="6">exclusivePossibilities row <span class="fu">=</span></a>
+<a class="sourceLine" id="cb11-7" data-line-number="7">  <span class="co">-- input</span></a>
+<a class="sourceLine" id="cb11-8" data-line-number="8">  row</a>
+<a class="sourceLine" id="cb11-9" data-line-number="9">  <span class="co">-- [Possible [4,6,9], Fixed 1, Fixed 5, Possible [6,9], Fixed 7, Possible [2,3,6,8,9],</span></a>
+<a class="sourceLine" id="cb11-10" data-line-number="10">  <span class="co">-- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]</span></a>
+<a class="sourceLine" id="cb11-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb11-12" data-line-number="12">  <span class="co">-- step 1</span></a>
+<a class="sourceLine" id="cb11-13" data-line-number="13">  <span class="fu">&amp;</span> zip [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>]</a>
+<a class="sourceLine" id="cb11-14" data-line-number="14">  <span class="co">-- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),</span></a>
+<a class="sourceLine" id="cb11-15" data-line-number="15">  <span class="co">-- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-16" data-line-number="16">  <span class="co">-- (9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb11-18" data-line-number="18">  <span class="co">-- step 2</span></a>
+<a class="sourceLine" id="cb11-19" data-line-number="19">  <span class="fu">&amp;</span> filter (isPossible <span class="fu">.</span> snd)</a>
+<a class="sourceLine" id="cb11-20" data-line-number="20">  <span class="co">-- [(1,Possible [4,6,9]),(4,Possible [6,9]),(6,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-21" data-line-number="21">  <span class="co">-- (7,Possible [6,9]), (8,Possible [2,3,6,8,9]),(9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb11-23" data-line-number="23">  <span class="co">-- step 3</span></a>
+<a class="sourceLine" id="cb11-24" data-line-number="24">  <span class="fu">&amp;</span> Data.List.foldl'</a>
+<a class="sourceLine" id="cb11-25" data-line-number="25">      (\acc <span class="fu">~</span>(i, <span class="dt">Possible</span> xs) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb11-26" data-line-number="26">        Data.List.foldl' (\acc' x <span class="ot">-&gt;</span> Map.insertWith prepend x [i] acc') acc xs)</a>
+<a class="sourceLine" id="cb11-27" data-line-number="27">      Map.empty</a>
+<a class="sourceLine" id="cb11-28" data-line-number="28">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(6,[9,8,7,6,4,1]),(8,[9,8,6]),</span></a>
+<a class="sourceLine" id="cb11-29" data-line-number="29">  <span class="co">-- (9,[9,8,7,6,4,1])]</span></a>
+<a class="sourceLine" id="cb11-30" data-line-number="30"></a>
+<a class="sourceLine" id="cb11-31" data-line-number="31">  <span class="co">-- step 4</span></a>
+<a class="sourceLine" id="cb11-32" data-line-number="32">  <span class="fu">&amp;</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> length)</a>
+<a class="sourceLine" id="cb11-33" data-line-number="33">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(8,[9,8,6])]</span></a>
+<a class="sourceLine" id="cb11-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb11-35" data-line-number="35">  <span class="co">-- step 5</span></a>
+<a class="sourceLine" id="cb11-36" data-line-number="36">  <span class="fu">&amp;</span> Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb11-37" data-line-number="37">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-38" data-line-number="38"></a>
+<a class="sourceLine" id="cb11-39" data-line-number="39">  <span class="co">-- step 6</span></a>
+<a class="sourceLine" id="cb11-40" data-line-number="40">  <span class="fu">&amp;</span> Map.filterWithKey (\is xs <span class="ot">-&gt;</span> length is <span class="fu">==</span> length xs)</a>
+<a class="sourceLine" id="cb11-41" data-line-number="41">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-42" data-line-number="42"></a>
+<a class="sourceLine" id="cb11-43" data-line-number="43">  <span class="co">-- step 7</span></a>
+<a class="sourceLine" id="cb11-44" data-line-number="44">  <span class="fu">&amp;</span> Map.elems</a>
+<a class="sourceLine" id="cb11-45" data-line-number="45">  <span class="co">-- [[4],[8,3,2]]</span></a>
+<a class="sourceLine" id="cb11-46" data-line-number="46">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
+<p>We extract the <code>isPossible</code> function to top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Singles, Twins and Triplets (called <em>Exclusives</em> in general) in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
+<p>The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from the possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
+<h2 id="pruning-the-cells-exclusively">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>To start with, we extract some reusable code from the previous <code>pruneCells</code> function and rename it to <code>pruneCellsByFixed</code>:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">makeCell ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Cell</span></a>
+<a class="sourceLine" id="cb12-2" data-line-number="2">makeCell ys <span class="fu">=</span> <span class="kw">case</span> ys <span class="kw">of</span></a>
+<a class="sourceLine" id="cb12-3" data-line-number="3">  []  <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb12-4" data-line-number="4">  [y] <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Fixed</span> y</a>
+<a class="sourceLine" id="cb12-5" data-line-number="5">  _   <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> ys</a>
+<a class="sourceLine" id="cb12-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="ot">pruneCellsByFixed ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb12-8" data-line-number="8">pruneCellsByFixed cells <span class="fu">=</span> traverse pruneCell cells</a>
+<a class="sourceLine" id="cb12-9" data-line-number="9">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-10" data-line-number="10">    fixeds <span class="fu">=</span> [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> cells]</a>
+<a class="sourceLine" id="cb12-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb12-12" data-line-number="12">    pruneCell (<span class="dt">Possible</span> xs) <span class="fu">=</span> makeCell (xs <span class="dt">Data.List</span><span class="fu">.</span>\\ fixeds)</a>
+<a class="sourceLine" id="cb12-13" data-line-number="13">    pruneCell x             <span class="fu">=</span> <span class="dt">Just</span> x</a></code></pre></div>
+<p>Now we write the <code>pruneCellsByExclusives</code> function which uses the <code>exclusivePossibilities</code> function to prune the cells:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">pruneCellsByExclusives ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">pruneCellsByExclusives cells <span class="fu">=</span> <span class="kw">case</span> exclusives <span class="kw">of</span></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3">  [] <span class="ot">-&gt;</span> <span class="dt">Just</span> cells</a>
+<a class="sourceLine" id="cb13-4" data-line-number="4">  _  <span class="ot">-&gt;</span> traverse pruneCell cells</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">    exclusives    <span class="fu">=</span> exclusivePossibilities cells</a>
+<a class="sourceLine" id="cb13-7" data-line-number="7">    allExclusives <span class="fu">=</span> concat exclusives</a>
+<a class="sourceLine" id="cb13-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb13-9" data-line-number="9">    pruneCell cell<span class="fu">@</span>(<span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> cell</a>
+<a class="sourceLine" id="cb13-10" data-line-number="10">    pruneCell cell<span class="fu">@</span>(<span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb13-11" data-line-number="11">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span> makeCell intersection</a>
+<a class="sourceLine" id="cb13-12" data-line-number="12">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> cell</a>
+<a class="sourceLine" id="cb13-13" data-line-number="13">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-14" data-line-number="14">        intersection <span class="fu">=</span> xs <span class="ot">`Data.List.intersect`</span> allExclusives</a></code></pre></div>
+<p><code>pruneCellsByExclusives</code> works exactly as shown in the examples above. We first find the list of Exclusives in the given cells. If there are no Exclusives, there’s nothing to do and we just return the cells. If we found any Exclusives, we <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse" target="_blank" rel="noopener"><code>traverse</code></a> the cells, pruning each cell to just the intersection of the possible digits in the cell and Exclusive digits. That’s it! We reuse the <code>makeCell</code> function to create a new cell with the intersection.</p>
+<p>As the final step, we rewrite the <code>pruneCells</code> function by combining both the functions.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="ot">fixM ::</span> (<span class="dt">Eq</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (t <span class="ot">-&gt;</span> m t) <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> m t</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">fixM f x <span class="fu">=</span> f x <span class="fu">&gt;&gt;=</span> \x' <span class="ot">-&gt;</span> <span class="kw">if</span> x' <span class="fu">==</span> x <span class="kw">then</span> return x <span class="kw">else</span> fixM f x'</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">pruneCells cells <span class="fu">=</span> fixM pruneCellsByFixed cells <span class="fu">&gt;&gt;=</span> fixM pruneCellsByExclusives</a></code></pre></div>
+<p>We have extracted <code>fixM</code> as a top level function from the <code>pruneGrid</code> function. Just like the <code>pruneGrid'</code> function, we need to use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) to chain the two pruning steps. We also use <code>fixM</code> to apply each step repeatedly till the pruned cells settle<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
+<p>No further code changes are required. It is time to check out the improvements.</p>
+<h2 id="faster-than-a-speeding-bullet">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Let’s build the program and run the exact same number of puzzles as before:</p>
+<pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
+... output omitted ...
+      0.53 real         0.58 user         0.23 sys</code></pre>
+<p>Woah! It is way faster than before. Let’s solve all of these puzzles now:</p>
+<pre class="plain"><code>$ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
+      282.98 real       407.25 user       109.27 sys</code></pre>
+<p>So it is took about 283 seconds to solve all the 49151 puzzles. The speedup is about 200x<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>. That’s about 5.8 milliseconds per puzzle.</p>
+<p>Let’s do a quick profiling to see where the time is going:</p>
+<pre class="plain"><code>$ stack build --profile
+$ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></pre>
+<p>This generates a file named <code>sudoku.prof</code> with the profiling results. Here are the top five most time-taking functions (cleaned for brevity):</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cost Center</th>
+<th style="text-align: left;">Source</th>
+<th style="text-align: right;">%time</th>
+<th style="text-align: right;">%alloc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>exclusivePossibilities</code></td>
+<td style="text-align: left;">(49,1)-(62,26)</td>
+<td style="text-align: right;">17.6</td>
+<td style="text-align: right;">11.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneCellsByFixed.pruneCell</code></td>
+<td style="text-align: left;">(75,5)-(76,36)</td>
+<td style="text-align: right;">16.9</td>
+<td style="text-align: right;">30.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>exclusivePossibilities.\.\</code></td>
+<td style="text-align: left;">55:38-70</td>
+<td style="text-align: right;">12.2</td>
+<td style="text-align: right;">20.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fixM.\</code></td>
+<td style="text-align: left;">13:27-65</td>
+<td style="text-align: right;">10.0</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>==</code></td>
+<td style="text-align: left;">15:56-57</td>
+<td style="text-align: right;">7.2</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+</tbody>
+</table>
+<p>Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?</p>
+<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>In this post, we improved upon our simple Sudoku solution from the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">last time</a> by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We’ll work on that and more in the upcoming posts in this series. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0" target="_blank" rel="noopener">here</a>.</p>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>At least 17 cells must be pre-filled in a Sudoku puzzle for it to have a unique solution. So 17-clue puzzles are the most difficult of all puzzles. <a href="https://arxiv.org/pdf/1201.0749v2.pdf" target="_blank" rel="noopener">This paper</a> by McGuire, Tugemann and Civario gives the proof of the same.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>Reverse application operation is not used much in Haskell, but is the preferred way of function chaining in some other functional programming languages like <a href="https://clojuredocs.org/clojure.core/-%3E" target="_blank" rel="noopener">Clojure</a>, <a href="https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d" target="_blank" rel="noopener">FSharp</a>, and <a href="https://hexdocs.pm/elixir/Kernel.html#%7C%3E/2" target="_blank" rel="noopener">Elixir</a>.<a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn4"><p>We need to run <code>pruneCellsByFixed</code> and <code>pruneCellsByExclusives</code> repeatedly using <code>fixM</code> because an unsettled row can lead to wrong solutions. Imagine a row which just got a <code>9</code> fixed because of <code>pruneCellsByFixed</code>. If we don’t run the function again, the row may be left with one non-fixed cell with a <code>9</code>. When we run this row through <code>pruneCellsByExclusives</code>, it’ll consider the <code>9</code> in the non-fixed cell as a Single and fix it, leading to two <code>9</code>s in the same row, and causing the solution to fail.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>Speedup: 116.7 / 100 * 49151 / 282.98 = 202.7<a href="#fnref5" class="footnote-back">↩</a></p></li>
+</ol>
+</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#comment-container">leave a comment</a>.</p>]]></summary>
+</entry>
+<entry>
     <title>Fast Sudoku Solver in Haskell #1: A Simple Solution</title>
     <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/" />
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</id>
@@ -21,6 +388,11 @@
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language and is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell, so we’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <!--more-->
+<p>This is the first post in a series of posts:</p>
+<ol type="1">
+<li><a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">Fast Sudoku Solver in Haskell #1: A Simple Solution</a></li>
+<li><a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/">Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</a></li>
+</ol>
 <p>This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#constraint-satisfaction-problem">Constraint Satisfaction Problem</a></li><li><a href="#setting-up">Setting up</a></li><li><a href="#pruning-the-cells">Pruning the Cells</a></li><li><a href="#pruning-the-grid">Pruning the Grid</a></li><li><a href="#making-the-choice">Making the Choice</a></li><li><a href="#solving-the-puzzle">Solving the Puzzle</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="constraint-satisfaction-problem">Constraint Satisfaction Problem<a href="#constraint-satisfaction-problem" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
@@ -568,7 +940,7 @@
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
-<p>It took about 292 seconds to solve a hundred puzzles, so, about 3 seconds per puzzle. This is pretty slow but we’ll get around to making it faster in the subsequent posts.</p>
+<p>It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per puzzle. This is pretty slow but we’ll get around to making it faster in the subsequent posts.</p>
 <h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <section class="footnotes">
