@@ -114,7 +114,7 @@
 | [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
-<p>It is a bit difficult to notice with naked eyes but there’s something special here too. The digits <code>5</code> and <code>7</code> occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, <code>5</code> and <code>7</code> can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only <code>5</code> and <code>7</code> like this:</p>
+<p>It is a bit difficult to notice with the naked eye but there’s something special here too. The digits <code>5</code> and <code>7</code> occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, <code>5</code> and <code>7</code> can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only <code>5</code> and <code>7</code> like this:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
