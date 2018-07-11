@@ -116,7 +116,7 @@
     </section>
     <section itemprop="articleBody" class="body">
         <div class="ert">
-31 minute read
+32 minute read
 </div>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language and is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell, so we’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
@@ -669,7 +669,7 @@
 4 8 6 5 1 2 7 9 3
 5 1 7 8 9 3 2 4 6</code></pre>
 <p>And, we are done.</p>
-<p>If you want to play with different puzzles, the file <a href="../../files/sudoku17.txt.bz2">here</a> lists some of the toughest ones. Let’s run some of them through our program to see how fast it is:</p>
+<p>If you want to play with different puzzles, the file <a href="../../files/sudoku17.txt.bz2">here</a> lists some of the toughest ones. Let’s run<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> some of them through our program to see how fast it is:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
@@ -680,6 +680,7 @@
 <hr />
 <ol>
 <li id="fn1"><p>This exercise was originally done as a part of <a href="https://github.com/pratul/haskell-classes/" target="_blank" rel="noopener">the</a> <a href="https://github.com/ford-prefect/haskell-classes/" target="_blank" rel="noopener">Haskell</a> <a href="https://github.com/bnvinay92/haskell-classes/" target="_blank" rel="noopener">classes</a> I taught at <a href="https://nilenso.com" target="_blank" rel="noopener">nilenso</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref2" class="footnote-back">↩</a></p></li>
 </ol>
 </section>
     </section>

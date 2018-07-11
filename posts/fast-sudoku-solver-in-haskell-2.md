@@ -15,7 +15,7 @@ This post can be discussed on [r/haskell].
 
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-In the [previous post], we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran some of [17-clue puzzles][1][^17clue] through our program to see how fast it was:
+In the [previous post], we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran[^machinespec] some of [17-clue puzzles][1][^17clue] through our program to see how fast it was:
 
 ```plain
 $ head -n100 sudoku17.txt | time stack exec sudoku
@@ -379,6 +379,8 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
+
+[^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
 [^singles]: "Single" as in ["Single child"]
 
