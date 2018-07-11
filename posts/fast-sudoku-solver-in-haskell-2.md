@@ -16,6 +16,8 @@ This is the second post in a series of posts:
 1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
 2. [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]
 
+This post can be discussed on [r/haskell].
+
 * toc
 
 ## Quick Recap
@@ -363,7 +365,7 @@ Looking at the report, my guess is that a lot of time is going into list operati
 
 ## Conclusion
 
-In this post, we improved upon our simple Sudoku solution from the [last time] by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2].
+In this post, we improved upon our simple Sudoku solution from the [last time] by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. This post can be discussed on [r/haskell].
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
 [last time]: /posts/fast-sudoku-solver-in-haskell-1/
@@ -382,6 +384,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 [Clojure]: https://clojuredocs.org/clojure.core/-%3E
 [FSharp]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d
 [Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2
+[r/haskell]: https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
