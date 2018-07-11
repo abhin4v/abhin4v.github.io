@@ -34,6 +34,8 @@ $ head -n100 sudoku17.txt | time stack exec sudoku
 
 So, it took about 117 seconds to solve one hundred puzzles. At this speed, it would take about 16 hours to solve all the 49151 puzzles contained in the file. This is just too slow. We need to find ways to make it faster. Let's go back to the drawing board.
 
+<div class="page-break"></div>
+
 ## Constraints and Corollaries
 
 In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called _blocks_ in general) have all of the digits, from 1 to 9.
@@ -113,6 +115,8 @@ And here's the same grid when it settles after repeated pruning:
 We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all of their other possible values are eliminated.
 
 This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?
+
+<div class="page-break"></div>
 
 ## Singles, Twins and Triplets
 

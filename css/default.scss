@@ -227,6 +227,12 @@ article {
   }
 }
 
+@media all {
+	.page-break	{
+    display: none;
+  }
+}
+
 @media screen and(max-width: 600px) {
   .hide-small {
     display: none;
@@ -278,6 +284,7 @@ article {
       border-right: none;
     }
   }
+
   article {
     .twitter-share-button {
       display: none;
@@ -295,8 +302,14 @@ article {
       }
     }
   }
+
   .post-download {
     display: none;
+  }
+
+  .page-break	{
+    display: block;
+    page-break-before: always;
   }
 }
 
