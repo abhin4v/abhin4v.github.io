@@ -7,9 +7,14 @@ author: Abhinav Sarkar
 toc: right
 ---
 
-In the [first part] of this series of posts, we wrote a simple [Sudoku] solver in [Haskell] which used a [constraint satisfaction] algorithm with [backtracking]. The solution worked well but was found to be very slow. In this post, we are going to improve the solution to make it **fast**.
+In the [first part] of this series of posts, we wrote a simple [Sudoku] solver in [Haskell] which used a [constraint satisfaction] algorithm with [backtracking]. The solution worked well but was very slow. In this post, we are going to improve it and make it **fast**.
 
 <!--more-->
+
+This is the second post in a series of posts:
+
+1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
+2. [Fast Sudoku Solver in Haskell #2: A Faster Solution]
 
 * toc
 
@@ -103,7 +108,7 @@ And here's the same grid when it settles after repeated pruning:
 ```
 </small>
 
-We see how the possibilities conflicting with the fixed values are removed. We also see how some non-fixed cells turn into fixed ones as all of their other possible values are eliminated.
+We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all of their other possible values are eliminated.
 
 This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?
 
@@ -119,9 +124,9 @@ Let's have a look at this sample row captured from a solution in progress:
 ```
 </small> 
 
-Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` can not be placed in any other cell in the row. Let's call this the _Singles_[^singles] scenario.
+Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that the sixth cell should be fixed to `1` as `1` cannot be placed in any other cell in the row. Let's call this the _Singles_[^singles] scenario.
 
-In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario while pruning cells and fix the cell to `1` right then, it will prune the search tree by a lot and make the solution much faster.
+In our current solution, the sixth cell will not be fixed to `1` either till all other possibilities of the cell are pruned away or, till the cell is chosen as pivot in the `nextGrids` function and `1` is chosen as the value to fix. This may take very long and lead to a longer solution time. If we recognize the Singles scenario while pruning cells and fix the cell to `1` right then, it will cut down the search tree by a lot and make the solution much faster.
 
 This pattern can be generalized. Let's check out this sample row from middle of a solution:
 
@@ -133,7 +138,7 @@ This pattern can be generalized. Let's check out this sample row from middle of 
 ```
 </small>
 
-It's a bit difficult to notice with naked eyes but there's something special here too. The digits `5` and `7` occur only in the third and ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, `5` and `7` can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only `5` and `7` like this:
+It is a bit difficult to notice with naked eyes but there's something special here too. The digits `5` and `7` occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, `5` and `7` can be placed either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only `5` and `7` like this:
 
 <small>
 ``` {.plain .low-line-height}
@@ -143,7 +148,7 @@ It's a bit difficult to notice with naked eyes but there's something special her
 ```
 </small>
 
-This is the _Twins_ scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it's the _Triplets_ scenario, as in the example below:
+This is the _Twins_ scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it is the _Triplets_ scenario, as in the example below:
 
 <small>
 ``` {.plain .low-line-height}
@@ -163,13 +168,13 @@ In this case, the triplet digits are `3`, `8` and `9`. And as before, we can pru
 ```
 </small>
 
-Though we can extend this to _Quadruplets_ scenario and further, such scenarios rarely occur in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.
+Though we can extend this to _Quadruplets_ scenario and further, such scenarios occur rarely in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.
 
 Now that we have discovered these new strategies to prune cells, let's implement them in Haskell.
 
 ## A Little Forward, a Little Backward
 
-We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function because of the [combinatorial] nature of the Sudoku puzzles. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let's take this sample row:
+We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let's take this sample row:
 
 <small>
 ``` {.plain .low-line-height}
@@ -259,9 +264,9 @@ exclusivePossibilities row =
     prepend ~[y] ys = y:ys
 ```
 
-We extract the `isPossible` function to top level from the `nextGrids` function for reuse. Then we write the `exclusivePossibilities` function which finds the Singles, Twins and Triplets (called _Exclusives_ in general) in the input row. This function is written using the reverse application operator [`(&)`] instead of the usual `($)` operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.
+We extract the `isPossible` function to top level from the `nextGrids` function for reuse. Then we write the `exclusivePossibilities` function which finds the Singles, Twins and Triplets (called _Exclusives_ in general) in the input row. This function is written using the reverse application operator [`(&)`][^revapp] instead of the usual `($)` operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.
 
-The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
+The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from the possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
 
 ## Pruning the Cells, Exclusively
 
@@ -314,7 +319,7 @@ pruneCells :: [Cell] -> Maybe [Cell]
 pruneCells cells = fixM pruneCellsByFixed cells >>= fixM pruneCellsByExclusives
 ```
 
-We have extracted `fixM` as a top level function from the `pruneGrid` function. Just like the `pruneGrid'` function, we need to use monadic bind ([`>>=`]) to chain the two pruning steps. We also use `fixM` to apply each step repeatedly till the pruned cells settle.
+We have extracted `fixM` as a top level function from the `pruneGrid` function. Just like the `pruneGrid'` function, we need to use monadic bind ([`>>=`]) to chain the two pruning steps. We also use `fixM` to apply each step repeatedly till the pruned cells settle[^fixM].
 
 No further code changes are required. It is time to check out the improvements.
 
@@ -337,24 +342,24 @@ $ cat sudoku17.txt | time stack exec sudoku > /dev/null
 
 So it is took about 283 seconds to solve all the 49151 puzzles. The speedup is about 200x[^speedup]. That's about 5.8 milliseconds per puzzle.
 
-Let's do a quick profiling to see where is the time going:
+Let's do a quick profiling to see where the time is going:
 
 ```plain
 $ stack build --profile
 $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p > /dev/null
 ```
 
-This generates a file named `sudoku.prof` with profiling results. Here are the top five most time-taking functions (cleaned for brevity):
+This generates a file named `sudoku.prof` with the profiling results. Here are the top five most time-taking functions (cleaned for brevity):
 
-COST CENTRE                 SRC              %time  %alloc
----------------             --------        ------ -------
-exclusivePossibilities      (49,1)-(62,26)  17.6    11.4
-pruneCellsByFixed.pruneCell (75,5)-(76,36)  16.9    30.8
-exclusivePossibilities.\.\  55:38-70        12.2    20.3
-fixM.\                      13:27-65        10.0     0.0
-==                          15:56-57         7.2     0.0
+Cost Center                   Source           %time  %alloc
+---------------               --------        ------ -------
+`exclusivePossibilities`      (49,1)-(62,26)  17.6    11.4
+`pruneCellsByFixed.pruneCell` (75,5)-(76,36)  16.9    30.8
+`exclusivePossibilities.\.\`  55:38-70        12.2    20.3
+`fixM.\`                      13:27-65        10.0     0.0
+`==`                          15:56-57         7.2     0.0
 
-Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we could switch to some other data structures?
+Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?
 
 ## Conclusion
 
@@ -368,15 +373,25 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 [Haskell]: https://www.haskell.org/
 [previous post]: /posts/fast-sudoku-solver-in-haskell-1/
 ["Single child"]: https://en.wikipedia.org/wiki/Single_child
-[combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
 [`(&)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-
 [This paper]: https://arxiv.org/pdf/1201.0749v2.pdf
 [`traverse`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse
 [`>>=`]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
+[Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
+[Fast Sudoku Solver in Haskell #2: A Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
+[Clojure]: https://clojuredocs.org/clojure.core/-%3E
+[FSharp]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d
+[Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
 
 [^singles]: "Single" as in ["Single child"]
+
 [^17clue]: At least 17 cells must be pre-filled in a Sudoku puzzle for it to have a unique solution. So 17-clue puzzles are the most difficult of all puzzles. [This paper] by McGuire, Tugemann and Civario gives the proof of the same.
-[^speedup]: 116.7 / 100 * 49151 / 282.98 = 202.7
+
+[^revapp]: Reverse application operation is not used much in Haskell, but is the preferred way of function chaining in some other functional programming languages like [Clojure], [FSharp], and [Elixir].
+
+[^fixM]: We need to run `pruneCellsByFixed` and `pruneCellsByExclusives` repeatedly using `fixM` because an unsettled row can lead to wrong solutions. Imagine a row which just got a `9` fixed because of `pruneCellsByFixed`. If we don't run the function again, the row may be left with one non-fixed cell with a `9`. When we run this row through `pruneCellsByExclusives`, it'll consider the `9` in the non-fixed cell as a Single and fix it, leading to two `9`s in the same row, and causing the solution to fail.
+
+[^speedup]: Speedup: 116.7 / 100 * 49151 / 282.98 = 202.7
