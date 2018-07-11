@@ -13,6 +13,11 @@ toc: right
 
 <!--more-->
 
+This is the first post in a series of posts:
+
+1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
+2. [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]
+
 This post can be discussed on [r/haskell].
 
 * toc
@@ -700,7 +705,7 @@ $ head -n100 sudoku17.txt | time stack exec sudoku
       116.70 real       198.09 user        94.46 sys
 ```
 
-It took about 292 seconds to solve a hundred puzzles, so, about 3 seconds per puzzle. This is pretty slow but we'll get around to making it faster in the subsequent posts.
+It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per puzzle. This is pretty slow but we'll get around to making it faster in the subsequent posts.
 
 ## Conclusion
 
@@ -716,6 +721,8 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [`Alternative`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2
 [r/haskell]: https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/
 [nilenso]: https://nilenso.com
+[Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
+[Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 
 [1]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [2]: https://en.wikipedia.org/wiki/State_space_search

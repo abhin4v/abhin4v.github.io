@@ -1,5 +1,5 @@
 ---
-title: "Fast Sudoku Solver in Haskell #2: A Faster Solution"
+title: "Fast Sudoku Solver in Haskell #2: A 200x Faster Solution"
 date: 2018-07-11
 description: We optimize the simple Sudoku solver to be much faster.
 tags: haskell, sudoku, programming, puzzle
@@ -14,7 +14,7 @@ In the [first part] of this series of posts, we wrote a simple [Sudoku] solver i
 This is the second post in a series of posts:
 
 1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
-2. [Fast Sudoku Solver in Haskell #2: A Faster Solution]
+2. [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]
 
 * toc
 
@@ -378,7 +378,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 [`traverse`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse
 [`>>=`]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
-[Fast Sudoku Solver in Haskell #2: A Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
+[Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 [Clojure]: https://clojuredocs.org/clojure.core/-%3E
 [FSharp]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d
 [Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2
