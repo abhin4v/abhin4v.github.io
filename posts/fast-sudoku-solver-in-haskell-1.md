@@ -697,7 +697,7 @@ $ echo ".......12.5.4............3.7..6..4....1..........8....92....8.....51.7..
 
 And, we are done.
 
-If you want to play with different puzzles, the file [here][8] lists some of the toughest ones. Let's run some of them through our program to see how fast it is:
+If you want to play with different puzzles, the file [here][8] lists some of the toughest ones. Let's run[^machinespec] some of them through our program to see how fast it is:
 
 ```plain
 $ head -n100 sudoku17.txt | time stack exec sudoku
@@ -738,3 +738,5 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [12]: https://github.com/pratul/haskell-classes/
 
 [^1]: This exercise was originally done as a part of [the][12] [Haskell][10] [classes][11] I taught at [nilenso].
+
+[^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
