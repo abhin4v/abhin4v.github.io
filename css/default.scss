@@ -214,7 +214,7 @@ article {
   border-collapse: collapse;
   min-width: 40%;
   td, th {
-    padding: 0.2em 2em;
+    padding: 0.2em 1em;
   }
   thead {
     border-top: 2px solid lighten($text-color, 30%);
@@ -238,6 +238,14 @@ article {
   .post h1 {
     font-size: 2em;
   }
+  .post .body {
+    overflow-x: scroll;
+    > table {
+      td, th {
+        padding: 0.2em 0.2em;
+      }
+    }
+  }
 }
 
 @media print {
@@ -258,8 +266,13 @@ article {
     .source {
       display: none!important;
     }
-    .body a:after {
-      display: none!important;
+    .body {
+      > table {
+        page-break-inside: avoid;
+      }
+      a:after {
+        display: none!important;
+      }
     }
     td.hljs-ln-numbers {
       border-right: none;

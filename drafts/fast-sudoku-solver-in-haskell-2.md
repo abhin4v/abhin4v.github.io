@@ -1,7 +1,7 @@
 ---
-title: "Fast Sudoku Solver in Haskell #2: 500x Faster!"
-date: 2018-06-28
-description: We write a Sudoku Solver in Haskell and optimize it to be fast
+title: "Fast Sudoku Solver in Haskell #2: A Faster Solution"
+date: 2018-07-11
+description: We optimize the simple Sudoku solver to be much faster.
 tags: haskell, sudoku, programming, puzzle
 author: Abhinav Sarkar
 toc: right
@@ -222,7 +222,7 @@ exclusivePossibilities row =
   -- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]
 
   -- step 1
-  & zip [1..]
+  & zip [1..9]
   -- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),
   -- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),
   -- (9,Possible [2,3,6,8,9])]
@@ -263,8 +263,105 @@ We extract the `isPossible` function to top level from the `nextGrids` function 
 
 The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
 
+## Pruning the Cells, Exclusively
+
+To start with, we extract some reusable code from the previous `pruneCells` function and rename it to `pruneCellsByFixed`:
+
+```haskell
+makeCell :: [Int] -> Maybe Cell
+makeCell ys = case ys of
+  []  -> Nothing
+  [y] -> Just $ Fixed y
+  _   -> Just $ Possible ys
+
+pruneCellsByFixed :: [Cell] -> Maybe [Cell]
+pruneCellsByFixed cells = traverse pruneCell cells
+  where
+    fixeds = [x | Fixed x <- cells]
+
+    pruneCell (Possible xs) = makeCell (xs Data.List.\\ fixeds)
+    pruneCell x             = Just x
+```
+
+Now we write the `pruneCellsByExclusives` function which uses the `exclusivePossibilities` function to prune the cells:
+
+```haskell
+pruneCellsByExclusives :: [Cell] -> Maybe [Cell]
+pruneCellsByExclusives cells = case exclusives of
+  [] -> Just cells
+  _  -> traverse pruneCell cells
+  where
+    exclusives    = exclusivePossibilities cells
+    allExclusives = concat exclusives
+
+    pruneCell cell@(Fixed _) = Just cell
+    pruneCell cell@(Possible xs)
+      | intersection `elem` exclusives = makeCell intersection
+      | otherwise                      = Just cell
+      where
+        intersection = xs `Data.List.intersect` allExclusives
+```
+
+`pruneCellsByExclusives` works exactly as shown in the examples above. We first find the list of Exclusives in the given cells. If there are no Exclusives, there's nothing to do and we just return the cells. If we found any Exclusives, we [`traverse`] the cells, pruning each cell to just the intersection of the possible digits in the cell and Exclusive digits. That's it! We reuse the `makeCell` function to create a new cell with the intersection.
+
+As the final step, we rewrite the `pruneCells` function by combining both the functions.
+
+```haskell
+fixM :: (Eq t, Monad m) => (t -> m t) -> t -> m t
+fixM f x = f x >>= \x' -> if x' == x then return x else fixM f x'
+
+pruneCells :: [Cell] -> Maybe [Cell]
+pruneCells cells = fixM pruneCellsByFixed cells >>= fixM pruneCellsByExclusives
+```
+
+We have extracted `fixM` as a top level function from the `pruneGrid` function. Just like the `pruneGrid'` function, we need to use monadic bind ([`>>=`]) to chain the two pruning steps. We also use `fixM` to apply each step repeatedly till the pruned cells settle.
+
+No further code changes are required. It is time to check out the improvements.
+
+## Faster than a Speeding Bullet!
+
+Let's build the program and run the exact same number of puzzles as before:
+
+```plain
+$ head -n100 sudoku17.txt | time stack exec sudoku
+... output omitted ...
+      0.53 real         0.58 user         0.23 sys
+```
+
+Woah! It is way faster than before. Let's solve all of these puzzles now:
+
+```plain
+$ cat sudoku17.txt | time stack exec sudoku > /dev/null
+      282.98 real       407.25 user       109.27 sys
+```
+
+So it is took about 283 seconds to solve all the 49151 puzzles. The speedup is about 200x[^speedup]. That's about 5.8 milliseconds per puzzle.
+
+Let's do a quick profiling to see where is the time going:
+
+```plain
+$ stack build --profile
+$ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p > /dev/null
+```
+
+This generates a file named `sudoku.prof` with profiling results. Here are the top five most time-taking functions (cleaned for brevity):
+
+COST CENTRE                 SRC              %time  %alloc
+---------------             --------        ------ -------
+exclusivePossibilities      (49,1)-(62,26)  17.6    11.4
+pruneCellsByFixed.pruneCell (75,5)-(76,36)  16.9    30.8
+exclusivePossibilities.\.\  55:38-70        12.2    20.3
+fixM.\                      13:27-65        10.0     0.0
+==                          15:56-57         7.2     0.0
+
+Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we could switch to some other data structures?
+
+## Conclusion
+
+In this post, we improved upon our simple Sudoku solution from the [last time] by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2].
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
+[last time]: /posts/fast-sudoku-solver-in-haskell-1/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [constraint satisfaction]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [backtracking]: https://en.wikipedia.org/wiki/Depth-first_search
@@ -274,8 +371,12 @@ The nub of the function lies in step 3 (pun intended) where we do a nested fold 
 [combinatorial]: https://en.wikipedia.org/wiki/Combinatorics
 [`(&)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-
 [This paper]: https://arxiv.org/pdf/1201.0749v2.pdf
+[`traverse`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse
+[`>>=`]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
 
 [1]: /files/sudoku17.txt.bz2
+[2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
 
 [^singles]: "Single" as in ["Single child"]
-[^17clue]: At least 17 cells must be pre-filled in a Sudoku puzzle for it to be solvable. So 17-clue puzzles are the most difficult of all puzzles. [This paper] by McGuire, Tugemann and Civario gives the proof of the same.
+[^17clue]: At least 17 cells must be pre-filled in a Sudoku puzzle for it to have a unique solution. So 17-clue puzzles are the most difficult of all puzzles. [This paper] by McGuire, Tugemann and Civario gives the proof of the same.
+[^speedup]: 116.7 / 100 * 49151 / 282.98 = 202.7
