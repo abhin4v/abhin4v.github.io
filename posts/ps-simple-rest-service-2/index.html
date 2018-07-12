@@ -127,7 +127,7 @@
 </ol>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#bugs">Bugs!</a></li><li><a href="#validation">Validation</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#logging">Logging</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <p>But first,</p>
-<h2 id="bugs" data-track-content data-content-name="bugs">Bugs!<a href="#bugs" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="bugs" data-track-content data-content-name="bugs" data-content-piece="ps-simple-rest-service-2">Bugs!<a href="#bugs" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>What happens if we hit a URL on our server which does not exist? Let’s fire up the server and test it:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">pulp</span> --watch run</a></code></pre></div>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/random
@@ -241,7 +241,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;connect ECONNREFUSED 127.0.0.1:5432&quot;
 }</code></pre>
 <p>It works! Bugs are fixed now. We proceed to add next features.</p>
-<h2 id="validation" data-track-content data-content-name="validation">Validation<a href="#validation" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="validation" data-track-content data-content-name="validation" data-content-piece="ps-simple-rest-service-2">Validation<a href="#validation" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s recall the code to update a user from the <code>src/SimpleService/Handler.purs</code> file:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">updateUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
@@ -510,7 +510,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;User ID must be positive&quot;
 }</code></pre>
 <p>It works as expected.</p>
-<h2 id="configuration" data-track-content data-content-name="configuration">Configuration<a href="#configuration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="configuration" data-track-content data-content-name="configuration" data-content-piece="ps-simple-rest-service-2">Configuration<a href="#configuration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Right now our application configuration resides in the <code>main</code> function:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1">main <span class="fu">=</span> runServer port databaseConfig</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="kw">where</span></a>
@@ -621,7 +621,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb25-4" data-line-number="4"><span class="ex">Unable</span> to start. Missing Env keys: SS_DB_DATABASE, SS_DB_HOST, SS_DB_IDLE_CONN_TIMEOUT_MILLIS, SS_DB_PASSWORD, SS_DB_POOL_SIZE, SS_DB_PORT, SS_DB_USER, SS_PORT</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5"><span class="ex">*</span> ERROR: Subcommand terminated with exit code 1</a></code></pre></div>
 <p>Up next, we add logging to our application.</p>
-<h2 id="logging" data-track-content data-content-name="logging">Logging<a href="#logging" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="logging" data-track-content data-content-name="logging" data-content-piece="ps-simple-rest-service-2">Logging<a href="#logging" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>For logging, we use the <a href="https://pursuit.purescript.org/packages/purescript-logging" target="_blank" rel="noopener"><code>purescript-logging</code></a> package. We write a logger which logs to <code>stdout</code>; in the <code>src/SimpleService/Logger.purs</code> file:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Logger</span></a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">  ( debug</a>
@@ -726,7 +726,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb29-7" data-line-number="7">[<span class="ex">2017-09-30</span> 16:03:46.615] DEBUG HTTP: DELETE /v1/user/3</a>
 <a class="sourceLine" id="cb29-8" data-line-number="8">[<span class="ex">2017-09-30</span> 16:03:46.635] DEBUG Deleted user 3</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">[<span class="ex">2017-09-30</span> 16:05:03.805] DEBUG HTTP: GET /v1/users</a></code></pre></div>
-<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="ps-simple-rest-service-2">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this tutorial we learned how to create a simple JSON REST web service written in PureScript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
     <section class="source">
