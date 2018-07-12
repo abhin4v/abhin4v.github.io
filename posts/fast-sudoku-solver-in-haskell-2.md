@@ -367,6 +367,25 @@ Cost Center                   Source           %time  %alloc
 
 Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?
 
+### Update
+
+As per the comments below by Chris Casinghino, I ran both the versions of code without the `-threaded`, `-rtsopts` and `-with-rtsopts=-N` options. The time for previous post's code:
+
+```plain
+$ head -n100 sudoku17.txt | time stack exec sudoku
+... output omitted ...
+       96.54 real        95.90 user         0.66 sys
+```
+
+And the time for this post's code:
+
+```plain
+$ cat sudoku17.txt | time stack exec sudoku > /dev/null
+      258.97 real       257.34 user         1.52 sys
+```
+
+So, both the versions run about 10% faster without the threading options. I suspect this has something to do with GHC's parallel GC as described in [this post][3]. So for now, I'll keep threading disabled.
+
 ## Conclusion
 
 In this post, we improved upon our simple Sudoku solution from the [last time] by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. This post can be discussed on [r/haskell].
@@ -392,6 +411,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
+[3]: https://inner-haven.net/posts/2017-05-08-speed-up-haskell-programs-weird-trick.html
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
