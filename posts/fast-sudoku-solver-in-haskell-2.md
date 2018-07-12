@@ -410,7 +410,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time] b
 [r/haskell]: https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/
 
 [1]: /files/sudoku17.txt.bz2
-[2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/e0162d96e1eeb7fb50d5a541778431fd863c83a0
+[2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022
 [3]: https://inner-haven.net/posts/2017-05-08-speed-up-haskell-programs-weird-trick.html
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
