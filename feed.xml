@@ -27,7 +27,7 @@
 </ol>
 <p>This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li><li><a href="#a-little-forward-a-little-backward">A Little Forward, a Little Backward</a></li><li><a href="#pruning-the-cells-exclusively">Pruning the Cells, Exclusively</a></li><li><a href="#faster-than-a-speeding-bullet">Faster than a Speeding Bullet!</a><ol><li><a href="#update">Update</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
-<h2 id="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="quick-recap" data-track-content data-content-name="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> some of <a href="https://abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> through our program to see how fast it was:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
@@ -37,7 +37,7 @@
 <div class="page-break">
 
 </div>
-<h2 id="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="constraints-and-corollaries" data-track-content data-content-name="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called <em>blocks</em> in general) have all of the digits, from 1 to 9.</p>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
 | . . . | . . . | . 1 . |
@@ -105,7 +105,7 @@
 <div class="page-break">
 
 </div>
-<h2 id="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="singles-twins-and-triplets" data-track-content data-content-name="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s have a look at this sample row captured from a solution in progress:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -140,7 +140,7 @@
 <p></small></p>
 <p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios occur rarely in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.</p>
 <p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
-<h2 id="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="a-little-forward-a-little-backward" data-track-content data-content-name="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -275,7 +275,7 @@
 <a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
 <p>We extract the <code>isPossible</code> function to top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Singles, Twins and Triplets (called <em>Exclusives</em> in general) in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
 <p>The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from the possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
-<h2 id="pruning-the-cells-exclusively">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="pruning-the-cells-exclusively" data-track-content data-content-name="pruning-the-cells-exclusively">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>To start with, we extract some reusable code from the previous <code>pruneCells</code> function and rename it to <code>pruneCellsByFixed</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">makeCell ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Cell</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">makeCell ys <span class="fu">=</span> <span class="kw">case</span> ys <span class="kw">of</span></a>
@@ -314,7 +314,7 @@
 <a class="sourceLine" id="cb14-5" data-line-number="5">pruneCells cells <span class="fu">=</span> fixM pruneCellsByFixed cells <span class="fu">&gt;&gt;=</span> fixM pruneCellsByExclusives</a></code></pre></div>
 <p>We have extracted <code>fixM</code> as a top level function from the <code>pruneGrid</code> function. Just like the <code>pruneGrid'</code> function, we need to use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) to chain the two pruning steps. We also use <code>fixM</code> to apply each step repeatedly till the pruned cells settle<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 <p>No further code changes are required. It is time to check out the improvements.</p>
-<h2 id="faster-than-a-speeding-bullet">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="faster-than-a-speeding-bullet" data-track-content data-content-name="faster-than-a-speeding-bullet">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s build the program and run the exact same number of puzzles as before:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
@@ -379,7 +379,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <pre class="plain"><code>$ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
       258.97 real       257.34 user         1.52 sys</code></pre>
 <p>So, both the versions run about 10% faster without the threading options. I suspect this has something to do with GHC’s parallel GC as described in <a href="https://inner-haven.net/posts/2017-05-08-speed-up-haskell-programs-weird-trick.html" target="_blank" rel="noopener">this post</a>. So for now, I’ll keep threading disabled.</p>
-<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this post, we improved upon our simple Sudoku solution from the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">last time</a> by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We’ll work on that and more in the upcoming posts in this series. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022" target="_blank" rel="noopener">here</a>. This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <section class="footnotes">
 <hr />
@@ -412,7 +412,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </ol>
 <p>This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#constraint-satisfaction-problem">Constraint Satisfaction Problem</a></li><li><a href="#setting-up">Setting up</a></li><li><a href="#pruning-the-cells">Pruning the Cells</a></li><li><a href="#pruning-the-grid">Pruning the Grid</a></li><li><a href="#making-the-choice">Making the Choice</a></li><li><a href="#solving-the-puzzle">Solving the Puzzle</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
-<h2 id="constraint-satisfaction-problem">Constraint Satisfaction Problem<a href="#constraint-satisfaction-problem" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="constraint-satisfaction-problem" data-track-content data-content-name="constraint-satisfaction-problem">Constraint Satisfaction Problem<a href="#constraint-satisfaction-problem" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Solving Sudoku is a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction problem</a>. We are given a partially filled grid and we have to fill the rest of the grid such that each of the following constraints are satisfied:</p>
 <ol type="1">
 <li>Each of the nine rows must have all of the digits, from 1 to 9.</li>
@@ -525,7 +525,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <li>If you exhaust all branches of the solution then the puzzle is unsolvable. This can happen if it starts with cells wrongly pre-filled.</li>
 </ol>
 <p>This algorithm is actually a <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">Depth-First Search</a> on the <a href="https://en.wikipedia.org/wiki/State_space_search" target="_blank" rel="noopener">state space</a> of the grid configurations, which is guaranteed to either find a solution or prove a puzzle to be unsolvable.</p>
-<h2 id="setting-up">Setting up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="setting-up" data-track-content data-content-name="setting-up">Setting up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with writing types to represent the cells and the grid.</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Cell</span> <span class="fu">=</span> <span class="dt">Fixed</span> <span class="dt">Int</span> <span class="fu">|</span> <span class="dt">Possible</span> [<span class="dt">Int</span>] <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">type</span> <span class="dt">Row</span>  <span class="fu">=</span> [<span class="dt">Cell</span>]</a>
@@ -597,7 +597,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb12-10" data-line-number="10">[<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] <span class="dv">8</span>           [<span class="dv">123456789</span>] <span class="dv">6</span>           [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>]</a></code></pre></div>
 <p></small></p>
 <p>The output is more readable now. We see that, at the start, all the non-filled cells have all digits as possible values. We’ll use these functions for debugging as we go forward. We can now start solving the puzzle.</p>
-<h2 id="pruning-the-cells">Pruning the Cells<a href="#pruning-the-cells" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="pruning-the-cells" data-track-content data-content-name="pruning-the-cells">Pruning the Cells<a href="#pruning-the-cells" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Instead of removing fixed digits of a cell from its neighboring cells, one cell as a time, it is easier to find all the fixed digits in a row of cells and remove all of them from the possibilities of all the non-fixed cells of the row. Then we can repeat this “pruning” step for all the rows of the grid (and columns and sub-grids too! We’ll see how).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">pruneCells cells <span class="fu">=</span> traverse pruneCell cells</a>
@@ -624,7 +624,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb14-5" data-line-number="5"><span class="dv">6</span>           [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] <span class="dv">1</span>           [ <span class="dv">2345</span> <span class="dv">789</span>]</a></code></pre></div>
 <p></small></p>
 <p>It works! <code>6</code> and <code>1</code> are removed from the possibilities of the other cells. Now we are ready for …</p>
-<h2 id="pruning-the-grid">Pruning the Grid<a href="#pruning-the-grid" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="pruning-the-grid" data-track-content data-content-name="pruning-the-grid">Pruning the Grid<a href="#pruning-the-grid" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Pruning a grid requires us to prune each row, each column and each sub-grid. Let’s try to solve it in the <em>REPL</em> first:</p>
 <p><small></p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
@@ -804,7 +804,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb25-12" data-line-number="12">[<span class="dv">12</span>    <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span>  <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">2</span> <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] <span class="dv">8</span>           [ <span class="dv">23</span>      ] <span class="dv">6</span>           [<span class="dv">1</span>   <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [  <span class="dv">345</span> <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span> <span class="dv">345</span>   <span class="dv">9</span>]</a></code></pre></div>
 <p></small></p>
 <p>We see that “7” in the row-7-column-5 cell is eliminated from all its neighboring cells. We cant’ prune the grid anymore. Now it’s time to make the choice.</p>
-<h2 id="making-the-choice">Making the Choice<a href="#making-the-choice" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="making-the-choice" data-track-content data-content-name="making-the-choice">Making the Choice<a href="#making-the-choice" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>One the grid is settled, we need to choose a non-fixed cell and make it fixed by assuming one of its possible values. This gives us two grids, next in the state-space of the solution search: one which has this chosen cell fixed to this chosen digit, and the other in which the chosen cell has all the other possibilities except the one we chose to fix. We call this function <code>nextGrids</code>:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="ot">nextGrids ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> (<span class="dt">Grid</span>, <span class="dt">Grid</span>)</a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">nextGrids grid <span class="fu">=</span></a>
@@ -874,7 +874,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb27-34" data-line-number="34">[ <span class="dv">2</span>    <span class="dv">789</span>] <span class="dv">5</span>           [ <span class="dv">2</span> <span class="dv">4</span> <span class="dv">67</span> <span class="dv">9</span>] <span class="dv">1</span>           [ <span class="dv">23</span>      ] [ <span class="dv">23</span>     <span class="dv">9</span>] [     <span class="dv">6789</span>] [  <span class="dv">34</span> <span class="dv">6789</span>] [  <span class="dv">34</span> <span class="dv">6</span> <span class="dv">89</span>]</a>
 <a class="sourceLine" id="cb27-35" data-line-number="35">[<span class="dv">12</span>    <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span>  <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">2</span> <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] <span class="dv">8</span>           [ <span class="dv">23</span>      ] <span class="dv">6</span>           [<span class="dv">1</span>   <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [  <span class="dv">345</span> <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span> <span class="dv">345</span>   <span class="dv">9</span>]</a></code></pre></div>
 <p></small></p>
-<h2 id="solving-the-puzzle">Solving the Puzzle<a href="#solving-the-puzzle" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="solving-the-puzzle" data-track-content data-content-name="solving-the-puzzle">Solving the Puzzle<a href="#solving-the-puzzle" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We have implemented parts of our algorithm till now. Now we’ll put everything together to solve the puzzle. First, we need to know if we are done or have messed up:</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="ot">isGridFilled ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
 <a class="sourceLine" id="cb28-2" data-line-number="2">isGridFilled grid <span class="fu">=</span> null [ () <span class="fu">|</span> <span class="dt">Possible</span> _ <span class="ot">&lt;-</span> concat grid ]</a>
@@ -958,7 +958,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per puzzle. This is pretty slow but we’ll get around to making it faster in the subsequent posts.</p>
-<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <section class="footnotes">
 <hr />
@@ -985,7 +985,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </ol>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#bugs">Bugs!</a></li><li><a href="#validation">Validation</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#logging">Logging</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <p>But first,</p>
-<h2 id="bugs">Bugs!<a href="#bugs" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="bugs" data-track-content data-content-name="bugs">Bugs!<a href="#bugs" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>What happens if we hit a URL on our server which does not exist? Let’s fire up the server and test it:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="ex">pulp</span> --watch run</a></code></pre></div>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/random
@@ -1099,7 +1099,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;connect ECONNREFUSED 127.0.0.1:5432&quot;
 }</code></pre>
 <p>It works! Bugs are fixed now. We proceed to add next features.</p>
-<h2 id="validation">Validation<a href="#validation" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="validation" data-track-content data-content-name="validation">Validation<a href="#validation" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s recall the code to update a user from the <code>src/SimpleService/Handler.purs</code> file:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="ot">updateUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
 <a class="sourceLine" id="cb8-2" data-line-number="2">updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
@@ -1368,7 +1368,7 @@ X-Powered-By: Express
     &quot;error&quot;: &quot;User ID must be positive&quot;
 }</code></pre>
 <p>It works as expected.</p>
-<h2 id="configuration">Configuration<a href="#configuration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="configuration" data-track-content data-content-name="configuration">Configuration<a href="#configuration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Right now our application configuration resides in the <code>main</code> function:</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1">main <span class="fu">=</span> runServer port databaseConfig</a>
 <a class="sourceLine" id="cb19-2" data-line-number="2">  <span class="kw">where</span></a>
@@ -1479,7 +1479,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb25-4" data-line-number="4"><span class="ex">Unable</span> to start. Missing Env keys: SS_DB_DATABASE, SS_DB_HOST, SS_DB_IDLE_CONN_TIMEOUT_MILLIS, SS_DB_PASSWORD, SS_DB_POOL_SIZE, SS_DB_PORT, SS_DB_USER, SS_PORT</a>
 <a class="sourceLine" id="cb25-5" data-line-number="5"><span class="ex">*</span> ERROR: Subcommand terminated with exit code 1</a></code></pre></div>
 <p>Up next, we add logging to our application.</p>
-<h2 id="logging">Logging<a href="#logging" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="logging" data-track-content data-content-name="logging">Logging<a href="#logging" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>For logging, we use the <a href="https://pursuit.purescript.org/packages/purescript-logging" target="_blank" rel="noopener"><code>purescript-logging</code></a> package. We write a logger which logs to <code>stdout</code>; in the <code>src/SimpleService/Logger.purs</code> file:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Logger</span></a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">  ( debug</a>
@@ -1584,7 +1584,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb29-7" data-line-number="7">[<span class="ex">2017-09-30</span> 16:03:46.615] DEBUG HTTP: DELETE /v1/user/3</a>
 <a class="sourceLine" id="cb29-8" data-line-number="8">[<span class="ex">2017-09-30</span> 16:03:46.635] DEBUG Deleted user 3</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">[<span class="ex">2017-09-30</span> 16:05:03.805] DEBUG HTTP: GET /v1/users</a></code></pre></div>
-<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this tutorial we learned how to create a simple JSON REST web service written in PureScript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/#comment-container">leave a comment</a>.</p>]]></summary>
 </entry>
 <entry>
@@ -1607,7 +1607,7 @@ X-Powered-By: Express
 </ol>
 <p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
-<h2 id="setting-up">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="setting-up" data-track-content data-content-name="setting-up">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with installing PureScript and the required tools. This assumes that we have <a href="https://nodejs.org" target="_blank" rel="noopener">node</a> and <a href="https://www.npmjs.com" target="_blank" rel="noopener">npm</a> installed on our machine.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="fu">mkdir</span> -p ~/.local/</a>
 <a class="sourceLine" id="cb1-2" data-line-number="2">$ <span class="ex">npm</span> install -g purescript pulp bower --prefix ~/.local/</a></code></pre></div>
@@ -1638,7 +1638,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb2-23" data-line-number="23">$ ls bower_components</a>
 <a class="sourceLine" id="cb2-24" data-line-number="24">purescript-console  purescript-eff  purescript-prelude purescript-psci-support</a></code></pre></div>
 <p>Pulp creates the basic project structure for us. <code>src</code> directory will contain the source while the <code>test</code> directory will contain the tests. <code>bower.json</code> contains the PureScript libraries as dependencies which are downloaded and installed in the <code>bower_components</code> directory.</p>
-<h2 id="types-first">Types First<a href="#types-first" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="types-first" data-track-content data-content-name="types-first">Types First<a href="#types-first" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>First, we create the types needed in <code>src/SimpleService/Types.purs</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Types</span> <span class="kw">where</span></a>
 <a class="sourceLine" id="cb3-2" data-line-number="2"></a>
@@ -1688,7 +1688,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb5-17" data-line-number="17"><span class="fu">&gt;</span> eUser</a>
 <a class="sourceLine" id="cb5-18" data-line-number="18">(<span class="dt">Right</span> (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }))</a></code></pre></div>
 <p>We use <code>encodeJSON</code> and <code>decodeJSON</code> functions from the <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.Generic" target="_blank" rel="noopener"><code>Data.Foreign.Generic</code></a> module to encode and decode the <code>User</code> instance to JSON. The return type of <code>decodeJSON</code> is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a <code>Right</code> with the correctly parsed <code>User</code> instance.</p>
-<h2 id="persisting-it">Persisting It<a href="#persisting-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="persisting-it" data-track-content data-content-name="persisting-it">Persisting It<a href="#persisting-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Next, we add the support for saving a <code>User</code> instance to a Postgres database. First, we install the required libraries using bower and npm: <a href="https://github.com/brianc/node-postgres" target="_blank" rel="noopener"><code>pg</code></a> for Javascript bindings to call Postgres, <a href="https://pursuit.purescript.org/packages/purescript-aff" target="_blank" rel="noopener"><code>purescript-aff</code></a> for asynchronous processing and <a href="https://pursuit.purescript.org/packages/purescript-postgresql-client" target="_blank" rel="noopener"><code>purescript-postgresql-client</code></a> for PureScript wrapper over <code>pg</code>:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="ex">npm</span> init -y</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2">$ <span class="ex">npm</span> install pg@6.4.0 --save</a>
@@ -1819,7 +1819,7 @@ Indexes:
 <a class="sourceLine" id="cb10-53" data-line-number="53">          <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Array</span> <span class="dt">User</span>)</a>
 <a class="sourceLine" id="cb10-54" data-line-number="54">listUsers conn <span class="fu">=</span></a>
 <a class="sourceLine" id="cb10-55" data-line-number="55">  PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></a></code></pre></div>
-<h2 id="serving-it">Serving It<a href="#serving-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="serving-it" data-track-content data-content-name="serving-it">Serving It<a href="#serving-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com" target="_blank" rel="noopener">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank" rel="noopener">purescript-express</a>, the PureScript wrapper over it:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" data-line-number="1">$ <span class="ex">npm</span> install express --save</a>
 <a class="sourceLine" id="cb11-2" data-line-number="2">$ <span class="ex">bower</span> install purescript-express --save</a></code></pre></div>
@@ -2292,7 +2292,7 @@ X-Powered-By: Express
         &quot;name&quot;: &quot;sarkarabhinav&quot;
     }
 ]</code></pre>
-<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/#comment-container">leave a comment</a>.</p>]]></summary>
 </entry>
 

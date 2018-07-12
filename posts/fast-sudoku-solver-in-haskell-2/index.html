@@ -53,6 +53,7 @@
           var _paq = _paq || [];
           _paq.push(['trackPageView']);
           _paq.push(['enableLinkTracking']);
+          _paq.push(['trackVisibleContentImpressions']);
           (function() {
             var u="//anna.abhinavsarkar.net/";
             _paq.push(['setTrackerUrl', u+'piwik.php']);
@@ -127,7 +128,7 @@
 </ol>
 <p>This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#constraints-and-corollaries">Constraints and Corollaries</a></li><li><a href="#singles-twins-and-triplets">Singles, Twins and Triplets</a></li><li><a href="#a-little-forward-a-little-backward">A Little Forward, a Little Backward</a></li><li><a href="#pruning-the-cells-exclusively">Pruning the Cells, Exclusively</a></li><li><a href="#faster-than-a-speeding-bullet">Faster than a Speeding Bullet!</a><ol><li><a href="#update">Update</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
-<h2 id="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="quick-recap" data-track-content data-content-name="quick-recap">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all of the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">previous post</a>, we implemented a simple Sudoku solver without paying much attention to its performance characteristics. We ran<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> some of <a href="../../files/sudoku17.txt.bz2">17-clue puzzles</a><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> through our program to see how fast it was:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
@@ -137,7 +138,7 @@
 <div class="page-break">
 
 </div>
-<h2 id="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="constraints-and-corollaries" data-track-content data-content-name="constraints-and-corollaries">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In a Sudoku puzzle, we are given a partially filled 9x9 grid and we have to fill the rest of the grid such that each of the nine rows, columns and sub-grids (called <em>blocks</em> in general) have all of the digits, from 1 to 9.</p>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
 | . . . | . . . | . 1 . |
@@ -205,7 +206,7 @@
 <div class="page-break">
 
 </div>
-<h2 id="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="singles-twins-and-triplets" data-track-content data-content-name="singles-twins-and-triplets">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s have a look at this sample row captured from a solution in progress:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -240,7 +241,7 @@
 <p></small></p>
 <p>Though we can extend this to <em>Quadruplets</em> scenario and further, such scenarios occur rarely in a 9x9 Sudoku puzzle. So rarely they occur that trying to find them will end up being more computationally expensive than the benefit we might get in solution time speedup by finding them.</p>
 <p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
-<h2 id="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="a-little-forward-a-little-backward" data-track-content data-content-name="a-little-forward-a-little-backward">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can implement the three new strategies to prune cells as one function for each. But as it turns out, all of these strategies can be implemented in a single function. However, this function is a bit more complex than the previous pruning function, so first we try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -375,7 +376,7 @@
 <a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
 <p>We extract the <code>isPossible</code> function to top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Singles, Twins and Triplets (called <em>Exclusives</em> in general) in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
 <p>The nub of the function lies in step 3 (pun intended) where we do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table, that is, the mapping from the possible digits to the cells they are contained in. Thereafter, we filter the map to keep only the entries with length less than four (step 4), and flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
-<h2 id="pruning-the-cells-exclusively">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="pruning-the-cells-exclusively" data-track-content data-content-name="pruning-the-cells-exclusively">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>To start with, we extract some reusable code from the previous <code>pruneCells</code> function and rename it to <code>pruneCellsByFixed</code>:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">makeCell ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Cell</span></a>
 <a class="sourceLine" id="cb12-2" data-line-number="2">makeCell ys <span class="fu">=</span> <span class="kw">case</span> ys <span class="kw">of</span></a>
@@ -414,7 +415,7 @@
 <a class="sourceLine" id="cb14-5" data-line-number="5">pruneCells cells <span class="fu">=</span> fixM pruneCellsByFixed cells <span class="fu">&gt;&gt;=</span> fixM pruneCellsByExclusives</a></code></pre></div>
 <p>We have extracted <code>fixM</code> as a top level function from the <code>pruneGrid</code> function. Just like the <code>pruneGrid'</code> function, we need to use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) to chain the two pruning steps. We also use <code>fixM</code> to apply each step repeatedly till the pruned cells settle<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 <p>No further code changes are required. It is time to check out the improvements.</p>
-<h2 id="faster-than-a-speeding-bullet">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="faster-than-a-speeding-bullet" data-track-content data-content-name="faster-than-a-speeding-bullet">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s build the program and run the exact same number of puzzles as before:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
@@ -479,7 +480,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <pre class="plain"><code>$ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
       258.97 real       257.34 user         1.52 sys</code></pre>
 <p>So, both the versions run about 10% faster without the threading options. I suspect this has something to do with GHC’s parallel GC as described in <a href="https://inner-haven.net/posts/2017-05-08-speed-up-haskell-programs-weird-trick.html" target="_blank" rel="noopener">this post</a>. So for now, I’ll keep threading disabled.</p>
-<h2 id="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h2 id="conclusion" data-track-content data-content-name="conclusion">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In this post, we improved upon our simple Sudoku solution from the <a href="../../posts/fast-sudoku-solver-in-haskell-1/">last time</a> by discovering and implementing a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We’ll work on that and more in the upcoming posts in this series. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022" target="_blank" rel="noopener">here</a>. This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <section class="footnotes">
 <hr />
