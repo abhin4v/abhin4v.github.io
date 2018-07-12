@@ -20,6 +20,9 @@
     padding: 0.2em;
     border: 1px solid $border-color;
     font-family: $text-ff;
+    &[type="email"] {
+      margin-bottom: 0;
+    }
   }
   input {
     width: 50%;
