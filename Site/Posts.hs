@@ -83,7 +83,7 @@ compilePosts tags published = do
               listField "comments" siteContext (return comments) <>
               boolField "published" (const published)
 
-    contentCompiler alignment True
+    contentCompiler postSlug alignment True
       >>= saveSnapshot "content"
       >>= loadAndApplyTemplate "templates/post.html" ctx
       >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -98,11 +98,12 @@ readerOptions = defaultHakyllReaderOptions {
 writerOptions :: WriterOptions
 writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceObfuscation }
 
-contentCompiler :: String -> Bool -> Compiler (Item String)
-contentCompiler alignment ertEnabled =
+contentCompiler :: String -> String -> Bool -> Compiler (Item String)
+contentCompiler postSlug alignment ertEnabled =
   pandocCompilerWithTransformM defaultHakyllReaderOptions writerOptions
     (return . estimatedReadingTime ertEnabled
             . walk linkHeaders
+            . walk (addHeaderTracking postSlug)
             . walk linkImages
             . tableOfContents alignment
             . walk blankTargetLinks)
@@ -118,6 +119,17 @@ blankTargetLinks (Link (ident, classes, props) children (url, title)) =
       then props
       else props <> [("target", "_blank"), ("rel", "noopener")]
 blankTargetLinks x = x
+
+addHeaderTracking :: String -> Block -> Block
+addHeaderTracking postSlug (Header level attr@(ident, cls, kvs) content) =
+  if level == 2
+  then Header level (ident, cls, kvs <> trackingAttrs) content
+  else Header level attr content
+  where
+    trackingAttrs = [ ("data-track-content", "")
+                    , ("data-content-name", ident)
+                    , ("data-content-piece", postSlug)]
+addHeaderTracking _ x = x
 
 linkHeaders :: Block -> Block
 linkHeaders (Header level attr@(ident, _, _) content) =
