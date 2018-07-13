@@ -19,7 +19,7 @@
       var jq = jQuery;
 
       var ww = jq(window).width();
-      var bw = jq(document.body).width();
+      var bw = jq("main").width();
       var margin = (ww - bw)/2;
       jq("article pre").css("left", "-" + margin + "px");
       jq("article pre code").css("margin-left", margin + "px");

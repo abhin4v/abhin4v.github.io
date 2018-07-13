@@ -1,14 +1,13 @@
 @import "consts";
 
 nav#topnav {
-  text-align: center;
-  z-index: 999;
   border-bottom: 1px solid $border-color;
-  border-top: 0.2em solid $link-color;
   padding-bottom: 10px;
   padding-top: 10px;
-  position: fixed;
-  width: 100%;
+  max-width: 55rem;
+  margin-left: auto;
+  margin-right: auto;
+
   left: 0px;
   background-color: $background-color;
 
@@ -23,15 +22,12 @@ nav#topnav {
 
   .logo {
     font-weight: bold;
-    min-width: 21em;
-    display: inline-block;
     text-align: left;
   }
 
   .links {
-    min-width: 29em;
-    display: inline-block;
     text-align: right;
+    float: right;
   }
 
   .label-toggle {
@@ -54,7 +50,7 @@ nav#topnav {
   }
 }
 
-@media screen and(max-width: 900px) {
+@media screen and(max-width: 40rem) {
   nav#topnav {
     border-bottom: none;
     padding-bottom: 0px;
@@ -69,7 +65,7 @@ nav#topnav {
 
     .links {
       display: block;
-      min-width: inherit;
+      min-width: 100%;
       clear: both;
 
       &:first-child {
@@ -98,11 +94,7 @@ nav#topnav {
   nav#topnav {
     border-top: 0px!important;
     border-bottom: none;
-    position: relative;
-
-    .logo {
-      text-align: center;
-    }
+    text-align: center;
     .links {
       display: none;
     }

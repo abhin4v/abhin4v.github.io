@@ -12,10 +12,8 @@ html {
 }
 
 body {
-  max-width: 50em;
-  min-width: 20em;
+  min-width: 23rem;
   margin: auto;
-  padding: 1em;
   padding-top: 0.1px;
   font-family: $text-ff;
   font-size: 1.1em;
@@ -24,8 +22,11 @@ body {
   color: $text-color;
 
   > main {
-    margin-top: 4em;
+    padding: 0 1em;
     font-size: 1.1em;
+    max-width: 55rem;
+    margin-left: auto;
+    margin-right: auto;
     h1, h2, h3, h4, h5, h6 {
       font-family: $header-ff;
     }
@@ -46,6 +47,10 @@ body {
     }
   }
   > footer {
+    max-width: 55rem;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 1em;
     text-align: right;
     border-top: 1px solid $border-color;
     margin-top: 10px;
@@ -234,7 +239,7 @@ article {
   }
 }
 
-@media screen and(max-width: 600px) {
+@media screen and(max-width: 640px) {
   .hide-small {
     display: none;
   }
@@ -242,16 +247,24 @@ article {
     font-family: $text-ss-ff;
     font-size: inherit;
   }
-  .post h1 {
-    font-size: 2em;
-  }
-  .post .body {
-    overflow-x: scroll;
-    > table {
-      td, th {
-        padding: 0.2em 0.2em;
+  .post {
+    h1 {
+      font-size: 2em;
+    }
+    .body {
+      overflow-x: scroll;
+      > table {
+        td, th {
+          padding: 0.2em 0.2em;
+        }
       }
     }
+  }
+}
+
+@media screen and (orientation: landscape) and(max-height: 500px) {
+  .post h1 {
+    font-size: 2em;
   }
 }
 
