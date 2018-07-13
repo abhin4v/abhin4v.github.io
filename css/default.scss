@@ -184,9 +184,12 @@ article {
       margin-left: -2em;
     }
   }
+  .scrollable-table {
+    overflow-x: scroll;
+  }
 }
 
-.header, .ert {
+section.header, .ert {
   text-align: right;
   font-size: 0.9em;
 }
@@ -216,7 +219,7 @@ article {
   }
 }
 
-.post .body > table {
+.post .body > .scrollable-table table {
   border-collapse: collapse;
   min-width: 40%;
   td, th {
@@ -252,11 +255,11 @@ article {
       font-size: 2em;
     }
     .body {
-      overflow-x: scroll;
-      > table {
+      > .scrollable-table table {
         td, th {
           padding: 0.2em 0.2em;
         }
+        min-width: 60%;
       }
     }
   }
@@ -287,7 +290,7 @@ article {
       display: none!important;
     }
     .body {
-      > table {
+      > .scrollable-table table {
         page-break-inside: avoid;
       }
       a:after {

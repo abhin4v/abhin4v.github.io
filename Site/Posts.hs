@@ -12,7 +12,7 @@ import Site.ERT
 import Site.TOC
 import Site.Util
 import System.FilePath.Posix (takeBaseName, splitExtension)
-import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header), nullAttr)
+import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
@@ -105,6 +105,7 @@ contentCompiler postSlug alignment ertEnabled =
             . walk linkHeaders
             . walk (addHeaderTracking postSlug)
             . walk linkImages
+            . walk mkScrollableTables
             . tableOfContents alignment
             . walk blankTargetLinks)
 
@@ -143,6 +144,10 @@ linkImages :: Inline -> Inline
 linkImages (Image (_, _, _) elems (url, _)) =
   Link ("", ["img-link"], []) [Image ("",[],[]) [] (url, ""), Span nullAttr elems] (url, "")
 linkImages x = x
+
+mkScrollableTables :: Block -> Block
+mkScrollableTables table@Table{} = Div ("", ["scrollable-table"], []) [table]
+mkScrollableTables x             = x
 
 postCtx :: Context String
 postCtx =
