@@ -255,6 +255,7 @@
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>First, we make a table mapping the digits to the cells in which they occur, excluding the fixed cells:</p>
+<div class="scrollable-table">
 <table>
 <thead>
 <tr class="header">
@@ -289,7 +290,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>Then, we flip this table and collect all the digits that occur in the same set of cells:</p>
+<div class="scrollable-table">
 <table>
 <thead>
 <tr class="header">
@@ -312,7 +315,9 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>And finally, we remove the rows of the table in which the count of the cells is not the same as the count of the digits:</p>
+<div class="scrollable-table">
 <table>
 <thead>
 <tr class="header">
@@ -331,6 +336,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>Voilà! We have found a Single <code>4</code> and a set of Triplets <code>2</code>, <code>3</code> and <code>8</code>. You can go over the puzzle row and verify that this indeed is the case.</p>
 <p>Translating this logic to Haskell is quite easy now:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">isPossible ::</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
@@ -434,6 +440,7 @@
 <pre class="plain"><code>$ stack build --profile
 $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></pre>
 <p>This generates a file named <code>sudoku.prof</code> with the profiling results. Here are the top five most time-taking functions (cleaned for brevity):</p>
+<div class="scrollable-table">
 <table>
 <thead>
 <tr class="header">
@@ -476,6 +483,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </tr>
 </tbody>
 </table>
+</div>
 <p>Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?</p>
 <h3 id="update">Update<a href="#update" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>As per the comments below by Chris Casinghino, I ran both the versions of code without the <code>-threaded</code>, <code>-rtsopts</code> and <code>-with-rtsopts=-N</code> options. The time for previous post’s code:</p>
