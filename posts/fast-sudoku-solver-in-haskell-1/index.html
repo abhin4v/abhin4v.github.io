@@ -120,21 +120,21 @@
 32 minute read
 </div>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
-<p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language and is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell, so we’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language. It is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell. We’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <!--more-->
 <p>This is the first post in a series of posts:</p>
 <ol type="1">
 <li><a href="../../posts/fast-sudoku-solver-in-haskell-1/">Fast Sudoku Solver in Haskell #1: A Simple Solution</a></li>
 <li><a href="../../posts/fast-sudoku-solver-in-haskell-2/">Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</a></li>
 </ol>
-<p>This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
+<p>Discuss this post on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#constraint-satisfaction-problem">Constraint Satisfaction Problem</a></li><li><a href="#setting-up">Setting up</a></li><li><a href="#pruning-the-cells">Pruning the Cells</a></li><li><a href="#pruning-the-grid">Pruning the Grid</a></li><li><a href="#making-the-choice">Making the Choice</a></li><li><a href="#solving-the-puzzle">Solving the Puzzle</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="constraint-satisfaction-problem" data-track-content data-content-name="constraint-satisfaction-problem" data-content-piece="fast-sudoku-solver-in-haskell-1">Constraint Satisfaction Problem<a href="#constraint-satisfaction-problem" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>Solving Sudoku is a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction problem</a>. We are given a partially filled grid and we have to fill the rest of the grid such that each of the following constraints are satisfied:</p>
+<p>Solving Sudoku is a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction problem</a>. We are given a partially filled grid which we have to fill completely such that each of the following constraints are satisfied:</p>
 <ol type="1">
-<li>Each of the nine rows must have all of the digits, from 1 to 9.</li>
-<li>Each of the nine columns must have all of the digits, from 1 to 9.</li>
-<li>Each of the nine 3x3 sub-grids must have all of the digits, from 1 to 9.</li>
+<li>Each of the nine rows must have all the digits, from 1 to 9.</li>
+<li>Each of the nine columns must have all the digits, from 1 to 9.</li>
+<li>Each of the nine 3x3 sub-grids must have all the digits, from 1 to 9.</li>
 </ol>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
 | . . . | . . . | . 1 . |
@@ -165,7 +165,7 @@
 | 2 7 4 | 8 3 6 | 1 5 9 |
 +-------+-------+-------+
     and its solution</code></pre>
-<p>Each cell in the grid is a member of one row, one column and one sub-grid (called “block” in general). Digits in the pre-filled cells impose constraints on the row, column, and sub-grids they are part of. For example, if a cell contains “1” then no other cell in that cell’s row, column or sub-grid can contain “1”. Given these constraints, we can devise a simple algorithm to solve Sudoku:</p>
+<p>Each cell in the grid is member of one row, one column and one sub-grid (called <em>block</em> in general). Digits in the pre-filled cells impose constraints on the rows, columns, and sub-grids they are part of. For example, if a cell contains <code>1</code> then no other cell in that cell’s row, column or sub-grid can contain <code>1</code>. Given these constraints, we can devise a simple algorithm to solve Sudoku:</p>
 <ol type="1">
 <li>Each cell contains either a single digit or has a set of possible digits. For example, a grid showing the possibilities of all non-filled cells for the sample puzzle above: <small></li>
 </ol>
@@ -184,7 +184,7 @@
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <ol start="2" type="1">
-<li>If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells, where neighboring cells are defined as the other cells in the given cell’s row, column and sub-grid. For example, the grid after removing the fixed value “4” of the row-2-column-1 cell from its neighboring cells:</li>
+<li>If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells. Neighboring cells are the other cells in the given cell’s row, column and sub-grid. For example, the grid after removing the fixed value <code>4</code> of the row-2-column-1 cell from its neighboring cells:</li>
 </ol>
 <p><small></p>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
@@ -202,7 +202,7 @@
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <ol start="3" type="1">
-<li>Repeat the previous step for all the cells that are have been solved (or “fixed”), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells: <small></li>
+<li>Repeat the previous step for all the cells that are have been solved (or <em>fixed</em>), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells: <small></li>
 </ol>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 678 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
@@ -219,7 +219,7 @@
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <ol start="4" type="1">
-<li>Continue till the grid “settles”, that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration: <small></li>
+<li>Continue till the grid <em>settles</em>, that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration: <small></li>
 </ol>
 <pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
@@ -236,18 +236,18 @@
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <ol start="5" type="1">
-<li>Once the grid settles, choose one of the non-fixed cells, either randomly or following some strategy. Select one of the digits from all the possibilities of the cell, and fix (assume) the cell to have that digit. Go back to step 1 and repeat.</li>
-<li>If the elimination of possibilities results in an inconsistency — for example, you end up with a cell with no possibilities — discard that branch of solution, and backtrack to last point where you fixed a cell. Choose a different possibility to fix and repeat.</li>
+<li>Once the grid settles, choose one of the non-fixed cells following some strategy. Select one of the digits from all the possibilities of the cell, and fix (assume) the cell to have that digit. Go back to step 1 and repeat.</li>
+<li>The elimination of possibilities may result in inconsistencies. For example, you may end up with a cell with no possibilities. In such a case, discard that branch of solution, and backtrack to last point where you fixed a cell. Choose a different possibility to fix and repeat.</li>
 <li>If at any point the grid is completely filled, you’ve found the solution!</li>
-<li>If you exhaust all branches of the solution then the puzzle is unsolvable. This can happen if it starts with cells wrongly pre-filled.</li>
+<li>If you exhaust all branches of the solution then the puzzle is unsolvable. This can happen if it starts with cells pre-filled wrongly.</li>
 </ol>
-<p>This algorithm is actually a <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">Depth-First Search</a> on the <a href="https://en.wikipedia.org/wiki/State_space_search" target="_blank" rel="noopener">state space</a> of the grid configurations, which is guaranteed to either find a solution or prove a puzzle to be unsolvable.</p>
+<p>This algorithm is actually a <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">Depth-First Search</a> on the <a href="https://en.wikipedia.org/wiki/State_space_search" target="_blank" rel="noopener">state space</a> of the grid configurations. It guarantees to either find a solution or prove a puzzle to be unsolvable.</p>
 <h2 id="setting-up" data-track-content data-content-name="setting-up" data-content-piece="fast-sudoku-solver-in-haskell-1">Setting up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>We start with writing types to represent the cells and the grid.</p>
+<p>We start with writing types to represent the cells and the grid:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Cell</span> <span class="fu">=</span> <span class="dt">Fixed</span> <span class="dt">Int</span> <span class="fu">|</span> <span class="dt">Possible</span> [<span class="dt">Int</span>] <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="kw">type</span> <span class="dt">Row</span>  <span class="fu">=</span> [<span class="dt">Cell</span>]</a>
 <a class="sourceLine" id="cb6-3" data-line-number="3"><span class="kw">type</span> <span class="dt">Grid</span> <span class="fu">=</span> [<span class="dt">Row</span>]</a></code></pre></div>
-<p>Since a cell is either fixed with a particular digit or has a set of digits as possibilities, so it is natural to represent it as a <a href="https://en.wikipedia.org/wiki/Algebraic_data_type" target="_blank" rel="noopener">sum type</a> with <code>Fixed</code> and <code>Possible</code> constructors. A row is a list of cells and a grid is a list of rows.</p>
+<p>A cell is either fixed with a particular digit or has a set of digits as possibilities. So it is natural to represent it as a <a href="https://en.wikipedia.org/wiki/Algebraic_data_type" target="_blank" rel="noopener">sum type</a> with <code>Fixed</code> and <code>Possible</code> constructors. A row is a list of cells and a grid is a list of rows.</p>
 <p>We’ll take the input puzzle as a string of 81 characters representing the cells, left-to-right and top-to-bottom. An example is:</p>
 <pre class="plain"><code>.......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...</code></pre>
 <p>Here, <code>.</code> represents an non-filled cell. Let’s write a function to read this input and parse it to our <code>Grid</code> data structure:</p>
@@ -313,9 +313,9 @@
 <a class="sourceLine" id="cb12-9" data-line-number="9">[<span class="dv">123456789</span>] <span class="dv">5</span>           [<span class="dv">123456789</span>] <span class="dv">1</span>           [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>]</a>
 <a class="sourceLine" id="cb12-10" data-line-number="10">[<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] <span class="dv">8</span>           [<span class="dv">123456789</span>] <span class="dv">6</span>           [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>]</a></code></pre></div>
 <p></small></p>
-<p>The output is more readable now. We see that, at the start, all the non-filled cells have all digits as possible values. We’ll use these functions for debugging as we go forward. We can now start solving the puzzle.</p>
+<p>The output is more readable now. We see that, at the start, all the non-filled cells have all the digits as possible values. We’ll use these functions for debugging as we go forward. We can now start solving the puzzle.</p>
 <h2 id="pruning-the-cells" data-track-content data-content-name="pruning-the-cells" data-content-piece="fast-sudoku-solver-in-haskell-1">Pruning the Cells<a href="#pruning-the-cells" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>Instead of removing fixed digits of a cell from its neighboring cells, one cell as a time, it is easier to find all the fixed digits in a row of cells and remove all of them from the possibilities of all the non-fixed cells of the row. Then we can repeat this “pruning” step for all the rows of the grid (and columns and sub-grids too! We’ll see how).</p>
+<p>We can remove the digits of fixed cells from their neighboring cells, one cell as a time. But, it is faster to find all the fixed digits in a row of cells and remove them from the possibilities of all the non-fixed cells of the row, at once. Then we can repeat this <em>pruning</em> step for all the rows of the grid (and columns and sub-grids too! We’ll see how).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
 <a class="sourceLine" id="cb13-2" data-line-number="2">pruneCells cells <span class="fu">=</span> traverse pruneCell cells</a>
 <a class="sourceLine" id="cb13-3" data-line-number="3">  <span class="kw">where</span></a>
@@ -326,7 +326,7 @@
 <a class="sourceLine" id="cb13-8" data-line-number="8">      [y] <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Fixed</span> y</a>
 <a class="sourceLine" id="cb13-9" data-line-number="9">      ys  <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> ys</a>
 <a class="sourceLine" id="cb13-10" data-line-number="10">    pruneCell x <span class="fu">=</span> <span class="dt">Just</span> x</a></code></pre></div>
-<p><code>pruneCells</code> prunes a list of cells as described previously. We start with finding the fixed digits in the list of cells. Then we go over each non-fixed cells, removing the fixed digits we found from their possible values. Two special cases arise:</p>
+<p><code>pruneCells</code> prunes a list of cells as described before. We start with finding the fixed digits in the list of cells. Then we go over each non-fixed cells, removing the fixed digits we found, from their possible values. Two special cases arise:</p>
 <ul>
 <li>If pruning results in a cell with no possible digits, it is a sign that this branch of search has no solution and hence, we return a <code>Nothing</code> in that case.</li>
 <li>If only one possible digit remains after pruning, then we turn that cell into a fixed cell with that digit.</li>
@@ -395,7 +395,7 @@
 <a class="sourceLine" id="cb17-11" data-line-number="11">[<span class="dv">12</span>  <span class="dv">5</span> <span class="dv">789</span>] <span class="dv">5</span>           [ <span class="dv">234567</span> <span class="dv">9</span>] <span class="dv">1</span>           [<span class="dv">1234</span> <span class="dv">678</span> ] [<span class="dv">12345</span> <span class="dv">789</span>] [<span class="dv">1</span>   <span class="dv">56789</span>] [ <span class="dv">23456789</span>] [<span class="dv">123456</span> <span class="dv">89</span>]</a>
 <a class="sourceLine" id="cb17-12" data-line-number="12">[<span class="dv">12</span>  <span class="dv">5</span> <span class="dv">789</span>] [<span class="dv">1</span> <span class="dv">34</span> <span class="dv">6789</span>] [ <span class="dv">234567</span> <span class="dv">9</span>] <span class="dv">8</span>           [<span class="dv">1234</span> <span class="dv">678</span> ] <span class="dv">6</span>           [<span class="dv">1</span>   <span class="dv">56789</span>] [ <span class="dv">23456789</span>] [<span class="dv">123456</span> <span class="dv">89</span>]</a></code></pre></div>
 <p></small></p>
-<p>We <code>transpose</code> the grid to convert the columns into rows, then prune the rows by <code>traverse</code>-ing <code>pruneCells</code> over them, and finally, turn the rows back into columns by <code>transpose</code>-ing the grid back again. The last <code>transpose</code> needs to be <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Prelude.html#v:fmap" target="_blank" rel="noopener"><code>fmap</code></a>-ped because <code>traverse pruneCells</code> returns a <code>Maybe</code>.</p>
+<p>First, we <code>transpose</code> the grid to convert the columns into rows. Then, we prune the rows by <code>traverse</code>-ing <code>pruneCells</code> over them. And finally, we turn the rows back into columns by <code>transpose</code>-ing the grid back again. The last <code>transpose</code> needs to be <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Prelude.html#v:fmap" target="_blank" rel="noopener"><code>fmap</code></a>-ped because <code>traverse pruneCells</code> returns a <code>Maybe</code>.</p>
 <p>Pruning sub-grids is a bit trickier. Following the same idea as pruning columns, we need two functions to transform the sub-grids into rows and back. Let’s write the first one:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb18-1" data-line-number="1"><span class="ot">subGridsToRows ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Grid</span></a>
 <a class="sourceLine" id="cb18-2" data-line-number="2">subGridsToRows <span class="fu">=</span></a>
@@ -460,7 +460,7 @@
 <a class="sourceLine" id="cb21-11" data-line-number="11">[<span class="dv">12</span> <span class="dv">4</span> <span class="dv">6789</span>] <span class="dv">5</span>           [<span class="dv">12</span> <span class="dv">4</span> <span class="dv">6789</span>] <span class="dv">1</span>           [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span> <span class="dv">3456789</span>] [<span class="dv">1</span> <span class="dv">3456789</span>] [<span class="dv">1</span> <span class="dv">3456789</span>]</a>
 <a class="sourceLine" id="cb21-12" data-line-number="12">[<span class="dv">12</span> <span class="dv">4</span> <span class="dv">6789</span>] [<span class="dv">12</span> <span class="dv">4</span> <span class="dv">6789</span>] [<span class="dv">12</span> <span class="dv">4</span> <span class="dv">6789</span>] <span class="dv">8</span>           [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] <span class="dv">6</span>           [<span class="dv">1</span> <span class="dv">3456789</span>] [<span class="dv">1</span> <span class="dv">3456789</span>] [<span class="dv">1</span> <span class="dv">3456789</span>]</a></code></pre></div>
 <p></small></p>
-<p>It works well. Now we can string together these three steps to prune the entire grid. We also have to make sure that result of pruning each step is fed into the next step so that fixed cells created into one step cause more pruning in further steps. We use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) for that. Here’s the final code:</p>
+<p>It works well. Now we can string together these three steps to prune the entire grid. We also have to make sure that result of pruning each step is fed into the next step. This is so that the fixed cells created into one step cause more pruning in the further steps. We use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) for that. Here’s the final code:</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb22-1" data-line-number="1"><span class="ot">pruneGrid' ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
 <a class="sourceLine" id="cb22-2" data-line-number="2">pruneGrid' grid <span class="fu">=</span></a>
 <a class="sourceLine" id="cb22-3" data-line-number="3">  traverse pruneCells grid</a>
@@ -500,12 +500,12 @@
 <a class="sourceLine" id="cb23-31" data-line-number="31"><span class="fu">.</span> <span class="dv">5</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
 <a class="sourceLine" id="cb23-32" data-line-number="32"><span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">8</span> <span class="fu">.</span> <span class="dv">6</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a></code></pre></div>
 <p></small></p>
-<p>We can clearly see the massive pruning of possibilities all around the grid. We also see a “7” pop up in the row-7-column-5 cell. This means that we can prune the grid further, until it settles. If you are familiar with Haskell, you may recognize this as trying to find a <a href="https://en.wikipedia.org/wiki/Fixed_point_%28mathematics%29" target="_blank" rel="noopener">fixed point</a> for the <code>pruneGrid'</code> function, except in a monadic context. It’s simple to implement:</p>
+<p>We can clearly see the massive pruning of possibilities all around the grid. We also see a <code>7</code> pop up in the row-7-column-5 cell. This means that we can prune the grid further, until it settles. If you are familiar with Haskell, you may recognize this as trying to find a <a href="https://en.wikipedia.org/wiki/Fixed_point_%28mathematics%29" target="_blank" rel="noopener">fixed point</a> for the <code>pruneGrid'</code> function, except in a monadic context. It is simple to implement:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="ot">pruneGrid ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
 <a class="sourceLine" id="cb24-2" data-line-number="2">pruneGrid <span class="fu">=</span> fixM pruneGrid'</a>
 <a class="sourceLine" id="cb24-3" data-line-number="3">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb24-4" data-line-number="4">    fixM f x <span class="fu">=</span> f x <span class="fu">&gt;&gt;=</span> \x' <span class="ot">-&gt;</span> <span class="kw">if</span> x' <span class="fu">==</span> x <span class="kw">then</span> return x <span class="kw">else</span> fixM f x'</a></code></pre></div>
-<p>The crux of this code is the <code>fixM</code> function which takes monadic function <code>f</code> and an initial value and recursively calls itself till the return value settles. Let’s do another round in the <em>REPL</em>:</p>
+<p>The crux of this code is the <code>fixM</code> function. It takes a monadic function <code>f</code> and an initial value, and recursively calls itself till the return value settles. Let’s do another round in the <em>REPL</em>:</p>
 <p><small></p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb25-2" data-line-number="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> pruneGrid grid</a>
@@ -520,9 +520,14 @@
 <a class="sourceLine" id="cb25-11" data-line-number="11">[ <span class="dv">2</span>    <span class="dv">789</span>] <span class="dv">5</span>           [ <span class="dv">2</span> <span class="dv">4</span> <span class="dv">67</span> <span class="dv">9</span>] <span class="dv">1</span>           [ <span class="dv">23</span>      ] [ <span class="dv">23</span>     <span class="dv">9</span>] [     <span class="dv">6789</span>] [  <span class="dv">34</span> <span class="dv">6789</span>] [  <span class="dv">34</span> <span class="dv">6</span> <span class="dv">89</span>]</a>
 <a class="sourceLine" id="cb25-12" data-line-number="12">[<span class="dv">12</span>    <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span>  <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">2</span> <span class="dv">4</span>  <span class="dv">7</span> <span class="dv">9</span>] <span class="dv">8</span>           [ <span class="dv">23</span>      ] <span class="dv">6</span>           [<span class="dv">1</span>   <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [  <span class="dv">345</span> <span class="dv">7</span> <span class="dv">9</span>] [<span class="dv">1</span> <span class="dv">345</span>   <span class="dv">9</span>]</a></code></pre></div>
 <p></small></p>
-<p>We see that “7” in the row-7-column-5 cell is eliminated from all its neighboring cells. We cant’ prune the grid anymore. Now it’s time to make the choice.</p>
+<p>We see that <code>7</code> in the row-7-column-5 cell is eliminated from all its neighboring cells. We can’t prune the grid anymore. Now it is time to make the choice.</p>
 <h2 id="making-the-choice" data-track-content data-content-name="making-the-choice" data-content-piece="fast-sudoku-solver-in-haskell-1">Making the Choice<a href="#making-the-choice" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>One the grid is settled, we need to choose a non-fixed cell and make it fixed by assuming one of its possible values. This gives us two grids, next in the state-space of the solution search: one which has this chosen cell fixed to this chosen digit, and the other in which the chosen cell has all the other possibilities except the one we chose to fix. We call this function <code>nextGrids</code>:</p>
+<p>One the grid is settled, we need to choose a non-fixed cell and make it fixed by assuming one of its possible values. This gives us two grids, next in the state-space of the solution search:</p>
+<ul>
+<li>one which has this chosen cell fixed to this chosen digit, and,</li>
+<li>the other in which the chosen cell has all the other possibilities except the one we chose to fix.</li>
+</ul>
+<p>We call this function, <code>nextGrids</code>:</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="ot">nextGrids ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> (<span class="dt">Grid</span>, <span class="dt">Grid</span>)</a>
 <a class="sourceLine" id="cb26-2" data-line-number="2">nextGrids grid <span class="fu">=</span></a>
 <a class="sourceLine" id="cb26-3" data-line-number="3">  <span class="kw">let</span> (i, first<span class="fu">@</span>(<span class="dt">Fixed</span> _), rest) <span class="fu">=</span></a>
@@ -548,7 +553,7 @@
 <a class="sourceLine" id="cb26-23" data-line-number="23">    replace2D i v <span class="fu">=</span></a>
 <a class="sourceLine" id="cb26-24" data-line-number="24">      <span class="kw">let</span> (x, y) <span class="fu">=</span> (i <span class="ot">`quot`</span> <span class="dv">9</span>, i <span class="ot">`mod`</span> <span class="dv">9</span>) <span class="kw">in</span> replace x (replace y (const v))</a>
 <a class="sourceLine" id="cb26-25" data-line-number="25">    replace p f xs <span class="fu">=</span> [<span class="kw">if</span> i <span class="fu">==</span> p <span class="kw">then</span> f x <span class="kw">else</span> x <span class="fu">|</span> (x, i) <span class="ot">&lt;-</span> zip xs [<span class="dv">0</span><span class="fu">..</span>]]</a></code></pre></div>
-<p>We choose the non-fixed cell with least count of possibilities as the pivot. This strategy make sense intuitively as with a cell with fewest possibilities, we have most chance of being right when assuming one. Fixing a non-fixed cell leads to one of the two cases:</p>
+<p>We choose the non-fixed cell with least count of possibilities as the pivot. This strategy make sense intuitively, as with a cell with fewest possibilities, we have the most chance of being right when assuming one. Fixing a non-fixed cell leads to one of the two cases:</p>
 <ol type="a">
 <li>the cell has only two possible values, resulting in two fixed cells, or,</li>
 <li>the cell has more than two possible values, resulting in one fixed and one non-fixed cell.</li>
@@ -614,7 +619,7 @@
 <a class="sourceLine" id="cb28-19" data-line-number="19">      <span class="fu">|</span> y <span class="ot">`elem`</span> xs <span class="fu">=</span> <span class="dt">True</span></a>
 <a class="sourceLine" id="cb28-20" data-line-number="20">      <span class="fu">|</span> otherwise   <span class="fu">=</span> hasDups' ys (y<span class="fu">:</span>xs)</a></code></pre></div>
 <p><code>isGridFilled</code> returns whether a grid is filled completely by checking it for any <code>Possible</code> cells. <code>isGridInvalid</code> checks if a grid is invalid because it either has duplicate fixed cells in any block or has any non-fixed cell with no possibilities.</p>
-<p>Writing the <code>solve</code> function is now almost trivial:</p>
+<p>Writing the <code>solve</code> function is almost trivial now:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="ot">solve ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
 <a class="sourceLine" id="cb29-2" data-line-number="2">solve grid <span class="fu">=</span> pruneGrid grid <span class="fu">&gt;&gt;=</span> solve'</a>
 <a class="sourceLine" id="cb29-3" data-line-number="3">  <span class="kw">where</span></a>
@@ -624,7 +629,7 @@
 <a class="sourceLine" id="cb29-7" data-line-number="7">      <span class="fu">|</span> otherwise       <span class="fu">=</span></a>
 <a class="sourceLine" id="cb29-8" data-line-number="8">          <span class="kw">let</span> (grid1, grid2) <span class="fu">=</span> nextGrids g</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">          <span class="kw">in</span> solve grid1 <span class="fu">&lt;|&gt;</span> solve grid2</a></code></pre></div>
-<p>We prune the grid as before and pipe it to the helper function <code>solve'</code>. <code>solve'</code> bails with a <code>Nothing</code> if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by calling the <code>solve</code> function. Backtracking here is implemented by the using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2" target="_blank" rel="noopener"><code>Alternative</code></a> (<code>&lt;|&gt;</code>) implementation of the <code>Maybe</code> type (<a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873" target="_blank" rel="noopener">source</a>), which takes the next branch in the computation if the first branch returns a <code>Nothing</code>.</p>
+<p>We prune the grid as before and pipe it to the helper function <code>solve'</code>. <code>solve'</code> bails with a <code>Nothing</code> if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by calling the <code>solve</code> function. Backtracking here is implemented by the using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2" target="_blank" rel="noopener"><code>Alternative</code></a> (<code>&lt;|&gt;</code>) implementation of the <code>Maybe</code> type<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. It takes the second branch in the computation if the first branch returns a <code>Nothing</code>.</p>
 <p>Whew! That took us long. Let’s put it to the final test now:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb30-2" data-line-number="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid</a>
@@ -670,18 +675,19 @@
 4 8 6 5 1 2 7 9 3
 5 1 7 8 9 3 2 4 6</code></pre>
 <p>And, we are done.</p>
-<p>If you want to play with different puzzles, the file <a href="../../files/sudoku17.txt.bz2">here</a> lists some of the toughest ones. Let’s run<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> some of them through our program to see how fast it is:</p>
+<p>If you want to play with different puzzles, the file <a href="../../files/sudoku17.txt.bz2">here</a> lists some of the toughest ones. Let’s run<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> some of them through our program to see how fast it is:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per puzzle. This is pretty slow but we’ll get around to making it faster in the subsequent posts.</p>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="fast-sudoku-solver-in-haskell-1">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. This post can be discussed on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a>.</p>
+<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. Discuss this post on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a> or comment below.</p>
 <section class="footnotes">
 <hr />
 <ol>
 <li id="fn1"><p>This exercise was originally done as a part of <a href="https://github.com/pratul/haskell-classes/" target="_blank" rel="noopener">the</a> <a href="https://github.com/ford-prefect/haskell-classes/" target="_blank" rel="noopener">Haskell</a> <a href="https://github.com/bnvinay92/haskell-classes/" target="_blank" rel="noopener">classes</a> I taught at <a href="https://nilenso.com" target="_blank" rel="noopener">nilenso</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p><a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873" target="_blank" rel="noopener">Source</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
 </section>
     </section>
