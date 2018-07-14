@@ -6,9 +6,12 @@ ARG CF_API_KEY
 ARG CF_EMAIL
 ARG STRAVA_KEY
 ARG TRAVIS_COMMIT_MESSAGE
+ENV ENV=CI
 
 ADD . .
-RUN stack --no-terminal build --fast -j2 \
+RUN set -xe \
+    && echo "127.0.0.1	abhinavsarkar.net" >> /etc/hosts \
+    && stack --no-terminal build --fast -j2 \
     && cd _site \
     && git checkout master \
     && git pull origin master \

@@ -10,7 +10,7 @@ import Data.Maybe (fromJust)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
-import Hakyll
+import Hakyll hiding (relativizeUrls)
 import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody)
 import Site.Util
 import Text.Blaze.Html ((!), toValue)
@@ -77,8 +77,8 @@ getActivities feedURL =
       "Estimated Avg Power" -> v <> "W"
       _ -> v
 
-activities :: Rules ()
-activities = do
+activities :: String -> Rules ()
+activities env = do
   anyDependency <- makePatternDependency "**"
   rulesExtraDependencies [anyDependency] $
     create ["activities.html"] $ do
@@ -93,7 +93,7 @@ activities = do
         makeItem ""
           >>= loadAndApplyTemplate "templates/activities.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
-          >>= relativizeUrls
+          >>= relativizeUrls env
           >>= removeIndexHtml
   where
     activityField name f = field name (return . f . itemBody)

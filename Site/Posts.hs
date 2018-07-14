@@ -7,7 +7,7 @@ import Data.Monoid ((<>))
 import Data.Ord (comparing)
 import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
-import Hakyll
+import Hakyll hiding (relativizeUrls)
 import Site.ERT
 import Site.TOC
 import Site.Util
@@ -17,8 +17,8 @@ import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
-posts :: Tags -> Rules ()
-posts tags = do
+posts :: Tags -> String -> Rules ()
+posts tags env = do
   -- post comments
   match "comments/*/*" $
     compile $ do
@@ -34,7 +34,7 @@ posts tags = do
         >>= saveSnapshot "comment"
 
   -- posts
-  match "posts/*" $ compilePosts tags True
+  match "posts/*" $ compilePosts tags True env
 
   -- raw posts
   match "posts/*" $ version "raw" $ do
@@ -48,9 +48,9 @@ posts tags = do
       (path, _) <- splitExtension <$> getResourceFilePath
       makeItem $ Redirect ("/" ++ path ++ "/")
 
-drafts :: Tags -> Rules ()
-drafts tags = do
-  match "drafts/*" $ compilePosts tags False
+drafts :: Tags -> String -> Rules ()
+drafts tags env = do
+  match "drafts/*" $ compilePosts tags False env
 
   create ["drafts.html"] $ do
     route indexHTMLRoute
@@ -64,11 +64,11 @@ drafts tags = do
       makeItem ""
         >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
         >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls
+        >>= relativizeUrls env
         >>= removeIndexHtml
 
-compilePosts :: Tags -> Bool -> Rules ()
-compilePosts tags published = do
+compilePosts :: Tags -> Bool -> String -> Rules ()
+compilePosts tags published env = do
   route indexHTMLRoute
   compile $ do
     alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
@@ -87,7 +87,7 @@ compilePosts tags published = do
       >>= saveSnapshot "content"
       >>= loadAndApplyTemplate "templates/post.html" ctx
       >>= loadAndApplyTemplate "templates/default.html" ctx
-      >>= relativizeUrls
+      >>= relativizeUrls env
       >>= removeIndexHtml
 
 readerOptions :: ReaderOptions

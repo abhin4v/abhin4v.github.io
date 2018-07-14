@@ -9,7 +9,7 @@ import Data.List (find, isInfixOf, sortBy)
 import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
-import Hakyll
+import Hakyll hiding (relativizeUrls)
 import Network.HTTP.Simple (httpLBS, getResponseBody, parseRequest)
 import Site.Util
 import Text.RSS.Syntax (RSS(..), RSSChannel(..), RSSItem(..))
@@ -100,8 +100,8 @@ itemToBook RSSItem {..} =
       x | "to-read" `isInfixOf` x           -> ToRead
       _                                     -> Read
 
-readings :: Rules ()
-readings = do
+readings :: String -> Rules ()
+readings env = do
   anyDependency <- makePatternDependency "**"
   rulesExtraDependencies [anyDependency] $
     create ["readings.html"] $ do
@@ -119,7 +119,7 @@ readings = do
         makeItem ""
           >>= loadAndApplyTemplate "templates/readings.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
-          >>= relativizeUrls
+          >>= relativizeUrls env
           >>= removeIndexHtml
   where
     bookField name f = field name (return . f . itemBody)

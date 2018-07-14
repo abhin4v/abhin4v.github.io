@@ -3,7 +3,7 @@ module Site.Collections where
 
 import Data.Monoid ((<>))
 import Data.String (fromString)
-import Hakyll
+import Hakyll hiding (relativizeUrls)
 import Site.Posts
 import Site.Sitemap
 import Site.Util
@@ -13,8 +13,8 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 import Text.Blaze.Html.Renderer.String (renderHtml)
 
-collections :: Tags -> Rules ()
-collections tags = do
+collections :: Tags -> String -> Rules ()
+collections tags env = do
   -- tag pages
   tagsRules tags $ \tag pattrn -> do
     let title = "Posts tagged ‘" ++ tag ++ "’"
@@ -29,7 +29,7 @@ collections tags = do
       makeItem ""
           >>= loadAndApplyTemplate "templates/tag.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
-          >>= relativizeUrls
+          >>= relativizeUrls env
           >>= removeIndexHtml
 
     -- tag feeds
@@ -55,7 +55,7 @@ collections tags = do
         makeItem ""
           >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
           >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-          >>= relativizeUrls
+          >>= relativizeUrls env
           >>= removeIndexHtml
 
   -- posts index
@@ -97,7 +97,7 @@ collections tags = do
       getResourceBody
         >>= applyAsTemplate indexCtx
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
-        >>= relativizeUrls
+        >>= relativizeUrls env
         >>= removeIndexHtml
 
 feedCtx :: Context String

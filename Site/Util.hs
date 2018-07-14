@@ -3,6 +3,7 @@ module Site.Util where
 import Data.Monoid ((<>))
 import Data.List (isInfixOf)
 import Hakyll
+import qualified Hakyll as H
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
 
 siteRoot :: String
@@ -32,3 +33,12 @@ siteContext = defaultContext <> field "full_url" (const fullUrl)
         "./index.html" -> ""
         "./404.html"   -> "/404.html"
         _              -> drop 1 (takeDirectory path </> takeBaseName path <> "/")
+
+relativizeUrls :: String -> Item String -> Compiler (Item String)
+relativizeUrls env item = do
+  route <- getRoute $ itemIdentifier item
+  return $ case route of
+    Nothing -> item
+    Just r  -> flip fmap item $ H.relativizeUrlsWith $ case env of
+      "DEV" -> toSiteRoot r
+      _     -> drop 6 siteRoot
