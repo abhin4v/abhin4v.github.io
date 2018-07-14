@@ -185,6 +185,8 @@ We can extend this to _Quadruplets_ scenario and further. But such scenarios occ
 
 Now that we have discovered these new strategies to prune cells, let's implement them in Haskell.
 
+<div class="page-break"></div>
+
 ## A Little Forward, a Little Backward
 
 We can implement the three new strategies to prune cells as one function for each. However, we can actually implement all these strategies in a single function. But, this function is a bit more complex than the previous pruning function. So first, let's try to understand its working using tables. Let's take this sample row:
@@ -373,6 +375,8 @@ Cost Center                   Source           %time  %alloc
 `==`                          15:56-57         7.2     0.0
 
 Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?
+
+<div class="page-break"></div>
 
 ### Update
 
