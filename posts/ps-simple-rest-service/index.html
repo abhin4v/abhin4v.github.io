@@ -28,15 +28,15 @@
 
         <title>Writing a Simple REST Web Service in PureScript - Part 1 | abhinavsarkar.net</title>
 
-        <link rel="shortcut icon" type="image/x-icon" href="../../images/favicon.ico">
+        <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
         <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
         <link rel="canonical" href="https://abhinavsarkar.net/posts/ps-simple-rest-service/">
         <link rel="me" href="https://abhinavsarkar.net/about/" type="text/html">
         <link rel="alternate" type="application/atom+xml" title="abhinavsarkar.net" href="https://abhinavsarkar.net/feed.xml">
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-        <link rel="stylesheet" href="../../css/default.css">
-        <link rel="stylesheet" href="../../css/syntax.css">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/default.css">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/syntax.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif|Cardo">
 
         <!-- Global Site Tag (gtag.js) - Google Analytics -->
@@ -71,7 +71,7 @@
         <header>
             <nav id="topnav">
                 <span class="logo">
-                  <a href="../../">abhinavsarkar.net</a>
+                  <a href="//abhinavsarkar.net/">abhinavsarkar.net</a>
                   <label for="menu-toggle" class="label-toggle">
                     <svg height="1em" version="1.1" viewBox="0 0 25 25" width="1em" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink">
                       <g id="hamburger-round">
@@ -82,10 +82,10 @@
                 </span>
                 <span class="links">
                   <input type="checkbox" id="menu-toggle">
-                  <a href="../../about/">About Me</a>
-                  <a href="../../archive/">Archive</a>
-                  <a href="../../activities/" class="hide-small">Activities</a>
-                  <a href="../../readings/" class="hide-small">Readings</a>
+                  <a href="//abhinavsarkar.net/about/">About Me</a>
+                  <a href="//abhinavsarkar.net/archive/">Archive</a>
+                  <a href="//abhinavsarkar.net/activities/" class="hide-small">Activities</a>
+                  <a href="//abhinavsarkar.net/readings/" class="hide-small">Readings</a>
                 </span>
             </nav>
         </header>
@@ -104,13 +104,13 @@
     </section>
     <section class="header">
         
-        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="../../tags/purescript/">purescript</a>, <a href="../../tags/REST/">REST</a>, <a href="../../tags/programming/">programming</a>, <a href="../../tags/nilenso/">nilenso</a>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/purescript/">purescript</a>, <a href="//abhinavsarkar.net/tags/REST/">REST</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/nilenso/">nilenso</a>
         
     </section>
     <section class="header post-download">
         <span class="fa fa-download fa-fw" aria-hidden="true"></span> Download as
-        <a href="../../pdfs/posts/ps-simple-rest-service.pdf" download rel="nofollow">PDF</a> or
-        <a href="../../posts/ps-simple-rest-service.md" download rel="nofollow">Markdown</a>
+        <a href="//abhinavsarkar.net/pdfs/posts/ps-simple-rest-service.pdf" download rel="nofollow">PDF</a> or
+        <a href="//abhinavsarkar.net/posts/ps-simple-rest-service.md" download rel="nofollow">Markdown</a>
     </section>
     <section class="header twitter-button">
       <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-via="abhin4v" data-dnt="true" data-show-count="false">Tweet</a>
@@ -128,7 +128,7 @@
 <li>reading the server and database configs from environment variables.</li>
 <li>logging HTTP requests and debugging info.</li>
 </ol>
-<p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
+<p>In this part we’ll work on setting up the project and on the first two requirements. In the <a href="//abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part we’ll work on the rest of the requirements.</p>
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up" data-track-content data-content-name="setting-up" data-content-piece="ps-simple-rest-service">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with installing PureScript and the required tools. This assumes that we have <a href="https://nodejs.org" target="_blank" rel="noopener">node</a> and <a href="https://www.npmjs.com" target="_blank" rel="noopener">npm</a> installed on our machine.</p>
@@ -816,7 +816,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="ps-simple-rest-service">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="../../posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="//abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
     <section class="source">
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/ps-simple-rest-service.md" target="_blank" rel="noopener">Post history</a>
@@ -852,12 +852,12 @@ X-Powered-By: Express
     </fieldset>
   </form>
 </div>
-<script src="../../js/comment-form.js" defer async></script>
+<script src="//abhinavsarkar.net/js/comment-form.js" defer async></script>
 <script src="https://www.google.com/recaptcha/api.js" defer async></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
 <script href="https://cdn.jsdelivr.net/npm/promise-polyfill@6/dist/promise.min.js" defer async></script>
 
-<script src="../../js/code-styling.js" defer async></script>
+<script src="//abhinavsarkar.net/js/code-styling.js" defer async></script>
 <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
 <script>
   window.asn_ss = window.asn_ss || [];
