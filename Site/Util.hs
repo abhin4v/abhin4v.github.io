@@ -28,4 +28,7 @@ siteContext = defaultContext <> field "full_url" (const fullUrl)
   where
     fullUrl = do
       path <- getResourceFilePath
-      return $ siteRoot <> drop 1 (takeDirectory path </> takeBaseName path <> "/")
+      return $ siteRoot <> case path of
+        "./index.html" -> ""
+        "./404.html"   -> "/404.html"
+        _              -> drop 1 (takeDirectory path </> takeBaseName path <> "/")
