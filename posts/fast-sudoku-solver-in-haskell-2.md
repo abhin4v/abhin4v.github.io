@@ -119,7 +119,7 @@ Let's have a look at this sample row captured from a solution in progress:
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small> 
+</small>
 
 Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that we should fix the sixth cell to `1` as we cannot place `1` in any other cell in the row. Let's call this the _Singles_[^singles] scenario.
 
@@ -366,8 +366,6 @@ Cost Center                   Source           %time  %alloc
 `==`                          15:56-57         7.2     0.0
 
 Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?
-
-<div class="page-break"></div>
 
 ### Update
 
