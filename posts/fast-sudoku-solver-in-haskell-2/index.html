@@ -247,9 +247,6 @@
 <p>Let’s call these three scenarios <em>Exclusives</em> in general.</p>
 <p>We can extend this to <em>Quadruplets</em> scenario and further. But such scenarios occur rarely in a 9x9 Sudoku puzzle. Trying to find them may end up being more computationally expensive than the benefit we may get in solution time speedup by finding them.</p>
 <p>Now that we have discovered these new strategies to prune cells, let’s implement them in Haskell.</p>
-<div class="page-break">
-
-</div>
 <h2 id="a-little-forward-a-little-backward" data-track-content data-content-name="a-little-forward-a-little-backward" data-content-piece="fast-sudoku-solver-in-haskell-2">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can implement the three new strategies to prune cells as one function for each. However, we can actually implement all these strategies in a single function. But, this function is a bit more complex than the previous pruning function. So first, let’s try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
