@@ -614,6 +614,9 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb12-10" data-line-number="10">[<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] <span class="dv">8</span>           [<span class="dv">123456789</span>] <span class="dv">6</span>           [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>]</a></code></pre></div>
 <p></small></p>
 <p>The output is more readable now. We see that, at the start, all the non-filled cells have all the digits as possible values. We’ll use these functions for debugging as we go forward. We can now start solving the puzzle.</p>
+<div class="page-break">
+
+</div>
 <h2 id="pruning-the-cells" data-track-content data-content-name="pruning-the-cells" data-content-piece="fast-sudoku-solver-in-haskell-1">Pruning the Cells<a href="#pruning-the-cells" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can remove the digits of fixed cells from their neighboring cells, one cell as a time. But, it is faster to find all the fixed digits in a row of cells and remove them from the possibilities of all the non-fixed cells of the row, at once. Then we can repeat this <em>pruning</em> step for all the rows of the grid (and columns and sub-grids too! We’ll see how).</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>

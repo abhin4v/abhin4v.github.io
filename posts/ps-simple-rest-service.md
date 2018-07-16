@@ -54,6 +54,8 @@ purescript-console  purescript-eff  purescript-prelude purescript-psci-support
 
 Pulp creates the basic project structure for us. `src` directory will contain the source while the `test` directory will contain the tests. `bower.json` contains the PureScript libraries as dependencies which are downloaded and installed in the `bower_components` directory.
 
+<div class="page-break"></div>
+
 ## Types First
 
 First, we create the types needed in `src/SimpleService/Types.purs`:
@@ -532,6 +534,8 @@ X-Powered-By: Express
 }
 ```
 
+<div class="page-break"></div>
+
 ### Creating a User
 
 `createUser` handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use [`body-parser`][8] for this and access it through PureScript [FFI]. We create a new file `src/SimpleService/Middleware/BodyParser.js` with the content:
@@ -806,6 +810,8 @@ X-Powered-By: Express
     "error": "User name must not be empty"
 }
 ```
+
+<div class="page-break"></div>
 
 ### Listing all Users
 
