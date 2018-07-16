@@ -249,6 +249,8 @@ Back to the _REPL_ again:
 
 The output is more readable now. We see that, at the start, all the non-filled cells have all the digits as possible values. We'll use these functions for debugging as we go forward. We can now start solving the puzzle.
 
+<div class="page-break"></div>
+
 ## Pruning the Cells
 
 We can remove the digits of fixed cells from their neighboring cells, one cell as a time. But, it is faster to find all the fixed digits in a row of cells and remove them from the possibilities of all the non-fixed cells of the row, at once. Then we can repeat this _pruning_ step for all the rows of the grid (and columns and sub-grids too! We'll see how).
