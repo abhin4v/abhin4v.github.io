@@ -18,11 +18,11 @@ if [ -z "$CSS_CHANGED" -a "$CSS_CHANGED" == "" ]; then
     sed 's/\/index.html//' | \
     sed 's/.md//' | \
     sort -u | \
-    xargs -r -t -n1 -I {} ../node_modules/.bin/chrome-headless-render-pdf --chrome-option=--no-sandbox --url http://127.0.0.1/{}/ --pdf pdfs/{}.pdf
+    xargs -r -t -n1 -I {} ../node_modules/.bin/chrome-headless-render-pdf --paper-height 11.7 --paper-width 8.3 --chrome-option=--no-sandbox --url http://127.0.0.1/{}/ --pdf pdfs/{}.pdf
 else
   ls -1 -d posts/*/ | \
     sed 's/\/$//' | \
-    xargs -r -t -n1 -I {} ../node_modules/.bin/chrome-headless-render-pdf --chrome-option=--no-sandbox --url http://127.0.0.1/{}/ --pdf pdfs/{}.pdf
+    xargs -r -t -n1 -I {} ../node_modules/.bin/chrome-headless-render-pdf --paper-height 11.7 --paper-width 8.3 --chrome-option=--no-sandbox --url http://127.0.0.1/{}/ --pdf pdfs/{}.pdf
 fi
 
 kill $SERVER_PID

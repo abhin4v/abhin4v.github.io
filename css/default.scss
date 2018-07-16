@@ -272,9 +272,12 @@ section.header, .ert {
 }
 
 @media print {
+  html, body {
+    width: 210mm;
+    height: 297mm;
+  }
   body {
-    font-size: 0.8em;
-
+    font-size: 1em;
     main {
       margin-top: 0px;
     }
@@ -306,11 +309,15 @@ section.header, .ert {
     .twitter-share-button {
       display: none;
     }
+    p, li {
+      page-break-inside: avoid;
+    }
     pre {
       border: none!important;
       page-break-inside: avoid;
     }
     small {
+      font-size: 0.76em;
       pre {
         white-space: pre-wrap;
         code {
