@@ -279,7 +279,7 @@ exclusivePossibilities row =
 
 We extract the `isPossible` function to the top level from the `nextGrids` function for reuse. Then we write the `exclusivePossibilities` function which finds the Exclusives in the input row. This function is written using the reverse application operator [`(&)`][^revapp] instead of the usual `($)` operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.
 
-The nub of the function lies in step 3 (pun intended). We do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map which represents the first table. Thereafter, we filter the map to keep only the entries with length less than four (step 4). Then we flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
+The nub of the function lies in step 3 (pun intended). We do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map[^exmap] which represents the first table. Thereafter, we filter the map to keep only the entries with length less than four (step 4). Then we flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.
 
 ## Pruning the Cells, Exclusively
 
@@ -414,6 +414,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 [FSharp]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d
 [Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2
 [r/haskell]: https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/
+[Data.Map.Strict]: https://hackage.haskell.org/package/containers-0.5.10.2/docs/Data-Map-Strict.html
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022
@@ -430,3 +431,5 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 [^fixM]: We need to run `pruneCellsByFixed` and `pruneCellsByExclusives` repeatedly using `fixM` because an unsettled row can lead to wrong solutions. Imagine a row which just got a `9` fixed because of `pruneCellsByFixed`. If we don't run the function again, the row may be left with one non-fixed cell with a `9`. When we run this row through `pruneCellsByExclusives`, it'll consider the `9` in the non-fixed cell as a Single and fix it. This will lead to two `9`s in the same row, causing the solution to fail.
 
 [^speedup]: Speedup: 116.7 / 100 * 49151 / 282.98 = 202.7
+
+[^exmap]: We use [Data.Map.Strict] as the map implementation.
