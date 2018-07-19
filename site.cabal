@@ -23,6 +23,7 @@ executable site
                   , feed
                   , split
                   , text
+                  , numerals
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections

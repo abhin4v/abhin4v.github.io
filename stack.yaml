@@ -3,5 +3,6 @@ packages:
 - .
 extra-deps:
   - hakyll-sass-0.2.3
+  - numerals-0.4.1
 flags: {}
 extra-package-dbs: []

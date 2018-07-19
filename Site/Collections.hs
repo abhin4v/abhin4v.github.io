@@ -92,7 +92,7 @@ collections tags env = do
       allPosts <- loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       posts <- take indexPostCount <$> recentFirst allPosts
       let morePostCount = length allPosts - indexPostCount
-          morePostCountW = show morePostCount
+          morePostCountW = numToWord morePostCount
           morePosts = if morePostCount == 1
                       then morePostCountW <> " more post"
                       else morePostCountW <> " more posts"

@@ -1,22 +1,23 @@
 module Site.ERT (estimatedReadingTime) where
 
 import Text.Pandoc.Definition
+import Site.Util
 
 estimatedReadingTime :: Bool -> Pandoc -> Pandoc
 estimatedReadingTime enabled p@(Pandoc meta blocks) =
   if enabled
     then Pandoc meta (ert:blocks)
     else Pandoc meta blocks
-  where ert = Div ("", ["ert"], []) [Plain [Str $ timeEstimateString p ++ " read"]]
+  where ert = Div ("", ["ert"], []) [Plain [Str $ "A " ++ timeEstimateString p ++ " read"]]
 
 timeEstimateString :: Pandoc -> String
 timeEstimateString = toClockString . timeEstimateSeconds
 
 toClockString :: Int -> String
 toClockString i
-    | i >= 60 * 60 = show hours   ++ " hour " ++ show minutes ++ " minute"
-    | i >= 60      = show minutes ++ " minute"
-    | otherwise    = show seconds ++ " seccond"
+    | i >= 60 * 60 = numToWord hours   ++ " hour " ++ numToWord minutes ++ " minute"
+    | i >= 60      = numToWord minutes ++ " minute"
+    | otherwise    = numToWord seconds ++ " seccond"
   where
     hours   = i `quot` (60 * 60)
     minutes = (i `rem` (60 * 60)) `quot` 60

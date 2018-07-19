@@ -5,9 +5,15 @@ import Data.List (isInfixOf)
 import Hakyll
 import qualified Hakyll as H
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
+import qualified Text.Numeral.Language.ENG as EN
+import qualified Text.Numeral as Num
+import qualified Data.Text as T
 
 siteRoot :: String
 siteRoot = "https://abhinavsarkar.net"
+
+numToWord :: Int -> String
+numToWord n = maybe (show n) T.unpack (EN.us_cardinal Num.defaultInflection n)
 
 indexHTMLRoute :: Routes
 indexHTMLRoute = customRoute createIndexRoute
