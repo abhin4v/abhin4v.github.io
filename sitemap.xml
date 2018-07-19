@@ -2,115 +2,115 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://abhinavsarkar.net/404.html</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/about/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/activities/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/archive/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/ps-simple-rest-service/</loc>
-    <lastmod>2018-07-19T05:27:05Z</lastmod>
+    <lastmod>2018-07-19T16:44:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/readings/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/REST/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/haskell/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/nilenso/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/programming/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/purescript/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/puzzle/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/sudoku/</loc>
-    <lastmod>2018-07-19T05:30:05Z</lastmod>
+    <lastmod>2018-07-19T16:47:49Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

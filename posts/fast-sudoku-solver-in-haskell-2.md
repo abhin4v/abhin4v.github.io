@@ -367,7 +367,7 @@ Looking at the report, my guess is that a lot of time is going into list operati
 
 ### Update
 
-As per the [comment](#comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496) below by Chris Casinghino, I ran both the versions of code without the `-threaded`, `-rtsopts` and `-with-rtsopts=-N` options. The time for previous post's code:
+As per the [comment][4] below by Chris Casinghino, I ran both the versions of code without the `-threaded`, `-rtsopts` and `-with-rtsopts=-N` options. The time for previous post's code:
 
 ```plain
 $ head -n100 sudoku17.txt | time stack exec sudoku
@@ -410,6 +410,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022
 [3]: https://web.archive.org/web/20170612225421/https://inner-haven.net/posts/2017-05-08-speed-up-haskell-programs-weird-trick.html
+[4]: /posts/fast-sudoku-solver-in-haskell-2/#comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 

@@ -385,7 +385,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </div>
 <p>Looking at the report, my guess is that a lot of time is going into list operations. Lists are known to be inefficient in Haskell so maybe we should switch to some other data structures?</p>
 <h3 id="update">Update<a href="#update" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
-<p>As per the <a href="#comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496">comment</a> below by Chris Casinghino, I ran both the versions of code without the <code>-threaded</code>, <code>-rtsopts</code> and <code>-with-rtsopts=-N</code> options. The time for previous post’s code:</p>
+<p>As per the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496">comment</a> below by Chris Casinghino, I ran both the versions of code without the <code>-threaded</code>, <code>-rtsopts</code> and <code>-with-rtsopts=-N</code> options. The time for previous post’s code:</p>
 <pre class="plain"><code>$ head -n100 sudoku17.txt | time stack exec sudoku
 ... output omitted ...
        96.54 real        95.90 user         0.66 sys</code></pre>
