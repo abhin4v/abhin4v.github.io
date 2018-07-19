@@ -367,7 +367,7 @@ Looking at the report, my guess is that a lot of time is going into list operati
 
 ### Update
 
-As per the comments below by Chris Casinghino, I ran both the versions of code without the `-threaded`, `-rtsopts` and `-with-rtsopts=-N` options. The time for previous post's code:
+As per the [comment](#comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496) below by Chris Casinghino, I ran both the versions of code without the `-threaded`, `-rtsopts` and `-with-rtsopts=-N` options. The time for previous post's code:
 
 ```plain
 $ head -n100 sudoku17.txt | time stack exec sudoku
