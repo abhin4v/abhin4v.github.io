@@ -88,10 +88,18 @@ collections tags env = do
   match "index.html" $ do
     route idRoute
     compile $ do
-      posts <- fmap (take 5) . recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      let indexPostCount = 3
+      allPosts <- loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+      posts <- take indexPostCount <$> recentFirst allPosts
+      let morePostCount = length allPosts - indexPostCount
+          morePostCountW = show morePostCount
+          morePosts = if morePostCount == 1
+                      then morePostCountW <> " more post"
+                      else morePostCountW <> " more posts"
       let indexCtx =
             listField "posts" (teaserField "teaser" "content" <> postCtxWithTags tags) (return posts) <>
             constField "title" "Home"                                                                 <>
+            constField "more_posts" morePosts                                                         <>
             siteContext
 
       getResourceBody
