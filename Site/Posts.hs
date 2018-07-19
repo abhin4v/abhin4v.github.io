@@ -27,10 +27,11 @@ posts tags env = do
       date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
       let dateS = formatTime defaultTimeLocale "%B %e, %Y" date
       email <- getMetadataField' ident "email"
+      id <- getMetadataField' ident "_id"
 
       getResourceBody
         >>= renderPandocWith readerOptions writerOptions
-        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx dateS email)
+        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx id dateS email)
         >>= saveSnapshot "comment"
 
   -- posts
@@ -166,8 +167,9 @@ postCtx =
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
 
-commentCtx :: String -> String -> Context String
-commentCtx date email =
+commentCtx :: String -> String -> String -> Context String
+commentCtx id date email =
+  constField "id" id <>
   constField "date" date <>
   constField "email" email <>
   siteContext
