@@ -124,12 +124,6 @@ feedConfiguration siteRoot title = FeedConfiguration
   , feedRoot        = siteRoot
   }
 
-tagFeedRoute :: Routes
-tagFeedRoute = customRoute createIndexRoute
-  where
-    createIndexRoute ident = let p = toFilePath ident
-      in takeDirectory p </> takeBaseName p </> "feed.xml"
-
 addPostLink :: Item String -> Item String
 addPostLink item = let
     p = toFilePath (itemIdentifier item)

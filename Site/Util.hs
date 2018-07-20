@@ -2,7 +2,7 @@ module Site.Util where
 
 import Data.Monoid ((<>))
 import Data.List (isInfixOf)
-import Hakyll
+import Hakyll hiding (customRoute)
 import qualified Hakyll as H
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
 import qualified Text.Numeral.Language.ENG as EN
@@ -16,10 +16,16 @@ numToWord :: Int -> String
 numToWord n = maybe (show n) T.unpack (EN.us_cardinal Num.defaultInflection n)
 
 indexHTMLRoute :: Routes
-indexHTMLRoute = customRoute createIndexRoute
+indexHTMLRoute = customRoute "index.html"
+
+tagFeedRoute :: Routes
+tagFeedRoute = customRoute "feed.xml"
+
+customRoute :: String -> Routes
+customRoute fileName = H.customRoute createIndexRoute
   where
     createIndexRoute ident = let p = toFilePath ident
-      in takeDirectory p </> takeBaseName p </> "index.html"
+      in takeDirectory p </> takeBaseName p </> fileName
 
 removeIndexHtml :: Item String -> Compiler (Item String)
 removeIndexHtml item = return $ fmap (withUrls removeIndexURL) item

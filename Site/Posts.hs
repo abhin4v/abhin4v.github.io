@@ -35,7 +35,9 @@ posts tags env = do
         >>= saveSnapshot "comment"
 
   -- posts
-  match "posts/*" $ compilePosts tags True env
+  match "posts/*" $ do
+    route indexHTMLRoute
+    compilePosts tags env
 
   -- raw posts
   match "posts/*" $ version "raw" $ do
@@ -51,7 +53,9 @@ posts tags env = do
 
 drafts :: Tags -> String -> Rules ()
 drafts tags env = do
-  match "drafts/*" $ compilePosts tags False env
+  match "drafts/*" $ do
+    route indexHTMLRoute
+    compileDrafts tags env
 
   create ["drafts.html"] $ do
     route indexHTMLRoute
@@ -68,28 +72,32 @@ drafts tags env = do
         >>= relativizeUrls env
         >>= removeIndexHtml
 
-compilePosts :: Tags -> Bool -> String -> Rules ()
-compilePosts tags published env = do
-  route indexHTMLRoute
-  compile $ do
-    alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
+doCompilePosts :: Bool -> Tags -> String -> Rules ()
+doCompilePosts commentsEnabled tags env = compile $ do
+  alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
 
-    path <- getResourceFilePath
-    let postSlug = takeBaseName path
+  path <- getResourceFilePath
+  let postSlug = takeBaseName path
 
-    comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
-    let ctx = postCtxWithTags tags <>
-              constField "post_slug" postSlug <>
-              constField "comment_count" (show $ length comments) <>
-              listField "comments" siteContext (return comments) <>
-              boolField "published" (const published)
+  comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
+  let ctx = postCtxWithTags tags <>
+            constField "post_slug" postSlug <>
+            constField "comment_count" (show $ length comments) <>
+            listField "comments" siteContext (return comments) <>
+            boolField "comments_enabled" (const commentsEnabled)
 
-    contentCompiler postSlug alignment True
-      >>= saveSnapshot "content"
-      >>= loadAndApplyTemplate "templates/post.html" ctx
-      >>= loadAndApplyTemplate "templates/default.html" ctx
-      >>= relativizeUrls env
-      >>= removeIndexHtml
+  contentCompiler postSlug alignment True
+    >>= saveSnapshot "content"
+    >>= loadAndApplyTemplate "templates/post.html" ctx
+    >>= loadAndApplyTemplate "templates/default.html" ctx
+    >>= relativizeUrls env
+    >>= removeIndexHtml
+
+compilePosts :: Tags -> String -> Rules ()
+compilePosts = doCompilePosts True
+
+compileDrafts :: Tags -> String -> Rules ()
+compileDrafts = doCompilePosts False
 
 readerOptions :: ReaderOptions
 readerOptions = defaultHakyllReaderOptions {
