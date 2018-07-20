@@ -1,0 +1,13 @@
+{
+	"version": "1.0",
+	"type": "rich",
+	"provider_name": "abhinavsarkar.net",
+	"provider_url": "https://abhinavsarkar.net/",
+	"width": 800,
+	"height": 2800,
+	"title": "Fast Sudoku Solver in Haskell #1: A Simple Solution",
+	"author_name": "Abhinav Sarkar",
+	"author_url": "https://abhinavsarkar.net/about/",
+	"html":
+		"<iframe width=\"800\"  height=\"2800\" src=\"https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/embed.html\" frameborder=\"0\" allowfullscreen></iframe>"
+}
