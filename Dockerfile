@@ -28,6 +28,8 @@ RUN set -xe \
     && git commit -m "$TRAVIS_COMMIT_MESSAGE" \
     && git push "$REPO_URL" master
 
-FROM pierrezemb/gostatic:latest
+FROM abhin4v/hastatic:latest
 
-COPY --from=builder /opt/abhinavsarkar.net/_site /srv/http
+COPY --from=builder /opt/abhinavsarkar.net/_site /opt/abhinavsarkar.net
+WORKDIR /opt/abhinavsarkar.net
+CMD ["/usr/bin/hastatic"]
