@@ -15,6 +15,14 @@ Here are some talks and workshops I have presented in various conferences:
 
 You can get in touch with me over Twitter[^twitter] or [email].
 
+## About the Website
+
+The source of the website can be found on my [github]. The [master] branch contains the static website which is generated from the code and the content in the [source] branch.
+
+It uses the [Hakyll] library as the base for static website generation, along with [Staticman] for the static comments support. Website styling is done with [SCSS] and interactivity is added using [JQuery]. The PDF files are generated using headless [Google Chrome] browser with [this tool] running on [node.js].
+
+The website is run using the [hastatic] server for [docker]. It is hosted on [Digital Ocean], behind [Cloudflare] for caching. Builds are done automatically using [Travis CI].
+
 [^linkedin]: [Linkedin](http://in.linkedin.com/in/abhinavsarkar)
 [^stackoverflow]: [StackOverflow](https://stackoverflow.com/story/abhinavsarkar)
 [^github]: [Github](https://github.com/abhin4v)
@@ -29,3 +37,18 @@ You can get in touch with me over Twitter[^twitter] or [email].
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
 [2]: https://web.archive.org/web/20160629192412/https://metarefresh.talkfunnel.com/2015/1326-a-quick-and-hopefully-painless-ride-through-reactj
 [email]: mailto:abhinav@abhinavsarkar.net
+[master]: https://github.com/abhin4v/abhin4v.github.io/tree/master
+[source]: https://github.com/abhin4v/abhin4v.github.io/tree/source
+[Hakyll]: https://jaspervdj.be/hakyll/
+[Staticman]: http://staticman.net/
+[SCSS]: http://sass-lang.com/
+[JQuery]: http://jquery.com/
+[docker]: http://docker.com/
+[hastatic]: https://github.com/abhin4v/hastatic/
+[Digital Ocean]: https://www.digitalocean.com/
+[Cloudflare]: https://www.cloudflare.com/
+[Travis CI]: https://travis-ci.org/
+[github]: https://github.com/abhin4v/abhin4v.github.io
+[this tool]: https://github.com/Szpadel/chrome-headless-render-pdf
+[Google Chrome]: https://www.google.com/chrome/index.html
+[node.js]: https://nodejs.org/
