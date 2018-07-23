@@ -101,7 +101,7 @@ hr {
 a, a:visited {
   text-decoration: none;
   color: $link-color;
-  &:not(.no-js div.sourceCode):hover {
+  &:hover {
     color: $link-hover-color;
   }
 }
