@@ -25,7 +25,7 @@ Discuss this post on [r/haskell].
 
 [Sudoku] is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.
 
-In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This [new strategy] found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run[^machinespec] time for solving all the 49151 [17-clue puzzles][1]:
+In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This [new strategy][2] found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run[^machinespec] time for solving all the 49151 [17-clue puzzles][1]:
 
 ```plain
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
@@ -92,12 +92,15 @@ In Haskell, we can use the [`Data.Word`] module to represent a BitSet. Specifica
 
 ## Bit by Bit, We Get Faster
 
-First, we replace List with `Word16` in the `Cell` type:
+First, we replace List with `Word16` in the `Cell` type and add a helper function:
 
 ```haskell
 data Cell = Fixed Data.Word.Word16
           | Possible Data.Word.Word16
           deriving (Show, Eq)
+
+setBits :: Data.Word.Word16 -> [Data.Word.Word16] -> Data.Word.Word16
+setBits = Data.List.foldl' (Data.Bits..|.)
 ```
 
 Then we replace `Int` related operations with bit related ones in the read and show functions.
@@ -181,6 +184,269 @@ In the nested folding step, instead of folding over the possible values of cells
 
 This is the same example row as the [last time][2]. And it returns same results, excepts as a list of `Word16` now.
 
+We change `makeCell` to use bit operations instead of list ones:
+
+```haskell
+makeCell :: Data.Word.Word16 -> Maybe Cell
+makeCell ys
+  | ys == Data.Bits.zeroBits   = Nothing
+  | Data.Bits.popCount ys == 1 = Just $ Fixed ys
+  | otherwise                  = Just $ Possible ys
+```
+
+And we change cell pruning functions also:
+
+```diff
+ pruneCellsByFixed :: [Cell] -> Maybe [Cell]
+ pruneCellsByFixed cells = traverse pruneCell cells
+   where
+-    fixeds = [x | Fixed x <- cells]
++    fixeds = setBits Data.Bits.zeroBits [x | Fixed x <- cells]
+
+-    pruneCell (Possible xs) = makeCell (xs Data.List.\\ fixeds)
++    pruneCell (Possible xs) = makeCell (xs Data.Bits..&. Data.Bits.complement fixeds)
+     pruneCell x             = Just x
+
+ pruneCellsByExclusives :: [Cell] -> Maybe [Cell]
+ pruneCellsByExclusives cells = case exclusives of
+   [] -> Just cells
+   _  -> traverse pruneCell cells
+   where
+     exclusives    = exclusivePossibilities cells
+-    allExclusives = concat exclusives
++    allExclusives = setBits Data.Bits.zeroBits exclusives
+
+     pruneCell cell@(Fixed _) = Just cell
+     pruneCell cell@(Possible xs)
+       | intersection `elem` exclusives = makeCell intersection
+       | otherwise                      = Just cell
+       where
+-        intersection = xs `Data.List.intersect` allExclusives
++        intersection = xs Data.Bits..&. allExclusives
+```
+
+Notice how the list difference and intersection functions are replaced by `Data.Bits` functions. Specifically, list difference is replace by bitwise-and of the bitwise-complement and list intersection is replaced by bitwise-and.
+
+We make a one-line change in the `isGridInvalid` function to find empty possible cells using bit ops:
+
+```diff
+ isGridInvalid :: Grid -> Bool
+ isGridInvalid grid =
+   any isInvalidRow grid
+   || any isInvalidRow (Data.List.transpose grid)
+   || any isInvalidRow (subGridsToRows grid)
+   where
+     isInvalidRow row =
+       let fixeds         = [x | Fixed x <- row]
+-          emptyPossibles = [x | Possible x <- row, null x]
++          emptyPossibles = [() | Possible x <- row, x == Data.Bits.zeroBits]
+       in hasDups fixeds || not (null emptyPossibles)
+
+     hasDups l = hasDups' l []
+
+     hasDups' [] _ = False
+     hasDups' (y:ys) xs
+       | y `elem` xs = True
+       | otherwise   = hasDups' ys (y:xs)
+```
+
+And finally, we change the `nextGrids` functions to use bit operations:
+
+```haskell
+nextGrids :: Grid -> (Grid, Grid)
+nextGrids grid =
+  let (i, first@(Fixed _), rest) =
+        fixCell
+        . Data.List.minimumBy (compare `Data.Function.on` (possibilityCount . snd))
+        . filter (isPossible . snd)
+        . zip [0..]
+        . concat
+        $ grid
+  in (replace2D i first grid, replace2D i rest grid)
+  where
+    possibilityCount (Possible xs) = Data.Bits.popCount xs
+    possibilityCount (Fixed _)     = 1
+
+    fixCell ~(i, Possible xs) =
+      let x = Data.Bits.countTrailingZeros xs
+      in case makeCell (Data.Bits.clearBit xs x) of
+        Nothing -> error "Impossible case"
+        Just cell -> (i, Fixed (Data.Bits.bit x), cell)
+
+    replace2D :: Int -> a -> [[a]] -> [[a]]
+    replace2D i v = 
+      let (x, y) = (i `quot` 9, i `mod` 9) in replace x (replace y (const v))
+    replace p f xs = [if i == p then f x else x | (x, i) <- zip xs [0..]]
+```
+
+`possibilityCount` now uses `Data.Bits.popCount` to count the number of bits set to 1. `fixCell` now chooses the first set bit from right as the digit to fix. Rest of the code stays the same. Let's build and run it:
+
+```plain
+$ stack build
+$ cat sudoku17.txt | time stack exec sudoku > /dev/null
+       80.30 real        79.82 user         0.50 sys
+```
+
+Wow! That is almost 3.2x faster than the previous solution. It's a massive win! But let's not be content yet. To the profiler again!
+
+## Back to the Profiler
+
+Running the profiler again now gives us these top six culprits:
+
+Cost Centre                  Src                         %time  %alloc
+-------------                -------                    ------ -------
+`exclusivePossibilities`     Sudoku.hs:(57,1)-(74,26)     22.2    16.6
+`exclusivePossibilities.\.\` Sudoku.hs:64:23-96           18.7    32.8
+`fixM.\`                     Sudoku.hs:15:27-65           12.3     0.1
+`pruneGrid'`                 Sudoku.hs:(115,1)-(118,64)    5.6     8.6
+`pruneCellsByFixed`          Sudoku.hs:(83,1)-(88,36)      5.1     7.1
+`exclusivePossibilities.\`   Sudoku.hs:69:36-68            4.3     3.5
+
+Hurray! `pruneCellsByFixed.pruneCell` has disappeared from the list of top bottlenecks. Though `exclusivePossibilities` still remains here as expected.
+
+`exclusivePossibilities` is a big function. The profiler does not really tell us which parts of it are actually slow. That's because by default, the profiler only considers functions as _Cost Centres_. We need to give it hints for it to be able to find bottlenecks inside functions. For that, we need to insert [_Cost Centre_ annotations] in the code:
+
+```haskell
+exclusivePossibilities :: [Cell] -> [Data.Word.Word16]
+exclusivePossibilities row =
+  row
+  & ({-# SCC "EP.zip" #-} zip [1..9])
+  & ({-# SCC "EP.filter" #-} filter (isPossible . snd))
+  & ({-# SCC "EP.foldl" #-} Data.List.foldl'
+      (\acc ~(i, Possible xs) ->
+        Data.List.foldl'
+          (\acc' n -> if Data.Bits.testBit xs n
+                      then Map.insertWith prepend n [i] acc'
+                      else acc')
+          acc
+          [1..9])
+      Map.empty)
+  & ({-# SCC "EP.Map.filter1" #-} Map.filter ((< 4) . length))
+  & ({-# SCC "EP.Map.foldl" #-} Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty)
+  & ({-# SCC "EP.Map.filter2" #-} Map.filterWithKey (\is xs -> length is == length xs))
+  & ({-# SCC "EP.Map.elems" #-} Map.elems)
+  & ({-# SCC "EP.map" #-} map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits))
+  where
+    prepend ~[y] ys = y:ys
+```
+
+After profiling the code again, we get a different list of bottlenecks:
+
+Cost Centre                  Src                         %time  %alloc
+-------------                -------                    ------ -------
+`exclusivePossibilities.\.\` Sudoku.hs:64:23-96           20.3   31.4
+`fixM.\`                     Sudoku.hs:15:27-65           11.1    0.1
+`pruneGrid'`                 Sudoku.hs:(115,1)-(118,64)    5.2    8.3
+`EP.zip`                     Sudoku.hs:59:27-36            4.9   10.7
+`pruneCellsByFixed`          Sudoku.hs:(83,1)-(88,36)      4.8    6.8
+`exclusivePossibilities.\`   Sudoku.hs:69:64-96            4.3    3.4
+`exclusivePossibilities.\`   Sudoku.hs:(63,9)-(66,16)      4.2    0.0
+
+So almost one-fifth of the time is actually going in this nested one-line anonymous function inside `exclusivePossibilities`:
+
+```haskell
+(\acc' n -> if Data.Bits.testBit xs n then Map.insertWith prepend n [i] acc' else acc')
+```
+
+If you recall from the [explanation][2] given in the last part, this is the function which computes the mapping of the digits to the cells. Here, we accumulate the mapping in a [`Data.Map.Strict`] map, keys of which are the digits and values are the indices of the cells in which the digits occur.
+
+So here's an idea: since this map is always going to have `1` to `9` as keys, what if we replace it with a data structure which has nine fixed slots to put the indices in? That _may_ be faster than using a generic map. Let's try it out.
+
+## Accumulators Assemble!
+
+We need a data structure with nine slots to accumulate lists of indices. That sounds easy:
+
+```haskell
+-- Exclusive Possibilities Accumulator
+data ExPosAcc = ExPosAcc ![Int] ![Int] ![Int] ![Int] ![Int] ![Int] ![Int] ![Int] ![Int]
+
+exPosAccEmpty :: ExPosAcc
+exPosAccEmpty = ExPosAcc [] [] [] [] [] [] [] [] []
+```
+
+We just create a data type with nine fields --- one for each digit --- where the fields' values are just lists of integers. Adding indices to the accumulator is quite straightforward:
+
+<small>
+```haskell
+exPosAccInsert :: Int -> Int -> ExPosAcc -> ExPosAcc
+exPosAccInsert 1 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc (i:v1) v2 v3 v4 v5 v6 v7 v8 v9
+exPosAccInsert 2 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 (i:v2) v3 v4 v5 v6 v7 v8 v9
+exPosAccInsert 3 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 (i:v3) v4 v5 v6 v7 v8 v9
+exPosAccInsert 4 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 (i:v4) v5 v6 v7 v8 v9
+exPosAccInsert 5 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 (i:v5) v6 v7 v8 v9
+exPosAccInsert 6 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 (i:v6) v7 v8 v9
+exPosAccInsert 7 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 (i:v7) v8 v9
+exPosAccInsert 8 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 v7 (i:v8) v9
+exPosAccInsert 9 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 (i:v9)
+exPosAccInsert _ _ _                                     = error "Impossible"
+```
+</small>
+
+We pattern match on the digit for the nine cases and cons the index onto the right list for the digit. And finally, a function to convert this accumulator to an associative list:
+
+```haskell
+exPosAccToList :: ExPosAcc -> [(Int, [Int])]
+exPosAccToList (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  [(1, v1), (2, v2), (3, v3), (4, v4), (5, v5), (6, v6), (7, v7), (8, v8), (9, v9)]
+```
+
+The change to the `exclusivePossibilities` function is quite minimal:
+
+```diff
+ exclusivePossibilities :: [Cell] -> [Data.Word.Word16]
+ exclusivePossibilities row =
+   row
+   & zip [1..9]
+   & filter (isPossible . snd)
+   & Data.List.foldl'
+       (\acc ~(i, Possible xs) ->
+         Data.List.foldl'
+-          (\acc' n -> if Data.Bits.testBit xs n
+-                      then Map.insertWith prepend n [i] acc'
+-                      else acc')
++          (\acc' n -> if Data.Bits.testBit xs n
++                      then exPosAccInsert n i acc'
++                      else acc')
+           acc
+           [1..9])
+-      Map.empty
++      exPosAccEmpty
+-  & Map.filter ((< 4) . length)
+-  & Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
++  & exPosAccToList
++  & filter ((< 4) . length . snd)
++  & Data.List.foldl' (\acc (x, is) -> Map.insertWith prepend is [x] acc) Map.empty
+   & Map.filterWithKey (\is xs -> length is == length xs)
+   & Map.elems
+   & map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)
+   where
+     prepend ~[y] ys = y:ys
+```
+
+Instead of doing insert in the map, now we do inserts in our custom accumulator. And instead of filtering and folding the map, we now filter and fold the list we get from the accumulator. No further code changes are required. Let's check the performance now:
+
+```plain
+$ stack build
+$ cat sudoku17.txt | time stack exec sudoku > /dev/null
+       64.58 real        64.20 user         0.40 sys
+```
+
+Nice! That brings our run time down by another 24%. A run with profiling on gives us the following top bottlenecks now:
+
+Cost Centre                        Module                    Src                                            %time  %alloc
+-------------                      -------                   -------                                       ------ -------
+`exclusivePossibilities.\`         Main                      Sudoku.hs:(85,9)-(88,16)                        15.0    8.7
+`fixM.\`                           Main                      Sudoku.hs:15:27-65                              11.1    0.1
+`exclusivePossibilities.\`         Main                      Sudoku.hs:92:64-96                               7.0   13.9
+`pruneCellsByFixed`                Main                      Sudoku.hs:(106,1)-(111,36)                       6.2    6.9
+`pruneGrid'`                       Main                      Sudoku.hs:(138,1)-(141,64)                       5.3    8.3
+`EP.filter2`                       Main                      Sudoku.hs:91:31-59                               4.2    6.4
+`EP.zip`                           Main                      Sudoku.hs:81:27-36                               4.0   10.8
+`chunksOf`                         Data.List.Split.Internals Data/List/Split/Internals.hs:(514,1)-(517,49)    3.4    7.4
+`exclusivePossibilities`           Main                      Sudoku.hs:(79,1)-(97,26)                         3.3    2.6
+`==`                               Main                      Sudoku.hs:22:27-28                               2.9    0.0
+
+
 
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
@@ -188,7 +454,6 @@ This is the same example row as the [last time][2]. And it returns same results,
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /drafts/fast-sudoku-solver-in-haskell-3/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
-[new strategy]: /posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward
 [University of Glasgow]: https://en.wikipedia.org/wiki/University_of_Glasgow
 [singly linked lists]: https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list
 [asymptotic complexity]: https://en.wikipedia.org/wiki/Asymptotic_complexity
@@ -204,6 +469,9 @@ This is the same example row as the [last time][2]. And it returns same results,
 [bits]: https://en.wikipedia.org/wiki/Bit
 [`Data.Word.Word16`]: https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html#t:Word16
 [`Data.Bits`]: https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Bits.html
+[_Cost Centre_ annotations]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html#inserting-cost-centres-by-hand
+[`Data.Map.Strict`]: https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html
+
 
 [1]: /files/sudoku17.txt.bz2
 [2]: /posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward
