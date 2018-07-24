@@ -12,21 +12,21 @@
 
         <meta property="og:url" content="https://abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-3/">
         <meta property="og:type" content="article">
-        <meta property="og:title" content="Fast Sudoku Solver in Haskell #3: Arrival of the Set">
+        <meta property="og:title" content="Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures">
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
         <meta name="keywords" content="haskell, sudoku, programming, puzzle">
         
         
-        <meta name="description" content="We write a Sudoku Solver in Haskell and optimize it to be fast">
-        <meta property="og:description" content="We write a Sudoku Solver in Haskell and optimize it to be fast">
+        <meta name="description" content="We make the Sudoku solution faster by using the right data structure">
+        <meta property="og:description" content="We make the Sudoku solution faster by using the right data structure">
         
         <meta name="language" content="EN">
         <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
         <meta name="HandheldFriendly" content="True">
 
-        <title>Fast Sudoku Solver in Haskell #3: Arrival of the Set | abhinavsarkar.net</title>
+        <title>Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures | abhinavsarkar.net</title>
 
         <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
         <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
@@ -93,7 +93,7 @@
         <main role="main">
             <article itemscope itemtype="http://schema.org/Article" class="post">
     <header>
-        <h1 itemprop="name" id="#top">Fast Sudoku Solver in Haskell #3: Arrival of the Set</h1>
+        <h1 itemprop="name" id="#top">Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</h1>
     </header>
     <section class="header">
         <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
@@ -117,8 +117,192 @@
     </section>
     <section itemprop="articleBody" class="body">
         <div class="ert">
-A zero seccond read
+A seven minute read
 </div>
+<p>In the <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/">previous part</a> of this series of posts, we optimized the Sudoku solver by implementing a new strategy to prune cells and were able to achieve a speedup of almost 200x. Afterwards, we profiled the solution and found that there were bottlenecks in the program leading to a slowdown. In this post, we are going to follow the profiler and use the right <em>Data Structures</em> to improve the solution further and make it <strong>faster</strong>.</p>
+<!--more-->
+<p>This is the third post in a series of posts:</p>
+<ol type="1">
+<li><a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">Fast Sudoku Solver in Haskell #1: A Simple Solution</a></li>
+<li><a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/">Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</a></li>
+<li><a href="//abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-3/">Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</a></li>
+</ol>
+<p>Discuss this post on [r/haskell].</p>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li></ol></nav>
+<h2 id="quick-recap" data-track-content data-content-name="quick-recap" data-content-piece="fast-sudoku-solver-in-haskell-3">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
+<p>In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">new strategy</a> found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> time for solving all the 49151 <a href="//abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a>:</p>
+<pre class="plain"><code>$ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
+      258.97 real       257.34 user         1.52 sys</code></pre>
+<p>Let’s try to improve this time.</p>
+<h2 id="profile-twice-code-once" data-track-content data-content-name="profile-twice-code-once" data-content-piece="fast-sudoku-solver-in-haskell-3">Profile Twice, Code Once<a href="#profile-twice-code-once" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Instead of trying to guess how to improve the performance of our solution, let’s be methodical about it. We start with profiling the code to find the bottlenecks. Let’s compile and run the code with profiling flags.</p>
+<pre class="plain"><code>$ stack build --profile
+$ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></pre>
+<p>This generates a <code>sudoku.prof</code> file with profiling output. Here are the top sever <em>Cost Centres</em><a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> from the file (cleaned for brevity):</p>
+<div class="scrollable-table">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cost Centre</th>
+<th style="text-align: left;">Src</th>
+<th style="text-align: right;">%time</th>
+<th style="text-align: right;">%alloc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>exclusivePossibilities</code></td>
+<td style="text-align: left;">Sudoku.hs:(49,1)-(62,26)</td>
+<td style="text-align: right;">18.9</td>
+<td style="text-align: right;">11.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneCellsByFixed.pruneCell</code></td>
+<td style="text-align: left;">Sudoku.hs:(75,5)-(76,36)</td>
+<td style="text-align: right;">17.7</td>
+<td style="text-align: right;">30.8</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>exclusivePossibilities.\.\</code></td>
+<td style="text-align: left;">Sudoku.hs:55:38-70</td>
+<td style="text-align: right;">11.7</td>
+<td style="text-align: right;">20.3</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>fixM.\</code></td>
+<td style="text-align: left;">Sudoku.hs:13:27-65</td>
+<td style="text-align: right;">10.7</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>==</code></td>
+<td style="text-align: left;">Sudoku.hs:15:56-57</td>
+<td style="text-align: right;">5.6</td>
+<td style="text-align: right;">0.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneGrid'</code></td>
+<td style="text-align: left;">Sudoku.hs:(103,1)-(106,64)</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">6.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>pruneCellsByFixed</code></td>
+<td style="text-align: left;">Sudoku.hs:(71,1)-(76,36)</td>
+<td style="text-align: right;">4.5</td>
+<td style="text-align: right;">5.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>exclusivePossibilities.\</code></td>
+<td style="text-align: left;">Sudoku.hs:58:36-68</td>
+<td style="text-align: right;">3.4</td>
+<td style="text-align: right;">2.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Cost Centre</em> points to a function, either named or anonymous. <em>Src</em> gives the line and column numbers of the source code of the function. <em>%time</em> and <em>%alloc</em> are the percentages of time spent and memory allocated in the function, respectively.</p>
+<p>We see that <code>exclusivePossibilities</code> and the nested functions inside it take up almost 34% time of the entire run time. Seconds biggest bottleneck is the <code>pruneCell</code> function inside the <code>pruneCellsByFixed</code> function.</p>
+<p>It is easy to guess the possible reason for <code>pruneCell</code> taking so much time. Here’s the code for reference:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="ot">pruneCellsByFixed ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">pruneCellsByFixed cells <span class="fu">=</span> traverse pruneCell cells</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">    fixeds <span class="fu">=</span> [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> cells]</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">    pruneCell (<span class="dt">Possible</span> xs) <span class="fu">=</span> makeCell (xs <span class="dt">Data.List</span><span class="fu">.</span>\\ fixeds)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">    pruneCell x             <span class="fu">=</span> <span class="dt">Just</span> x</a></code></pre></div>
+<p><code>pruneCell</code> uses <code>Data.List.\\</code> to find the difference of the cell’s possible digits and the fixed digits in the cell’s block. In Haskell, lists are implemented as <a href="https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list" target="_blank" rel="noopener">singly linked lists</a>. So, finding the difference or intersection of two lists is O(n<sup>2</sup>), that is, quadratic <a href="https://en.wikipedia.org/wiki/Asymptotic_complexity" target="_blank" rel="noopener">asymptotic complexity</a>. Let’s tackle this bottleneck first.</p>
+<h2 id="a-set-for-all-occasions" data-track-content data-content-name="a-set-for-all-occasions" data-content-piece="fast-sudoku-solver-in-haskell-3">A Set for All Occasions<a href="#a-set-for-all-occasions" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>What is a efficient data structure for finding differences and intersections? Why, a <a href="https://en.wikipedia.org/wiki/Set_(abstract_data_type)" target="_blank" rel="noopener"><em>Set</em></a> of course! A Set stores unique values and provides fast operations for testing membership of its elements. If we use a Set to represent the possible values of cells instead of a List, the program should run faster. Since the possible values are already unique (<code>1</code> to <code>9</code>), it should not break anything.</p>
+<p>Haskell comes with a bunch of Set implementations:</p>
+<ul>
+<li><a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Set.html" target="_blank" rel="noopener"><code>Data.Set</code></a> which is a generic data structure implemented as <a href="https://en.wikipedia.org/wiki/Self-balancing_binary_search_tree" target="_blank" rel="noopener">self-balancing binary search tree</a>.</li>
+<li><a href="https://hackage.haskell.org/package/unordered-containers-0.2.9.0/docs/Data-HashSet.html" target="_blank" rel="noopener"><code>Data.HashSet</code></a> which is a generic data structure implemented as <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie" target="_blank" rel="noopener">hash array mapped trie</a>.</li>
+<li><a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-IntSet.html" target="_blank" rel="noopener"><code>Data.IntSet</code></a> which is a specialized data structure for integer values, implemented as <a href="https://en.wikipedia.org/wiki/Radix_tree" target="_blank" rel="noopener">radix tree</a>.</li>
+</ul>
+<p>However, a much faster implementation is possible for our particular use-case. We can use a <a href="https://en.wikipedia.org/wiki/Bitset" target="_blank" rel="noopener"><em>BitSet</em></a>.</p>
+<p>A BitSet uses <a href="https://en.wikipedia.org/wiki/Bit" target="_blank" rel="noopener">bits</a> to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to <code>1</code> then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. However, for our Sudoku solver, we need to store just the digits <code>1</code> to <code>9</code> in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.</p>
+<p>In Haskell, we can use the <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html" target="_blank" rel="noopener"><code>Data.Word</code></a> module to represent a BitSet. Specifically, we can use <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html#t:Word16" target="_blank" rel="noopener"><code>Data.Word.Word16</code></a> type which has sixteen bits because we need only nine bits to represent the nine digits. The bit-level operations on <code>Word16</code> are provided by the <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Bits.html" target="_blank" rel="noopener"><code>Data.Bits</code></a> module.</p>
+<h2 id="bit-by-bit-we-get-faster" data-track-content data-content-name="bit-by-bit-we-get-faster" data-content-piece="fast-sudoku-solver-in-haskell-3">Bit by Bit, We Get Faster<a href="#bit-by-bit-we-get-faster" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>First, we replace List with <code>Word16</code> in the <code>Cell</code> type:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">data</span> <span class="dt">Cell</span> <span class="fu">=</span> <span class="dt">Fixed</span> <span class="dt">Data.Word.Word16</span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">          <span class="fu">|</span> <span class="dt">Possible</span> <span class="dt">Data.Word.Word16</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">          <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Eq</span>)</a></code></pre></div>
+<p>Then we replace <code>Int</code> related operations with bit related ones in the read and show functions.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="ot">readGrid ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">readGrid s</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">  <span class="fu">|</span> length s <span class="fu">==</span> <span class="dv">81</span> <span class="fu">=</span> </a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">      traverse (traverse readCell) <span class="fu">.</span> Data.List.Split.chunksOf <span class="dv">9</span> <span class="fu">$</span> s</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">  <span class="fu">|</span> otherwise      <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7">    allBitsSet <span class="fu">=</span> <span class="dv">1022</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">    readCell <span class="ch">'.'</span> <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> allBitsSet</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    readCell c</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">      <span class="fu">|</span> Data.Char.isDigit c <span class="fu">&amp;&amp;</span> c <span class="fu">&gt;</span> <span class="ch">'0'</span> <span class="fu">=</span> </a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">          <span class="dt">Just</span> <span class="fu">.</span> <span class="dt">Fixed</span> <span class="fu">.</span> Data.Bits.bit <span class="fu">.</span> Data.Char.digitToInt <span class="fu">$</span> c</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">      <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="ot">showGrid ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb5-16" data-line-number="16">showGrid <span class="fu">=</span> unlines <span class="fu">.</span> map (unwords <span class="fu">.</span> map showCell)</a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18">    showCell (<span class="dt">Fixed</span> x) <span class="fu">=</span> show <span class="fu">.</span> Data.Bits.countTrailingZeros <span class="fu">$</span> x</a>
+<a class="sourceLine" id="cb5-19" data-line-number="19">    showCell _         <span class="fu">=</span> <span class="st">&quot;.&quot;</span></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb5-21" data-line-number="21"><span class="ot">showGridWithPossibilities ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb5-22" data-line-number="22">showGridWithPossibilities <span class="fu">=</span> unlines <span class="fu">.</span> map (unwords <span class="fu">.</span> map showCell)</a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">    showCell (<span class="dt">Fixed</span> x)     <span class="fu">=</span> (show <span class="fu">.</span> Data.Bits.countTrailingZeros <span class="fu">$</span> x) <span class="fu">++</span> <span class="st">&quot;          &quot;</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">    showCell (<span class="dt">Possible</span> xs) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">      <span class="st">&quot;[&quot;</span> <span class="fu">++</span> </a>
+<a class="sourceLine" id="cb5-27" data-line-number="27">      map (\i <span class="ot">-&gt;</span> <span class="kw">if</span> Data.Bits.testBit xs i <span class="kw">then</span> Data.Char.intToDigit i <span class="kw">else</span> <span class="ch">' '</span>) [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>] </a>
+<a class="sourceLine" id="cb5-28" data-line-number="28">      <span class="fu">++</span> <span class="st">&quot;]&quot;</span></a></code></pre></div>
+<p>We set the same bit as the digit to indicate the presence of the digit in the possibilities. For example, for digit <code>1</code>, we set the bit 1 so that the resulting <code>Word16</code> is <code>0000 0000 0000 0010</code> or 2. So for fixed cells, the value is count of the zeros from right.</p>
+<p>The change in the <code>exclusivePossibilities</code> function is pretty minimal:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="st">-exclusivePossibilities :: [Cell] -&gt; [[Int]]</span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="va">+exclusivePossibilities :: [Cell] -&gt; [Data.Word.Word16]</span></a>
+<a class="sourceLine" id="cb6-3" data-line-number="3"> exclusivePossibilities row =</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">   row</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">   &amp; zip [1..9]</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">   &amp; filter (isPossible . snd)</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">   &amp; Data.List.foldl'</a>
+<a class="sourceLine" id="cb6-8" data-line-number="8">       (\acc ~(i, Possible xs) -&gt;</a>
+<a class="sourceLine" id="cb6-9" data-line-number="9"><span class="st">-        Data.List.foldl' </span></a>
+<a class="sourceLine" id="cb6-10" data-line-number="10"><span class="st">-          (\acc' x -&gt; Map.insertWith prepend x [i] acc') </span></a>
+<a class="sourceLine" id="cb6-11" data-line-number="11"><span class="st">-          acc </span></a>
+<a class="sourceLine" id="cb6-12" data-line-number="12"><span class="st">-          xs)</span></a>
+<a class="sourceLine" id="cb6-13" data-line-number="13"><span class="va">+        Data.List.foldl'</span></a>
+<a class="sourceLine" id="cb6-14" data-line-number="14"><span class="va">+          (\acc' x -&gt; if Data.Bits.testBit xs x</span></a>
+<a class="sourceLine" id="cb6-15" data-line-number="15"><span class="va">+                      then Map.insertWith prepend x [i] acc'</span></a>
+<a class="sourceLine" id="cb6-16" data-line-number="16"><span class="va">+                      else acc')</span></a>
+<a class="sourceLine" id="cb6-17" data-line-number="17"><span class="va">+          acc</span></a>
+<a class="sourceLine" id="cb6-18" data-line-number="18"><span class="va">+          [1..9])</span></a>
+<a class="sourceLine" id="cb6-19" data-line-number="19">       Map.empty</a>
+<a class="sourceLine" id="cb6-20" data-line-number="20">   &amp; Map.filter ((&lt; 4) . length)</a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">   &amp; Map.foldlWithKey'(\acc x is -&gt; Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb6-22" data-line-number="22">   &amp; Map.filterWithKey (\is xs -&gt; length is == length xs)</a>
+<a class="sourceLine" id="cb6-23" data-line-number="23">   &amp; Map.elems</a>
+<a class="sourceLine" id="cb6-24" data-line-number="24"><span class="va">+  &amp; map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</span></a>
+<a class="sourceLine" id="cb6-25" data-line-number="25">   where</a>
+<a class="sourceLine" id="cb6-26" data-line-number="26">     prepend ~[y] ys = y:ys</a></code></pre></div>
+<p>In the nested folding step, instead of folding over the possible values of cells, now we fold over the digits from <code>1</code> to <code>9</code> and insert the entry in the map if the bit corresponding to the digit is set in the possibilities. And as the last step, we convert the exclusive possibilities to <code>Word16</code> by folding them, starting with zero. As example in the <em>REPL</em> should be instructive:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> poss <span class="fu">=</span> Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> row <span class="fu">=</span> [<span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">9</span>], <span class="dt">Fixed</span> <span class="fu">$</span> poss [<span class="dv">1</span>], <span class="dt">Fixed</span> <span class="fu">$</span> poss [<span class="dv">5</span>], <span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">6</span>,<span class="dv">9</span>], <span class="dt">Fixed</span> <span class="fu">$</span> poss [<span class="dv">7</span>], <span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>], <span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">6</span>,<span class="dv">9</span>], <span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>], <span class="dt">Possible</span> <span class="fu">$</span> poss [<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">6</span>,<span class="dv">8</span>,<span class="dv">9</span>]]</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGridWithPossibilities [row]</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">[   <span class="dv">4</span> <span class="dv">6</span>  <span class="dv">9</span>] <span class="dv">1</span>           <span class="dv">5</span>           [     <span class="dv">6</span>  <span class="dv">9</span>] <span class="dv">7</span>           [ <span class="dv">23</span>  <span class="dv">6</span> <span class="dv">89</span>] [     <span class="dv">6</span>  <span class="dv">9</span>] [ <span class="dv">23</span>  <span class="dv">6</span> <span class="dv">89</span>] [ <span class="dv">23</span>  <span class="dv">6</span> <span class="dv">89</span>]</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> exclusivePossibilities row</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">[<span class="dv">16</span>,<span class="dv">268</span>]</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> [poss [<span class="dv">4</span>], poss [<span class="dv">8</span>,<span class="dv">3</span>,<span class="dv">2</span>]]</a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">[<span class="dv">16</span>,<span class="dv">268</span>]</a></code></pre></div>
+<p>This is the same example row as the <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">last time</a>. And it returns same results, excepts as a list of <code>Word16</code> now.</p>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p>Notice the British english spelling. GHC was originally developed in <a href="https://en.wikipedia.org/wiki/University_of_Glasgow" target="_blank" rel="noopener">University of Glasgow</a> in Scotland.<a href="#fnref2" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
     </section>
     <section class="source">
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/fast-sudoku-solver-in-haskell-3.md" target="_blank" rel="noopener">Post history</a>
