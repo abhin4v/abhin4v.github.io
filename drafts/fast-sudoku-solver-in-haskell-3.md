@@ -86,7 +86,7 @@ Haskell comes with a bunch of Set implementations:
 
 However, a much faster implementation is possible for our particular use-case. We can use a [_BitSet_]. 
 
-A BitSet uses [bits] to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to `1` then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. However, for our Sudoku solver, we need to store just the digits `1` to `9` in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.
+A BitSet uses [bits] to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to `1` then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. But, for our Sudoku solver, we need to store just the digits `1` to `9` in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.
 
 In Haskell, we can use the [`Data.Word`] module to represent a BitSet. Specifically, we can use [`Data.Word.Word16`] type which has sixteen bits because we need only nine bits to represent the nine digits. The bit-level operations on `Word16` are provided by the [`Data.Bits`] module.
 
@@ -366,21 +366,28 @@ exPosAccEmpty = ExPosAcc [] [] [] [] [] [] [] [] []
 
 We just create a data type with nine fields --- one for each digit --- where the fields' values are just lists of integers. Adding indices to the accumulator is quite straightforward:
 
-<small>
 ```haskell
 exPosAccInsert :: Int -> Int -> ExPosAcc -> ExPosAcc
-exPosAccInsert 1 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc (i:v1) v2 v3 v4 v5 v6 v7 v8 v9
-exPosAccInsert 2 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 (i:v2) v3 v4 v5 v6 v7 v8 v9
-exPosAccInsert 3 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 (i:v3) v4 v5 v6 v7 v8 v9
-exPosAccInsert 4 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 (i:v4) v5 v6 v7 v8 v9
-exPosAccInsert 5 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 (i:v5) v6 v7 v8 v9
-exPosAccInsert 6 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 (i:v6) v7 v8 v9
-exPosAccInsert 7 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 (i:v7) v8 v9
-exPosAccInsert 8 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 v7 (i:v8) v9
-exPosAccInsert 9 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) = ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 (i:v9)
-exPosAccInsert _ _ _                                     = error "Impossible"
+exPosAccInsert 1 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc (i:v1) v2 v3 v4 v5 v6 v7 v8 v9
+exPosAccInsert 2 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 (i:v2) v3 v4 v5 v6 v7 v8 v9
+exPosAccInsert 3 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 (i:v3) v4 v5 v6 v7 v8 v9
+exPosAccInsert 4 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 (i:v4) v5 v6 v7 v8 v9
+exPosAccInsert 5 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 v4 (i:v5) v6 v7 v8 v9
+exPosAccInsert 6 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 v4 v5 (i:v6) v7 v8 v9
+exPosAccInsert 7 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 v4 v5 v6 (i:v7) v8 v9
+exPosAccInsert 8 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 v4 v5 v6 v7 (i:v8) v9
+exPosAccInsert 9 i (ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 v9) =
+  ExPosAcc v1 v2 v3 v4 v5 v6 v7 v8 (i:v9)
+exPosAccInsert _ _ _ = error "Impossible"
 ```
-</small>
 
 We pattern match on the digit for the nine cases and cons the index onto the right list for the digit. And finally, a function to convert this accumulator to an associative list:
 
@@ -433,20 +440,22 @@ $ cat sudoku17.txt | time stack exec sudoku > /dev/null
 
 Nice! That brings our run time down by another 24%. A run with profiling on gives us the following top bottlenecks now:
 
-Cost Centre                        Module                    Src                                            %time  %alloc
--------------                      -------                   -------                                       ------ -------
-`exclusivePossibilities.\`         Main                      Sudoku.hs:(85,9)-(88,16)                        15.0    8.7
-`fixM.\`                           Main                      Sudoku.hs:15:27-65                              11.1    0.1
-`exclusivePossibilities.\`         Main                      Sudoku.hs:92:64-96                               7.0   13.9
-`pruneCellsByFixed`                Main                      Sudoku.hs:(106,1)-(111,36)                       6.2    6.9
-`pruneGrid'`                       Main                      Sudoku.hs:(138,1)-(141,64)                       5.3    8.3
-`EP.filter2`                       Main                      Sudoku.hs:91:31-59                               4.2    6.4
-`EP.zip`                           Main                      Sudoku.hs:81:27-36                               4.0   10.8
-`chunksOf`                         Data.List.Split.Internals Data/List/Split/Internals.hs:(514,1)-(517,49)    3.4    7.4
-`exclusivePossibilities`           Main                      Sudoku.hs:(79,1)-(97,26)                         3.3    2.6
-`==`                               Main                      Sudoku.hs:22:27-28                               2.9    0.0
+Cost Centre                Src                                            %time  %alloc
+-------------              -------                                       ------ -------
+`exclusivePossibilities.\` Sudoku.hs:(85,9)-(88,16)                        15.0    8.7
+`fixM.\`                   Sudoku.hs:15:27-65                              11.1    0.1
+`exclusivePossibilities.\` Sudoku.hs:92:64-96                               7.0   13.9
+`pruneCellsByFixed`        Sudoku.hs:(106,1)-(111,36)                       6.2    6.9
+`pruneGrid'`               Sudoku.hs:(138,1)-(141,64)                       5.3    8.3
+`EP.filter2`               Sudoku.hs:91:31-59                               4.2    6.4
+`EP.zip`                   Sudoku.hs:81:27-36                               4.0   10.8
+`chunksOf`                 Data/List/Split/Internals.hs:(514,1)-(517,49)    3.4    7.4
+`exclusivePossibilities`   Sudoku.hs:(79,1)-(97,26)                         3.3    2.6
+`==`                       Sudoku.hs:22:27-28                               2.9    0.0
 
+The bottleneck function from the last round has disappeared now. If we look closely, we find that around 15% of the run time now goes into list traversal and manipulation. This is in the functions `pruneCellsByFixed`, `pruneGrid'` and `chunksOf`, two of which are majorly list traversal and transposition, and the third is list splitting. Maybe it's time to get rid of lists altogether?
 
+## Vectors of Speed
 
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
