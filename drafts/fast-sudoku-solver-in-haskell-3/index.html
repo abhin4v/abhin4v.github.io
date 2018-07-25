@@ -128,7 +128,7 @@ A sixteen minute read
 <li><a href="//abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-3/">Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</a></li>
 </ol>
 <p>Discuss this post on [r/haskell].</p>
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#accumulators-assemble">Accumulators Assemble!</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#accumulators-assemble">Accumulators Assemble!</a></li><li><a href="#vectors-of-speed">Vectors of Speed</a></li></ol></nav>
 <h2 id="quick-recap" data-track-content data-content-name="quick-recap" data-content-piece="fast-sudoku-solver-in-haskell-3">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">new strategy</a> found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> time for solving all the 49151 <a href="//abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a>:</p>
@@ -222,7 +222,7 @@ $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></
 <li><a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-IntSet.html" target="_blank" rel="noopener"><code>Data.IntSet</code></a> which is a specialized data structure for integer values, implemented as <a href="https://en.wikipedia.org/wiki/Radix_tree" target="_blank" rel="noopener">radix tree</a>.</li>
 </ul>
 <p>However, a much faster implementation is possible for our particular use-case. We can use a <a href="https://en.wikipedia.org/wiki/Bitset" target="_blank" rel="noopener"><em>BitSet</em></a>.</p>
-<p>A BitSet uses <a href="https://en.wikipedia.org/wiki/Bit" target="_blank" rel="noopener">bits</a> to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to <code>1</code> then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. However, for our Sudoku solver, we need to store just the digits <code>1</code> to <code>9</code> in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.</p>
+<p>A BitSet uses <a href="https://en.wikipedia.org/wiki/Bit" target="_blank" rel="noopener">bits</a> to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to <code>1</code> then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. But, for our Sudoku solver, we need to store just the digits <code>1</code> to <code>9</code> in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.</p>
 <p>In Haskell, we can use the <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html" target="_blank" rel="noopener"><code>Data.Word</code></a> module to represent a BitSet. Specifically, we can use <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html#t:Word16" target="_blank" rel="noopener"><code>Data.Word.Word16</code></a> type which has sixteen bits because we need only nine bits to represent the nine digits. The bit-level operations on <code>Word16</code> are provided by the <a href="https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Bits.html" target="_blank" rel="noopener"><code>Data.Bits</code></a> module.</p>
 <h2 id="bit-by-bit-we-get-faster" data-track-content data-content-name="bit-by-bit-we-get-faster" data-content-piece="fast-sudoku-solver-in-haskell-3">Bit by Bit, We Get Faster<a href="#bit-by-bit-we-get-faster" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>First, we replace List with <code>Word16</code> in the <code>Cell</code> type and add a helper function:</p>
@@ -526,19 +526,26 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ot">exPosAccEmpty ::</span> <span class="dt">ExPosAcc</span></a>
 <a class="sourceLine" id="cb15-5" data-line-number="5">exPosAccEmpty <span class="fu">=</span> <span class="dt">ExPosAcc</span> [] [] [] [] [] [] [] [] []</a></code></pre></div>
 <p>We just create a data type with nine fields — one for each digit — where the fields’ values are just lists of integers. Adding indices to the accumulator is quite straightforward:</p>
-<p><small></p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb16-1" data-line-number="1"><span class="ot">exPosAccInsert ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">ExPosAcc</span> <span class="ot">-&gt;</span> <span class="dt">ExPosAcc</span></a>
-<a class="sourceLine" id="cb16-2" data-line-number="2">exPosAccInsert <span class="dv">1</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> (i<span class="fu">:</span>v1) v2 v3 v4 v5 v6 v7 v8 v9</a>
-<a class="sourceLine" id="cb16-3" data-line-number="3">exPosAccInsert <span class="dv">2</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 (i<span class="fu">:</span>v2) v3 v4 v5 v6 v7 v8 v9</a>
-<a class="sourceLine" id="cb16-4" data-line-number="4">exPosAccInsert <span class="dv">3</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 (i<span class="fu">:</span>v3) v4 v5 v6 v7 v8 v9</a>
-<a class="sourceLine" id="cb16-5" data-line-number="5">exPosAccInsert <span class="dv">4</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 (i<span class="fu">:</span>v4) v5 v6 v7 v8 v9</a>
-<a class="sourceLine" id="cb16-6" data-line-number="6">exPosAccInsert <span class="dv">5</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 v4 (i<span class="fu">:</span>v5) v6 v7 v8 v9</a>
-<a class="sourceLine" id="cb16-7" data-line-number="7">exPosAccInsert <span class="dv">6</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 (i<span class="fu">:</span>v6) v7 v8 v9</a>
-<a class="sourceLine" id="cb16-8" data-line-number="8">exPosAccInsert <span class="dv">7</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 (i<span class="fu">:</span>v7) v8 v9</a>
-<a class="sourceLine" id="cb16-9" data-line-number="9">exPosAccInsert <span class="dv">8</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 (i<span class="fu">:</span>v8) v9</a>
-<a class="sourceLine" id="cb16-10" data-line-number="10">exPosAccInsert <span class="dv">9</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span> <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 (i<span class="fu">:</span>v9)</a>
-<a class="sourceLine" id="cb16-11" data-line-number="11">exPosAccInsert _ _ _                                     <span class="fu">=</span> error <span class="st">&quot;Impossible&quot;</span></a></code></pre></div>
-<p></small></p>
+<a class="sourceLine" id="cb16-2" data-line-number="2">exPosAccInsert <span class="dv">1</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-3" data-line-number="3">  <span class="dt">ExPosAcc</span> (i<span class="fu">:</span>v1) v2 v3 v4 v5 v6 v7 v8 v9</a>
+<a class="sourceLine" id="cb16-4" data-line-number="4">exPosAccInsert <span class="dv">2</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-5" data-line-number="5">  <span class="dt">ExPosAcc</span> v1 (i<span class="fu">:</span>v2) v3 v4 v5 v6 v7 v8 v9</a>
+<a class="sourceLine" id="cb16-6" data-line-number="6">exPosAccInsert <span class="dv">3</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-7" data-line-number="7">  <span class="dt">ExPosAcc</span> v1 v2 (i<span class="fu">:</span>v3) v4 v5 v6 v7 v8 v9</a>
+<a class="sourceLine" id="cb16-8" data-line-number="8">exPosAccInsert <span class="dv">4</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-9" data-line-number="9">  <span class="dt">ExPosAcc</span> v1 v2 v3 (i<span class="fu">:</span>v4) v5 v6 v7 v8 v9</a>
+<a class="sourceLine" id="cb16-10" data-line-number="10">exPosAccInsert <span class="dv">5</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-11" data-line-number="11">  <span class="dt">ExPosAcc</span> v1 v2 v3 v4 (i<span class="fu">:</span>v5) v6 v7 v8 v9</a>
+<a class="sourceLine" id="cb16-12" data-line-number="12">exPosAccInsert <span class="dv">6</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-13" data-line-number="13">  <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 (i<span class="fu">:</span>v6) v7 v8 v9</a>
+<a class="sourceLine" id="cb16-14" data-line-number="14">exPosAccInsert <span class="dv">7</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-15" data-line-number="15">  <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 (i<span class="fu">:</span>v7) v8 v9</a>
+<a class="sourceLine" id="cb16-16" data-line-number="16">exPosAccInsert <span class="dv">8</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-17" data-line-number="17">  <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 (i<span class="fu">:</span>v8) v9</a>
+<a class="sourceLine" id="cb16-18" data-line-number="18">exPosAccInsert <span class="dv">9</span> i (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb16-19" data-line-number="19">  <span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 (i<span class="fu">:</span>v9)</a>
+<a class="sourceLine" id="cb16-20" data-line-number="20">exPosAccInsert _ _ _ <span class="fu">=</span> error <span class="st">&quot;Impossible&quot;</span></a></code></pre></div>
 <p>We pattern match on the digit for the nine cases and cons the index onto the right list for the digit. And finally, a function to convert this accumulator to an associative list:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" data-line-number="1"><span class="ot">exPosAccToList ::</span> <span class="dt">ExPosAcc</span> <span class="ot">-&gt;</span> [(<span class="dt">Int</span>, [<span class="dt">Int</span>])]</a>
 <a class="sourceLine" id="cb17-2" data-line-number="2">exPosAccToList (<span class="dt">ExPosAcc</span> v1 v2 v3 v4 v5 v6 v7 v8 v9) <span class="fu">=</span></a>
@@ -582,7 +589,6 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <thead>
 <tr class="header">
 <th style="text-align: left;">Cost Centre</th>
-<th style="text-align: left;">Module</th>
 <th style="text-align: left;">Src</th>
 <th style="text-align: right;">%time</th>
 <th style="text-align: right;">%alloc</th>
@@ -591,70 +597,60 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"><code>exclusivePossibilities.\</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:(85,9)-(88,16)</td>
 <td style="text-align: right;">15.0</td>
 <td style="text-align: right;">8.7</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>fixM.\</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:15:27-65</td>
 <td style="text-align: right;">11.1</td>
 <td style="text-align: right;">0.1</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>exclusivePossibilities.\</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:92:64-96</td>
 <td style="text-align: right;">7.0</td>
 <td style="text-align: right;">13.9</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>pruneCellsByFixed</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:(106,1)-(111,36)</td>
 <td style="text-align: right;">6.2</td>
 <td style="text-align: right;">6.9</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>pruneGrid'</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:(138,1)-(141,64)</td>
 <td style="text-align: right;">5.3</td>
 <td style="text-align: right;">8.3</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>EP.filter2</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:91:31-59</td>
 <td style="text-align: right;">4.2</td>
 <td style="text-align: right;">6.4</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>EP.zip</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:81:27-36</td>
 <td style="text-align: right;">4.0</td>
 <td style="text-align: right;">10.8</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>chunksOf</code></td>
-<td style="text-align: left;">Data.List.Split.Internals</td>
 <td style="text-align: left;">Data/List/Split/Internals.hs:(514,1)-(517,49)</td>
 <td style="text-align: right;">3.4</td>
 <td style="text-align: right;">7.4</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"><code>exclusivePossibilities</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:(79,1)-(97,26)</td>
 <td style="text-align: right;">3.3</td>
 <td style="text-align: right;">2.6</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"><code>==</code></td>
-<td style="text-align: left;">Main</td>
 <td style="text-align: left;">Sudoku.hs:22:27-28</td>
 <td style="text-align: right;">2.9</td>
 <td style="text-align: right;">0.0</td>
@@ -662,6 +658,8 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </tbody>
 </table>
 </div>
+<p>The bottleneck function from the last round has disappeared now. If we look closely, we find that around 15% of the run time now goes into list traversal and manipulation. This is in the functions <code>pruneCellsByFixed</code>, <code>pruneGrid'</code> and <code>chunksOf</code>, two of which are majorly list traversal and transposition, and the third is list splitting. Maybe it’s time to get rid of lists altogether?</p>
+<h2 id="vectors-of-speed" data-track-content data-content-name="vectors-of-speed" data-content-piece="fast-sudoku-solver-in-haskell-3">Vectors of Speed<a href="#vectors-of-speed" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <section class="footnotes">
 <hr />
 <ol>
