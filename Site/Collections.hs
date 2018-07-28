@@ -3,7 +3,7 @@ module Site.Collections where
 
 import Data.Monoid ((<>))
 import Data.String (fromString)
-import Hakyll hiding (relativizeUrls)
+import Hakyll hiding (relativizeUrls, renderAtom)
 import Site.Posts
 import Site.Sitemap
 import Site.Util
@@ -109,7 +109,7 @@ collections tags env = do
         >>= removeIndexHtml
 
 feedCtx :: Context String
-feedCtx =  bodyField "description" <> field "url" postUrl <> siteContext
+feedCtx =  bodyField "description" <> field "url" postUrl <> postCtx <> siteContext
   where
     postUrl item = do
       let path = toFilePath (itemIdentifier item)
@@ -133,3 +133,9 @@ addPostLink item = let
       H.a ! A.href (fromString $ postUrl <> "#comment-container") $ "leave a comment"
       H.text "."
   in itemSetBody (itemBody item <> postLink) item
+
+renderAtom :: FeedConfiguration -> Context String -> [Item String] -> Compiler (Item String)
+renderAtom config context items = do
+  atomTemplate     <- unsafeCompiler $ readFile "templates/atom.xml"
+  atomItemTemplate <- unsafeCompiler $ readFile "templates/atom-item.xml"
+  renderAtomWithTemplates atomTemplate atomItemTemplate config context items

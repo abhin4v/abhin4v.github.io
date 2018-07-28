@@ -163,6 +163,7 @@ postCtx =
   dateField "date" "%B %e, %Y" <>
   dateField "date_num" "%Y-%m-%d" <>
   field "tags_str" tagsStr <>
+  listFieldWith "tags_list" tagCtx tagsList <>
   constField "page_type" "article" <>
   siteContext
   where
@@ -171,6 +172,12 @@ postCtx =
       case tags of
         [] -> fail "No tags found"
         _  -> return $ intercalate ", " tags
+
+    tagsList item = do
+      tags <- getTags $ itemIdentifier item
+      mapM makeItem tags
+
+    tagCtx = field "tag" (return . itemBody)
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx

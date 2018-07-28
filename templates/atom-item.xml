@@ -1,0 +1,11 @@
+<entry>
+    <title>$title$</title>
+    <link href="$root$$url$" />
+    <id>$root$$url$</id>
+    <published>$published$</published>
+    <updated>$updated$</updated>
+    $for(tags_list)$
+    <category term="$tag$" />
+    $endfor$
+    <summary type="html"><![CDATA[$description$]]></summary>
+</entry>

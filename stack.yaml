@@ -4,5 +4,6 @@ packages:
 extra-deps:
   - hakyll-sass-0.2.3
   - numerals-0.4.1
+  - https://github.com/abhin4v/hakyll/archive/997297fda88a7ea0caa724b3064776b4d247d203.zip
 flags: {}
 extra-package-dbs: []
