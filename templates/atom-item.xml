@@ -4,6 +4,11 @@
     <id>$root$$url$</id>
     <published>$published$</published>
     <updated>$updated$</updated>
+    $if(author)$
+    <author>
+        <name>$author$</name>
+    </author>
+    $endif$
     $for(tags_list)$
     <category term="$tag$" />
     $endfor$

@@ -119,7 +119,7 @@ feedConfiguration :: String -> String -> FeedConfiguration
 feedConfiguration siteRoot title = FeedConfiguration
   { feedTitle       = title <> " on abhinavsarkar.net"
   , feedDescription = title <> " on abhinavsarkar.net"
-  , feedAuthorName  = "Abhinv Sarkar"
+  , feedAuthorName  = "Abhinav Sarkar"
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
   , feedRoot        = siteRoot
   }

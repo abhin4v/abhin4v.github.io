@@ -9,5 +9,7 @@
         <email>$authorEmail$</email>
     </author>
     <updated>$updated$</updated>
+    <icon>$root$/images/favicon.ico</icon>
+    <rights>>© 2017-2018, $authorName$</rights>
     $body$
 </feed>
