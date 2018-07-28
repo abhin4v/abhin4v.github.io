@@ -5,16 +5,23 @@
     <link href="https://abhinavsarkar.net" />
     <id>https://abhinavsarkar.net/tags/REST/feed.xml</id>
     <author>
-        <name>Abhinv Sarkar</name>
+        <name>Abhinav Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
     </author>
     <updated>2017-10-01T00:00:00Z</updated>
+    <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
+    <rights>>© 2017-2018, Abhinav Sarkar</rights>
     <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 2</title>
     <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</id>
     <published>2017-10-01T00:00:00Z</published>
     <updated>2017-10-01T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="purescript" />
     
@@ -643,6 +650,11 @@ X-Powered-By: Express
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="purescript" />
     

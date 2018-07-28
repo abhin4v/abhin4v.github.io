@@ -5,16 +5,23 @@
     <link href="https://abhinavsarkar.net" />
     <id>https://abhinavsarkar.net/feed.xml</id>
     <author>
-        <name>Abhinv Sarkar</name>
+        <name>Abhinav Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
     </author>
     <updated>2018-07-11T00:00:00Z</updated>
+    <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
+    <rights>>© 2017-2018, Abhinav Sarkar</rights>
     <entry>
     <title>Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</title>
     <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/" />
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</id>
     <published>2018-07-11T00:00:00Z</published>
     <updated>2018-07-11T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="haskell" />
     
@@ -423,6 +430,11 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</id>
     <published>2018-06-28T00:00:00Z</published>
     <updated>2018-06-28T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="haskell" />
     
@@ -1016,6 +1028,11 @@ A thirty-two minute read
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</id>
     <published>2017-10-01T00:00:00Z</published>
     <updated>2017-10-01T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="purescript" />
     
@@ -1644,6 +1661,11 @@ X-Powered-By: Express
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+    </author>
+    
     
     <category term="purescript" />
     
