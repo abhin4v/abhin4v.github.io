@@ -123,7 +123,7 @@ readings env = do
           >>= removeIndexHtml
   where
     bookField name f = field name (return . f . itemBody)
-    bookHasField name f = boolField name (isJust . f. itemBody)
+    bookHasField name f = boolField name (isJust . f . itemBody)
 
     bookFields =
       mconcat [ bookField "name" bookName

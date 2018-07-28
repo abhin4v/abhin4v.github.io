@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables, TupleSections #-}
 module Site.Posts where
 
-import Data.List (sortBy)
+import Data.List (sortBy, intercalate)
 import Data.Maybe (fromMaybe)
 import Data.Monoid ((<>))
 import Data.Ord (comparing)
@@ -162,15 +162,15 @@ postCtx :: Context String
 postCtx =
   dateField "date" "%B %e, %Y" <>
   dateField "date_num" "%Y-%m-%d" <>
-  field "ttags" ttags <>
+  field "tags_str" tagsStr <>
   constField "page_type" "article" <>
   siteContext
   where
-    ttags item = do
-      mtags <- getMetadataField (itemIdentifier item) "tags"
-      case mtags of
-        Nothing -> fail "No tags found"
-        Just tags -> return tags
+    tagsStr item = do
+      tags <- getTags $ itemIdentifier item
+      case tags of
+        [] -> fail "No tags found"
+        _  -> return $ intercalate ", " tags
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
