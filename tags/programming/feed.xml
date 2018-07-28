@@ -15,6 +15,15 @@
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</id>
     <published>2018-07-11T00:00:00Z</published>
     <updated>2018-07-11T00:00:00Z</updated>
+    
+    <category term="haskell" />
+    
+    <category term="sudoku" />
+    
+    <category term="programming" />
+    
+    <category term="puzzle" />
+    
     <summary type="html"><![CDATA[<div class="ert">
 A sixteen minute read
 </div>
@@ -414,6 +423,15 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</id>
     <published>2018-06-28T00:00:00Z</published>
     <updated>2018-06-28T00:00:00Z</updated>
+    
+    <category term="haskell" />
+    
+    <category term="sudoku" />
+    
+    <category term="programming" />
+    
+    <category term="puzzle" />
+    
     <summary type="html"><![CDATA[<div class="ert">
 A thirty-two minute read
 </div>
@@ -998,6 +1016,15 @@ A thirty-two minute read
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</id>
     <published>2017-10-01T00:00:00Z</published>
     <updated>2017-10-01T00:00:00Z</updated>
+    
+    <category term="purescript" />
+    
+    <category term="REST" />
+    
+    <category term="programming" />
+    
+    <category term="nilenso" />
+    
     <summary type="html"><![CDATA[<div class="ert">
 A twenty-one minute read
 </div>
@@ -1617,6 +1644,15 @@ X-Powered-By: Express
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
+    
+    <category term="purescript" />
+    
+    <category term="REST" />
+    
+    <category term="programming" />
+    
+    <category term="nilenso" />
+    
     <summary type="html"><![CDATA[<div class="ert">
 A twenty-three minute read
 </div>
