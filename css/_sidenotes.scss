@@ -1,0 +1,62 @@
+body.sidenotes {
+  .footnotes {
+    hr {
+      display: none;
+    }
+
+    ol::before {
+      content: "";
+      margin-left: initial;
+    }
+
+    li {
+      margin-left: 62rem;
+      margin-right: 5%;
+      position: absolute;
+      font-size: 0.8em;
+      max-width: 18rem;
+      list-style: none;
+      background-color: $background-color;
+      padding: 10px;
+      border: 1px dashed #ccc;
+
+      p:first-child {
+        margin-top: 0;
+      }
+      p:last-child {
+        margin-bottom: 0;
+      }
+      img {
+        width: 98%
+      }
+      .footnote-back {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and(max-width: 1900px) {
+  body.sidenotes {
+    > main, > header, > footer {
+      margin-left: 10%;
+    }
+    > header nav {
+      margin-left: 1em!important;
+      margin-right: 1em!important;
+    }
+  }
+}
+
+@media screen and(min-width: 1900px) {
+  body.sidenotes {
+    > main, > header, > footer {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    > header nav {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+}
