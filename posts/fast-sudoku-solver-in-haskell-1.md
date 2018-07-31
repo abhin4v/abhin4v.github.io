@@ -640,7 +640,8 @@ We prune the grid as before and pipe it to the helper function `solve'`. `solve'
 Whew! That took us long. Let's put it to the final test now:
 
 ```haskell
-*Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
+*Main> Just grid =
+  readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> putStr $ showGrid grid
 6 . . . . . . 1 .
 4 . . . . . . . .
@@ -739,4 +740,11 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
-[^maybe-alt]: [Source][6]
+[^maybe-alt]: `Alternative` implementation of `Maybe`:
+
+    ```haskell
+    instance Alternative Maybe where
+      empty = Nothing
+      Nothing <|> r = r
+      l       <|> _ = l
+    ```

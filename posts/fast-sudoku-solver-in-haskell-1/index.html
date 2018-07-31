@@ -16,7 +16,7 @@
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
-        <meta name="keywords" content="haskell, sudoku, programming, puzzle">
+        <meta name="keywords" content="haskell, sudoku, programming, puzzle, nilenso">
         
         
         <meta name="description" content="We write a Sudoku Solver in Haskell and optimize it to be fast">
@@ -104,7 +104,7 @@
     </section>
     <section class="header">
         
-        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/sudoku/">sudoku</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/puzzle/">puzzle</a>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/sudoku/">sudoku</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/puzzle/">puzzle</a>, <a href="//abhinavsarkar.net/tags/nilenso/">nilenso</a>
         
     </section>
     <section class="header post-download">
@@ -634,38 +634,39 @@ A thirty-two minute read
 <a class="sourceLine" id="cb29-9" data-line-number="9">          <span class="kw">in</span> solve grid1 <span class="fu">&lt;|&gt;</span> solve grid2</a></code></pre></div>
 <p>We prune the grid as before and pipe it to the helper function <code>solve'</code>. <code>solve'</code> bails with a <code>Nothing</code> if the grid is invalid, or returns the solved grid if it is filled completely. Otherwise, it finds the next two grids in the search tree and solves them recursively with backtracking by calling the <code>solve</code> function. Backtracking here is implemented by the using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Applicative.html#g:2" target="_blank" rel="noopener"><code>Alternative</code></a> (<code>&lt;|&gt;</code>) implementation of the <code>Maybe</code> type<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>. It takes the second branch in the computation if the first branch returns a <code>Nothing</code>.</p>
 <p>Whew! That took us long. Let’s put it to the final test now:</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
-<a class="sourceLine" id="cb30-2" data-line-number="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid</a>
-<a class="sourceLine" id="cb30-3" data-line-number="3"><span class="dv">6</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="dv">4</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="fu">.</span> <span class="dv">2</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-6" data-line-number="6"><span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">5</span> <span class="fu">.</span> <span class="dv">4</span> <span class="fu">.</span> <span class="dv">7</span></a>
-<a class="sourceLine" id="cb30-7" data-line-number="7"><span class="fu">.</span> <span class="fu">.</span> <span class="dv">8</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">3</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-8" data-line-number="8"><span class="fu">.</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span> <span class="dv">9</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-9" data-line-number="9"><span class="dv">3</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">4</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">2</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-10" data-line-number="10"><span class="fu">.</span> <span class="dv">5</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-11" data-line-number="11"><span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">8</span> <span class="fu">.</span> <span class="dv">6</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
-<a class="sourceLine" id="cb30-12" data-line-number="12"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> solve grid</a>
-<a class="sourceLine" id="cb30-13" data-line-number="13"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid'</a>
-<a class="sourceLine" id="cb30-14" data-line-number="14"><span class="dv">6</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">7</span> <span class="dv">8</span> <span class="dv">4</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span></a>
-<a class="sourceLine" id="cb30-15" data-line-number="15"><span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">6</span></a>
-<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span> <span class="dv">9</span> <span class="dv">6</span> <span class="dv">3</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">4</span></a>
-<a class="sourceLine" id="cb30-17" data-line-number="17"><span class="dv">9</span> <span class="dv">3</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span></a>
-<a class="sourceLine" id="cb30-18" data-line-number="18"><span class="dv">5</span> <span class="dv">6</span> <span class="dv">8</span> <span class="dv">2</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">1</span></a>
-<a class="sourceLine" id="cb30-19" data-line-number="19"><span class="dv">7</span> <span class="dv">4</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">8</span> <span class="dv">6</span> <span class="dv">2</span> <span class="dv">5</span></a>
-<a class="sourceLine" id="cb30-20" data-line-number="20"><span class="dv">3</span> <span class="dv">1</span> <span class="dv">9</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">8</span></a>
-<a class="sourceLine" id="cb30-21" data-line-number="21"><span class="dv">8</span> <span class="dv">5</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">3</span></a>
-<a class="sourceLine" id="cb30-22" data-line-number="22"><span class="dv">2</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">5</span> <span class="dv">9</span></a></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span></a>
+<a class="sourceLine" id="cb31-2" data-line-number="2">  readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<a class="sourceLine" id="cb31-3" data-line-number="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid</a>
+<a class="sourceLine" id="cb31-4" data-line-number="4"><span class="dv">6</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-5" data-line-number="5"><span class="dv">4</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-6" data-line-number="6"><span class="fu">.</span> <span class="dv">2</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-7" data-line-number="7"><span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">5</span> <span class="fu">.</span> <span class="dv">4</span> <span class="fu">.</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb31-8" data-line-number="8"><span class="fu">.</span> <span class="fu">.</span> <span class="dv">8</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">3</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-9" data-line-number="9"><span class="fu">.</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span> <span class="dv">9</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-10" data-line-number="10"><span class="dv">3</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">4</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">2</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-11" data-line-number="11"><span class="fu">.</span> <span class="dv">5</span> <span class="fu">.</span> <span class="dv">1</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-12" data-line-number="12"><span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span> <span class="dv">8</span> <span class="fu">.</span> <span class="dv">6</span> <span class="fu">.</span> <span class="fu">.</span> <span class="fu">.</span></a>
+<a class="sourceLine" id="cb31-13" data-line-number="13"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> solve grid</a>
+<a class="sourceLine" id="cb31-14" data-line-number="14"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> putStr <span class="fu">$</span> showGrid grid'</a>
+<a class="sourceLine" id="cb31-15" data-line-number="15"><span class="dv">6</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">7</span> <span class="dv">8</span> <span class="dv">4</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb31-16" data-line-number="16"><span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">3</span> <span class="dv">6</span></a>
+<a class="sourceLine" id="cb31-17" data-line-number="17"><span class="dv">1</span> <span class="dv">2</span> <span class="dv">5</span> <span class="dv">9</span> <span class="dv">6</span> <span class="dv">3</span> <span class="dv">8</span> <span class="dv">7</span> <span class="dv">4</span></a>
+<a class="sourceLine" id="cb31-18" data-line-number="18"><span class="dv">9</span> <span class="dv">3</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">5</span> <span class="dv">1</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">7</span></a>
+<a class="sourceLine" id="cb31-19" data-line-number="19"><span class="dv">5</span> <span class="dv">6</span> <span class="dv">8</span> <span class="dv">2</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb31-20" data-line-number="20"><span class="dv">7</span> <span class="dv">4</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">9</span> <span class="dv">8</span> <span class="dv">6</span> <span class="dv">2</span> <span class="dv">5</span></a>
+<a class="sourceLine" id="cb31-21" data-line-number="21"><span class="dv">3</span> <span class="dv">1</span> <span class="dv">9</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">5</span> <span class="dv">2</span> <span class="dv">6</span> <span class="dv">8</span></a>
+<a class="sourceLine" id="cb31-22" data-line-number="22"><span class="dv">8</span> <span class="dv">5</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">2</span> <span class="dv">9</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">3</span></a>
+<a class="sourceLine" id="cb31-23" data-line-number="23"><span class="dv">2</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">5</span> <span class="dv">9</span></a></code></pre></div>
 <p>It works! Let’s put a quick <code>main</code> wrapper around <code>solve</code> to call it from the command line:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb31-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
-<a class="sourceLine" id="cb31-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb31-3" data-line-number="3">  inputs <span class="ot">&lt;-</span> lines <span class="fu">&lt;$&gt;</span> getContents</a>
-<a class="sourceLine" id="cb31-4" data-line-number="4">  Control.Monad.forM_ inputs <span class="fu">$</span> \input <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb31-5" data-line-number="5">    <span class="kw">case</span> readGrid input <span class="kw">of</span></a>
-<a class="sourceLine" id="cb31-6" data-line-number="6">      <span class="dt">Nothing</span>   <span class="ot">-&gt;</span> putStrLn <span class="st">&quot;Invalid input&quot;</span></a>
-<a class="sourceLine" id="cb31-7" data-line-number="7">      <span class="dt">Just</span> grid <span class="ot">-&gt;</span> <span class="kw">case</span> solve grid <span class="kw">of</span></a>
-<a class="sourceLine" id="cb31-8" data-line-number="8">        <span class="dt">Nothing</span>    <span class="ot">-&gt;</span> putStrLn <span class="st">&quot;No solution found&quot;</span></a>
-<a class="sourceLine" id="cb31-9" data-line-number="9">        <span class="dt">Just</span> grid' <span class="ot">-&gt;</span> putStrLn <span class="fu">$</span> showGrid grid'</a></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb32-1" data-line-number="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb32-2" data-line-number="2">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb32-3" data-line-number="3">  inputs <span class="ot">&lt;-</span> lines <span class="fu">&lt;$&gt;</span> getContents</a>
+<a class="sourceLine" id="cb32-4" data-line-number="4">  Control.Monad.forM_ inputs <span class="fu">$</span> \input <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb32-5" data-line-number="5">    <span class="kw">case</span> readGrid input <span class="kw">of</span></a>
+<a class="sourceLine" id="cb32-6" data-line-number="6">      <span class="dt">Nothing</span>   <span class="ot">-&gt;</span> putStrLn <span class="st">&quot;Invalid input&quot;</span></a>
+<a class="sourceLine" id="cb32-7" data-line-number="7">      <span class="dt">Just</span> grid <span class="ot">-&gt;</span> <span class="kw">case</span> solve grid <span class="kw">of</span></a>
+<a class="sourceLine" id="cb32-8" data-line-number="8">        <span class="dt">Nothing</span>    <span class="ot">-&gt;</span> putStrLn <span class="st">&quot;No solution found&quot;</span></a>
+<a class="sourceLine" id="cb32-9" data-line-number="9">        <span class="dt">Just</span> grid' <span class="ot">-&gt;</span> putStrLn <span class="fu">$</span> showGrid grid'</a></code></pre></div>
 <p>And now, we can invoke it from the command line:</p>
 <pre class="plain"><code>$ echo &quot;.......12.5.4............3.7..6..4....1..........8....92....8.....51.7.......3...&quot; | stack exec sudoku
 3 6 4 9 7 8 5 1 2
@@ -689,7 +690,12 @@ A thirty-two minute read
 <hr />
 <ol>
 <li id="fn1"><p>This exercise was originally done as a part of <a href="https://github.com/pratul/haskell-classes/" target="_blank" rel="noopener">the</a> <a href="https://github.com/ford-prefect/haskell-classes/" target="_blank" rel="noopener">Haskell</a> <a href="https://github.com/bnvinay92/haskell-classes/" target="_blank" rel="noopener">classes</a> I taught at <a href="https://nilenso.com" target="_blank" rel="noopener">nilenso</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p><a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/src/GHC.Base.html#line-873" target="_blank" rel="noopener">Source</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p><code>Alternative</code> implementation of <code>Maybe</code>:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb30-1" data-line-number="1"><span class="kw">instance</span> <span class="dt">Alternative</span> <span class="dt">Maybe</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb30-2" data-line-number="2">  empty <span class="fu">=</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">  <span class="dt">Nothing</span> <span class="fu">&lt;|&gt;</span> r <span class="fu">=</span> r</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4">  l       <span class="fu">&lt;|&gt;</span> _ <span class="fu">=</span> l</a></code></pre></div>
+<a href="#fnref2" class="footnote-back">↩</a></li>
 <li id="fn3"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
 </section>
@@ -733,7 +739,7 @@ A thirty-two minute read
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
 <script href="https://cdn.jsdelivr.net/npm/promise-polyfill@6/dist/promise.min.js" defer async></script>
 
-<script src="//abhinavsarkar.net/js/code-styling.js" defer async></script>
+<script src="//abhinavsarkar.net/js/post-styling.js" defer async></script>
 <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
 <script>
   window.asn_ss = window.asn_ss || [];
