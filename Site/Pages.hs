@@ -3,7 +3,7 @@ module Site.Pages where
 
 import Hakyll hiding (relativizeUrls)
 import Site.Util
-import Site.Posts
+import Site.PostCompiler
 
 pages :: String -> Rules ()
 pages env = do

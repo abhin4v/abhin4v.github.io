@@ -30,6 +30,7 @@ executable site
                   , Site.ERT
                   , Site.Pages
                   , Site.Posts
+                  , Site.PostCompiler
                   , Site.Readings
                   , Site.Sitemap
                   , Site.TOC

@@ -4,7 +4,7 @@ module Site.Collections where
 import Data.Monoid ((<>))
 import Data.String (fromString)
 import Hakyll hiding (relativizeUrls, renderAtom)
-import Site.Posts
+import Site.PostCompiler
 import Site.Sitemap
 import Site.Util
 import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>))
