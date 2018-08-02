@@ -20,7 +20,7 @@ import Text.Pandoc.Walk (walk)
 posts :: Tags -> String -> Rules ()
 posts tags env = do
   -- post comments
-  match "comments/*/*" $
+  match "comments/*/*.md" $
     compile $ do
       ident <- getUnderlying
       tss <- getMetadataField' ident "date"
@@ -35,17 +35,17 @@ posts tags env = do
         >>= saveSnapshot "comment"
 
   -- posts
-  match "posts/*" $ do
+  match "posts/*.md" $ do
     route indexHTMLRoute
     compilePosts tags env
 
   -- raw posts
-  match "posts/*" $ version "raw" $ do
+  match "posts/*.md" $ version "raw" $ do
     route   idRoute
     compile getResourceBody
 
   -- redirects for drafts
-  match "posts/*" $ version "draft-redirects" $ do
+  match "posts/*.md" $ version "draft-redirects" $ do
     route (indexHTMLRoute `composeRoutes` gsubRoute "posts" (const "drafts"))
     compile $ do
       (path, _) <- splitExtension <$> getResourceFilePath
@@ -53,14 +53,14 @@ posts tags env = do
 
 drafts :: Tags -> String -> Rules ()
 drafts tags env = do
-  match "drafts/*" $ do
+  match "drafts/*.md" $ do
     route indexHTMLRoute
     compileDrafts tags env
 
   create ["drafts.html"] $ do
     route indexHTMLRoute
     compile $ do
-      posts <- recentFirst =<< loadAllSnapshots ("drafts/*" .&&. hasNoVersion) "content"
+      posts <- recentFirst =<< loadAllSnapshots ("drafts/*.md" .&&. hasNoVersion) "content"
       let archiveCtx = listField "posts" postCtx (return posts) <>
                        tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
                        constField "title" "Drafts"             <>
@@ -79,7 +79,7 @@ doCompilePosts commentsEnabled tags env = compile $ do
   path <- getResourceFilePath
   let postSlug = takeBaseName path
 
-  comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*") "comment"
+  comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   let ctx = postCtxWithTags tags <>
             constField "post_slug" postSlug <>
             constField "comment_count" (show $ length comments) <>
