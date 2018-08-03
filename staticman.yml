@@ -1,5 +1,5 @@
 comments:
-  allowedFields     : ['name', 'email', 'message']
+  allowedFields     : ['name', 'email', 'message', 'reply_to']
   branch            : "source"
   commitMessage     : "New comment by {fields.name}"
   filename          : "{@id}"
