@@ -29,7 +29,7 @@ posts tags env = do
   -- posts
   match "posts/*.md" $ do
     route indexHTMLRoute
-    compilePosts tags env
+    compilePosts tags env =<< getMatches "posts/*.md"
 
   -- raw posts
   match "posts/*.md" $ version "raw" $ do
@@ -47,7 +47,7 @@ drafts :: Tags -> String -> Rules ()
 drafts tags env = do
   match "drafts/*.md" $ do
     route indexHTMLRoute
-    compileDrafts tags env
+    compileDrafts tags env =<< getMatches "drafts/*.md"
 
   create ["drafts.html"] $ do
     route indexHTMLRoute

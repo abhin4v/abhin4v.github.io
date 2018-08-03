@@ -68,6 +68,29 @@ $if(comments_enabled)$
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
 <script href="https://cdn.jsdelivr.net/npm/promise-polyfill@6/dist/promise.min.js" defer async></script>
 $endif$
+
+<ul class="pager">
+  <li class="previous">
+    $if(prev_post_url)$
+    <a href="$prev_post_url$" title="Previous">
+      <span class="fa fa-chevron-left" aria-hidden="true"></span>
+      <span class="ind">Previous</span> <br>
+      <span class="title">$prev_post_title$</span>
+    </a>
+    $endif$
+  </li>
+
+  <li class="next">
+    $if(next_post_url)$
+    <a href="$next_post_url$" title="Next">
+      <span class="ind">Next</span>
+      <span class="fa fa-chevron-right" aria-hidden="true"></span> <br>
+      <span class="title">$next_post_title$</span>
+    </a>
+    $endif$
+  </li>
+</ul>
+
 <script src="/js/post-styling.js" defer async></script>
 <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
 <script>

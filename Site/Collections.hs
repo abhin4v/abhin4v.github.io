@@ -113,7 +113,7 @@ feedCtx =  bodyField "description" <> field "url" postUrl <> postCtx <> siteCont
   where
     postUrl item = do
       let path = toFilePath (itemIdentifier item)
-      return $ ("/" <> takeDirectory path </> takeBaseName path <> "/")
+      return $ "/" <> takeDirectory path </> takeBaseName path <> "/"
 
 feedConfiguration :: String -> String -> FeedConfiguration
 feedConfiguration siteRoot title = FeedConfiguration

@@ -18,27 +18,32 @@ import Hakyll hiding (relativizeUrls)
 import Site.ERT
 import Site.TOC
 import Site.Util
-import System.FilePath.Posix (takeBaseName)
+import System.FilePath.Posix (takeBaseName, takeDirectory)
 import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
-compilePosts :: Tags -> String -> Rules ()
+compilePosts :: Tags -> String -> [Identifier] -> Rules ()
 compilePosts = doCompilePosts True
 
-compileDrafts :: Tags -> String -> Rules ()
+compileDrafts :: Tags -> String -> [Identifier] -> Rules ()
 compileDrafts = doCompilePosts False
 
-doCompilePosts :: Bool -> Tags -> String -> Rules ()
-doCompilePosts commentsEnabled tags env = compile $ do
-  alignment <- fromMaybe "left" <$> (flip getMetadataField "toc" =<< getUnderlying)
-
-  path <- getResourceFilePath
+doCompilePosts :: Bool -> Tags -> String -> [Identifier] -> Rules ()
+doCompilePosts commentsEnabled tags env posts = compile $ do
+  post         <- getUnderlying
+  alignment    <- fromMaybe "left" <$> getMetadataField post "toc"
+  path         <- getResourceFilePath
   let postSlug = takeBaseName path
+  comments     <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
+  sortedPosts  <- sortChronological posts
 
-  comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
+  nextPostCtx <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
+  prevPostCtx <- navLinkCtx "prev_post" $ sortedPosts `itemBefore` post
+
   let ctx = postCtxWithTags tags <>
+            nextPostCtx <> prevPostCtx <>
             constField "post_slug" postSlug <>
             constField "comment_count" (show $ length comments) <>
             listField "comments" siteContext (return comments) <>
@@ -50,6 +55,15 @@ doCompilePosts commentsEnabled tags env = compile $ do
     >>= loadAndApplyTemplate "templates/default.html" ctx
     >>= relativizeUrls env
     >>= removeIndexHtml
+
+navLinkCtx :: String -> Maybe Identifier -> Compiler (Context String)
+navLinkCtx key mIdent = case mIdent of
+  Nothing    -> return mempty
+  Just ident -> do
+    title <- getMetadataField' ident "title"
+    let filePath = toFilePath ident
+        url = "/" <> takeDirectory filePath <> "/" <> takeBaseName filePath <> "/"
+    return $ constField (key <> "_url") url <> constField (key <> "_title") title
 
 postCtx :: Context String
 postCtx =
@@ -85,7 +99,11 @@ postCtxWithTags tags = tagsField "tags" tags <> postCtx
 sortComments :: MonadMetadata m => [Item a] -> m [Item a]
 sortComments = sortByM $ flip getMetadataField' "date" . itemIdentifier
   where
-    sortByM f xs = (map fst . sortBy (comparing snd)) <$> mapM (\x -> (x,) <$> f x) xs
+    sortByM f xs = map fst . sortBy (comparing snd) <$> mapM (\ x -> (x,) <$> f x) xs
+
+itemAfter, itemBefore :: Eq a => [a] -> a -> Maybe a
+itemAfter xs x  = lookup x $ zip xs (tail xs)
+itemBefore xs x = lookup x $ zip (tail xs) xs
 
 readerOptions :: ReaderOptions
 readerOptions = defaultHakyllReaderOptions {

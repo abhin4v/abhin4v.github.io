@@ -1,0 +1,29 @@
+.pager {
+  margin: 0 auto;
+  padding-left: 0;
+  width: 100%;
+  font-size: 0.9em;
+
+  .previous, .next {
+    display: table-cell;
+    width: 50%;
+    .title {
+      color: $text-color;
+    }
+    .ind {
+      font-variant: small-caps;
+    }
+  }
+  .previous {
+    text-align: left;
+  }
+  .next {
+    text-align: right;
+  }
+}
+
+@media print {
+  .pager {
+    display: none;
+  }
+}
