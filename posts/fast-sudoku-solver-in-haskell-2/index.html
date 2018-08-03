@@ -520,122 +520,113 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
   <h3>9 comments</h3>
   <div class="comments">
   
-      <article class="comment">
+      <article class="comment level-0">
   <div id="comment-8d80f8c0-8514-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/eb911e23431c4cb78618477e1f058e36?d=mm&s=60">
     <span>
       <h4 class="author">Chris Casinghino</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T14:13:15.925Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p>Out of curiosity, what kind of machine did you use for your experiments? I just ran your code on a 32 core Xeon E5-2630 and it took about 3x as long.</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-1">
   <div id="comment-7f272350-851c-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/eb911e23431c4cb78618477e1f058e36?d=mm&s=60">
     <span>
       <h4 class="author">Chris Casinghino</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T15:10:08.274Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p>(To be clear, I said “32 cores”, but should have said “with 32 hardware threads”)</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-1">
   <div id="comment-e67da8d0-8521-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/4d29918c109bc75d2a1fd8420660d72b?d=mm&s=60">
     <span>
       <h4 class="author">Abhinav Sarkar</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T15:48:48.695Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p><span class="citation" data-cites="Chris">@Chris</span>, I updated the post with the info. It is a MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory. The program is single threaded so number of cores doesn’t really matter.</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-2">
   <div id="comment-35e07620-852f-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/eb911e23431c4cb78618477e1f058e36?d=mm&s=60">
     <span>
       <h4 class="author">Chris Casinghino</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T17:24:05.254Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p><span class="citation" data-cites="Abhinav">@Abhinav</span> On my desktop, the program is using all the hardware threads (I watched it in htop). This definitely surprised me too, since there’s no parallelism explicit in the source. Perhaps the -threaded option in the package.yaml file is causing GHC to do some smart automated threading around the forM_?</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-2">
   <div id="comment-97ca7640-8531-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/eb911e23431c4cb78618477e1f058e36?d=mm&s=60">
     <span>
       <h4 class="author">Chris Casinghino</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T17:41:08.523Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p>Additional interesting facts: If I remove the “-threaded”, “-rtsopts” and “-with-rtsopts=-N” from the package.yaml file, the program runs on a single thread. It actually finishes faster (about twice as fast) than it did when it used all 32 threads. It’s still a bit slower for me than it was for you, but now reasonably so.</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-3">
   <div id="comment-b88e5ef0-8531-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/4d29918c109bc75d2a1fd8420660d72b?d=mm&s=60">
     <span>
       <h4 class="author">Abhinav Sarkar</h4>
-      <div class="date">July 11, 2018</div>
+      <div class="date" title="2018-07-11T17:42:03.472Z">July 11, 2018</div>
     </span>
   </div>
   <div class="message"><p><span class="citation" data-cites="Chris">@Chris</span>, you are right that the program is threaded. The usage in htop could be because of GHC’s parallel GC kicking in. This is an interesting point. I’ll disable the parallel GC and see if it impacts the performance.</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
-  <div id="comment-cf70b740-8562-11e8-a1d5-1fd7d3dbc496">
-    <img class="avatar" src="https://www.gravatar.com/avatar/df45f3915d597372a1b93b7eae5ea7d2?d=mm&s=60">
-    <span>
-      <h4 class="author">Dαvid</h4>
-      <div class="date">July 11, 2018</div>
-    </span>
-  </div>
-  <div class="message"><p>Thanks Abhinav, I like your posts and wish you will continue make things like that</p></div>
-</article>
-
-      <hr>
-  
-      <article class="comment">
+      <article class="comment level-3">
   <div id="comment-cf42fd40-8572-11e8-a1d5-1fd7d3dbc496">
     <img class="avatar" src="https://www.gravatar.com/avatar/a458c4d941f0a6f5b01d924c1c3fc004?d=mm&s=60">
     <span>
       <h4 class="author">Brian Jones</h4>
-      <div class="date">July 12, 2018</div>
+      <div class="date" title="2018-07-12T01:27:58.883Z">July 12, 2018</div>
     </span>
   </div>
   <div class="message"><p>Sometimes the context switching when threading is turned on adds more overhead that the single threaded version itself, which is probably why you are seeing the slow down.</p></div>
 </article>
 
-      <hr>
   
-      <article class="comment">
+      <article class="comment level-0">
+  <div id="comment-cf70b740-8562-11e8-a1d5-1fd7d3dbc496">
+    <img class="avatar" src="https://www.gravatar.com/avatar/df45f3915d597372a1b93b7eae5ea7d2?d=mm&s=60">
+    <span>
+      <h4 class="author">Dαvid</h4>
+      <div class="date" title="2018-07-11T23:33:27.236Z">July 11, 2018</div>
+    </span>
+  </div>
+  <div class="message"><p>Thanks Abhinav, I like your posts and wish you will continue make things like that</p></div>
+</article>
+
+  
+      <article class="comment level-0">
   <div id="comment-6b2953a0-85b7-11e8-bc0b-854aed025d9d">
     <img class="avatar" src="https://www.gravatar.com/avatar/1495085f87f1fa1955b9c977fd4a4b90?d=mm&s=60">
     <span>
       <h4 class="author">Samuel Chase</h4>
-      <div class="date">July 12, 2018</div>
+      <div class="date" title="2018-07-12T09:39:06.249Z">July 12, 2018</div>
     </span>
   </div>
   <div class="message"><p>Excellent post Abhinav, I attempted to write a sudoku solver once, but I was not successful. You inspire to me to tackle this problem again.</p></div>
 </article>
 
-      <hr>
   
   </div>
   <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments" id="comment-form">
