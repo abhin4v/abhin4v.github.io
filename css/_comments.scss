@@ -62,8 +62,15 @@
 }
 
 .comment {
-  margin: 1em;
+  margin-bottom: 0.1em;
   font-size: 0.95em;
+  padding-left: 0.8em;
+  padding-top: 1em;
+  padding-bottom: 1em;
+
+  .message p:last-child {
+    margin-bottom: 0;
+  }
   .avatar {
     width: 3.25em;
     height: 3.25em;
@@ -79,6 +86,22 @@
     font-size: 1.25em;
     line-height: 1;
   }
+  &.level-0 {
+    margin-left: 0.5em;
+    border-left: 0.3em solid #ff69b4;
+  }
+  &.level-1 {
+    margin-left: 2.5em;
+    border-left: 0.3em solid #8a2be2;
+  }
+  &.level-2 {
+    margin-left: 4.5em;
+    border-left: 0.3em solid #fa8072;
+  }
+  &.level-3 {
+    margin-left: 6.5em;
+    border-left: 0.3em solid #2e8b57;
+  }
 }
 
 @media screen and(max-width: 600px) {
@@ -86,6 +109,20 @@
     input, textarea {
       width: 100%!important;
       font-family: $text-ss-ff;
+    }
+  }
+}
+
+@media screen and(max-width: 900px) {
+  .comment {
+    &.level-1 {
+      margin-left: 1.5em;
+    }
+    &.level-2 {
+      margin-left: 2.5em;
+    }
+    &.level-3 {
+      margin-left: 3.5em;
     }
   }
 }
