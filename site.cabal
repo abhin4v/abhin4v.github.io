@@ -27,6 +27,7 @@ executable site
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections
+                  , Site.Comments
                   , Site.ERT
                   , Site.Pages
                   , Site.Posts

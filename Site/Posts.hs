@@ -2,9 +2,8 @@
 module Site.Posts where
 
 import Data.Monoid ((<>))
-import Data.Time.Clock (UTCTime)
-import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll hiding (relativizeUrls)
+import Site.Comments
 import Site.PostCompiler
 import Site.Util
 import System.FilePath.Posix (splitExtension)
@@ -12,19 +11,7 @@ import System.FilePath.Posix (splitExtension)
 posts :: Tags -> String -> Rules ()
 posts tags env = do
   -- post comments
-  match "comments/*/*.md" $
-    compile $ do
-      ident           <- getUnderlying
-      tss             <- getMetadataField' ident "date"
-      date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
-      email           <- getMetadataField' ident "email"
-      commentID       <- getMetadataField' ident "_id"
-      let dateS       = formatTime defaultTimeLocale "%B %e, %Y" date
-
-      getResourceBody
-        >>= renderPandocWith readerOptions writerOptions
-        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx commentID dateS tss email)
-        >>= saveSnapshot "comment"
+  comments
 
   -- posts
   match "posts/*.md" $ do
