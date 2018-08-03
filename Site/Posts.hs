@@ -14,16 +14,16 @@ posts tags env = do
   -- post comments
   match "comments/*/*.md" $
     compile $ do
-      ident <- getUnderlying
-      tss <- getMetadataField' ident "date"
+      ident           <- getUnderlying
+      tss             <- getMetadataField' ident "date"
       date :: UTCTime <- parseTimeM False defaultTimeLocale (iso8601DateFormat $ Just "%H:%M:%S%QZ") tss
-      let dateS = formatTime defaultTimeLocale "%B %e, %Y" date
-      email <- getMetadataField' ident "email"
-      id <- getMetadataField' ident "_id"
+      email           <- getMetadataField' ident "email"
+      commentID       <- getMetadataField' ident "_id"
+      let dateS       = formatTime defaultTimeLocale "%B %e, %Y" date
 
       getResourceBody
         >>= renderPandocWith readerOptions writerOptions
-        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx id dateS email)
+        >>= loadAndApplyTemplate "templates/comment.html" (commentCtx commentID dateS tss email)
         >>= saveSnapshot "comment"
 
   -- posts

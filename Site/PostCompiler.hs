@@ -86,10 +86,11 @@ postCtx =
 
     tagCtx = field "tag" (return . itemBody)
 
-commentCtx :: String -> String -> String -> Context String
-commentCtx commentID date email =
+commentCtx :: String -> String -> String -> String -> Context String
+commentCtx commentID date datetime email =
   constField "id" commentID <>
   constField "date" date <>
+  constField "datetime" datetime <>
   constField "email" email <>
   siteContext
 
