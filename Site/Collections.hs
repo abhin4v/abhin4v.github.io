@@ -37,7 +37,7 @@ collections tags env = do
       route tagFeedRoute
       compile $ loadAllSnapshots pattrn "content"
           >>= fmap (take 10) . recentFirst
-          >>= return . map (fmap (relativizeUrlsWith siteRoot) . addPostLink)
+          >>= return . map (fmap (relativizeUrlsWith siteRoot) . addTrackingImg . addPostLink)
           >>= renderAtom (feedConfiguration siteRoot title) feedCtx
 
   -- post archive
@@ -74,7 +74,7 @@ collections tags env = do
     compile $
       loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
       >>= fmap (take 10) . recentFirst
-      >>= return . map (fmap (relativizeUrlsWith siteRoot) . addPostLink)
+      >>= return . map (fmap (relativizeUrlsWith siteRoot) . addTrackingImg . addPostLink)
       >>= renderAtom (feedConfiguration siteRoot "All posts") feedCtx
 
   -- sitemap
@@ -123,6 +123,12 @@ feedConfiguration siteRoot title = FeedConfiguration
   , feedAuthorEmail = "abhinav@abhinavsarkar.net"
   , feedRoot        = siteRoot
   }
+
+addTrackingImg :: Item String -> Item String
+addTrackingImg item = itemSetBody (itemBody item <> trackingImg) item
+  where
+    trackingImg =
+      "<img src=\"https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1\" style=\"border:0; display: none;\" />"
 
 addPostLink :: Item String -> Item String
 addPostLink item = let
