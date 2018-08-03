@@ -90,6 +90,9 @@ postCtx =
 
     tagCtx = field "tag" (return . itemBody)
 
+maxCommentLevel :: Int
+maxCommentLevel = 3
+
 commentCtx :: String -> String -> String -> String -> Int -> Context String
 commentCtx commentID date datetime email level =
   constField "id" commentID <>
@@ -97,6 +100,7 @@ commentCtx commentID date datetime email level =
   constField "datetime" datetime <>
   constField "email" email <>
   constField "level" (show level) <>
+  boolField "reply_allowed" (const $ level < maxCommentLevel) <>
   siteContext
 
 postCtxWithTags :: Tags -> Context String

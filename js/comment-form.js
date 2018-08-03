@@ -19,6 +19,10 @@
         if (toutId !== null) {
           window.clearTimeout(toutId);
         }
+      }
+
+      function showNotif(msg) {
+        showMsg(msg);
         toutId = window.setTimeout(function() { formMessage.fadeOut("slow"); }, 5000);
       }
 
@@ -26,7 +30,7 @@
       jq("#comment-form").on("submit", function(event) {
         event.preventDefault();
         if (grecaptcha.getResponse() === "") {
-          showMsg("Please tick the reCAPTCHA");
+          showNotif("Please tick the reCAPTCHA");
           return false;
         }
         var form = jq(this);
@@ -49,20 +53,43 @@
           fieldSet.removeAttr("disabled");
 
           if (!response.ok) {
-            showMsg("Sorry, there was an error in posting the comment. Please try again.");
+            showNotif("Sorry, there was an error in posting the comment. Please try again.");
           } else {
             form.trigger("reset");
             grecaptcha.reset();
-            showMsg("Thanks for your comment. It will show on the site once it has been approved.");
+            showNotif("Thanks for your comment. It will show on the site once it has been approved.");
           }
         })
         .catch(function(error) {
           formSubmit.val(origVal);
           fieldSet.removeAttr("disabled");
           grecaptcha.reset();
-          showMsg("Sorry, there was an error in posting the comment. Please try again.");
+          showNotif("Sorry, there was an error in posting the comment. Please try again.");
         });
         return false;
+      });
+
+      jq(".comment input").on("click", function(event){
+        event.preventDefault();
+        var parts = event.target.name.split("###");
+        var commentId = parts[1];
+
+        jq("#comment-parent").attr("value", commentId);
+        showMsg("Replying to <a href=\"#comment-" + commentId + "\">" + parts[0] + "'s comment</a>");
+        jq("#comment-text").focus();
+        jq("#cancel-reply").attr("href", "#comment-" + commentId).show();
+
+        var offset = jq("#comment-form").offset();
+        offset.top -= 20;
+        $('html, body').animate({
+          scrollTop: offset.top,
+        });
+      });
+
+      jq("#cancel-reply").on("click", function() {
+        jq("#comment-parent").attr("value", "");
+        formMessage.fadeOut("fast");
+        jq(this).hide();
       });
     } else {
       window.setTimeout(addCommentSubmitHandler, 1000);
