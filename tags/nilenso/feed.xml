@@ -425,7 +425,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <p>Imagine a row which just got a <code>9</code> fixed because of <code>pruneCellsByFixed</code>. If we don’t run the function again, the row may be left with one non-fixed cell with a <code>9</code>. When we run this row through <code>pruneCellsByExclusives</code>, it’ll consider the <code>9</code> in the non-fixed cell as a Single and fix it. This will lead to two <code>9</code>s in the same row, causing the solution to fail.<a href="#fnref6" class="footnote-back">↩</a></p></li>
 <li id="fn7"><p>Speedup calculation: 116.7 / 100 * 49151 / 282.98 = 202.7<a href="#fnref7" class="footnote-back">↩</a></p></li>
 </ol>
-</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#comment-container">leave a comment</a>.</p>]]></summary>
+</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
 </entry>
 <entry>
     <title>Fast Sudoku Solver in Haskell #1: A Simple Solution</title>
@@ -1031,7 +1031,7 @@ A thirty-two minute read
 <a href="#fnref2" class="footnote-back">↩</a></li>
 <li id="fn3"><p>All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 </ol>
-</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/#comment-container">leave a comment</a>.</p>]]></summary>
+</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
 </entry>
 <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 2</title>
@@ -1664,7 +1664,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb29-8" data-line-number="8">[<span class="ex">2017-09-30</span> 16:03:46.635] DEBUG Deleted user 3</a>
 <a class="sourceLine" id="cb29-9" data-line-number="9">[<span class="ex">2017-09-30</span> 16:05:03.805] DEBUG HTTP: GET /v1/users</a></code></pre></div>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="ps-simple-rest-service-2">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In this tutorial we learned how to create a simple JSON REST web service written in PureScript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/#comment-container">leave a comment</a>.</p>]]></summary>
+<p>In this tutorial we learned how to create a simple JSON REST web service written in PureScript with persistence, validation, configuration and logging. The complete code for this tutorial can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service" target="_blank" rel="noopener">github</a>. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
 </entry>
 <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 1</title>
@@ -2395,7 +2395,7 @@ X-Powered-By: Express
     }
 ]</code></pre>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="ps-simple-rest-service">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/#comment-container">leave a comment</a>.</p>]]></summary>
+<p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
 </entry>
 
 </feed>
