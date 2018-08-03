@@ -2,6 +2,17 @@
 
 #comment-container {
   border-top: 1px solid $border-color;
+
+  input[type="submit"] {
+    font-family: $text-ss-ff;
+    background-color: #3e97ed;
+    color: #eee;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      background-color: #bd24bb;
+    }
+  }
 }
 
 #comment-form {
@@ -33,19 +44,16 @@
     margin-bottom: 0;
   }
   input[type="submit"] {
-    font-family: $text-ss-ff;
-    background-color: #3e97ed;
-    color: #eee;
-    border: none;
-    padding: 0.3em;
-    cursor: pointer;
     width: 15em;
-    &:hover {
-      background-color: #bd24bb;
-    }
+    padding: 0.3em;
   }
   fieldset[disabled="disabled"] input[type="submit"] {
     background-color: #777;
+  }
+  #cancel-reply {
+    display: none;
+    float: right;
+    font-size: smaller;
   }
 }
 
@@ -101,6 +109,19 @@
   &.level-3 {
     margin-left: 6.5em;
     border-left: 0.3em solid #2e8b57;
+  }
+  input[type="submit"] {
+    font-size: smaller;
+    float: right;
+    padding: 0.3em 0.5em;
+  }
+}
+
+.no-js {
+  .comment {
+    input[type="submit"] {
+      display: none;
+    }
   }
 }
 
