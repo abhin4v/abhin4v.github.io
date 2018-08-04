@@ -1,0 +1,11 @@
+pipeline:
+  docker:
+    image: plugins/docker
+    repo: abhin4v/abhinavsarkar.net
+    tags: latest
+    secrets: [ docker_username, docker_password, repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
+    build_args_from_env: [ repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
+    build_args:
+      - TRAVIS_COMMIT_MESSAGE="${DRONE_COMMIT_MESSAGE}"
+
+branches: source

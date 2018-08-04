@@ -26,7 +26,8 @@ RUN set -xe \
     && git config --global user.email "abhinav@abhinavsarkar.net" \
     && git config --global user.name "Travis" \
     && git commit -m "$TRAVIS_COMMIT_MESSAGE" \
-    && git push "$REPO_URL" master
+    && git push "$REPO_URL" master \
+    && (sh bin/purge_cf_cache.sh || true)
 
 FROM abhin4v/hastatic:latest
 
