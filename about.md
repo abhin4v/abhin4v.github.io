@@ -4,7 +4,7 @@ page_type: profile
 ---
 # About Me
 
-I am Abhinav Sarkar, a software developer currently living in Bangalore, India. I work[^linkedin]^,^[^stackoverflow] at [Nilenso Software]. When not making software[^github], I read books[^goodreads], play drums, listen to music[^last.fm] and ride[^strava] my bike.
+I am Abhinav Sarkar, a software developer currently living in Bangalore, India. I work at [Flipkart] as Principal Engineer. When not making software, I read books, play drums, listen to music and ride my bike.
 
 Here are some talks and workshops I have presented in various conferences:
 
@@ -13,9 +13,19 @@ Here are some talks and workshops I have presented in various conferences:
 1. [A Slow (and Hopefully Heedful) Ride Through ReactJS and Flux][1] - JSFoo 2015, Bangalore
 1. [A Quick (and Hopefully Painless) Ride Through ReactJS][2] - Meta Refresh 2015, Bangalore
 
-You can get in touch with me over Twitter[^twitter] or [email].
+You can find more about me on the internet:
+
+- [LinkedIn]
+- [StackOverflow]
+- [Github]
+
+You can get in touch with me over [Twitter] or [email].
 
 ## About the Website
+
+This is my personal website written and edited by me.
+
+All content provided is for informational purposes only. The articles and posts on this website are my own and don’t necessarily represent the positions, strategies, or opinions of my employer or its subsidiaries. I make no representations as to the accuracy or completeness of any information found here or by following any links. I will not be liable for any errors or omissions in this information nor for the availability of this information. I will not be liable for any losses, injuries, or damages from the display or use of this information.
 
 The source of the website can be found on my [github]. The [master] branch contains the static website which is generated from the code and the content in the [source] branch.
 
@@ -23,15 +33,15 @@ It uses the [Hakyll] library as the base for static website generation, along wi
 
 The website is run using the [hastatic] server for [docker]. It is hosted on [Digital Ocean], behind [Cloudflare] for caching. Builds are done automatically using [Travis CI].
 
-[^linkedin]: [Linkedin](http://in.linkedin.com/in/abhinavsarkar)
-[^stackoverflow]: [StackOverflow](https://stackoverflow.com/story/abhinavsarkar)
-[^github]: [Github](https://github.com/abhin4v)
-[^goodreads]: [Goodreads](http://www.goodreads.com/user/show/24614151-abhinav-sarkar)
-[^last.fm]: [Last.fm](http://last.fm/user/abhin4v)
-[^strava]: [Strava](http://www.strava.com/athletes/3485865)
-[^twitter]: [Twitter](https://twitter.com/abhin4v)
+[LinkedIn]: http://in.linkedin.com/in/abhinavsarkar
+[StackOverflow]: https://stackoverflow.com/story/abhinavsarkar
+[Github]: https://github.com/abhin4v
+[Goodreads]: http://www.goodreads.com/user/show/24614151-abhinav-sarkar
+[Last.fm]: http://last.fm/user/abhin4v
+[Strava]: http://www.strava.com/athletes/3485865
+[Twitter]: https://twitter.com/abhin4v
 
-[Nilenso Software]: https://nilenso.com
+[Flipkart]: https://www.flipkart.com/about-us
 [Moving People with Clojure]: https://www.youtube.com/watch?v=3y7xzH8jB8A
 [Introduction To Concurrency In Haskell]: https://www.youtube.com/watch?v=uVK3t-5wWew
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop

@@ -111,6 +111,12 @@ a, a:visited {
 em {
   padding-right: 0.2em;
 }
+ul li {
+  list-style: none;
+  &:before {
+    content: "> ";
+  }
+}
 
 .sourceCode a {
   color: inherit;
