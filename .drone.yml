@@ -3,6 +3,9 @@ pipeline:
     image: plugins/docker
     repo: abhin4v/abhinavsarkar.net
     tags: latest
+    use_cache: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     secrets: [ docker_username, docker_password, repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
     build_args_from_env: [ repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
     build_args:
