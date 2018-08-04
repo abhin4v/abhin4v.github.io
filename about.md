@@ -15,9 +15,11 @@ Here are some talks and workshops I have presented in various conferences:
 
 You can find more about me on the internet:
 
+::: {#ref-sites}
 - [LinkedIn]
 - [StackOverflow]
 - [Github]
+:::
 
 You can get in touch with me over [Twitter] or [email].
 
