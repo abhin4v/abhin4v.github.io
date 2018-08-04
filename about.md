@@ -31,7 +31,7 @@ The source of the website can be found on my [github]. The [master] branch conta
 
 It uses the [Hakyll] library as the base for static website generation, along with [Staticman] for the static comments support. Website styling is done with [SCSS] and interactivity is added using [JQuery]. The PDF files are generated using headless [Google Chrome] browser with [this tool] running on [node.js].
 
-The website is run using the [hastatic] server for [docker]. It is hosted on [Digital Ocean], behind [Cloudflare] for caching. Builds are done automatically using [Travis CI].
+The website is run using the [hastatic] server for [docker]. It is hosted on [Digital Ocean], behind [Cloudflare] for caching. Builds are done automatically using a self-hosted [Drone CI] instance.
 
 [LinkedIn]: http://in.linkedin.com/in/abhinavsarkar
 [StackOverflow]: https://stackoverflow.com/story/abhinavsarkar
@@ -57,7 +57,7 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [hastatic]: https://github.com/abhin4v/hastatic/
 [Digital Ocean]: https://www.digitalocean.com/
 [Cloudflare]: https://www.cloudflare.com/
-[Travis CI]: https://travis-ci.org/
+[Drone CI]: https://drone.io/
 [github]: https://github.com/abhin4v/abhin4v.github.io
 [this tool]: https://github.com/Szpadel/chrome-headless-render-pdf
 [Google Chrome]: https://www.google.com/chrome/index.html

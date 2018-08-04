@@ -5,7 +5,7 @@ ARG CF_ZONE_ID
 ARG CF_API_KEY
 ARG CF_EMAIL
 ARG STRAVA_KEY
-ARG TRAVIS_COMMIT_MESSAGE
+ARG DRONE_COMMIT_MESSAGE
 ENV ENV=CI
 
 ADD . .
@@ -24,7 +24,7 @@ RUN set -xe \
     && sh ../bin/gen_activities_json.sh \
     && git status --short \
     && git config --global user.email "abhinav@abhinavsarkar.net" \
-    && git config --global user.name "Travis" \
+    && git config --global user.name "Drone.io" \
     && git commit -m "$DRONE_COMMIT_MESSAGE" \
     && git push "$REPO_URL" master \
     && (sh ../bin/purge_cf_cache.sh || true)
