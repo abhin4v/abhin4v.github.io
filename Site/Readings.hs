@@ -63,7 +63,7 @@ getBooks feedURL =
 itemToBook :: RSSItem -> Book
 itemToBook RSSItem {..} =
   Book { bookName          = T.unpack $ fromJust rssItemTitle
-       , bookURL           = "https://www.goodreads.com/book/show/" <> getBookProp "book_id"
+       , bookURL           = bookURL
        , bookImageURL      = getBookProp "book_small_image_url"
        , bookAuthor        = getBookProp "author_name"
        , bookRating        = getBookRating
@@ -73,6 +73,11 @@ itemToBook RSSItem {..} =
        , bookShelf         = getBookShelf
        }
   where
+    bookURL = let isbn = getBookProp "isbn"
+      in if null isbn
+         then "https://www.goodreads.com/book/show/" <> getBookProp "book_id"
+         else "https://www.amazon.com/gp/product/" <> isbn <> "/?tag=abhinavsarkar-20"
+
     getBookProp :: T.Text -> String
     getBookProp prop =
       T.unpack
