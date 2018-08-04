@@ -20,7 +20,7 @@ RUN set -xe \
     && stack exec site build \
     && cd _site \
     && git add --all \
-    && sh ../bin/generate_pdfs.sh \
+    && bash ../bin/generate_pdfs.sh \
     && sh ../bin/gen_activities_json.sh \
     && git status --short \
     && git config --global user.email "abhinav@abhinavsarkar.net" \
