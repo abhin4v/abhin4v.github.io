@@ -82,12 +82,16 @@ article.post {
       margin: 0.7em auto;
     }
   }
-  section.twitter-button {
+  div.twitter-button {
     line-height: 0.8em;
   }
   section.header, .ert {
     font-size: 0.9em;
+  }
+  .ert {
     text-align: right;
+    position: relative;
+    top: -2.1em;
   }
   .source {
     font-size: 0.8em;
@@ -112,9 +116,28 @@ article.post {
       }
     }
   }
+  ul.headers {
+    width: 100%;
+    height: 4.8em;
+    margin: 0 auto;
+    padding-left: 0;
+    li {
+      width: 40%;
+      vertical-align: top;
+      list-style: none;
+      display: table-cell;
+
+      div.header {
+        font-size: 0.9em;
+      }
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
 }
 
-.no-js section.twitter-button {
+.no-js div.twitter-button {
   display: none;
 }
 
@@ -128,10 +151,15 @@ article.post {
   h3 {
     margin: 0.5em 0;
   }
-  article header {
-    margin-bottom: 0;
-    a {
-      color: $text-color
+  article.post {
+    header {
+      margin-bottom: 0;
+      a {
+        color: $text-color
+      }
+    }
+    .ert {
+      top: -1.6em;
     }
   }
   .footnoteRef {
@@ -167,6 +195,29 @@ article.post {
   }
 }
 
+@media screen and(max-width: 900px) {
+  article.post {
+    ul.headers {
+      height: 100%;
+      li {
+        display: inline;
+        text-align: right;
+      }
+    }
+    .ert {
+      text-align: right;
+      position: initial;
+    }
+  }
+  #home-posts {
+    article.post {
+      section.header {
+        text-align: right;
+      }
+    }
+  }
+}
+
 @media screen and (orientation: landscape) and(max-height: 500px) {
   article.post h1 {
     font-size: 2em;
@@ -175,7 +226,7 @@ article.post {
 
 @media print {
   article.post {
-    .twitter-share-button {
+    .twitter-share-button, .post-comments, .post-download {
       display: none;
     }
     p, li {
@@ -197,8 +248,16 @@ article.post {
     .source {
       display: none!important;
     }
-    section.post-download {
-      display: none;
+    .ert {
+      text-align: right;
+      position: initial;
+    }
+    ul.headers {
+      height: 100%;
+      li {
+        display: inline;
+        text-align: right;
+      }
     }
     section.body {
       > .scrollable-table table {
