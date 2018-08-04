@@ -92,6 +92,8 @@ article.post {
     text-align: right;
     position: relative;
     top: -2.1em;
+    width: 50%;
+    margin-left: 50%;
   }
   .source {
     font-size: 0.8em;
@@ -207,6 +209,8 @@ article.post {
     .ert {
       text-align: right;
       position: initial;
+      width: initial;
+      margin-left: initial;
     }
   }
   #home-posts {
@@ -251,6 +255,8 @@ article.post {
     .ert {
       text-align: right;
       position: initial;
+      width: initial;
+      margin-left: initial;
     }
     ul.headers {
       height: 100%;
