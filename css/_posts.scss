@@ -7,7 +7,7 @@ article.post {
     }
   }
   h1 {
-    font-size: 2.7em;
+    font-size: 3.5em;
     margin-bottom: 0.2em;
   }
   h2 {
@@ -222,7 +222,7 @@ article.post {
   }
 }
 
-@media screen and (orientation: landscape) and(max-height: 500px) {
+@media screen and(max-height: 750px) {
   article.post h1 {
     font-size: 2em;
   }
@@ -230,6 +230,9 @@ article.post {
 
 @media print {
   article.post {
+    h1 {
+      font-size: 2.7em!important;
+    }
     .twitter-share-button, .post-comments, .post-download {
       display: none;
     }
