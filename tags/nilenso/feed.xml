@@ -33,10 +33,7 @@
     
     <category term="nilenso" />
     
-    <summary type="html"><![CDATA[<div class="ert">
-A sixteen minute read
-</div>
-<p>In the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">first part</a> of this series of posts, we wrote a simple <a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> solver in <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>. It used a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction</a> algorithm with <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">backtracking</a>. The solution worked well but was very slow. In this post, we are going to improve it and make it <strong>fast</strong>.</p>
+    <summary type="html"><![CDATA[<p>In the <a href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">first part</a> of this series of posts, we wrote a simple <a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> solver in <a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a>. It used a <a href="https://en.wikipedia.org/wiki/Constraint_satisfaction_problem" target="_blank" rel="noopener">constraint satisfaction</a> algorithm with <a href="https://en.wikipedia.org/wiki/Depth-first_search" target="_blank" rel="noopener">backtracking</a>. The solution worked well but was very slow. In this post, we are going to improve it and make it <strong>fast</strong>.</p>
 <!--more-->
 <p>This is the second post in a series of posts:</p>
 <ol type="1">
@@ -449,10 +446,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
     
     <category term="nilenso" />
     
-    <summary type="html"><![CDATA[<div class="ert">
-A thirty-two minute read
-</div>
-<p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
+    <summary type="html"><![CDATA[<p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language. It is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell. We’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
 <!--more-->
 <p>This is the first post in a series of posts:</p>
@@ -1053,10 +1047,7 @@ A thirty-two minute read
     
     <category term="nilenso" />
     
-    <summary type="html"><![CDATA[<div class="ert">
-A twenty-one minute read
-</div>
-<p>To recap, in the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service in <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the features. <!--more--> The requirements are:</p>
+    <summary type="html"><![CDATA[<p>To recap, in the <a href="https://abhinavsarkar.net/posts/ps-simple-rest-service/">first</a> part of this two-part tutorial, we built a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service in <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> to create, update, get, list and delete users, backed by a Postgres database. In this part we’ll work on the rest of the features. <!--more--> The requirements are:</p>
 <ol type="1">
 <li>validation of API requests.</li>
 <li>reading the server and database configs from environment variables.</li>
@@ -1686,10 +1677,7 @@ X-Powered-By: Express
     
     <category term="nilenso" />
     
-    <summary type="html"><![CDATA[<div class="ert">
-A twenty-three minute read
-</div>
-<p>At <a href="https://nilenso.com" target="_blank" rel="noopener">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
+    <summary type="html"><![CDATA[<p>At <a href="https://nilenso.com" target="_blank" rel="noopener">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
 <p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service written in PureScript, to run on a node.js server. <!--more--> This assumes that you have basic proficiency with PureScript. We have the following requirements:</p>
 <ol type="1">
 <li>persisting users into a Postgres database.</li>

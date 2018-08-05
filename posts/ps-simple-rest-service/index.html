@@ -97,43 +97,36 @@
     </header>
 
     <ul class="headers">
-      <li>
-        <div class="header">
-            <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
-            Posted on <span itemprop="datePublished" content="2017-09-29">September 29, 2017</span>
-            
-                by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
-            
-        </div>
-        <div class="header">
-            
-            <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/purescript/">purescript</a>, <a href="//abhinavsarkar.net/tags/REST/">REST</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/nilenso/">nilenso</a>
-            
-        </div>
+      <li class="header post-publish-date">
+        <span class="fa fa-pencil fa-fw" aria-hidden="true"></span>
+        <span itemprop="datePublished" content="2017-09-29">September 29, 2017</span>
+      </li>
+      <li class="header post-ert">
+        <span class="fa fa-clock-o fa-fw" aria-hidden="true"></span>
+        A twenty-three minute read
+      </li>
+      
+      <li class="header post-comments">
+        <span class="fa fa-comment fa-fw" aria-hidden="true"></span>
+        <a href="#comment-container">0 comments</a>
+      </li>
+      
+      <li class="header post-download">
+        <span class="fa fa-download fa-fw" aria-hidden="true"></span>
+        <a href="//abhinavsarkar.net/pdfs/posts/ps-simple-rest-service.pdf" download rel="nofollow">Download</a>
+      </li>
+      <li class="header post-tags">
         
-        <div class="header post-comments">
-            <span class="fa fa-comment fa-fw" aria-hidden="true"></span>
-          <a href="#comment-container">0 comments</a>
-        </div>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/purescript/">purescript</a>, <a href="//abhinavsarkar.net/tags/REST/">REST</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/nilenso/">nilenso</a>
         
       </li>
-      <li>
-        <div class="header post-download">
-            <span class="fa fa-download fa-fw" aria-hidden="true"></span> Download as
-            <a href="//abhinavsarkar.net/pdfs/posts/ps-simple-rest-service.pdf" download rel="nofollow">PDF</a> or
-            <a href="//abhinavsarkar.net/posts/ps-simple-rest-service.md" download rel="nofollow">Markdown</a>
-        </div>
-        <div class="header twitter-button">
-            <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-via="abhin4v" data-dnt="true" data-show-count="false">Tweet</a>
-        </div>
+      <li class="header twitter-button">
+        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-via="abhin4v" data-dnt="true" data-show-count="false">Tweet</a>
       </li>
     </ul>
 
     <section itemprop="articleBody" class="body">
-        <div class="ert">
-A twenty-three minute read
-</div>
-<p>At <a href="https://nilenso.com" target="_blank" rel="noopener">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
+        <p>At <a href="https://nilenso.com" target="_blank" rel="noopener">Nilenso</a>, we’ve been working with a client who has chosen <a href="http://purescript.org" target="_blank" rel="noopener">PureScript</a> as their primary programming language. Since I couldn’t find any canonical documentation on writing a web service in PureScript, I thought I’d jot down the approach that we took.</p>
 <p>The aim of this two-part tutorial is to create a simple JSON <a href="https://en.wikipedia.org/wiki/REST" target="_blank" rel="noopener">REST</a> web service written in PureScript, to run on a node.js server. <!--more--> This assumes that you have basic proficiency with PureScript. We have the following requirements:</p>
 <ol type="1">
 <li>persisting users into a Postgres database.</li>
@@ -842,7 +835,13 @@ X-Powered-By: Express
 <p>That concludes the first part of the two-part tutorial. We learned how to set up a PureScript project, how to access a Postgres database and how to create a JSON REST API over the database. The code till the end of this part can be found in <a href="https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678" target="_blank" rel="noopener">github</a>. In the <a href="//abhinavsarkar.net/posts/ps-simple-rest-service-2/">next</a> part, we’ll learn how to do API validation, application configuration and logging. This post can be discussed on <a href="https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/" target="_blank" rel="noopener">r/purescript</a>.</p>
     </section>
     <section class="source">
-      <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/ps-simple-rest-service.md" target="_blank" rel="noopener">Post history</a>
+        Posted on <span itemprop="datePublished" content="2017-09-29">September 29, 2017</span>
+        
+            by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
+        
+      <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/ps-simple-rest-service.md" target="_blank" rel="noopener" style="float: right;">
+        Post history
+      </a>
     </section>
 </article>
 <meta itemprop="url" content="https://abhinavsarkar.net/posts/ps-simple-rest-service/">
