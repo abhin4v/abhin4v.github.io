@@ -82,18 +82,11 @@ article.post {
       margin: 0.7em auto;
     }
   }
-  div.twitter-button {
+  .twitter-button {
     line-height: 0.8em;
   }
   section.header, .ert {
     font-size: 0.9em;
-  }
-  .ert {
-    text-align: right;
-    position: relative;
-    top: -2.1em;
-    width: 50%;
-    margin-left: 50%;
   }
   .source {
     font-size: 0.8em;
@@ -118,23 +111,22 @@ article.post {
       }
     }
   }
+  .header {
+    font-size: 0.9em;
+  }
   ul.headers {
     width: 100%;
-    height: 4.8em;
-    margin: 0 auto;
+    margin: 0.1em auto;
     padding-left: 0;
-    li {
-      width: 40%;
-      vertical-align: top;
-      list-style: none;
-      display: table-cell;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
-      div.header {
-        font-size: 0.9em;
-      }
-      &:last-child {
-        text-align: right;
-      }
+    li {
+      list-style: none;
+      display: inline-block;
+      padding: 0 0.25em;
+      text-align: right;
     }
   }
 }
@@ -160,9 +152,6 @@ article.post {
         color: $text-color
       }
     }
-    .ert {
-      top: -1.6em;
-    }
   }
   .footnoteRef {
       display: none;
@@ -186,6 +175,9 @@ article.post {
     h1 {
       font-size: 2em;
     }
+    ul.headers {
+      justify-content: flex-end;
+    }
     section.body {
       > .scrollable-table table {
         td, th {
@@ -198,21 +190,6 @@ article.post {
 }
 
 @media screen and(max-width: 900px) {
-  article.post {
-    ul.headers {
-      height: 100%;
-      li {
-        display: inline;
-        text-align: right;
-      }
-    }
-    .ert {
-      text-align: right;
-      position: initial;
-      width: initial;
-      margin-left: initial;
-    }
-  }
   #home-posts {
     article.post {
       section.header {
@@ -234,7 +211,7 @@ article.post {
       font-size: 2.7em!important;
     }
     .twitter-share-button, .post-comments, .post-download {
-      display: none;
+      display: none!important;
     }
     p, li {
       page-break-inside: avoid;
@@ -255,16 +232,10 @@ article.post {
     .source {
       display: none!important;
     }
-    .ert {
-      text-align: right;
-      position: initial;
-      width: initial;
-      margin-left: initial;
-    }
     ul.headers {
-      height: 100%;
+      display: block;
       li {
-        display: inline;
+        display: list-item;
         text-align: right;
       }
     }

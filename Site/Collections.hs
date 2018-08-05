@@ -93,11 +93,9 @@ collections tags env = do
       posts <- take indexPostCount <$> recentFirst allPosts
       let morePostCount = length allPosts - indexPostCount
           morePostCountW = numToWord morePostCount
-          morePosts = if morePostCount == 1
-                      then morePostCountW <> " more post"
-                      else morePostCountW <> " more posts"
+          morePosts = morePostCountW <> " more post" <> (if morePostCount == 1 then "" else "s")
       let indexCtx =
-            listField "posts" (teaserField "teaser" "content" <> postCtxWithTags tags) (return posts) <>
+            listField "posts" postCtx (return posts) <>
             constField "title" "Home"                                                                 <>
             constField "more_posts" morePosts                                                         <>
             siteContext
@@ -107,6 +105,11 @@ collections tags env = do
         >>= loadAndApplyTemplate "templates/default.html" indexCtx
         >>= relativizeUrls env
         >>= removeIndexHtml
+  where
+    postCtx = teaserField "teaser" "content" <>
+      postCtxWithTags tags <>
+      field "post_ert" (fmap itemBody . flip loadSnapshot "ert" . itemIdentifier) <>
+      field "comment_count" (fmap itemBody . flip loadSnapshot "comment_count" . itemIdentifier)
 
 feedCtx :: Context String
 feedCtx =  bodyField "description" <> field "url" postUrl <> postCtx <> siteContext

@@ -1,17 +1,7 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables, TupleSections #-}
-module Site.PostCompiler
-  ( compilePosts
-  , compileDrafts
-  , contentCompiler
-  , readerOptions
-  , writerOptions
-  , postCtx
-  , postCtxWithTags
-  , commentCtx
-  , commentReplyToMap
-  ) where
+module Site.PostCompiler where
 
-import Control.Monad (foldM)
+import Control.Monad (foldM, void)
 import Data.List (stripPrefix, sortBy, intercalate, (\\))
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as Map
@@ -23,7 +13,7 @@ import Site.ERT
 import Site.TOC
 import Site.Util
 import System.FilePath.Posix (takeBaseName, takeDirectory)
-import Text.Pandoc.Definition (Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
+import Text.Pandoc.Definition (Pandoc, Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
@@ -42,18 +32,23 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
   let postSlug = takeBaseName path
   comments     <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   sortedPosts  <- sortChronological posts
-
-  nextPostCtx <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
-  prevPostCtx <- navLinkCtx "prev_post" $ sortedPosts `itemBefore` post
+  nextPostCtx  <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
+  prevPostCtx  <- navLinkCtx "prev_post" $ sortedPosts `itemBefore` post
+  content      <- readContentWithPandoc
+  let ert      = timeEstimate . itemBody $ content
+  void $ makeItem ert >>= saveSnapshot "ert"
+  let commentCount = show $ length comments
+  void $ makeItem commentCount >>= saveSnapshot "comment_count"
 
   let ctx = postCtxWithTags tags <>
             nextPostCtx <> prevPostCtx <>
             constField "post_slug" postSlug <>
-            constField "comment_count" (show $ length comments) <>
+            constField "post_ert" ert <>
+            constField "comment_count" commentCount <>
             listField "comments" siteContext (return comments) <>
             boolField "comments_enabled" (const commentsEnabled)
 
-  contentCompiler postSlug alignment True
+  pandocContentCompiler (postContentTransforms postSlug alignment) content
     >>= saveSnapshot "content"
     >>= loadAndApplyTemplate "templates/post.html" ctx
     >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -151,16 +146,23 @@ readerOptions = defaultHakyllReaderOptions {
 writerOptions :: WriterOptions
 writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceObfuscation }
 
-contentCompiler :: String -> String -> Bool -> Compiler (Item String)
-contentCompiler postSlug alignment ertEnabled =
-  pandocCompilerWithTransformM defaultHakyllReaderOptions writerOptions
-    (return . estimatedReadingTime ertEnabled
-            . walk linkHeaders
-            . walk (addHeaderTracking postSlug)
-            . walk linkImages
-            . walk mkScrollableTables
-            . tableOfContents alignment
-            . walk blankTargetLinks)
+readContentWithPandoc :: Compiler (Item Pandoc)
+readContentWithPandoc = getResourceBody >>= readPandocWith defaultHakyllReaderOptions
+
+pandocContentCompiler :: (Pandoc -> Pandoc) -> Item Pandoc -> Compiler (Item String)
+pandocContentCompiler transform = return . writePandocWith writerOptions . fmap transform
+
+contentCompiler :: (Pandoc -> Pandoc) -> Compiler (Item String)
+contentCompiler transform = readContentWithPandoc >>= pandocContentCompiler transform
+
+postContentTransforms :: String -> String -> Pandoc -> Pandoc
+postContentTransforms postSlug alignment =
+    walk linkHeaders
+  . walk (addHeaderTracking postSlug)
+  . walk linkImages
+  . walk mkScrollableTables
+  . tableOfContents alignment
+  . walk blankTargetLinks
 
 blankTargetLinks :: Inline -> Inline
 blankTargetLinks (Link (ident, classes, props) children (url, title)) =
