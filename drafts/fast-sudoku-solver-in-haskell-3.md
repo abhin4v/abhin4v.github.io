@@ -2,7 +2,7 @@
 title: "Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures"
 date: 2018-06-28
 description: We make the Sudoku solution faster by using the right data structure
-tags: haskell, sudoku, programming, puzzle
+tags: haskell, sudoku, programming, puzzle, nilenso
 author: Abhinav Sarkar
 toc: right
 ---
@@ -36,14 +36,14 @@ Let's try to improve this time.[^prev-post-note]
 
 ## Profile Twice, Code Once
 
-Instead of trying to guess how to improve the performance of our solution, let's be methodical about it. We start with profiling the code to find the bottlenecks. Let's compile and run the code with profiling flags.
+Instead of trying to guess how to improve the performance of our solution, let's be methodical about it. We start with profiling the code to find the bottlenecks. Let's compile and run the code with profiling flags:
 
 ```plain
 $ stack build --profile
 $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p > /dev/null
 ```
 
-This generates a `sudoku.prof` file with profiling output. Here are the top sever _Cost Centres_[^cc] from the file (cleaned for brevity):
+This generates a `sudoku.prof` file with the profiling output. Here are the top seven _Cost Centres_[^cc] from the file (cleaned for brevity):
 
 Cost Centre                   Src                        %time  %alloc
 -----------------             ---------                 ------ -------
@@ -729,6 +729,25 @@ Cost Centre                    Src                                  %time  %allo
 The double nested anonymous function mentioned before is still the biggest culprit but `fixM` has disappeared from the list. Let's tackle `exclusivePossibilities` now.
 
 ## Rise of the Mutables
+
+ ```plain
+$ stack build
+$ cat sudoku17.txt | time stack exec sudoku > /dev/null
+       36.44 real        36.21 user         0.25 sys
+```
+
+## Comparison of Implementations
+
+Implementation          Run Time (s)         Incremental Speedup     Cumulative Speedup
+----------------      --------------      ----------------------   --------------------
+Simple                         47450                          1x                     1x
+Exclusive Pruning             258.97                     183.23x                183.23x
+BitSet                          76.5                       3.39x                620.26x
+Vector                         58.46                       1.31x                811.67x
+Mutable Vector                 36.44                        1.6x               1302.14x
+
+![Run Time Chart](/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png)
+
 
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
