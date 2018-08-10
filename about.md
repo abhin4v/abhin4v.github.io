@@ -4,7 +4,7 @@ page_type: profile
 ---
 # About Me
 
-I am Abhinav Sarkar, a software developer currently living in Bangalore, India. I work at [Flipkart] as Principal Engineer. When not making software, I read books, play drums, listen to music and ride my bike.
+I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, India. I work at [Flipkart] as Principal Engineer. I've previously worked at [nilenso], [Capillary Technologies] and [FICO]. When not making software, I read books, play drums, listen to music and ride my bike.
 
 Here are some talks and workshops I have presented in various conferences:
 
@@ -44,6 +44,9 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Twitter]: https://twitter.com/abhin4v
 
 [Flipkart]: https://www.flipkart.com/about-us
+[nilenso]: https://nilenso.com
+[Capillary Technologies]: https://www.capillarytech.com
+[FICO]: http://www.fico.com/
 [Moving People with Clojure]: https://www.youtube.com/watch?v=3y7xzH8jB8A
 [Introduction To Concurrency In Haskell]: https://www.youtube.com/watch?v=uVK3t-5wWew
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
