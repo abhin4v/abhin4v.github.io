@@ -16,7 +16,7 @@
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
-        <meta name="keywords" content="haskell, sudoku, programming, puzzle">
+        <meta name="keywords" content="haskell, sudoku, programming, puzzle, nilenso">
         
         
         <meta name="description" content="We make the Sudoku solution faster by using the right data structure">
@@ -103,7 +103,7 @@
       </li>
       <li class="header post-ert">
         <span class="fa fa-clock-o fa-fw" aria-hidden="true"></span>
-        A twenty-six minute read
+        A twenty-seven minute read
       </li>
       
       <li class="header post-download">
@@ -112,7 +112,7 @@
       </li>
       <li class="header post-tags">
         
-        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/sudoku/">sudoku</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/puzzle/">puzzle</a>
+        <span class="fa fa-tags fa-fw" aria-hidden="true"></span> Tags: <a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/sudoku/">sudoku</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/puzzle/">puzzle</a>, <a href="//abhinavsarkar.net/tags/nilenso/">nilenso</a>
         
       </li>
       <li class="header twitter-button">
@@ -130,7 +130,7 @@
 <li><a href="//abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-3/">Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</a></li>
 </ol>
 <p>Discuss this post on [r/haskell].</p>
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#vectors-of-speed">Vectors of Speed</a></li><li><a href="#revenge-of-the">Revenge of the <code>(==)</code></a></li><li><a href="#one-function-to-prune-them-all">One Function to Prune Them All</a></li><li><a href="#rise-of-the-mutables">Rise of the Mutables</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#vectors-of-speed">Vectors of Speed</a></li><li><a href="#revenge-of-the">Revenge of the <code>(==)</code></a></li><li><a href="#one-function-to-prune-them-all">One Function to Prune Them All</a></li><li><a href="#rise-of-the-mutables">Rise of the Mutables</a></li><li><a href="#comparison-of-implementations">Comparison of Implementations</a></li></ol></nav>
 <h2 id="quick-recap" data-track-content data-content-name="quick-recap" data-content-piece="fast-sudoku-solver-in-haskell-3">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">new strategy</a> found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> time for solving all the 49151 <a href="//abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a>:</p>
@@ -138,10 +138,10 @@
       258.97 real       257.34 user         1.52 sys</code></pre>
 <p>Let’s try to improve this time.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></p>
 <h2 id="profile-twice-code-once" data-track-content data-content-name="profile-twice-code-once" data-content-piece="fast-sudoku-solver-in-haskell-3">Profile Twice, Code Once<a href="#profile-twice-code-once" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>Instead of trying to guess how to improve the performance of our solution, let’s be methodical about it. We start with profiling the code to find the bottlenecks. Let’s compile and run the code with profiling flags.</p>
+<p>Instead of trying to guess how to improve the performance of our solution, let’s be methodical about it. We start with profiling the code to find the bottlenecks. Let’s compile and run the code with profiling flags:</p>
 <pre class="plain"><code>$ stack build --profile
 $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></pre>
-<p>This generates a <code>sudoku.prof</code> file with profiling output. Here are the top sever <em>Cost Centres</em><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> from the file (cleaned for brevity):</p>
+<p>This generates a <code>sudoku.prof</code> file with the profiling output. Here are the top seven <em>Cost Centres</em><a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> from the file (cleaned for brevity):</p>
 <div class="scrollable-table">
 <table>
 <thead>
@@ -990,6 +990,55 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </div>
 <p>The double nested anonymous function mentioned before is still the biggest culprit but <code>fixM</code> has disappeared from the list. Let’s tackle <code>exclusivePossibilities</code> now.</p>
 <h2 id="rise-of-the-mutables" data-track-content data-content-name="rise-of-the-mutables" data-content-piece="fast-sudoku-solver-in-haskell-3">Rise of the Mutables<a href="#rise-of-the-mutables" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<pre class="plain"><code>$ stack build
+$ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
+      36.44 real        36.21 user         0.25 sys</code></pre>
+<h2 id="comparison-of-implementations" data-track-content data-content-name="comparison-of-implementations" data-content-piece="fast-sudoku-solver-in-haskell-3">Comparison of Implementations<a href="#comparison-of-implementations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<div class="scrollable-table">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Implementation</th>
+<th style="text-align: right;">Run Time (s)</th>
+<th style="text-align: right;">Incremental Speedup</th>
+<th style="text-align: right;">Cumulative Speedup</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Simple</td>
+<td style="text-align: right;">47450</td>
+<td style="text-align: right;">1x</td>
+<td style="text-align: right;">1x</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Exclusive Pruning</td>
+<td style="text-align: right;">258.97</td>
+<td style="text-align: right;">183.23x</td>
+<td style="text-align: right;">183.23x</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BitSet</td>
+<td style="text-align: right;">76.5</td>
+<td style="text-align: right;">3.39x</td>
+<td style="text-align: right;">620.26x</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Vector</td>
+<td style="text-align: right;">58.46</td>
+<td style="text-align: right;">1.31x</td>
+<td style="text-align: right;">811.67x</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mutable Vector</td>
+<td style="text-align: right;">36.44</td>
+<td style="text-align: right;">1.6x</td>
+<td style="text-align: right;">1302.14x</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><a href="//abhinavsarkar.net/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png" class="img-link"><img src="//abhinavsarkar.net/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png" /><span>Run Time Chart</span></a></p>
 <section class="footnotes">
 <hr />
 <ol>
@@ -1005,9 +1054,8 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </section>
     </section>
     <section class="source">
-        Posted on <span itemprop="datePublished" content="2018-06-28">June 28, 2018</span>
         
-            by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
+          Posted by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
         
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/fast-sudoku-solver-in-haskell-3.md" target="_blank" rel="noopener" style="float: right;">
         Post history
