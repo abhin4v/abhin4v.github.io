@@ -1,0 +1,23 @@
+@import "consts";
+
+#mentions-container {
+  border-top: 1px solid $border-color;
+
+  ul {
+    padding-left: 1em;
+
+    li.mention {
+      list-style: none;
+
+      &:before {
+        content: "> ";
+      }
+
+      .date {
+        font-size: smaller;
+        margin-left: 0.5em;
+        color: lighten($text-color, 30%);
+      }
+    }
+  }
+}

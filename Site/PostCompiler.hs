@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables, TupleSections #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables, TupleSections, RecordWildCards #-}
 module Site.PostCompiler where
 
 import Control.Monad (foldM, void)
@@ -12,6 +12,7 @@ import Hakyll hiding (relativizeUrls)
 import Site.ERT
 import Site.TOC
 import Site.Util
+import qualified Site.Webmentions as WM
 import System.FilePath.Posix (takeBaseName, takeDirectory)
 import Text.Pandoc.Definition (Pandoc, Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
 import Text.Pandoc.Extensions (disableExtension)
@@ -30,14 +31,20 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
   alignment    <- fromMaybe "left" <$> getMetadataField post "toc"
   path         <- getResourceFilePath
   let postSlug = takeBaseName path
-  comments     <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
-  sortedPosts  <- sortChronological posts
-  nextPostCtx  <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
-  prevPostCtx  <- navLinkCtx "prev_post" $ sortedPosts `itemBefore` post
-  content      <- readContentWithPandoc
-  let ert      = timeEstimate . itemBody $ content
-  void $ makeItem ert >>= saveSnapshot "ert"
+
+  comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   let commentCount = show $ length comments
+
+  mentions <- unsafeCompiler $ WM.getWebmentions postSlug
+
+  sortedPosts <- sortChronological posts
+  nextPostCtx <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
+  prevPostCtx <- navLinkCtx "prev_post" $ sortedPosts `itemBefore` post
+
+  content <- readContentWithPandoc
+  let ert = timeEstimate . itemBody $ content
+
+  void $ makeItem ert >>= saveSnapshot "ert"
   void $ makeItem commentCount >>= saveSnapshot "comment_count"
 
   let ctx = postCtxWithTags tags <>
@@ -48,10 +55,19 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
             listField "comments" siteContext (return comments) <>
             boolField "comments_enabled" (const commentsEnabled)
 
+  let ctxWithMentions = case mentions of
+        Nothing -> ctx
+        Just WM.Webmentions{..} ->
+          let mentionCount = length wmLinks
+          in ctx <>
+            boolField "mentions_enabled" (const $ mentionCount /= 0) <>
+            constField "mention_count" (show mentionCount) <>
+            listField "mention_links" WM.mentionLinkCtx (mapM makeItem wmLinks)
+
   pandocContentCompiler (postContentTransforms postSlug alignment) content
     >>= saveSnapshot "content"
-    >>= loadAndApplyTemplate "templates/post.html" ctx
-    >>= loadAndApplyTemplate "templates/default.html" ctx
+    >>= loadAndApplyTemplate "templates/post.html" ctxWithMentions
+    >>= loadAndApplyTemplate "templates/default.html" ctxWithMentions
     >>= relativizeUrls env
     >>= removeIndexHtml
 

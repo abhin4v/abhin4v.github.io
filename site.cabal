@@ -24,11 +24,14 @@ executable site
                   , split
                   , text
                   , numerals
+                  , aeson
+                  , aeson-casing
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections
                   , Site.Comments
                   , Site.ERT
+                  , Site.Webmentions
                   , Site.Pages
                   , Site.Posts
                   , Site.PostCompiler

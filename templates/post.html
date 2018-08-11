@@ -47,6 +47,19 @@
     </section>
 </article>
 <meta itemprop="url" content="$full_url$">
+$if(mentions_enabled)$
+<div id="mentions-container">
+  <h3>$mention_count$ mentions</h3>
+  <ul>
+  $for(mention_links)$
+    <li class="mention" id="#mention-$link_id$">
+      <a href="$link_source$">$link_source_name$</a>
+      <span class="date">$link_date$</span>
+    </li>
+  $endfor$
+  </ul>
+</div>
+$endif$
 $if(comments_enabled)$
 <div id="comment-container">
   <h3>$comment_count$ comments</h3>
