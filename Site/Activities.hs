@@ -86,7 +86,7 @@ activities env = do
       compile $ do
         activities' <- unsafeCompiler $ getActivities "http://feedmyride.net/activities/3485865"
 
-        let ctx = listField "activities" activityFields (mapM makeItem activities') <>
+        let ctx = listField "activities" activityCtx (mapM makeItem activities') <>
                   constField "title" "Activities" <>
                   siteContext
 
@@ -98,7 +98,7 @@ activities env = do
   where
     activityField name f = field name (return . f . itemBody)
 
-    activityFields =
+    activityCtx =
       mconcat [ activityField "name" activityName
               , activityField "type" activityType
               , activityField "eff" $ show . activityEffort
