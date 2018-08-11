@@ -7,14 +7,14 @@ import Control.Arrow ((&&&))
 import Control.Exception (try, SomeException)
 import Data.Aeson (FromJSON(..), genericParseJSON, decode')
 import Data.Aeson.Casing (aesonPrefix, aesonDrop, snakeCase)
-import Data.List (sortBy)
+import Data.Function (on)
+import Data.List (sortBy, nubBy)
 import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Time (UTCTime, defaultTimeLocale, formatTime)
 import GHC.Generics
 import Hakyll
 import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody)
-import Site.Util
 
 newtype Webmentions = Webmentions {wmLinks :: [Link]}
                       deriving (Show, Generic, Semigroup)
@@ -33,15 +33,15 @@ instance FromJSON Webmentions where
 
 getWebmentions :: String -> IO (Maybe Webmentions)
 getWebmentions postSlug =
-  go "posts" <> go "drafts"
+  fmap dedupLinks <$> go "https" "posts" <> go "https" "drafts" <> go "http" "posts" <> go "http" "drafts"
   where
-    go prefix = parseRequest (mentionsURL prefix) >>= try . httpLBS >>= \case
+    go scheme prefix = parseRequest (mentionsURL scheme prefix) >>= try . httpLBS >>= \case
       Left (_ :: SomeException) -> return Nothing
       Right resp -> return . fmap transform . decode' . getResponseBody $ resp
 
-    mentionsURL prefix =
+    mentionsURL scheme prefix =
       "https://webmention.io/api/mentions?target=" <>
-      siteRoot <> "/" <> prefix <> "/" <> postSlug <> "/"
+      scheme <> "://abhinavsarkar.net" <> "/" <> prefix <> "/" <> postSlug <> "/"
 
     transform Webmentions{..} =
       (\links -> Webmentions {wmLinks = links})
@@ -51,6 +51,8 @@ getWebmentions postSlug =
 
     cleanupLink :: Link -> Link
     cleanupLink link@Link{..} = link { linkTarget = T.replace "/drafts/" "/posts/" linkTarget }
+
+    dedupLinks wm@Webmentions{..} = wm {wmLinks = nubBy ((==) `on` linkSource) wmLinks}
 
 sourceName :: T.Text -> T.Text
 sourceName source
