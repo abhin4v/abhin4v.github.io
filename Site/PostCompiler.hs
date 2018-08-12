@@ -35,7 +35,7 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
   comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   let commentCount = show $ length comments
 
-  mentions <- unsafeCompiler $ WM.getWebmentions postSlug
+  mentions <- if commentsEnabled then unsafeCompiler $ WM.getWebmentions postSlug else return Nothing
 
   sortedPosts <- sortChronological posts
   nextPostCtx <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
