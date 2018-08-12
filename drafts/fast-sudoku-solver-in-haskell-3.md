@@ -139,7 +139,7 @@ showGridWithPossibilities = unlines . map (unwords . map showCell)
       ++ "]"
 ```
 
-We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit `1`, we set the bit 1 so that the resulting `Word16` is `0000 0000 0000 0010` or 2. This also means, for fixed cells, the value is count of the zeros from right.
+We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit `1`, we set the bit 1 so that the resulting `Word16` is `0000 0000 0000 0010` or 2. This also means, for fixed cells, the value is [count][8] of the zeros from right.
 
 The change in the `exclusivePossibilities` function is pretty minimal:
 
@@ -164,7 +164,7 @@ The change in the `exclusivePossibilities` function is pretty minimal:
 +          [1..9])
        Map.empty
    & Map.filter ((< 4) . length)
-   & Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
+   & Map.foldlWithKey' (\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
    & Map.filterWithKey (\is xs -> length is == length xs)
    & Map.elems
 +  & map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)
@@ -197,7 +197,7 @@ makeCell ys
   | otherwise                  = Just $ Possible ys
 ```
 
-And we change cell pruning functions also:
+And we change cell pruning functions too:
 
 ```diff
  pruneCellsByFixed :: [Cell] -> Maybe [Cell]
@@ -326,7 +326,7 @@ exclusivePossibilities row =
       Map.empty)
   & ({-# SCC "EP.Map.filter1" #-} Map.filter ((< 4) . length))
   & ({-# SCC "EP.Map.foldl" #-}
-       Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty)
+       Map.foldlWithKey' (\acc x is -> Map.insertWith prepend is [x] acc) Map.empty)
   & ({-# SCC "EP.Map.filter2" #-}
        Map.filterWithKey (\is xs -> length is == length xs))
   & ({-# SCC "EP.Map.elems" #-} Map.elems)
@@ -355,7 +355,7 @@ Cost Centre                        Src                                          
 `exclusivePossibilities`           Sudoku.hs:(57,1)-(76,26)                         2.7    1.9
 `chunksOf.splitter`                Data/List/Split/Internals.hs:(516,3)-(517,49)    2.5    2.7
 
-So almost one-fifth of the time is actually going in this nested one-line anonymous function inside `exclusivePossibilities`[^expos]:
+So almost one-fifth of the time is actually going in this nested one-line anonymous function inside `exclusivePossibilities`:
 
 ```haskell
 (\acc' n ->
@@ -483,36 +483,6 @@ Read and show functions are easy to change for vector:
 
 `readGrid` simply changes to work on a single vector of cells instead of a list of lists. Show functions have a pretty minor change to do lookups from a vector using the row indices and the [`(!)`] function. The `(!)` function is the vector indexing function which is similar to the [`(!!)`] function, except it executes in constant time.
 
-Changes in `exclusivePossibilities` are also very minor. Now, it takes the grid and cell indices instead of a list of cells as earlier, and it looks up the cells from the grid using the indices passed.
-
-```diff
--exclusivePossibilities :: [Cell] -> [Data.Word.Word16]
--exclusivePossibilities row =
--  row
-+exclusivePossibilities :: Grid -> CellIxs -> [Data.Word.Word16]
-+exclusivePossibilities grid cellIxs =
-+  cellIxs
-+  & map (grid !)
-   & zip [1..9]
-   & filter (isPossible . snd)
-   & Data.List.foldl'
-       (\acc ~(i, Possible xs) ->
-         Data.List.foldl'
-           (\acc' n -> if Data.Bits.testBit xs n
-                       then Map.insertWith prepend n [i] acc'
-                       else acc')
-           acc
-           [1..9])
-       Map.empty)
-   & Map.filter ((< 4) . length)
-   & Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
-   & Map.filterWithKey (\is xs -> length is == length xs)
-   & Map.elems
-   & map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)
-   where
-     prepend ~[y] ys = y:ys
-```
-
 The pruning related functions are rewritten for working with vectors:
 
 ```haskell
@@ -535,9 +505,10 @@ pruneCellsByFixed grid cellIxs =
 pruneCellsByExclusives :: Grid -> CellIxs -> Maybe Grid
 pruneCellsByExclusives grid cellIxs = case exclusives of
   [] -> Just grid
-  _  -> Control.Monad.foldM pruneCell grid . map (\i -> (i, grid ! i)) $ cellIxs
+  _  -> Control.Monad.foldM pruneCell grid . zip cellIxs $ cells
   where
-    exclusives    = exclusivePossibilities grid cellIxs
+    cells         = map (grid !) cellIxs
+    exclusives    = exclusivePossibilities cells
     allExclusives = setBits Data.Bits.zeroBits exclusives
 
     pruneCell g (_, Fixed _) = Just g
@@ -555,7 +526,7 @@ pruneCells grid cellIxs =
   >>= fixM (flip pruneCellsByExclusives cellIxs)
 ```
 
-All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the [`traverse`] function as earlier, now we use the [`Control.Monad.foldM`] function to fold over the cell indices in the context of the `Maybe` monad, making changes to the grid directly.
+All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the [`traverse`] function as earlier, now we use the [`Control.Monad.foldM`] function to fold over the cell index and cell tuples in the context of the `Maybe` monad, making changes to the grid directly.
 
 We use the `replaceCell` function to replace cells at an index in the grid. It is a simple wrapper over the vector update function `Data.Vector.//`. Rest of the code is same in essence, except a few changes to accommodate the changed function parameters.
 
@@ -643,7 +614,7 @@ Cost Centre                               Src                                 %t
 \ \ \ \ \ \ \ \ `>>=`                     Data/Vector/Fusion/Util.hs:36:3-18   51.9    50.7
 \ \ \ \ \ \ \ \ \ \ `basicUnsafeIndexM`   Data/Vector.hs:278:3-62              19.3    20.3
 
-Here, the indentation indicated nesting of operations. We see that both the `(>>=)` and `basicUnsafeIndexM` functions, which together take around three-quarter of the run time, are being called from the `(==)` function in the `fixM` function[^laziness]. It seems like we are checking for equality too many times. Here's the usage of the `fixM` for reference:
+Here, the indentation indicated nesting of operations. We see that both the `(>>=)` and `basicUnsafeIndexM` functions --- which together take around three-quarter of the run time --- are being called from the `(==)` function in the `fixM` function[^laziness]. It seems like we are checking for equality too many times. Here's the usage of the `fixM` for reference:
 
 ```haskell
 pruneCells :: Grid -> CellIxs -> Maybe Grid
@@ -673,9 +644,10 @@ With this idea, we rewrite `pruneCells` as a single function:
 pruneCells :: Grid -> CellIxs -> Maybe Grid
 pruneCells grid cellIxs = Control.Monad.foldM pruneCell grid cellIxs
   where
-    exclusives = exclusivePossibilities grid cellIxs
+    cells         = map (grid !) cellIxs
+    exclusives    = exclusivePossibilities cells
     allExclusives = setBits Data.Bits.zeroBits exclusives
-    fixeds = setBits Data.Bits.zeroBits [x | Fixed x <- map (grid !) cellIxs]
+    fixeds        = setBits Data.Bits.zeroBits [x | Fixed x <- cells]
 
     pruneCell g i =
       pruneCellByFixed g (i, g ! i) >>= \g' -> pruneCellByExclusives g' (i, g' ! i)
@@ -730,11 +702,150 @@ The double nested anonymous function mentioned before is still the biggest culpr
 
 ## Rise of the Mutables
 
+Here's `exclusivePossibilities` again for reference:
+
+```haskell
+exclusivePossibilities :: [Cell] -> [Data.Word.Word16]
+exclusivePossibilities row =
+  row
+  & zip [1..9]
+  & filter (isPossible . snd)
+  & Data.List.foldl'
+      (\acc ~(i, Possible xs) ->
+        Data.List.foldl'
+          (\acc' n -> if Data.Bits.testBit xs n 
+                      then Map.insertWith prepend n [i] acc' 
+                      else acc')
+          acc
+          [1..9])
+      Map.empty
+  & Map.filter ((< 4) . length)
+  & Map.foldlWithKey'(\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
+  & Map.filterWithKey (\is xs -> length is == length xs)
+  & Map.elems
+  & map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)
+  where
+    prepend ~[y] ys = y:ys
+```
+
+Let's zoom into lines 6--14. Here, we do a fold with a nested fold over the non-fixed cells of the given block to accumulate the mapping from the digits to the indices of the cells they occur in. We use a [`Data.Map.Strict`] map as the accumulator. If a digit is not present in the map as a key then we add a singleton list containing the corresponding cell index as the value. If the digit is already present in the map then we prepend the cell index to the list of indices for the digit. So we end up "mutating" the map repeatedly.
+
+Of course, it's not actual mutation because the map data structure we are using is immutable. Each change to the map instance creates a new copy with the addition, which we thread through the fold operation, and we get the final copy at the end. This may be the reason of the slowness in this section of the code.
+
+What if, instead of using an immutable data structure for this, we used a mutable one? But how can we do that when we know that Haskell is a pure language? Purity means that all code must be [referentially transparent], and mutability certainly isn't. It turns out, there is an escape hatch to mutability in Haskell. Quoting the relevant section from the book [Real World Haskell]:
+
+> Haskell provides a special monad, named `ST`, which lets us work safely with mutable state. Compared to the `State` monad, it has some powerful added capabilities.
+> 
+> - We can *thaw* an immutable array to give a mutable array; modify the mutable array in place; and freeze a new immutable array when we are done.
+> - We have the ability to use *mutable references*. This lets us implement data structures that we can modify after construction, as in an imperative language. This ability is vital for some imperative data structures and algorithms, for which similarly efficient purely functional alternatives have not yet been discovered.
+
+So if we use a mutable map in the [`ST` monad], we may be able to get rid of this bottleneck. But, we can actually do better! Since the keys of our map are digits `1`--`9`, we can use a [mutable vector] to store the indices. In fact, we can go one step even further and store the indices as a BitSet as `Word16` because they also range from 1 to 9, and are unique for a block. This lets us use an [unboxed mutable vector]. What is _unboxing_ you ask? Quoting from the [GHC docs]:
+
+> Most types in GHC are boxed, which means that values of that type are represented by a pointer to a heap object. The representation of a Haskell `Int`, for example, is a two-word heap object. An unboxed type, however, is represented by the value itself, no pointers or heap allocation are involved.
+
+When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirection completely. This is more memory efficient and allows better usage of caches[^unbox].
+
+Let's rewrite `exclusivePossibilities` using `ST` and unboxed mutable vectors:
+
+```haskell
+cellIndicesList :: [Cell] -> [Data.Word.Word16]
+cellIndicesList cells =
+  Data.Vector.Unboxed.toList $ Control.Monad.ST.runST $ do
+    vec <- Data.Vector.Unboxed.Mutable.replicate 9 Data.Bits.zeroBits
+    ref <- Data.STRef.newSTRef (1 :: Int)
+    Control.Monad.forM_ cells $ \cell -> do
+      i <- Data.STRef.readSTRef ref
+      case cell of
+        Fixed _ -> return ()
+        Possible xs -> Control.Monad.forM_ [0..8] $ \d ->
+          Control.Monad.when (Data.Bits.testBit xs (d+1)) $
+            Data.Vector.Unboxed.Mutable.unsafeModify vec (`Data.Bits.setBit` i) d
+      Data.STRef.writeSTRef ref (i+1)
+    Data.Vector.Unboxed.unsafeFreeze vec
+```
+First we write the core of this operation, the function `cellIndicesList` which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have `1` as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let's say it returns `[0,688,54,134,0,654,652,526,670]`. In 10-bit binary it is:
+
+```plain
+[0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]
+```
+
+We can arrange it in a table for further clarity:
+
+ Digits  Cell 9  Cell 8  Cell 7  Cell 6  Cell 5  Cell 4  Cell 3  Cell 2  Cell 1
+------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+ 1       0       0       0       0       0       0       0       0       0       
+ 2       1       0       1       0       1       1       0       0       0       
+ 3       0       0       0       0       1       1       0       1       1       
+ 4       0       0       1       0       0       0       0       1       1       
+ 5       0       0       0       0       0       0       0       0       0       
+ 6       1       0       1       0       0       0       1       1       1       
+ 7       1       0       1       0       0       0       1       1       0       
+ 8       1       0       0       0       0       0       1       1       1       
+ 9       1       0       1       0       0       1       1       1       1       
+ 
+If the value of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else not.
+
+The whole mutable code runs inside the `runST` function. `runST` take an operation in `ST` monad and executes it, making sure that the mutable references created inside it cannot escape the scope of `runST`. This is done using a type-system trickery called [Rank-2 types]. 
+
+Inside the `ST` operation, we start with creating a mutable vector of `Word16`s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit `1`--`9`, setting the right bit of the right value of the mutable vector. During this, we mutate the vector directly using the `Data.Vector.Unboxed.Mutable.unsafeModify` function. In the end of the `ST` operation, we freeze the mutable vector to return an immutable version of it. Outside `runST`, we convert the immutable vector to a list. Notice how this code is quite similar to how we'd write it in [imperative programming] languages like C or Java.
+
+It is easy to use this function now to rewrite `exclusivePossibilities`:
+
+```diff
+ exclusivePossibilities :: [Cell] -> [Data.Word.Word16]
+ exclusivePossibilities row =
+   row
+-  & zip [1..9]
+-  & filter (isPossible . snd)
+-  & Data.List.foldl'
+-      (\acc ~(i, Possible xs) ->
+-        Data.List.foldl'
+-          (\acc' n -> if Data.Bits.testBit xs n 
+-                      then Map.insertWith prepend n [i] acc' 
+-                      else acc')
+-          acc
+-          [1..9])
+-      Map.empty
++  & cellIndicesList
++  & zip [1..9]
+-  & Map.filter ((< 4) . length)
+-  & Map.foldlWithKey' (\acc x is -> Map.insertWith prepend is [x] acc) Map.empty
+-  & Map.filterWithKey (\is xs -> length is == length xs)
++  & filter (\(_, is) -> let p = Data.Bits.popCount is in p > 0 && p < 4)
++  & Data.List.foldl' (\acc (x, is) -> Map.insertWith prepend is [x] acc) Map.empty
++  & Map.filterWithKey (\is xs -> Data.Bits.popCount is == length xs)
+   & Map.elems
+   & map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)
+   where
+     prepend ~[y] ys = y:ys
+```
+
+We replace the nested two-fold operation with `cellIndicesList`. Then we replace some map related function with the corresponding list ones because `cellIndicesList` returns a list. We also replace the `length` function call on cell indices with `Data.Bits.popCount` function call as indices are represented as a `Word16` now.
+
+That is it. Let's build and run it now:
+
  ```plain
 $ stack build
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
        36.44 real        36.21 user         0.25 sys
 ```
+
+That's a 1.6x speedup over the map-and-fold based version. Let's check what the profiler has to say:
+
+Cost Centre              Src                                  %time  %alloc
+-------------            -------                             ------ -------
+`cellIndicesList.\.\`    Sudoku.hs:(88,11)-(89,81)             10.7     6.0
+`primitive`              Control/Monad/Primitive.hs:195:3-16    7.9     6.9
+`pruneCells`             Sudoku.hs:(113,1)-(138,53)             7.5     6.4
+`cellIndicesList`        Sudoku.hs:(79,1)-(91,40)               7.4    10.1
+`basicUnsafeIndexM`      Data/Vector.hs:278:3-62                7.3     0.5
+`pruneCells.pruneCell`   Sudoku.hs:(120,5)-(121,83)             6.8     2.0
+`exclusivePossibilities` Sudoku.hs:(94,1)-(104,26)              6.5     9.7
+`pruneCells.pruneCell.\` Sudoku.hs:121:48-83                    6.1     2.0
+`cellIndicesList.\`      Sudoku.hs:(83,42)-(90,37)              5.5     3.5
+`pruneCells.cells`       Sudoku.hs:115:5-40                     5.0    10.4
+
+The run time is spread quite evenly over all the functions and there are no hotspots anymore. We stop the optimizations at this point[^code-ref-mutvec]. Let's see how far we have come up.
 
 ## Comparison of Implementations
 
@@ -777,7 +888,15 @@ Mutable Vector                 36.44                        1.6x               1
 [`(!!)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Prelude.html#v:-33--33-
 [`traverse`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse
 [`Control.Monad.foldM`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html#v:foldM
-[`(>>=)`]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
+[`(>>=)`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html#v:-62--62--61-
+[referentially transparent]: https://en.wikipedia.org/wiki/Referential_transparency
+[Real World Haskell]: http://book.realworldhaskell.org/read/advanced-library-design-building-a-bloom-filter.html#id680273
+[`ST` monad]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad-ST.html
+[mutable vector]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Mutable.html
+[unboxed mutable vector]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed-Mutable.html
+[GHC docs]: https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/glasgow_exts.html#unboxed-types
+[Rank-2 types]: https://prime.haskell.org/wiki/Rank2Types
+[imperative programming]: https://en.wikipedia.org/wiki/Imperative_programming
 
 [1]: /files/sudoku17.txt.bz2
 [2]: /posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward
@@ -785,7 +904,10 @@ Mutable Vector                 36.44                        1.6x               1
 [4]: https://web.archive.org/web/20180802043644/https://github.com/haskell-perf/sequences/blob/master/README.md
 [5]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/5a3044e09cd86dd6154bc50760095c4b38c48c6a
 [6]: /posts/fast-sudoku-solver-in-haskell-2/#fn6
-[7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/d5d2757d71927189feaf3db450d2887b66712f80
+[7]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/a320a7874c6fa0c39665151cc8e073532cc750a1
+[8]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Bits.html#v:countTrailingZeros
+[9]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed.html#t:Unbox
+[10]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
@@ -797,7 +919,8 @@ Mutable Vector                 36.44                        1.6x               1
 
 [^code-ref-set]: The code for the bitset based implementation can be found [here][5].
 [^code-ref-vec]: The code for the vector based implementation can be found [here][7].
+[^code-ref-mutvec]: The code for the mutable vector based implementation can be found [here][10].
 
 [^laziness]: We see Haskell's laziness at work here. In the code for the `fixM` function, the `(==)` function is nested inside the `(>>=)` function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the `(==)` function causes the `(>>=)` function to be evaluated.
 
-[^expos]: If we recall from the [explanation][2] given in the last part, this is the function which computes the mapping of the digits to the cells. Here, we accumulate the mapping in a [`Data.Map.Strict`] map, which has the digits as the keys and the indices of the cells in which the digits occur as values.
+[^unbox]: Unboxed vectors have some [restrictions][9] on the kind of values that can be put into them but `Word16` already follows those restrictions so we are good.
