@@ -107,7 +107,7 @@
       </li>
       <li class="header post-ert">
         <span class="fa fa-clock-o fa-fw" aria-hidden="true"></span>
-        A twenty-seven minute read
+        A thirty-three minute read
       </li>
       
       <li class="header post-download">
@@ -270,7 +270,7 @@ $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></
 <a class="sourceLine" id="cb5-29" data-line-number="29">                 <span class="kw">else</span> <span class="ch">' '</span>)</a>
 <a class="sourceLine" id="cb5-30" data-line-number="30">          [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>]</a>
 <a class="sourceLine" id="cb5-31" data-line-number="31">      <span class="fu">++</span> <span class="st">&quot;]&quot;</span></a></code></pre></div>
-<p>We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit <code>1</code>, we set the bit 1 so that the resulting <code>Word16</code> is <code>0000 0000 0000 0010</code> or 2. This also means, for fixed cells, the value is count of the zeros from right.</p>
+<p>We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit <code>1</code>, we set the bit 1 so that the resulting <code>Word16</code> is <code>0000 0000 0000 0010</code> or 2. This also means, for fixed cells, the value is <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Bits.html#v:countTrailingZeros" target="_blank" rel="noopener">count</a> of the zeros from right.</p>
 <p>The change in the <code>exclusivePossibilities</code> function is pretty minimal:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb6-1" data-line-number="1"><span class="st">-exclusivePossibilities :: [Cell] -&gt; [[Int]]</span></a>
 <a class="sourceLine" id="cb6-2" data-line-number="2"><span class="va">+exclusivePossibilities :: [Cell] -&gt; [Data.Word.Word16]</span></a>
@@ -292,7 +292,7 @@ $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></
 <a class="sourceLine" id="cb6-18" data-line-number="18"><span class="va">+          [1..9])</span></a>
 <a class="sourceLine" id="cb6-19" data-line-number="19">       Map.empty</a>
 <a class="sourceLine" id="cb6-20" data-line-number="20">   &amp; Map.filter ((&lt; 4) . length)</a>
-<a class="sourceLine" id="cb6-21" data-line-number="21">   &amp; Map.foldlWithKey'(\acc x is -&gt; Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb6-21" data-line-number="21">   &amp; Map.foldlWithKey' (\acc x is -&gt; Map.insertWith prepend is [x] acc) Map.empty</a>
 <a class="sourceLine" id="cb6-22" data-line-number="22">   &amp; Map.filterWithKey (\is xs -&gt; length is == length xs)</a>
 <a class="sourceLine" id="cb6-23" data-line-number="23">   &amp; Map.elems</a>
 <a class="sourceLine" id="cb6-24" data-line-number="24"><span class="va">+  &amp; map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</span></a>
@@ -314,7 +314,7 @@ $ head -1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code></
 <a class="sourceLine" id="cb8-3" data-line-number="3">  <span class="fu">|</span> ys <span class="fu">==</span> Data.Bits.zeroBits   <span class="fu">=</span> <span class="dt">Nothing</span></a>
 <a class="sourceLine" id="cb8-4" data-line-number="4">  <span class="fu">|</span> Data.Bits.popCount ys <span class="fu">==</span> <span class="dv">1</span> <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Fixed</span> ys</a>
 <a class="sourceLine" id="cb8-5" data-line-number="5">  <span class="fu">|</span> otherwise                  <span class="fu">=</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> ys</a></code></pre></div>
-<p>And we change cell pruning functions also:</p>
+<p>And we change cell pruning functions too:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb9-1" data-line-number="1"> pruneCellsByFixed :: [Cell] -&gt; Maybe [Cell]</a>
 <a class="sourceLine" id="cb9-2" data-line-number="2"> pruneCellsByFixed cells = traverse pruneCell cells</a>
 <a class="sourceLine" id="cb9-3" data-line-number="3">   where</a>
@@ -456,7 +456,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <a class="sourceLine" id="cb13-14" data-line-number="14">      Map.empty)</a>
 <a class="sourceLine" id="cb13-15" data-line-number="15">  <span class="fu">&amp;</span> (<span class="ot">{-# SCC &quot;EP.Map.filter1&quot; #-}</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> length))</a>
 <a class="sourceLine" id="cb13-16" data-line-number="16">  <span class="fu">&amp;</span> (<span class="ot">{-# SCC &quot;EP.Map.foldl&quot; #-}</span></a>
-<a class="sourceLine" id="cb13-17" data-line-number="17">       Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty)</a>
+<a class="sourceLine" id="cb13-17" data-line-number="17">       Map.foldlWithKey' (\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty)</a>
 <a class="sourceLine" id="cb13-18" data-line-number="18">  <span class="fu">&amp;</span> (<span class="ot">{-# SCC &quot;EP.Map.filter2&quot; #-}</span></a>
 <a class="sourceLine" id="cb13-19" data-line-number="19">       Map.filterWithKey (\is xs <span class="ot">-&gt;</span> length is <span class="fu">==</span> length xs))</a>
 <a class="sourceLine" id="cb13-20" data-line-number="20">  <span class="fu">&amp;</span> (<span class="ot">{-# SCC &quot;EP.Map.elems&quot; #-}</span> Map.elems)</a>
@@ -552,13 +552,13 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </tbody>
 </table>
 </div>
-<p>So almost one-fifth of the time is actually going in this nested one-line anonymous function inside <code>exclusivePossibilities</code><a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>:</p>
+<p>So almost one-fifth of the time is actually going in this nested one-line anonymous function inside <code>exclusivePossibilities</code>:</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1">(\acc' n <span class="ot">-&gt;</span></a>
 <a class="sourceLine" id="cb14-2" data-line-number="2">    <span class="kw">if</span> Data.Bits.testBit xs n <span class="kw">then</span> Map.insertWith prepend n [i] acc' <span class="kw">else</span> acc')</a></code></pre></div>
 <p>But we are going to ignore it for now.</p>
 <p>If we look closely, we also find that around 17% of the run time now goes into list traversal and manipulation. This is in the functions <code>pruneCellsByFixed</code>, <code>pruneGrid'</code>, <code>chunksOf</code> and <code>chunksOf.splitter</code>, where the first two are majorly list traversal and transposition, and the last two are list splitting. Maybe it is time to get rid of lists altogether?</p>
 <h2 id="vectors-of-speed" data-track-content data-content-name="vectors-of-speed" data-content-piece="fast-sudoku-solver-in-haskell-3">Vectors of Speed<a href="#vectors-of-speed" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p><a href="https://hackage.haskell.org/package/vector-0.12.0.1" target="_blank" rel="noopener">Vector</a> is a Haskell library for working with arrays. It implements very performant operations for integer-indexed array data. Unlike the lists in Haskell which are implemented as <a href="https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list" target="_blank" rel="noopener">singly linked lists</a>, vectors are stored in a contiguous set of memory locations. This makes random access to the elements a constant time operation. The memory overhead per additional item in vectors is also much smaller. Lists allocate memory for each item in the heap and have pointers to the memory locations in nodes, leading to a lot of wasted memory in holding pointers. On the other hand, operations on lists are lazy, whereas, operations on vectors are strict, and this may need to useless computation depending on the use-case<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>.</p>
+<p><a href="https://hackage.haskell.org/package/vector-0.12.0.1" target="_blank" rel="noopener">Vector</a> is a Haskell library for working with arrays. It implements very performant operations for integer-indexed array data. Unlike the lists in Haskell which are implemented as <a href="https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list" target="_blank" rel="noopener">singly linked lists</a>, vectors are stored in a contiguous set of memory locations. This makes random access to the elements a constant time operation. The memory overhead per additional item in vectors is also much smaller. Lists allocate memory for each item in the heap and have pointers to the memory locations in nodes, leading to a lot of wasted memory in holding pointers. On the other hand, operations on lists are lazy, whereas, operations on vectors are strict, and this may need to useless computation depending on the use-case<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
 <p>In our current code, we represent the grid as a list of lists of cells. All the pruning operations require us to traverse the grid list or the row lists. They also require us to transform the grid back-and-forth for being able to use the same pruning operations for rows, columns and sub-grids. The pruning of cells and the choosing of pivot cells also requires us to replace cells in the grid with new ones, leading to a lot of list traversals.</p>
 <p>To prevent all this linear-time list traversals, we can replace the nested list of lists with a single vector. Then all we need to do it to go over the right parts of this vector, looking up and replacing cells as needed. Since both lookups and updates on vectors are constant time, this should lead to a speedup.</p>
 <p>Let’s start by changing the grid to a vector of cells.:</p>
@@ -652,108 +652,83 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <a class="sourceLine" id="cb18-34" data-line-number="34">           [1..9]</a>
 <a class="sourceLine" id="cb18-35" data-line-number="35">       ++ &quot;]&quot;</a></code></pre></div>
 <p><code>readGrid</code> simply changes to work on a single vector of cells instead of a list of lists. Show functions have a pretty minor change to do lookups from a vector using the row indices and the <a href="https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector.html#v:-33-" target="_blank" rel="noopener"><code>(!)</code></a> function. The <code>(!)</code> function is the vector indexing function which is similar to the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Prelude.html#v:-33--33-" target="_blank" rel="noopener"><code>(!!)</code></a> function, except it executes in constant time.</p>
-<p>Changes in <code>exclusivePossibilities</code> are also very minor. Now, it takes the grid and cell indices instead of a list of cells as earlier, and it looks up the cells from the grid using the indices passed.</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="st">-exclusivePossibilities :: [Cell] -&gt; [Data.Word.Word16]</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="st">-exclusivePossibilities row =</span></a>
-<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="st">-  row</span></a>
-<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="va">+exclusivePossibilities :: Grid -&gt; CellIxs -&gt; [Data.Word.Word16]</span></a>
-<a class="sourceLine" id="cb19-5" data-line-number="5"><span class="va">+exclusivePossibilities grid cellIxs =</span></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="va">+  cellIxs</span></a>
-<a class="sourceLine" id="cb19-7" data-line-number="7"><span class="va">+  &amp; map (grid !)</span></a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">   &amp; zip [1..9]</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">   &amp; filter (isPossible . snd)</a>
-<a class="sourceLine" id="cb19-10" data-line-number="10">   &amp; Data.List.foldl'</a>
-<a class="sourceLine" id="cb19-11" data-line-number="11">       (\acc ~(i, Possible xs) -&gt;</a>
-<a class="sourceLine" id="cb19-12" data-line-number="12">         Data.List.foldl'</a>
-<a class="sourceLine" id="cb19-13" data-line-number="13">           (\acc' n -&gt; if Data.Bits.testBit xs n</a>
-<a class="sourceLine" id="cb19-14" data-line-number="14">                       then Map.insertWith prepend n [i] acc'</a>
-<a class="sourceLine" id="cb19-15" data-line-number="15">                       else acc')</a>
-<a class="sourceLine" id="cb19-16" data-line-number="16">           acc</a>
-<a class="sourceLine" id="cb19-17" data-line-number="17">           [1..9])</a>
-<a class="sourceLine" id="cb19-18" data-line-number="18">       Map.empty)</a>
-<a class="sourceLine" id="cb19-19" data-line-number="19">   &amp; Map.filter ((&lt; 4) . length)</a>
-<a class="sourceLine" id="cb19-20" data-line-number="20">   &amp; Map.foldlWithKey'(\acc x is -&gt; Map.insertWith prepend is [x] acc) Map.empty</a>
-<a class="sourceLine" id="cb19-21" data-line-number="21">   &amp; Map.filterWithKey (\is xs -&gt; length is == length xs)</a>
-<a class="sourceLine" id="cb19-22" data-line-number="22">   &amp; Map.elems</a>
-<a class="sourceLine" id="cb19-23" data-line-number="23">   &amp; map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</a>
-<a class="sourceLine" id="cb19-24" data-line-number="24">   where</a>
-<a class="sourceLine" id="cb19-25" data-line-number="25">     prepend ~[y] ys = y:ys</a></code></pre></div>
 <p>The pruning related functions are rewritten for working with vectors:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="ot">replaceCell ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">replaceCell i c g <span class="fu">=</span> g <span class="fu">Data.Vector.//</span> [(i, c)]</a>
-<a class="sourceLine" id="cb20-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb20-4" data-line-number="4"><span class="ot">pruneCellsByFixed ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5">pruneCellsByFixed grid cellIxs <span class="fu">=</span></a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">  Control.Monad.foldM pruneCell grid <span class="fu">.</span> map (\i <span class="ot">-&gt;</span> (i, grid <span class="fu">!</span> i)) <span class="fu">$</span> cellIxs</a>
-<a class="sourceLine" id="cb20-7" data-line-number="7">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">    fixeds <span class="fu">=</span> setBits Data.Bits.zeroBits [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> map (grid <span class="fu">!</span>) cellIxs]</a>
-<a class="sourceLine" id="cb20-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb20-10" data-line-number="10">    pruneCell g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb20-11" data-line-number="11">    pruneCell g (i, <span class="dt">Possible</span> xs)</a>
-<a class="sourceLine" id="cb20-12" data-line-number="12">      <span class="fu">|</span> xs' <span class="fu">==</span> xs <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">      <span class="fu">|</span> otherwise <span class="fu">=</span> flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell xs'</a>
-<a class="sourceLine" id="cb20-14" data-line-number="14">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-15" data-line-number="15">        xs' <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> Data.Bits.complement fixeds</a>
-<a class="sourceLine" id="cb20-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb20-17" data-line-number="17"><span class="ot">pruneCellsByExclusives ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb20-18" data-line-number="18">pruneCellsByExclusives grid cellIxs <span class="fu">=</span> <span class="kw">case</span> exclusives <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-19" data-line-number="19">  [] <span class="ot">-&gt;</span> <span class="dt">Just</span> grid</a>
-<a class="sourceLine" id="cb20-20" data-line-number="20">  _  <span class="ot">-&gt;</span> Control.Monad.foldM pruneCell grid <span class="fu">.</span> map (\i <span class="ot">-&gt;</span> (i, grid <span class="fu">!</span> i)) <span class="fu">$</span> cellIxs</a>
-<a class="sourceLine" id="cb20-21" data-line-number="21">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-22" data-line-number="22">    exclusives    <span class="fu">=</span> exclusivePossibilities grid cellIxs</a>
-<a class="sourceLine" id="cb20-23" data-line-number="23">    allExclusives <span class="fu">=</span> setBits Data.Bits.zeroBits exclusives</a>
-<a class="sourceLine" id="cb20-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb20-25" data-line-number="25">    pruneCell g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb20-26" data-line-number="26">    pruneCell g (i, <span class="dt">Possible</span> xs)</a>
-<a class="sourceLine" id="cb20-27" data-line-number="27">      <span class="fu">|</span> intersection <span class="fu">==</span> xs             <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb20-28" data-line-number="28">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span></a>
-<a class="sourceLine" id="cb20-29" data-line-number="29">          flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell intersection</a>
-<a class="sourceLine" id="cb20-30" data-line-number="30">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb20-31" data-line-number="31">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb20-32" data-line-number="32">        intersection <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> allExclusives</a>
-<a class="sourceLine" id="cb20-33" data-line-number="33"></a>
-<a class="sourceLine" id="cb20-34" data-line-number="34"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb20-35" data-line-number="35">pruneCells grid cellIxs <span class="fu">=</span></a>
-<a class="sourceLine" id="cb20-36" data-line-number="36">  fixM (flip pruneCellsByFixed cellIxs) grid</a>
-<a class="sourceLine" id="cb20-37" data-line-number="37">  <span class="fu">&gt;&gt;=</span> fixM (flip pruneCellsByExclusives cellIxs)</a></code></pre></div>
-<p>All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse" target="_blank" rel="noopener"><code>traverse</code></a> function as earlier, now we use the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html#v:foldM" target="_blank" rel="noopener"><code>Control.Monad.foldM</code></a> function to fold over the cell indices in the context of the <code>Maybe</code> monad, making changes to the grid directly.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="ot">replaceCell ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb19-2" data-line-number="2">replaceCell i c g <span class="fu">=</span> g <span class="fu">Data.Vector.//</span> [(i, c)]</a>
+<a class="sourceLine" id="cb19-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="ot">pruneCellsByFixed ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb19-5" data-line-number="5">pruneCellsByFixed grid cellIxs <span class="fu">=</span></a>
+<a class="sourceLine" id="cb19-6" data-line-number="6">  Control.Monad.foldM pruneCell grid <span class="fu">.</span> map (\i <span class="ot">-&gt;</span> (i, grid <span class="fu">!</span> i)) <span class="fu">$</span> cellIxs</a>
+<a class="sourceLine" id="cb19-7" data-line-number="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb19-8" data-line-number="8">    fixeds <span class="fu">=</span> setBits Data.Bits.zeroBits [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> map (grid <span class="fu">!</span>) cellIxs]</a>
+<a class="sourceLine" id="cb19-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb19-10" data-line-number="10">    pruneCell g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb19-11" data-line-number="11">    pruneCell g (i, <span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb19-12" data-line-number="12">      <span class="fu">|</span> xs' <span class="fu">==</span> xs <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb19-13" data-line-number="13">      <span class="fu">|</span> otherwise <span class="fu">=</span> flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell xs'</a>
+<a class="sourceLine" id="cb19-14" data-line-number="14">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb19-15" data-line-number="15">        xs' <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> Data.Bits.complement fixeds</a>
+<a class="sourceLine" id="cb19-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb19-17" data-line-number="17"><span class="ot">pruneCellsByExclusives ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb19-18" data-line-number="18">pruneCellsByExclusives grid cellIxs <span class="fu">=</span> <span class="kw">case</span> exclusives <span class="kw">of</span></a>
+<a class="sourceLine" id="cb19-19" data-line-number="19">  [] <span class="ot">-&gt;</span> <span class="dt">Just</span> grid</a>
+<a class="sourceLine" id="cb19-20" data-line-number="20">  _  <span class="ot">-&gt;</span> Control.Monad.foldM pruneCell grid <span class="fu">.</span> zip cellIxs <span class="fu">$</span> cells</a>
+<a class="sourceLine" id="cb19-21" data-line-number="21">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb19-22" data-line-number="22">    cells         <span class="fu">=</span> map (grid <span class="fu">!</span>) cellIxs</a>
+<a class="sourceLine" id="cb19-23" data-line-number="23">    exclusives    <span class="fu">=</span> exclusivePossibilities cells</a>
+<a class="sourceLine" id="cb19-24" data-line-number="24">    allExclusives <span class="fu">=</span> setBits Data.Bits.zeroBits exclusives</a>
+<a class="sourceLine" id="cb19-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb19-26" data-line-number="26">    pruneCell g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb19-27" data-line-number="27">    pruneCell g (i, <span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb19-28" data-line-number="28">      <span class="fu">|</span> intersection <span class="fu">==</span> xs             <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb19-29" data-line-number="29">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span></a>
+<a class="sourceLine" id="cb19-30" data-line-number="30">          flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell intersection</a>
+<a class="sourceLine" id="cb19-31" data-line-number="31">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb19-32" data-line-number="32">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb19-33" data-line-number="33">        intersection <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> allExclusives</a>
+<a class="sourceLine" id="cb19-34" data-line-number="34"></a>
+<a class="sourceLine" id="cb19-35" data-line-number="35"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb19-36" data-line-number="36">pruneCells grid cellIxs <span class="fu">=</span></a>
+<a class="sourceLine" id="cb19-37" data-line-number="37">  fixM (flip pruneCellsByFixed cellIxs) grid</a>
+<a class="sourceLine" id="cb19-38" data-line-number="38">  <span class="fu">&gt;&gt;=</span> fixM (flip pruneCellsByExclusives cellIxs)</a></code></pre></div>
+<p>All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse" target="_blank" rel="noopener"><code>traverse</code></a> function as earlier, now we use the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html#v:foldM" target="_blank" rel="noopener"><code>Control.Monad.foldM</code></a> function to fold over the cell index and cell tuples in the context of the <code>Maybe</code> monad, making changes to the grid directly.</p>
 <p>We use the <code>replaceCell</code> function to replace cells at an index in the grid. It is a simple wrapper over the vector update function <code>Data.Vector.//</code>. Rest of the code is same in essence, except a few changes to accommodate the changed function parameters.</p>
 <p><code>pruneGrid'</code> function does not need to do transpositions and back-transpositions anymore as now we use the cell indices to go over the right parts of the grid vector directly:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" data-line-number="1"><span class="ot">pruneGrid' ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb21-2" data-line-number="2">pruneGrid' grid <span class="fu">=</span></a>
-<a class="sourceLine" id="cb21-3" data-line-number="3">  Control.Monad.foldM pruneCells grid allRowIxs</a>
-<a class="sourceLine" id="cb21-4" data-line-number="4">  <span class="fu">&gt;&gt;=</span> flip (Control.Monad.foldM pruneCells) allColIxs</a>
-<a class="sourceLine" id="cb21-5" data-line-number="5">  <span class="fu">&gt;&gt;=</span> flip (Control.Monad.foldM pruneCells) allSubGridIxs</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="ot">pruneGrid' ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb20-2" data-line-number="2">pruneGrid' grid <span class="fu">=</span></a>
+<a class="sourceLine" id="cb20-3" data-line-number="3">  Control.Monad.foldM pruneCells grid allRowIxs</a>
+<a class="sourceLine" id="cb20-4" data-line-number="4">  <span class="fu">&gt;&gt;=</span> flip (Control.Monad.foldM pruneCells) allColIxs</a>
+<a class="sourceLine" id="cb20-5" data-line-number="5">  <span class="fu">&gt;&gt;=</span> flip (Control.Monad.foldM pruneCells) allSubGridIxs</a></code></pre></div>
 <p>Notice that the <code>traverse</code> function here is also replaced by the <code>Control.Monad.foldM</code> function.</p>
 <p>Similarly, the grid predicate functions change a little to go over a vector instead of a list of lists:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb22-1" data-line-number="1"> isGridFilled :: Grid -&gt; Bool</a>
-<a class="sourceLine" id="cb22-2" data-line-number="2"><span class="st">-isGridFilled grid = null [ () | Possible _ &lt;- concat grid ]</span></a>
-<a class="sourceLine" id="cb22-3" data-line-number="3"><span class="va">+isGridFilled = not . Data.Vector.any isPossible</span></a>
-<a class="sourceLine" id="cb22-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb22-5" data-line-number="5"> isGridInvalid :: Grid -&gt; Bool</a>
-<a class="sourceLine" id="cb22-6" data-line-number="6"> isGridInvalid grid =</a>
-<a class="sourceLine" id="cb22-7" data-line-number="7"><span class="st">-  any isInvalidRow grid</span></a>
-<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="st">-  || any isInvalidRow (Data.List.transpose grid)</span></a>
-<a class="sourceLine" id="cb22-9" data-line-number="9"><span class="st">-  || any isInvalidRow (subGridsToRows grid)</span></a>
-<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="va">+  any isInvalidRow (map (map (grid !)) allRowIxs)</span></a>
-<a class="sourceLine" id="cb22-11" data-line-number="11"><span class="va">+  || any isInvalidRow (map (map (grid !)) allColIxs)</span></a>
-<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="va">+  || any isInvalidRow (map (map (grid !)) allSubGridIxs)</span></a></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb21-1" data-line-number="1"> isGridFilled :: Grid -&gt; Bool</a>
+<a class="sourceLine" id="cb21-2" data-line-number="2"><span class="st">-isGridFilled grid = null [ () | Possible _ &lt;- concat grid ]</span></a>
+<a class="sourceLine" id="cb21-3" data-line-number="3"><span class="va">+isGridFilled = not . Data.Vector.any isPossible</span></a>
+<a class="sourceLine" id="cb21-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb21-5" data-line-number="5"> isGridInvalid :: Grid -&gt; Bool</a>
+<a class="sourceLine" id="cb21-6" data-line-number="6"> isGridInvalid grid =</a>
+<a class="sourceLine" id="cb21-7" data-line-number="7"><span class="st">-  any isInvalidRow grid</span></a>
+<a class="sourceLine" id="cb21-8" data-line-number="8"><span class="st">-  || any isInvalidRow (Data.List.transpose grid)</span></a>
+<a class="sourceLine" id="cb21-9" data-line-number="9"><span class="st">-  || any isInvalidRow (subGridsToRows grid)</span></a>
+<a class="sourceLine" id="cb21-10" data-line-number="10"><span class="va">+  any isInvalidRow (map (map (grid !)) allRowIxs)</span></a>
+<a class="sourceLine" id="cb21-11" data-line-number="11"><span class="va">+  || any isInvalidRow (map (map (grid !)) allColIxs)</span></a>
+<a class="sourceLine" id="cb21-12" data-line-number="12"><span class="va">+  || any isInvalidRow (map (map (grid !)) allSubGridIxs)</span></a></code></pre></div>
 <p>And finally, we change the <code>nextGrids</code> function to replace the list related operations with the vector related ones:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb23-1" data-line-number="1"> nextGrids :: Grid -&gt; (Grid, Grid)</a>
-<a class="sourceLine" id="cb23-2" data-line-number="2"> nextGrids grid =</a>
-<a class="sourceLine" id="cb23-3" data-line-number="3">   let (i, first@(Fixed _), rest) =</a>
-<a class="sourceLine" id="cb23-4" data-line-number="4">         fixCell</a>
-<a class="sourceLine" id="cb23-5" data-line-number="5"><span class="st">-        . Data.List.minimumBy</span></a>
-<a class="sourceLine" id="cb23-6" data-line-number="6"><span class="va">+        . Data.Vector.minimumBy</span></a>
-<a class="sourceLine" id="cb23-7" data-line-number="7">             (compare `Data.Function.on` (possibilityCount . snd))</a>
-<a class="sourceLine" id="cb23-8" data-line-number="8"><span class="st">-        . filter (isPossible . snd)</span></a>
-<a class="sourceLine" id="cb23-9" data-line-number="9"><span class="st">-        . zip [0..]</span></a>
-<a class="sourceLine" id="cb23-10" data-line-number="10"><span class="st">-        . concat</span></a>
-<a class="sourceLine" id="cb23-11" data-line-number="11"><span class="va">+        . Data.Vector.imapMaybe</span></a>
-<a class="sourceLine" id="cb23-12" data-line-number="12"><span class="va">+            (\j cell -&gt; if isPossible cell then Just (j, cell) else Nothing)</span></a>
-<a class="sourceLine" id="cb23-13" data-line-number="13">         $ grid</a>
-<a class="sourceLine" id="cb23-14" data-line-number="14"><span class="st">-  in (replace2D i first grid, replace2D i rest grid)</span></a>
-<a class="sourceLine" id="cb23-15" data-line-number="15"><span class="va">+  in (replaceCell i first grid, replaceCell i rest grid)</span></a></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb22-1" data-line-number="1"> nextGrids :: Grid -&gt; (Grid, Grid)</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2"> nextGrids grid =</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">   let (i, first@(Fixed _), rest) =</a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">         fixCell</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"><span class="st">-        . Data.List.minimumBy</span></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="va">+        . Data.Vector.minimumBy</span></a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">             (compare `Data.Function.on` (possibilityCount . snd))</a>
+<a class="sourceLine" id="cb22-8" data-line-number="8"><span class="st">-        . filter (isPossible . snd)</span></a>
+<a class="sourceLine" id="cb22-9" data-line-number="9"><span class="st">-        . zip [0..]</span></a>
+<a class="sourceLine" id="cb22-10" data-line-number="10"><span class="st">-        . concat</span></a>
+<a class="sourceLine" id="cb22-11" data-line-number="11"><span class="va">+        . Data.Vector.imapMaybe</span></a>
+<a class="sourceLine" id="cb22-12" data-line-number="12"><span class="va">+            (\j cell -&gt; if isPossible cell then Just (j, cell) else Nothing)</span></a>
+<a class="sourceLine" id="cb22-13" data-line-number="13">         $ grid</a>
+<a class="sourceLine" id="cb22-14" data-line-number="14"><span class="st">-  in (replace2D i first grid, replace2D i rest grid)</span></a>
+<a class="sourceLine" id="cb22-15" data-line-number="15"><span class="va">+  in (replaceCell i first grid, replaceCell i rest grid)</span></a></code></pre></div>
 <p>We also switch the <code>replace2D</code> function which went over the entire list of lists of cells to replace a cell, with the vector-based <code>replaceCell</code> function.</p>
 <p>All the required changes are done. Let’s do a run:</p>
 <pre class="plain"><code>$ stack build
@@ -857,14 +832,14 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </tbody>
 </table>
 </div>
-<p>Here, the indentation indicated nesting of operations. We see that both the <code>(&gt;&gt;=)</code> and <code>basicUnsafeIndexM</code> functions, which together take around three-quarter of the run time, are being called from the <code>(==)</code> function in the <code>fixM</code> function<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>. It seems like we are checking for equality too many times. Here’s the usage of the <code>fixM</code> for reference:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb25-2" data-line-number="2">pruneCells grid cellIxs <span class="fu">=</span></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3">  fixM (flip pruneCellsByFixed cellIxs) grid</a>
-<a class="sourceLine" id="cb25-4" data-line-number="4">  <span class="fu">&gt;&gt;=</span> fixM (flip pruneCellsByExclusives cellIxs)</a>
-<a class="sourceLine" id="cb25-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb25-6" data-line-number="6"><span class="ot">pruneGrid ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb25-7" data-line-number="7">pruneGrid <span class="fu">=</span> fixM pruneGrid'</a></code></pre></div>
+<p>Here, the indentation indicated nesting of operations. We see that both the <code>(&gt;&gt;=)</code> and <code>basicUnsafeIndexM</code> functions — which together take around three-quarter of the run time — are being called from the <code>(==)</code> function in the <code>fixM</code> function<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>. It seems like we are checking for equality too many times. Here’s the usage of the <code>fixM</code> for reference:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb24-1" data-line-number="1"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">pruneCells grid cellIxs <span class="fu">=</span></a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">  fixM (flip pruneCellsByFixed cellIxs) grid</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">  <span class="fu">&gt;&gt;=</span> fixM (flip pruneCellsByExclusives cellIxs)</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb24-6" data-line-number="6"><span class="ot">pruneGrid ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">pruneGrid <span class="fu">=</span> fixM pruneGrid'</a></code></pre></div>
 <p>In <code>pruneGrid</code>, we run <code>pruneGrid'</code> till the resultant grid settles, that is, the grid computed in a particular iteration is <strong>equal to</strong> the grid in the previous iteration. Interestingly, we do the same thing in <code>pruneCells</code> too. We equate <strong>the whole grid</strong> to check for settling of each block of cells. This is the reason of the slowdown.</p>
 <h2 id="one-function-to-prune-them-all" data-track-content data-content-name="one-function-to-prune-them-all" data-content-piece="fast-sudoku-solver-in-haskell-3">One Function to Prune Them All<a href="#one-function-to-prune-them-all" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Why did we add <code>fixM</code> in the <code>pruneCells</code> function at all? Quoting from the <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#fn6">previous post</a>,</p>
@@ -874,38 +849,39 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </blockquote>
 <p>So the reason we added <code>fixM</code> is that we run the two pruning strategies one after another. That way, they see the cells in the same block in different states. If we were to merge the two pruning functions into one such that they work in lockstep, we would not need to run <code>fixM</code> at all!</p>
 <p>With this idea, we rewrite <code>pruneCells</code> as a single function:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2">pruneCells grid cellIxs <span class="fu">=</span> Control.Monad.foldM pruneCell grid cellIxs</a>
-<a class="sourceLine" id="cb26-3" data-line-number="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb26-4" data-line-number="4">    exclusives <span class="fu">=</span> exclusivePossibilities grid cellIxs</a>
-<a class="sourceLine" id="cb26-5" data-line-number="5">    allExclusives <span class="fu">=</span> setBits Data.Bits.zeroBits exclusives</a>
-<a class="sourceLine" id="cb26-6" data-line-number="6">    fixeds <span class="fu">=</span> setBits Data.Bits.zeroBits [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> map (grid <span class="fu">!</span>) cellIxs]</a>
-<a class="sourceLine" id="cb26-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb26-8" data-line-number="8">    pruneCell g i <span class="fu">=</span></a>
-<a class="sourceLine" id="cb26-9" data-line-number="9">      pruneCellByFixed g (i, g <span class="fu">!</span> i) <span class="fu">&gt;&gt;=</span> \g' <span class="ot">-&gt;</span> pruneCellByExclusives g' (i, g' <span class="fu">!</span> i)</a>
-<a class="sourceLine" id="cb26-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb26-11" data-line-number="11">    pruneCellByFixed g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-12" data-line-number="12">    pruneCellByFixed g (i, <span class="dt">Possible</span> xs)</a>
-<a class="sourceLine" id="cb26-13" data-line-number="13">      <span class="fu">|</span> xs' <span class="fu">==</span> xs <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-14" data-line-number="14">      <span class="fu">|</span> otherwise <span class="fu">=</span> flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell xs'</a>
-<a class="sourceLine" id="cb26-15" data-line-number="15">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb26-16" data-line-number="16">        xs' <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> Data.Bits.complement fixeds</a>
-<a class="sourceLine" id="cb26-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb26-18" data-line-number="18">    pruneCellByExclusives g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-19" data-line-number="19">    pruneCellByExclusives g (i, <span class="dt">Possible</span> xs)</a>
-<a class="sourceLine" id="cb26-20" data-line-number="20">      <span class="fu">|</span> null exclusives                <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-21" data-line-number="21">      <span class="fu">|</span> intersection <span class="fu">==</span> xs             <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-22" data-line-number="22">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span></a>
-<a class="sourceLine" id="cb26-23" data-line-number="23">          flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell intersection</a>
-<a class="sourceLine" id="cb26-24" data-line-number="24">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> g</a>
-<a class="sourceLine" id="cb26-25" data-line-number="25">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb26-26" data-line-number="26">        intersection <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> allExclusives</a></code></pre></div>
-<p>We have merged the two pruning functions almost blindly. The important part here is the nested <code>pruneCell</code> function which uses monadic bind <a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>(&gt;&gt;=)</code></a> to ensure that cells fixed in one step are seen by the next step. Merging the two functions ensures that both strategies will see same <em>Exclusives</em> and <em>Fixeds</em>, thereby running in lockstep.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="ot">pruneCells ::</span> <span class="dt">Grid</span> <span class="ot">-&gt;</span> <span class="dt">CellIxs</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Grid</span></a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">pruneCells grid cellIxs <span class="fu">=</span> Control.Monad.foldM pruneCell grid cellIxs</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">    cells         <span class="fu">=</span> map (grid <span class="fu">!</span>) cellIxs</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">    exclusives    <span class="fu">=</span> exclusivePossibilities cells</a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">    allExclusives <span class="fu">=</span> setBits Data.Bits.zeroBits exclusives</a>
+<a class="sourceLine" id="cb25-7" data-line-number="7">    fixeds        <span class="fu">=</span> setBits Data.Bits.zeroBits [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> cells]</a>
+<a class="sourceLine" id="cb25-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb25-9" data-line-number="9">    pruneCell g i <span class="fu">=</span></a>
+<a class="sourceLine" id="cb25-10" data-line-number="10">      pruneCellByFixed g (i, g <span class="fu">!</span> i) <span class="fu">&gt;&gt;=</span> \g' <span class="ot">-&gt;</span> pruneCellByExclusives g' (i, g' <span class="fu">!</span> i)</a>
+<a class="sourceLine" id="cb25-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb25-12" data-line-number="12">    pruneCellByFixed g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-13" data-line-number="13">    pruneCellByFixed g (i, <span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb25-14" data-line-number="14">      <span class="fu">|</span> xs' <span class="fu">==</span> xs <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-15" data-line-number="15">      <span class="fu">|</span> otherwise <span class="fu">=</span> flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell xs'</a>
+<a class="sourceLine" id="cb25-16" data-line-number="16">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb25-17" data-line-number="17">        xs' <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> Data.Bits.complement fixeds</a>
+<a class="sourceLine" id="cb25-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb25-19" data-line-number="19">    pruneCellByExclusives g (_, <span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-20" data-line-number="20">    pruneCellByExclusives g (i, <span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb25-21" data-line-number="21">      <span class="fu">|</span> null exclusives                <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-22" data-line-number="22">      <span class="fu">|</span> intersection <span class="fu">==</span> xs             <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-23" data-line-number="23">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span></a>
+<a class="sourceLine" id="cb25-24" data-line-number="24">          flip (replaceCell i) g <span class="fu">&lt;$&gt;</span> makeCell intersection</a>
+<a class="sourceLine" id="cb25-25" data-line-number="25">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> g</a>
+<a class="sourceLine" id="cb25-26" data-line-number="26">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb25-27" data-line-number="27">        intersection <span class="fu">=</span> xs <span class="fu">Data.Bits..&amp;.</span> allExclusives</a></code></pre></div>
+<p>We have merged the two pruning functions almost blindly. The important part here is the nested <code>pruneCell</code> function which uses monadic bind <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>(&gt;&gt;=)</code></a> to ensure that cells fixed in one step are seen by the next step. Merging the two functions ensures that both strategies will see same <em>Exclusives</em> and <em>Fixeds</em>, thereby running in lockstep.</p>
 <p>Let’s try it out:</p>
 <pre class="plain"><code>$ stack build
 $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
       58.46 real        58.12 user         0.36 sys</code></pre>
-<p>Ah, now it’s faster than the list-based implementation by 1.3x<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>. Let’s see what the profiler says:</p>
+<p>Ah, now it’s faster than the list-based implementation by 1.3x<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a>. Let’s see what the profiler says:</p>
 <div class="scrollable-table">
 <table>
 <thead>
@@ -994,9 +970,300 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </div>
 <p>The double nested anonymous function mentioned before is still the biggest culprit but <code>fixM</code> has disappeared from the list. Let’s tackle <code>exclusivePossibilities</code> now.</p>
 <h2 id="rise-of-the-mutables" data-track-content data-content-name="rise-of-the-mutables" data-content-piece="fast-sudoku-solver-in-haskell-3">Rise of the Mutables<a href="#rise-of-the-mutables" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Here’s <code>exclusivePossibilities</code> again for reference:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" data-line-number="1"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>
+<a class="sourceLine" id="cb27-2" data-line-number="2">exclusivePossibilities row <span class="fu">=</span></a>
+<a class="sourceLine" id="cb27-3" data-line-number="3">  row</a>
+<a class="sourceLine" id="cb27-4" data-line-number="4">  <span class="fu">&amp;</span> zip [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>]</a>
+<a class="sourceLine" id="cb27-5" data-line-number="5">  <span class="fu">&amp;</span> filter (isPossible <span class="fu">.</span> snd)</a>
+<a class="sourceLine" id="cb27-6" data-line-number="6">  <span class="fu">&amp;</span> Data.List.foldl'</a>
+<a class="sourceLine" id="cb27-7" data-line-number="7">      (\acc <span class="fu">~</span>(i, <span class="dt">Possible</span> xs) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb27-8" data-line-number="8">        Data.List.foldl'</a>
+<a class="sourceLine" id="cb27-9" data-line-number="9">          (\acc' n <span class="ot">-&gt;</span> <span class="kw">if</span> Data.Bits.testBit xs n </a>
+<a class="sourceLine" id="cb27-10" data-line-number="10">                      <span class="kw">then</span> Map.insertWith prepend n [i] acc' </a>
+<a class="sourceLine" id="cb27-11" data-line-number="11">                      <span class="kw">else</span> acc')</a>
+<a class="sourceLine" id="cb27-12" data-line-number="12">          acc</a>
+<a class="sourceLine" id="cb27-13" data-line-number="13">          [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>])</a>
+<a class="sourceLine" id="cb27-14" data-line-number="14">      Map.empty</a>
+<a class="sourceLine" id="cb27-15" data-line-number="15">  <span class="fu">&amp;</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> length)</a>
+<a class="sourceLine" id="cb27-16" data-line-number="16">  <span class="fu">&amp;</span> Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb27-17" data-line-number="17">  <span class="fu">&amp;</span> Map.filterWithKey (\is xs <span class="ot">-&gt;</span> length is <span class="fu">==</span> length xs)</a>
+<a class="sourceLine" id="cb27-18" data-line-number="18">  <span class="fu">&amp;</span> Map.elems</a>
+<a class="sourceLine" id="cb27-19" data-line-number="19">  <span class="fu">&amp;</span> map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</a>
+<a class="sourceLine" id="cb27-20" data-line-number="20">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb27-21" data-line-number="21">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
+<p>Let’s zoom into lines 6–14. Here, we do a fold with a nested fold over the non-fixed cells of the given block to accumulate the mapping from the digits to the indices of the cells they occur in. We use a <a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html" target="_blank" rel="noopener"><code>Data.Map.Strict</code></a> map as the accumulator. If a digit is not present in the map as a key then we add a singleton list containing the corresponding cell index as the value. If the digit is already present in the map then we prepend the cell index to the list of indices for the digit. So we end up “mutating” the map repeatedly.</p>
+<p>Of course, it’s not actual mutation because the map data structure we are using is immutable. Each change to the map instance creates a new copy with the addition, which we thread through the fold operation, and we get the final copy at the end. This may be the reason of the slowness in this section of the code.</p>
+<p>What if, instead of using an immutable data structure for this, we used a mutable one? But how can we do that when we know that Haskell is a pure language? Purity means that all code must be <a href="https://en.wikipedia.org/wiki/Referential_transparency" target="_blank" rel="noopener">referentially transparent</a>, and mutability certainly isn’t. It turns out, there is an escape hatch to mutability in Haskell. Quoting the relevant section from the book <a href="http://book.realworldhaskell.org/read/advanced-library-design-building-a-bloom-filter.html#id680273" target="_blank" rel="noopener">Real World Haskell</a>:</p>
+<blockquote>
+<p>Haskell provides a special monad, named <code>ST</code>, which lets us work safely with mutable state. Compared to the <code>State</code> monad, it has some powerful added capabilities.</p>
+<ul>
+<li>We can <em>thaw</em> an immutable array to give a mutable array; modify the mutable array in place; and freeze a new immutable array when we are done.</li>
+<li>We have the ability to use <em>mutable references</em>. This lets us implement data structures that we can modify after construction, as in an imperative language. This ability is vital for some imperative data structures and algorithms, for which similarly efficient purely functional alternatives have not yet been discovered.</li>
+</ul>
+</blockquote>
+<p>So if we use a mutable map in the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Control-Monad-ST.html" target="_blank" rel="noopener"><code>ST</code> monad</a>, we may be able to get rid of this bottleneck. But, we can actually do better! Since the keys of our map are digits <code>1</code>–<code>9</code>, we can use a <a href="https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Mutable.html" target="_blank" rel="noopener">mutable vector</a> to store the indices. In fact, we can go one step even further and store the indices as a BitSet as <code>Word16</code> because they also range from 1 to 9, and are unique for a block. This lets us use an <a href="https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed-Mutable.html" target="_blank" rel="noopener">unboxed mutable vector</a>. What is <em>unboxing</em> you ask? Quoting from the <a href="https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/glasgow_exts.html#unboxed-types" target="_blank" rel="noopener">GHC docs</a>:</p>
+<blockquote>
+<p>Most types in GHC are boxed, which means that values of that type are represented by a pointer to a heap object. The representation of a Haskell <code>Int</code>, for example, is a two-word heap object. An unboxed type, however, is represented by the value itself, no pointers or heap allocation are involved.</p>
+</blockquote>
+<p>When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirection completely. This is more memory efficient and allows better usage of caches<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
+<p>Let’s rewrite <code>exclusivePossibilities</code> using <code>ST</code> and unboxed mutable vectors:</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="ot">cellIndicesList ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2">cellIndicesList cells <span class="fu">=</span></a>
+<a class="sourceLine" id="cb28-3" data-line-number="3">  Data.Vector.Unboxed.toList <span class="fu">$</span> Control.Monad.ST.runST <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb28-4" data-line-number="4">    vec <span class="ot">&lt;-</span> Data.Vector.Unboxed.Mutable.replicate <span class="dv">9</span> Data.Bits.zeroBits</a>
+<a class="sourceLine" id="cb28-5" data-line-number="5">    ref <span class="ot">&lt;-</span> Data.STRef.newSTRef (<span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb28-6" data-line-number="6">    Control.Monad.forM_ cells <span class="fu">$</span> \cell <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb28-7" data-line-number="7">      i <span class="ot">&lt;-</span> Data.STRef.readSTRef ref</a>
+<a class="sourceLine" id="cb28-8" data-line-number="8">      <span class="kw">case</span> cell <span class="kw">of</span></a>
+<a class="sourceLine" id="cb28-9" data-line-number="9">        <span class="dt">Fixed</span> _ <span class="ot">-&gt;</span> return ()</a>
+<a class="sourceLine" id="cb28-10" data-line-number="10">        <span class="dt">Possible</span> xs <span class="ot">-&gt;</span> Control.Monad.forM_ [<span class="dv">0</span><span class="fu">..</span><span class="dv">8</span>] <span class="fu">$</span> \d <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb28-11" data-line-number="11">          Control.Monad.when (Data.Bits.testBit xs (d<span class="fu">+</span><span class="dv">1</span>)) <span class="fu">$</span></a>
+<a class="sourceLine" id="cb28-12" data-line-number="12">            Data.Vector.Unboxed.Mutable.unsafeModify vec (<span class="ot">`Data.Bits.setBit`</span> i) d</a>
+<a class="sourceLine" id="cb28-13" data-line-number="13">      Data.STRef.writeSTRef ref (i<span class="fu">+</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb28-14" data-line-number="14">    Data.Vector.Unboxed.unsafeFreeze vec</a></code></pre></div>
+<p>First we write the core of this operation, the function <code>cellIndicesList</code> which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have <code>1</code> as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let’s say it returns <code>[0,688,54,134,0,654,652,526,670]</code>. In 10-bit binary it is:</p>
+<pre class="plain"><code>[0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]</code></pre>
+<p>We can arrange it in a table for further clarity:</p>
+<div class="scrollable-table">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: right;">Digits</th>
+<th style="text-align: right;">Cell 9</th>
+<th style="text-align: right;">Cell 8</th>
+<th style="text-align: right;">Cell 7</th>
+<th style="text-align: right;">Cell 6</th>
+<th style="text-align: right;">Cell 5</th>
+<th style="text-align: right;">Cell 4</th>
+<th style="text-align: right;">Cell 3</th>
+<th style="text-align: right;">Cell 2</th>
+<th style="text-align: right;">Cell 1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>If the value of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else not.</p>
+<p>The whole mutable code runs inside the <code>runST</code> function. <code>runST</code> take an operation in <code>ST</code> monad and executes it, making sure that the mutable references created inside it cannot escape the scope of <code>runST</code>. This is done using a type-system trickery called <a href="https://prime.haskell.org/wiki/Rank2Types" target="_blank" rel="noopener">Rank-2 types</a>.</p>
+<p>Inside the <code>ST</code> operation, we start with creating a mutable vector of <code>Word16</code>s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit <code>1</code>–<code>9</code>, setting the right bit of the right value of the mutable vector. During this, we mutate the vector directly using the <code>Data.Vector.Unboxed.Mutable.unsafeModify</code> function. In the end of the <code>ST</code> operation, we freeze the mutable vector to return an immutable version of it. Outside <code>runST</code>, we convert the immutable vector to a list. Notice how this code is quite similar to how we’d write it in <a href="https://en.wikipedia.org/wiki/Imperative_programming" target="_blank" rel="noopener">imperative programming</a> languages like C or Java.</p>
+<p>It is easy to use this function now to rewrite <code>exclusivePossibilities</code>:</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb30-1" data-line-number="1"> exclusivePossibilities :: [Cell] -&gt; [Data.Word.Word16]</a>
+<a class="sourceLine" id="cb30-2" data-line-number="2"> exclusivePossibilities row =</a>
+<a class="sourceLine" id="cb30-3" data-line-number="3">   row</a>
+<a class="sourceLine" id="cb30-4" data-line-number="4"><span class="st">-  &amp; zip [1..9]</span></a>
+<a class="sourceLine" id="cb30-5" data-line-number="5"><span class="st">-  &amp; filter (isPossible . snd)</span></a>
+<a class="sourceLine" id="cb30-6" data-line-number="6"><span class="st">-  &amp; Data.List.foldl'</span></a>
+<a class="sourceLine" id="cb30-7" data-line-number="7"><span class="st">-      (\acc ~(i, Possible xs) -&gt;</span></a>
+<a class="sourceLine" id="cb30-8" data-line-number="8"><span class="st">-        Data.List.foldl'</span></a>
+<a class="sourceLine" id="cb30-9" data-line-number="9"><span class="st">-          (\acc' n -&gt; if Data.Bits.testBit xs n </span></a>
+<a class="sourceLine" id="cb30-10" data-line-number="10"><span class="st">-                      then Map.insertWith prepend n [i] acc' </span></a>
+<a class="sourceLine" id="cb30-11" data-line-number="11"><span class="st">-                      else acc')</span></a>
+<a class="sourceLine" id="cb30-12" data-line-number="12"><span class="st">-          acc</span></a>
+<a class="sourceLine" id="cb30-13" data-line-number="13"><span class="st">-          [1..9])</span></a>
+<a class="sourceLine" id="cb30-14" data-line-number="14"><span class="st">-      Map.empty</span></a>
+<a class="sourceLine" id="cb30-15" data-line-number="15"><span class="va">+  &amp; cellIndicesList</span></a>
+<a class="sourceLine" id="cb30-16" data-line-number="16"><span class="va">+  &amp; zip [1..9]</span></a>
+<a class="sourceLine" id="cb30-17" data-line-number="17"><span class="st">-  &amp; Map.filter ((&lt; 4) . length)</span></a>
+<a class="sourceLine" id="cb30-18" data-line-number="18"><span class="st">-  &amp; Map.foldlWithKey' (\acc x is -&gt; Map.insertWith prepend is [x] acc) Map.empty</span></a>
+<a class="sourceLine" id="cb30-19" data-line-number="19"><span class="st">-  &amp; Map.filterWithKey (\is xs -&gt; length is == length xs)</span></a>
+<a class="sourceLine" id="cb30-20" data-line-number="20"><span class="va">+  &amp; filter (\(_, is) -&gt; let p = Data.Bits.popCount is in p &gt; 0 &amp;&amp; p &lt; 4)</span></a>
+<a class="sourceLine" id="cb30-21" data-line-number="21"><span class="va">+  &amp; Data.List.foldl' (\acc (x, is) -&gt; Map.insertWith prepend is [x] acc) Map.empty</span></a>
+<a class="sourceLine" id="cb30-22" data-line-number="22"><span class="va">+  &amp; Map.filterWithKey (\is xs -&gt; Data.Bits.popCount is == length xs)</span></a>
+<a class="sourceLine" id="cb30-23" data-line-number="23">   &amp; Map.elems</a>
+<a class="sourceLine" id="cb30-24" data-line-number="24">   &amp; map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</a>
+<a class="sourceLine" id="cb30-25" data-line-number="25">   where</a>
+<a class="sourceLine" id="cb30-26" data-line-number="26">     prepend ~[y] ys = y:ys</a></code></pre></div>
+<p>We replace the nested two-fold operation with <code>cellIndicesList</code>. Then we replace some map related function with the corresponding list ones because <code>cellIndicesList</code> returns a list. We also replace the <code>length</code> function call on cell indices with <code>Data.Bits.popCount</code> function call as indices are represented as a <code>Word16</code> now.</p>
+<p>That is it. Let’s build and run it now:</p>
 <pre class="plain"><code>$ stack build
 $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
       36.44 real        36.21 user         0.25 sys</code></pre>
+<p>That’s a 1.6x speedup over the map-and-fold based version. Let’s check what the profiler has to say:</p>
+<div class="scrollable-table">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Cost Centre</th>
+<th style="text-align: left;">Src</th>
+<th style="text-align: right;">%time</th>
+<th style="text-align: right;">%alloc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"><code>cellIndicesList.\.\</code></td>
+<td style="text-align: left;">Sudoku.hs:(88,11)-(89,81)</td>
+<td style="text-align: right;">10.7</td>
+<td style="text-align: right;">6.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>primitive</code></td>
+<td style="text-align: left;">Control/Monad/Primitive.hs:195:3-16</td>
+<td style="text-align: right;">7.9</td>
+<td style="text-align: right;">6.9</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>pruneCells</code></td>
+<td style="text-align: left;">Sudoku.hs:(113,1)-(138,53)</td>
+<td style="text-align: right;">7.5</td>
+<td style="text-align: right;">6.4</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>cellIndicesList</code></td>
+<td style="text-align: left;">Sudoku.hs:(79,1)-(91,40)</td>
+<td style="text-align: right;">7.4</td>
+<td style="text-align: right;">10.1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>basicUnsafeIndexM</code></td>
+<td style="text-align: left;">Data/Vector.hs:278:3-62</td>
+<td style="text-align: right;">7.3</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneCells.pruneCell</code></td>
+<td style="text-align: left;">Sudoku.hs:(120,5)-(121,83)</td>
+<td style="text-align: right;">6.8</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>exclusivePossibilities</code></td>
+<td style="text-align: left;">Sudoku.hs:(94,1)-(104,26)</td>
+<td style="text-align: right;">6.5</td>
+<td style="text-align: right;">9.7</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneCells.pruneCell.\</code></td>
+<td style="text-align: left;">Sudoku.hs:121:48-83</td>
+<td style="text-align: right;">6.1</td>
+<td style="text-align: right;">2.0</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>cellIndicesList.\</code></td>
+<td style="text-align: left;">Sudoku.hs:(83,42)-(90,37)</td>
+<td style="text-align: right;">5.5</td>
+<td style="text-align: right;">3.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>pruneCells.cells</code></td>
+<td style="text-align: left;">Sudoku.hs:115:5-40</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">10.4</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The run time is spread quite evenly over all the functions and there are no hotspots anymore. We stop the optimizations at this point<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>. Let’s see how far we have come up.</p>
 <h2 id="comparison-of-implementations" data-track-content data-content-name="comparison-of-implementations" data-content-piece="fast-sudoku-solver-in-haskell-3">Comparison of Implementations<a href="#comparison-of-implementations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <div class="scrollable-table">
 <table>
@@ -1050,10 +1317,11 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <li id="fn2"><p>A lot of the code in this post references the code from the previous posts, including showing diffs. So, please read the previous posts if you have not already done so.<a href="#fnref2" class="footnote-back">↩</a></p></li>
 <li id="fn3"><p>Notice the British English spelling of the word “Centre”. GHC was originally developed in <a href="https://en.wikipedia.org/wiki/University_of_Glasgow" target="_blank" rel="noopener">University of Glasgow</a> in Scotland.<a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p>The code for the bitset based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/5a3044e09cd86dd6154bc50760095c4b38c48c6a" target="_blank" rel="noopener">here</a>.<a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p>If we recall from the <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">explanation</a> given in the last part, this is the function which computes the mapping of the digits to the cells. Here, we accumulate the mapping in a <a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html" target="_blank" rel="noopener"><code>Data.Map.Strict</code></a> map, which has the digits as the keys and the indices of the cells in which the digits occur as values.<a href="#fnref5" class="footnote-back">↩</a></p></li>
-<li id="fn6"><p><a href="https://web.archive.org/web/20171031080004/https://www.schoolofhaskell.com/user/commercial/content/vector" target="_blank" rel="noopener">This article</a> on School of Haskell goes into details about performance of vectors vs. lists. There are also <a href="https://web.archive.org/web/20180802043644/https://github.com/haskell-perf/sequences/blob/master/README.md" target="_blank" rel="noopener">these</a> benchmarks for sequence data structures in Haskell: lists, vectors, seqs, etc.<a href="#fnref6" class="footnote-back">↩</a></p></li>
-<li id="fn7"><p>We see Haskell’s laziness at work here. In the code for the <code>fixM</code> function, the <code>(==)</code> function is nested inside the <code>(&gt;&gt;=)</code> function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the <code>(==)</code> function causes the <code>(&gt;&gt;=)</code> function to be evaluated.<a href="#fnref7" class="footnote-back">↩</a></p></li>
-<li id="fn8"><p>The code for the vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/d5d2757d71927189feaf3db450d2887b66712f80" target="_blank" rel="noopener">here</a>.<a href="#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p><a href="https://web.archive.org/web/20171031080004/https://www.schoolofhaskell.com/user/commercial/content/vector" target="_blank" rel="noopener">This article</a> on School of Haskell goes into details about performance of vectors vs. lists. There are also <a href="https://web.archive.org/web/20180802043644/https://github.com/haskell-perf/sequences/blob/master/README.md" target="_blank" rel="noopener">these</a> benchmarks for sequence data structures in Haskell: lists, vectors, seqs, etc.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p>We see Haskell’s laziness at work here. In the code for the <code>fixM</code> function, the <code>(==)</code> function is nested inside the <code>(&gt;&gt;=)</code> function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the <code>(==)</code> function causes the <code>(&gt;&gt;=)</code> function to be evaluated.<a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn7"><p>The code for the vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/a320a7874c6fa0c39665151cc8e073532cc750a1" target="_blank" rel="noopener">here</a>.<a href="#fnref7" class="footnote-back">↩</a></p></li>
+<li id="fn8"><p>Unboxed vectors have some <a href="https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed.html#t:Unbox" target="_blank" rel="noopener">restrictions</a> on the kind of values that can be put into them but <code>Word16</code> already follows those restrictions so we are good.<a href="#fnref8" class="footnote-back">↩</a></p></li>
+<li id="fn9"><p>The code for the mutable vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031" target="_blank" rel="noopener">here</a>.<a href="#fnref9" class="footnote-back">↩</a></p></li>
 </ol>
 </section>
     </section>
