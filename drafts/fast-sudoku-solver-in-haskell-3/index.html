@@ -107,7 +107,7 @@
       </li>
       <li class="header post-ert">
         <span class="fa fa-clock-o fa-fw" aria-hidden="true"></span>
-        A thirty-three minute read
+        A thirty-four minute read
       </li>
       
       <li class="header post-download">
@@ -134,7 +134,7 @@
 <li><a href="//abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-3/">Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</a></li>
 </ol>
 <p>Discuss this post on [r/haskell].</p>
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#vectors-of-speed">Vectors of Speed</a></li><li><a href="#revenge-of-the">Revenge of the <code>(==)</code></a></li><li><a href="#one-function-to-prune-them-all">One Function to Prune Them All</a></li><li><a href="#rise-of-the-mutables">Rise of the Mutables</a></li><li><a href="#comparison-of-implementations">Comparison of Implementations</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#quick-recap">Quick Recap</a></li><li><a href="#profile-twice-code-once">Profile Twice, Code Once</a></li><li><a href="#a-set-for-all-occasions">A Set for All Occasions</a></li><li><a href="#bit-by-bit-we-get-faster">Bit by Bit, We Get Faster</a></li><li><a href="#back-to-the-profiler">Back to the Profiler</a></li><li><a href="#vectors-of-speed">Vectors of Speed</a></li><li><a href="#revenge-of-the">Revenge of the <code>(==)</code></a></li><li><a href="#one-function-to-prune-them-all">One Function to Prune Them All</a></li><li><a href="#rise-of-the-mutables">Rise of the Mutables</a></li><li><a href="#comparison-of-implementations">Comparison of Implementations</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="quick-recap" data-track-content data-content-name="quick-recap" data-content-piece="fast-sudoku-solver-in-haskell-3">Quick Recap<a href="#quick-recap" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9 such that each row, each column and each of the nine 3x3 sub-grids contain all the digits. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
 <p>In the previous post, we improved the performance of the simple Sudoku solver by implementing a new strategy to prune cells. This <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward">new strategy</a> found the digits which occurred uniquely, in pairs, or in triplets and fixed the cells to those digits. It led to a speedup of about 200x over our original naive solution. This is our current run<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> time for solving all the 49151 <a href="//abhinavsarkar.net/files/sudoku17.txt.bz2">17-clue puzzles</a>:</p>
@@ -1006,24 +1006,12 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <blockquote>
 <p>Most types in GHC are boxed, which means that values of that type are represented by a pointer to a heap object. The representation of a Haskell <code>Int</code>, for example, is a two-word heap object. An unboxed type, however, is represented by the value itself, no pointers or heap allocation are involved.</p>
 </blockquote>
-<p>When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirection completely. This is more memory efficient and allows better usage of caches<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
-<p>Let’s rewrite <code>exclusivePossibilities</code> using <code>ST</code> and unboxed mutable vectors:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="ot">cellIndicesList ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>
-<a class="sourceLine" id="cb28-2" data-line-number="2">cellIndicesList cells <span class="fu">=</span></a>
-<a class="sourceLine" id="cb28-3" data-line-number="3">  Data.Vector.Unboxed.toList <span class="fu">$</span> Control.Monad.ST.runST <span class="fu">$</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb28-4" data-line-number="4">    vec <span class="ot">&lt;-</span> Data.Vector.Unboxed.Mutable.replicate <span class="dv">9</span> Data.Bits.zeroBits</a>
-<a class="sourceLine" id="cb28-5" data-line-number="5">    ref <span class="ot">&lt;-</span> Data.STRef.newSTRef (<span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Int</span>)</a>
-<a class="sourceLine" id="cb28-6" data-line-number="6">    Control.Monad.forM_ cells <span class="fu">$</span> \cell <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb28-7" data-line-number="7">      i <span class="ot">&lt;-</span> Data.STRef.readSTRef ref</a>
-<a class="sourceLine" id="cb28-8" data-line-number="8">      <span class="kw">case</span> cell <span class="kw">of</span></a>
-<a class="sourceLine" id="cb28-9" data-line-number="9">        <span class="dt">Fixed</span> _ <span class="ot">-&gt;</span> return ()</a>
-<a class="sourceLine" id="cb28-10" data-line-number="10">        <span class="dt">Possible</span> xs <span class="ot">-&gt;</span> Control.Monad.forM_ [<span class="dv">0</span><span class="fu">..</span><span class="dv">8</span>] <span class="fu">$</span> \d <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb28-11" data-line-number="11">          Control.Monad.when (Data.Bits.testBit xs (d<span class="fu">+</span><span class="dv">1</span>)) <span class="fu">$</span></a>
-<a class="sourceLine" id="cb28-12" data-line-number="12">            Data.Vector.Unboxed.Mutable.unsafeModify vec (<span class="ot">`Data.Bits.setBit`</span> i) d</a>
-<a class="sourceLine" id="cb28-13" data-line-number="13">      Data.STRef.writeSTRef ref (i<span class="fu">+</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb28-14" data-line-number="14">    Data.Vector.Unboxed.unsafeFreeze vec</a></code></pre></div>
+<p>When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirections completely. This is more memory efficient and allows better usage of caches<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
+<p>Let’s rewrite <code>exclusivePossibilities</code> using <code>ST</code> and unboxed mutable vectors.</p>
 <p>First we write the core of this operation, the function <code>cellIndicesList</code> which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have <code>1</code> as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let’s say it returns <code>[0,688,54,134,0,654,652,526,670]</code>. In 10-bit binary it is:</p>
+<p><small></p>
 <pre class="plain"><code>[0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]</code></pre>
+<p></small></p>
 <p>We can arrange it in a table for further clarity:</p>
 <div class="scrollable-table">
 <table>
@@ -1153,9 +1141,23 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </tbody>
 </table>
 </div>
-<p>If the value of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else not.</p>
+<p>If the value of the combination of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else it is not.</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="ot">cellIndicesList ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">cellIndicesList cells <span class="fu">=</span></a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">  Data.Vector.Unboxed.toList <span class="fu">$</span> Control.Monad.ST.runST <span class="fu">$</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">    vec <span class="ot">&lt;-</span> Data.Vector.Unboxed.Mutable.replicate <span class="dv">9</span> Data.Bits.zeroBits</a>
+<a class="sourceLine" id="cb29-5" data-line-number="5">    ref <span class="ot">&lt;-</span> Data.STRef.newSTRef (<span class="dv">1</span><span class="ot"> ::</span> <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb29-6" data-line-number="6">    Control.Monad.forM_ cells <span class="fu">$</span> \cell <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb29-7" data-line-number="7">      i <span class="ot">&lt;-</span> Data.STRef.readSTRef ref</a>
+<a class="sourceLine" id="cb29-8" data-line-number="8">      <span class="kw">case</span> cell <span class="kw">of</span></a>
+<a class="sourceLine" id="cb29-9" data-line-number="9">        <span class="dt">Fixed</span> _ <span class="ot">-&gt;</span> return ()</a>
+<a class="sourceLine" id="cb29-10" data-line-number="10">        <span class="dt">Possible</span> xs <span class="ot">-&gt;</span> Control.Monad.forM_ [<span class="dv">0</span><span class="fu">..</span><span class="dv">8</span>] <span class="fu">$</span> \d <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb29-11" data-line-number="11">          Control.Monad.when (Data.Bits.testBit xs (d<span class="fu">+</span><span class="dv">1</span>)) <span class="fu">$</span></a>
+<a class="sourceLine" id="cb29-12" data-line-number="12">            Data.Vector.Unboxed.Mutable.unsafeModify vec (<span class="ot">`Data.Bits.setBit`</span> i) d</a>
+<a class="sourceLine" id="cb29-13" data-line-number="13">      Data.STRef.writeSTRef ref (i<span class="fu">+</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb29-14" data-line-number="14">    Data.Vector.Unboxed.unsafeFreeze vec</a></code></pre></div>
 <p>The whole mutable code runs inside the <code>runST</code> function. <code>runST</code> take an operation in <code>ST</code> monad and executes it, making sure that the mutable references created inside it cannot escape the scope of <code>runST</code>. This is done using a type-system trickery called <a href="https://prime.haskell.org/wiki/Rank2Types" target="_blank" rel="noopener">Rank-2 types</a>.</p>
-<p>Inside the <code>ST</code> operation, we start with creating a mutable vector of <code>Word16</code>s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit <code>1</code>–<code>9</code>, setting the right bit of the right value of the mutable vector. During this, we mutate the vector directly using the <code>Data.Vector.Unboxed.Mutable.unsafeModify</code> function. In the end of the <code>ST</code> operation, we freeze the mutable vector to return an immutable version of it. Outside <code>runST</code>, we convert the immutable vector to a list. Notice how this code is quite similar to how we’d write it in <a href="https://en.wikipedia.org/wiki/Imperative_programming" target="_blank" rel="noopener">imperative programming</a> languages like C or Java.</p>
+<p>Inside the <code>ST</code> operation, we start with creating a mutable vector of <code>Word16</code>s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit <code>1</code>–<code>9</code>, setting the right bit of the right index of the mutable vector. During this, we mutate the vector directly using the <code>Data.Vector.Unboxed.Mutable.unsafeModify</code> function. At the end of the <code>ST</code> operation, we freeze the mutable vector to return an immutable version of it. Outside <code>runST</code>, we convert the immutable vector to a list. Notice how this code is quite similar to how we’d write it in <a href="https://en.wikipedia.org/wiki/Imperative_programming" target="_blank" rel="noopener">imperative programming</a> languages like C or Java<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>.</p>
 <p>It is easy to use this function now to rewrite <code>exclusivePossibilities</code>:</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode diff"><code class="sourceCode diff"><a class="sourceLine" id="cb30-1" data-line-number="1"> exclusivePossibilities :: [Cell] -&gt; [Data.Word.Word16]</a>
 <a class="sourceLine" id="cb30-2" data-line-number="2"> exclusivePossibilities row =</a>
@@ -1183,7 +1185,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <a class="sourceLine" id="cb30-24" data-line-number="24">   &amp; map (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits)</a>
 <a class="sourceLine" id="cb30-25" data-line-number="25">   where</a>
 <a class="sourceLine" id="cb30-26" data-line-number="26">     prepend ~[y] ys = y:ys</a></code></pre></div>
-<p>We replace the nested two-fold operation with <code>cellIndicesList</code>. Then we replace some map related function with the corresponding list ones because <code>cellIndicesList</code> returns a list. We also replace the <code>length</code> function call on cell indices with <code>Data.Bits.popCount</code> function call as indices are represented as a <code>Word16</code> now.</p>
+<p>We replace the nested two-fold operation with <code>cellIndicesList</code>. Then we replace some map related function with the corresponding list ones because <code>cellIndicesList</code> returns a list. We also replace the <code>length</code> function call on cell indices with <code>Data.Bits.popCount</code> function call as the indices are represented as <code>Word16</code> now.</p>
 <p>That is it. Let’s build and run it now:</p>
 <pre class="plain"><code>$ stack build
 $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
@@ -1263,8 +1265,9 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </tbody>
 </table>
 </div>
-<p>The run time is spread quite evenly over all the functions and there are no hotspots anymore. We stop the optimizations at this point<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>. Let’s see how far we have come up.</p>
+<p>The run time is spread quite evenly over all the functions now and there are no hotspots anymore. We stop the optimizations at this point<a href="#fn10" class="footnote-ref" id="fnref10"><sup>10</sup></a>. Let’s see how far we have come up.</p>
 <h2 id="comparison-of-implementations" data-track-content data-content-name="comparison-of-implementations" data-content-piece="fast-sudoku-solver-in-haskell-3">Comparison of Implementations<a href="#comparison-of-implementations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Below is a table showing the speedups we got with each new implementation:</p>
 <div class="scrollable-table">
 <table>
 <thead>
@@ -1286,30 +1289,33 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <td style="text-align: left;">Exclusive Pruning</td>
 <td style="text-align: right;">258.97</td>
 <td style="text-align: right;">183.23x</td>
-<td style="text-align: right;">183.23x</td>
+<td style="text-align: right;">183x</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">BitSet</td>
-<td style="text-align: right;">76.5</td>
-<td style="text-align: right;">3.39x</td>
-<td style="text-align: right;">620.26x</td>
+<td style="text-align: right;">69.44</td>
+<td style="text-align: right;">3.73x</td>
+<td style="text-align: right;">683x</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">Vector</td>
-<td style="text-align: right;">58.46</td>
-<td style="text-align: right;">1.31x</td>
-<td style="text-align: right;">811.67x</td>
+<td style="text-align: right;">57.67</td>
+<td style="text-align: right;">1.20x</td>
+<td style="text-align: right;">823x</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mutable Vector</td>
-<td style="text-align: right;">36.44</td>
-<td style="text-align: right;">1.6x</td>
-<td style="text-align: right;">1302.14x</td>
+<td style="text-align: right;">35.04</td>
+<td style="text-align: right;">1.65x</td>
+<td style="text-align: right;">1354x</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p><a href="//abhinavsarkar.net/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png" class="img-link"><img src="//abhinavsarkar.net/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png" /><span>Run Time Chart</span></a></p>
+<p>The first improvement over the simple solution got us the most major speedup of 183x. After that, we followed the profiler, fixing bottlenecks by using the right data structures. We got quite significant speedup over the naive list-based solution, leading to drop in the run time from 259 seconds to 35 seconds. In total, we have done over a thousand time improvement in the run time since the first solution!</p>
+<h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="fast-sudoku-solver-in-haskell-3">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>In this post, we improved upon our list-based Sudoku solution from the <a href="//abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/">last time</a>. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the occasion. We ended up using BitSets and Vectors — both immutable and mutable variety — for different parts of the code and we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we’ll explore the parallel programming facilities in Haskell.</p>
+<p>The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031" target="_blank" rel="noopener">here</a>. Discuss this post on [r/haskell].</p>
 <section class="footnotes">
 <hr />
 <ol>
@@ -1321,7 +1327,8 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <li id="fn6"><p>We see Haskell’s laziness at work here. In the code for the <code>fixM</code> function, the <code>(==)</code> function is nested inside the <code>(&gt;&gt;=)</code> function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the <code>(==)</code> function causes the <code>(&gt;&gt;=)</code> function to be evaluated.<a href="#fnref6" class="footnote-back">↩</a></p></li>
 <li id="fn7"><p>The code for the vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/a320a7874c6fa0c39665151cc8e073532cc750a1" target="_blank" rel="noopener">here</a>.<a href="#fnref7" class="footnote-back">↩</a></p></li>
 <li id="fn8"><p>Unboxed vectors have some <a href="https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed.html#t:Unbox" target="_blank" rel="noopener">restrictions</a> on the kind of values that can be put into them but <code>Word16</code> already follows those restrictions so we are good.<a href="#fnref8" class="footnote-back">↩</a></p></li>
-<li id="fn9"><p>The code for the mutable vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031" target="_blank" rel="noopener">here</a>.<a href="#fnref9" class="footnote-back">↩</a></p></li>
+<li id="fn9"><p>Haskell can be a pretty good imperative programming language using the <code>ST</code> monad. <a href="https://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/" target="_blank" rel="noopener">This article</a> shows how to implement some algorithms which require mutable data stuctures in Haskell.<a href="#fnref9" class="footnote-back">↩</a></p></li>
+<li id="fn10"><p>The code for the mutable vector based implementation can be found <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031" target="_blank" rel="noopener">here</a>.<a href="#fnref10" class="footnote-back">↩</a></p></li>
 </ol>
 </section>
     </section>
