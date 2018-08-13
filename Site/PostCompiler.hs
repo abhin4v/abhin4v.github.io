@@ -112,7 +112,10 @@ commentCtx commentID date datetime email level =
   constField "email" email <>
   constField "level" (show level) <>
   boolField "reply_allowed" (const $ level < maxCommentLevel) <>
+  boolField "author_reply" (const $ email == authorEmail) <>
   siteContext
+  where
+    authorEmail = "4d29918c109bc75d2a1fd8420660d72b"
 
 postCtxWithTags :: Tags -> Context String
 postCtxWithTags tags = tagsField "tags" tags <> postCtx
