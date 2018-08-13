@@ -288,10 +288,10 @@ nextGrids grid =
 ```plain
 $ stack build
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
-       76.53 real        76.09 user         0.47 sys
+       69.44 real        69.12 user         0.37 sys
 ```
 
-Wow! That is almost 3.4x faster than the previous solution. It's a massive win! But let's not be content yet. To the profiler again![^code-ref-set]
+Wow! That is almost 3.7x faster than the previous solution. It's a massive win! But let's not be content yet. To the profiler again![^code-ref-set]
 
 ## Back to the Profiler
 
@@ -586,10 +586,10 @@ All the required changes are done. Let's do a run:
 ```plain
 $ stack build
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
-       95.67 real        95.19 user         0.49 sys
+       88.53 real        88.16 user         0.41 sys
 ```
 
-Oops! Instead of getting a speedup, our vector-based code is actually slower than the list-based code. How did this happen? Time to bust out the profiler again!
+Oops! Instead of getting a speedup, our vector-based code is actually 1.3x slower than the list-based code. How did this happen? Time to bust out the profiler again!
 
 ## Revenge of the `(==)`
 
@@ -677,26 +677,26 @@ Let's try it out:
  ```plain
 $ stack build
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
-       58.46 real        58.12 user         0.36 sys
+       57.67 real        57.12 user         0.46 sys
 ```
 
-Ah, now it's faster than the list-based implementation by 1.3x[^code-ref-vec]. Let's see what the profiler says:
+Ah, now it's faster than the list-based implementation by 1.2x[^code-ref-vec]. Let's see what the profiler says:
 
 
-Cost Centre                    Src                                  %time  %alloc
--------------                  -------                             ------ -------
-`exclusivePossibilities.\.\`   Sudoku.hs:(83,23)-(85,31)             13.8    32.3
-`basicUnsafeIndexM`            Data/Vector.hs:278:3-62               11.4     0.5
-`pruneCells.pruneCell`         Sudoku.hs:(111,5)-(112,83)             9.5     2.0
-`pruneCells`                   Sudoku.hs:(105,1)-(129,53)             8.0     6.3
-`pruneCells.pruneCell.\`       Sudoku.hs:112:48-83                    7.6     2.0
-`EP.map1`                      Sudoku.hs:77:28-39                     6.3    10.6
-`pruneCells.fixeds`            Sudoku.hs:109:5-84                     5.6     5.2
-`exclusivePossibilities.\`     Sudoku.hs:91:40-72                     3.5     3.7
-`EP.zip`                       Sudoku.hs:78:27-36                     3.2     8.1
-`exclusivePossibilities.\`     Sudoku.hs:(82,9)-(87,16)               2.8     0.0
-`primitive`                    Control/Monad/Primitive.hs:195:3-16    2.7     6.3
-`EP.Map.filter1`               Sudoku.hs:89:35-61                     2.5     0.5
+Cost Centre                   Src                                 %time  %alloc
+-------------                 -------                            ------ -------
+`exclusivePossibilities.\.\`  Sudoku.hs:82:23-96                   15.7   33.3
+`pruneCells`                  Sudoku.hs:(101,1)-(126,53)            9.6    6.8
+`pruneCells.pruneCell`        Sudoku.hs:(108,5)-(109,83)            9.5    2.1
+`basicUnsafeIndexM`           Data/Vector.hs:278:3-62               9.4    0.5
+`pruneCells.pruneCell.\`      Sudoku.hs:109:48-83                   7.6    2.1
+`pruneCells.cells`            Sudoku.hs:103:5-40                    7.1   10.9
+`exclusivePossibilities.\`    Sudoku.hs:87:64-96                    3.5    3.8
+`EP.Map.filter1`              Sudoku.hs:86:35-61                    3.0    0.6
+`>>=`                         Data/Vector/Fusion/Util.hs:36:3-18    2.8    2.0
+`replaceCell`                 Sudoku.hs:59:1-45                     2.5    1.1
+`EP.filter`                   Sudoku.hs:78:30-54                    2.4    3.3
+`primitive`                   Control/Monad/Primitive.hs:195:3-16   2.3    6.5
 
 The double nested anonymous function mentioned before is still the biggest culprit but `fixM` has disappeared from the list. Let's tackle `exclusivePossibilities` now.
 
@@ -827,7 +827,7 @@ That is it. Let's build and run it now:
  ```plain
 $ stack build
 $ cat sudoku17.txt | time stack exec sudoku > /dev/null
-       36.44 real        36.21 user         0.25 sys
+       35.04 real        34.84 user         0.24 sys
 ```
 
 That's a 1.6x speedup over the map-and-fold based version. Let's check what the profiler has to say:
