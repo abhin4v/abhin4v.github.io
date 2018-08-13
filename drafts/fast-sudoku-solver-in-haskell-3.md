@@ -76,7 +76,7 @@ pruneCellsByFixed cells = traverse pruneCell cells
 
 ## A Set for All Occasions
 
-What is a efficient data structure for finding differences and intersections? Why, a [_Set_] of course! A Set stores unique values and provides fast operations for testing membership of its elements. If we use a Set to represent the possible values of cells instead of a List, the program should run faster. Since the possible values are already unique (`1` to `9`), it should not break anything.
+What is a efficient data structure for finding differences and intersections? Why, a [_Set_] of course! A Set stores unique values and provides fast operations for testing membership of its elements. If we use a Set to represent the possible values of cells instead of a List, the program should run faster. Since the possible values are already unique (`1`--`9`), it should not break anything.
 
 Haskell comes with a bunch of Set implementations:
 
@@ -86,7 +86,7 @@ Haskell comes with a bunch of Set implementations:
 
 However, a much faster implementation is possible for our particular use-case. We can use a [_BitSet_].
 
-A BitSet uses [bits] to represent unique members of a Set. First, we map values to particular bits using some function. If the bit corresponding to a particular value is set to `1` then the value is present in the Set, else not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. But, for our Sudoku solver, we need to store only the digits `1` to `9` in our Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.
+A BitSet uses [bits] to represent unique members of a Set. We map values to particular bits using some function. If the bit corresponding to a particular value is set to 1 then the value is present in the Set, else it is not. So, we need as many bits in a BitSet as the number of values in our domain, which makes is difficult to use for generic problems. But, for our Sudoku solver, we need to store only the digits `1`--`9` in the Set, which make BitSet very suitable for us. Also, the Set operations on BitSet are implemented using bit-level instructions in hardware, making them much faster than those on the other data structure listed above.
 
 In Haskell, we can use the [`Data.Word`] module to represent a BitSet. Specifically, we can use the [`Data.Word.Word16`] type which has sixteen bits because we need only nine bits to represent the nine digits. The bit-level operations on `Word16` are provided by the [`Data.Bits`] module.
 
@@ -103,7 +103,7 @@ setBits :: Data.Word.Word16 -> [Data.Word.Word16] -> Data.Word.Word16
 setBits = Data.List.foldl' (Data.Bits..|.)
 ```
 
-Then we replace `Int` related operations with bit related ones in the read and show functions.
+Then we replace `Int` related operations with bit related ones in the read and show functions:
 
 ```haskell
 readGrid :: String -> Maybe Grid
@@ -139,7 +139,7 @@ showGridWithPossibilities = unlines . map (unwords . map showCell)
       ++ "]"
 ```
 
-We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit `1`, we set the bit 1 so that the resulting `Word16` is `0000 0000 0000 0010` or 2. This also means, for fixed cells, the value is [count][8] of the zeros from right.
+We set the same bits as the digits to indicate the presence of the digits in the possibilities. For example, for digit `1`, we set the bit 1 so that the resulting `Word16` is `0000 0000 0000 0010` or 2. This also means, for fixed cells, the value is [count of the zeros from right][8].
 
 The change in the `exclusivePossibilities` function is pretty minimal:
 
@@ -295,7 +295,7 @@ Wow! That is almost 3.7x faster than the previous solution. It's a massive win! 
 
 ## Back to the Profiler
 
-Running the profiler again now gives us these top six culprits:
+Running the profiler again gives us these top six culprits:
 
 Cost Centre                  Src                         %time  %alloc
 -------------                -------                    ------ -------
@@ -326,7 +326,9 @@ exclusivePossibilities row =
       Map.empty)
   & ({-# SCC "EP.Map.filter1" #-} Map.filter ((< 4) . length))
   & ({-# SCC "EP.Map.foldl" #-}
-       Map.foldlWithKey' (\acc x is -> Map.insertWith prepend is [x] acc) Map.empty)
+       Map.foldlWithKey'
+         (\acc x is -> Map.insertWith prepend is [x] acc)
+         Map.empty)
   & ({-# SCC "EP.Map.filter2" #-}
        Map.filterWithKey (\is xs -> length is == length xs))
   & ({-# SCC "EP.Map.elems" #-} Map.elems)
@@ -370,7 +372,7 @@ If we look closely, we also find that around 17% of the run time now goes into l
 
 [Vector] is a Haskell library for working with arrays. It implements very performant operations for integer-indexed array data. Unlike the lists in Haskell which are implemented as [singly linked lists], vectors are stored in a contiguous set of memory locations. This makes random access to the elements a constant time operation. The memory overhead per additional item in vectors is also much smaller. Lists allocate memory for each item in the heap and have pointers to the memory locations in nodes, leading to a lot of wasted memory in holding pointers. On the other hand, operations on lists are lazy, whereas, operations on vectors are strict, and this may need to useless computation depending on the use-case[^vector].
 
-In our current code, we represent the grid as a list of lists of cells. All the pruning operations require us to traverse the grid list or the row lists. They also require us to transform the grid back-and-forth for being able to use the same pruning operations for rows, columns and sub-grids. The pruning of cells and the choosing of pivot cells also requires us to replace cells in the grid with new ones, leading to a lot of list traversals.
+In our current code, we represent the grid as a list of lists of cells. All the pruning operations require us to traverse the grid list or the row lists. We also need to transform the grid back-and-forth for being able to use the same pruning operations for rows, columns and sub-grids. The pruning of cells and the choosing of pivot cells also requires us to replace cells in the grid with new ones, leading to a lot of list traversals.
 
 To prevent all this linear-time list traversals, we can replace the nested list of lists with a single vector. Then all we need to do it to go over the right parts of this vector, looking up and replacing cells as needed. Since both lookups and updates on vectors are constant time, this should lead to a speedup.
 
@@ -526,7 +528,7 @@ pruneCells grid cellIxs =
   >>= fixM (flip pruneCellsByExclusives cellIxs)
 ```
 
-All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the [`traverse`] function as earlier, now we use the [`Control.Monad.foldM`] function to fold over the cell index and cell tuples in the context of the `Maybe` monad, making changes to the grid directly.
+All the three functions now take the grid and the cell indices instead of a list of cells, and use the cell indices to lookup the cells from the grid. Also, instead of using the [`traverse`] function as earlier, now we use the [`Control.Monad.foldM`] function to fold over the cell-index-and-cell tuples in the context of the `Maybe` monad, making changes to the grid directly.
 
 We use the `replaceCell` function to replace cells at an index in the grid. It is a simple wrapper over the vector update function `Data.Vector.//`. Rest of the code is same in essence, except a few changes to accommodate the changed function parameters.
 
@@ -636,7 +638,7 @@ Why did we add `fixM` in the `pruneCells` function at all? Quoting from the [pre
 >
 > Imagine a row which just got a `9` fixed because of `pruneCellsByFixed`. If we don’t run the function again, the row may be left with one non-fixed cell with a `9`. When we run this row through `pruneCellsByExclusives`, it’ll consider the `9` in the non-fixed cell as a _Single_ and fix it. This will lead to two `9`s in the same row, causing the solution to fail.
 
-So the reason we added `fixM` is that we run the two pruning strategies one after another. That way, they see the cells in the same block in different states. If we were to merge the two pruning functions into one such that they work in lockstep, we would not need to run `fixM` at all!
+So the reason we added `fixM` is that, we run the two pruning strategies one-after-another. That way, they see the cells in the same block in different states. If we were to merge the two pruning functions into a single one such that they work in lockstep, we would not need to run `fixM` at all!
 
 With this idea, we rewrite `pruneCells` as a single function:
 
@@ -670,7 +672,7 @@ pruneCells grid cellIxs = Control.Monad.foldM pruneCell grid cellIxs
         intersection = xs Data.Bits..&. allExclusives
 ```
 
-We have merged the two pruning functions almost blindly. The important part here is the nested `pruneCell` function which uses monadic bind [`(>>=)`] to ensure that cells fixed in one step are seen by the next step. Merging the two functions ensures that both strategies will see same _Exclusives_ and _Fixeds_, thereby running in lockstep.
+We have merged the two pruning functions almost blindly. The important part here is the nested `pruneCell` function which uses monadic bind [`(>>=)`] to ensure that cells fixed in the first step are seen by the next step. Merging the two functions ensures that both strategies will see same _Exclusives_ and _Fixeds_, thereby running in lockstep.
 
 Let's try it out:
 
@@ -699,6 +701,8 @@ Cost Centre                   Src                                 %time  %alloc
 `primitive`                   Control/Monad/Primitive.hs:195:3-16   2.3    6.5
 
 The double nested anonymous function mentioned before is still the biggest culprit but `fixM` has disappeared from the list. Let's tackle `exclusivePossibilities` now.
+
+<div class="page-break"></div>
 
 ## Rise of the Mutables
 
@@ -743,17 +747,13 @@ So if we use a mutable map in the [`ST` monad], we may be able to get rid of thi
 
 > Most types in GHC are boxed, which means that values of that type are represented by a pointer to a heap object. The representation of a Haskell `Int`, for example, is a two-word heap object. An unboxed type, however, is represented by the value itself, no pointers or heap allocation are involved.
 
-When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirections completely. This is more memory efficient and allows better usage of caches[^unbox].
-
-Let's rewrite `exclusivePossibilities` using `ST` and unboxed mutable vectors.
+When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirections completely. This is more memory efficient and allows better usage of caches[^unbox]. Let's rewrite `exclusivePossibilities` using `ST` and unboxed mutable vectors.
 
 First we write the core of this operation, the function `cellIndicesList` which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have `1` as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let's say it returns `[0,688,54,134,0,654,652,526,670]`. In 10-bit binary it is:
 
-<small>
 ```plain
 [0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]
 ```
-</small>
 
 We can arrange it in a table for further clarity:
 
@@ -769,7 +769,7 @@ We can arrange it in a table for further clarity:
  8       1       0       0       0       0       0       1       1       1       
  9       1       0       1       0       0       1       1       1       1       
  
-If the value of the combination of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else it is not.
+If the value of the intersection of a particular digit and a particular cell index in the table is set to 1, then the digit is a possibility in the cell, else it is not. Here's the code:
 
 ```haskell
 cellIndicesList :: [Cell] -> [Data.Word.Word16]
@@ -848,7 +848,7 @@ Cost Centre              Src                                  %time  %alloc
 `cellIndicesList.\`      Sudoku.hs:(83,42)-(90,37)              5.5     3.5
 `pruneCells.cells`       Sudoku.hs:115:5-40                     5.0    10.4
 
-The run time is spread quite evenly over all the functions now and there are no hotspots anymore. We stop the optimizations at this point[^code-ref-mutvec]. Let's see how far we have come up.
+The run time is spread quite evenly over all the functions now and there are no hotspots anymore. We stop optimizating at this point[^code-ref-mutvec]. Let's see how far we have come up.
 
 ## Comparison of Implementations
 
@@ -862,13 +862,11 @@ BitSet                         69.44                       3.73x                
 Vector                         57.67                       1.20x                   823x
 Mutable Vector                 35.04                       1.65x                  1354x
 
-The first improvement over the simple solution got us the most major speedup of 183x. After that, we followed the profiler, fixing bottlenecks by using the right data structures. We got quite significant speedup over the naive list-based solution, leading to drop in the run time from 259 seconds to 35 seconds. In total, we have done over a thousand time improvement in the run time since the first solution!
+The first improvement over the simple solution got us the most major speedup of 183x. After that, we followed the profiler, fixing bottlenecks by using the right data structures. We got quite significant speedup over the naive list-based solution, leading to drop in the run time from 259 seconds to 35 seconds. In total, we have done more than a thousand times improvement in the run time since the first solution!
 
 ## Conclusion
 
-In this post, we improved upon our list-based Sudoku solution from the [last time]. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the occasion. We ended up using BitSets and Vectors --- both immutable and mutable variety --- for different parts of the code and we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we'll explore the parallel programming facilities in Haskell.
-
-The code till now is available [here][10]. Discuss this post on [r/haskell].
+In this post, we improved upon our list-based Sudoku solution from the [last time]. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the case. We ended up using BitSets and Vectors --- both immutable and mutable varieties --- for the different parts of the code. Finally, we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we'll explore the parallel programming facilities in Haskell. The code till now is available [here][10]. Discuss this post on [r/haskell].
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
 [last time]: /posts/fast-sudoku-solver-in-haskell-2/
@@ -905,7 +903,7 @@ The code till now is available [here][10]. Discuss this post on [r/haskell].
 [mutable vector]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Mutable.html
 [unboxed mutable vector]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed-Mutable.html
 [GHC docs]: https://downloads.haskell.org/~ghc/8.4.3/docs/html/users_guide/glasgow_exts.html#unboxed-types
-[Rank-2 types]: https://prime.haskell.org/wiki/Rank2Types
+[Rank-2 types]: https://web.archive.org/web/20180813050307/https://prime.haskell.org/wiki/Rank2Types
 [imperative programming]: https://en.wikipedia.org/wiki/Imperative_programming
 
 [1]: /files/sudoku17.txt.bz2
@@ -918,7 +916,7 @@ The code till now is available [here][10]. Discuss this post on [r/haskell].
 [8]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Bits.html#v:countTrailingZeros
 [9]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed.html#t:Unbox
 [10]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031
-[11]: https://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/
+[11]: https://web.archive.org/web/20180628054717/https://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
@@ -928,12 +926,12 @@ The code till now is available [here][10]. Discuss this post on [r/haskell].
 
 [^prev-post-note]: A lot of the code in this post references the code from the previous posts, including showing diffs. So, please read the previous posts if you have not already done so.
 
-[^code-ref-set]: The code for the bitset based implementation can be found [here][5].
+[^code-ref-set]: The code for the BitSet based implementation can be found [here][5].
 [^code-ref-vec]: The code for the vector based implementation can be found [here][7].
 [^code-ref-mutvec]: The code for the mutable vector based implementation can be found [here][10].
 
-[^laziness]: We see Haskell's laziness at work here. In the code for the `fixM` function, the `(==)` function is nested inside the `(>>=)` function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the `(==)` function causes the `(>>=)` function to be evaluated.
+[^laziness]: We see Haskell's laziness at work here. In the code for the `fixM` function, the `(==)` function is nested inside the `(>>=)` function, but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the `(==)` function causes the `(>>=)` function to be evaluated.
 
 [^unbox]: Unboxed vectors have some [restrictions][9] on the kind of values that can be put into them but `Word16` already follows those restrictions so we are good.
 
-[^imperative]: Haskell can be a pretty good imperative programming language using the `ST` monad. [This article][11] shows how to implement some algorithms which require mutable data stuctures in Haskell.
+[^imperative]: Haskell can be a pretty good imperative programming language using the `ST` monad. [This article][11] shows how to implement some algorithms which require mutable data structures in Haskell.
