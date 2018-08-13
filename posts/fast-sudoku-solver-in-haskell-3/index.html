@@ -112,7 +112,7 @@
       
       <li class="header post-comments">
         <span class="fa fa-comment fa-fw" aria-hidden="true"></span>
-        <a href="#comment-container">1 comments</a>
+        <a href="#comment-container">2 comments</a>
       </li>
       
       <li class="header post-download">
@@ -1351,7 +1351,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 
 
 <div id="comment-container">
-  <h3>1 comments</h3>
+  <h3>2 comments</h3>
   <div class="comments">
   
       <article class="comment level-0">
@@ -1364,6 +1364,19 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
     </span>
   </div>
   <div class="message"><p>Nice post! Have you considered replacing the Cell datatype with: “newtype Cell = Cell Word16”. Then you can either use a spare bit to encode Fixed/Possible. Or alternatively use “isFixed x = popCount x == 1” if popCount is fast enough.</p></div>
+</article>
+
+  
+      <article class="comment level-1">
+  <div id="comment-3c6e1e70-9f06-11e8-9eea-d14ec2a4b658">
+    <input type="submit" value="Reply" name="Abhinav Sarkar###3c6e1e70-9f06-11e8-9eea-d14ec2a4b658">
+    <img class="avatar" src="https://www.gravatar.com/avatar/4d29918c109bc75d2a1fd8420660d72b?d=mm&s=60">
+    <span>
+      <h4 class="author">Abhinav Sarkar</h4>
+      <div class="date" title="2018-08-13T14:36:17.183Z">August 13, 2018</div>
+    </span>
+  </div>
+  <div class="message"><p>Thanks Sylvain. Yes, I have tried using just <code>Word16</code> for the <code>Cell</code> type. You can see the code <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/branch/unboxed-vector">here</a>. But the gains were pretty minimal so I left it out of the post.</p></div>
 </article>
 
   
