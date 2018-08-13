@@ -6,6 +6,7 @@ This is the second post in a series of posts:
 
 1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
 2. [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]
+3. [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]
 
 Discuss this post on [r/haskell].
 
@@ -401,6 +402,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 [`>>=`]: https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
+[Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /posts/fast-sudoku-solver-in-haskell-3/
 [Clojure]: https://clojuredocs.org/clojure.core/-%3E
 [FSharp]: https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d
 [Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2

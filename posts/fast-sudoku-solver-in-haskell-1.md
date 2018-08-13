@@ -8,6 +8,7 @@ This is the first post in a series of posts:
 
 1. [Fast Sudoku Solver in Haskell #1: A Simple Solution]
 2. [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]
+3. [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]
 
 Discuss this post on [r/haskell].
 
@@ -722,6 +723,7 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [nilenso]: https://nilenso.com
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
+[Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /posts/fast-sudoku-solver-in-haskell-3/
 
 [1]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [2]: https://en.wikipedia.org/wiki/State_space_search
