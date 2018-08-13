@@ -1,6 +1,6 @@
 ---
 title: "Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures"
-date: 2018-06-28
+date: 2018-08-13
 description: We make the Sudoku solution faster by using the right data structure
 tags: haskell, sudoku, programming, puzzle, nilenso
 author: Abhinav Sarkar
@@ -872,7 +872,7 @@ In this post, we improved upon our list-based Sudoku solution from the [last tim
 [last time]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
-[Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /drafts/fast-sudoku-solver-in-haskell-3/
+[Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /posts/fast-sudoku-solver-in-haskell-3/
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [University of Glasgow]: https://en.wikipedia.org/wiki/University_of_Glasgow
 [singly linked lists]: https://en.wikipedia.org/wiki/Linked_list#Singly_linked_list
