@@ -743,9 +743,33 @@ So if we use a mutable map in the [`ST` monad], we may be able to get rid of thi
 
 > Most types in GHC are boxed, which means that values of that type are represented by a pointer to a heap object. The representation of a Haskell `Int`, for example, is a two-word heap object. An unboxed type, however, is represented by the value itself, no pointers or heap allocation are involved.
 
-When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirection completely. This is more memory efficient and allows better usage of caches[^unbox].
+When combined with vector, unboxing of values means the whole vector is stored as single byte array, avoiding pointer redirections completely. This is more memory efficient and allows better usage of caches[^unbox].
 
-Let's rewrite `exclusivePossibilities` using `ST` and unboxed mutable vectors:
+Let's rewrite `exclusivePossibilities` using `ST` and unboxed mutable vectors.
+
+First we write the core of this operation, the function `cellIndicesList` which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have `1` as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let's say it returns `[0,688,54,134,0,654,652,526,670]`. In 10-bit binary it is:
+
+<small>
+```plain
+[0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]
+```
+</small>
+
+We can arrange it in a table for further clarity:
+
+ Digits  Cell 9  Cell 8  Cell 7  Cell 6  Cell 5  Cell 4  Cell 3  Cell 2  Cell 1
+------- ------- ------- ------- ------- ------- ------- ------- ------- -------
+ 1       0       0       0       0       0       0       0       0       0       
+ 2       1       0       1       0       1       1       0       0       0       
+ 3       0       0       0       0       1       1       0       1       1       
+ 4       0       0       1       0       0       0       0       1       1       
+ 5       0       0       0       0       0       0       0       0       0       
+ 6       1       0       1       0       0       0       1       1       1       
+ 7       1       0       1       0       0       0       1       1       0       
+ 8       1       0       0       0       0       0       1       1       1       
+ 9       1       0       1       0       0       1       1       1       1       
+ 
+If the value of the combination of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else it is not.
 
 ```haskell
 cellIndicesList :: [Cell] -> [Data.Word.Word16]
@@ -763,31 +787,10 @@ cellIndicesList cells =
       Data.STRef.writeSTRef ref (i+1)
     Data.Vector.Unboxed.unsafeFreeze vec
 ```
-First we write the core of this operation, the function `cellIndicesList` which take a list of cells and returns the digit to cell indices mapping. The mapping is returned as a list. The zeroth value in this list is the indices of the cells which have `1` as a possible digit, and so on. The indices themselves are packed as BitSets. If the bit 1 is set then the first cell has a particular digit. Let's say it returns `[0,688,54,134,0,654,652,526,670]`. In 10-bit binary it is:
-
-```plain
-[0000000000, 1010110000, 0000110110, 0010000110, 0000000000, 1010001110, 1010001100, 1000001110, 1010011110]
-```
-
-We can arrange it in a table for further clarity:
-
- Digits  Cell 9  Cell 8  Cell 7  Cell 6  Cell 5  Cell 4  Cell 3  Cell 2  Cell 1
-------- ------- ------- ------- ------- ------- ------- ------- ------- -------
- 1       0       0       0       0       0       0       0       0       0       
- 2       1       0       1       0       1       1       0       0       0       
- 3       0       0       0       0       1       1       0       1       1       
- 4       0       0       1       0       0       0       0       1       1       
- 5       0       0       0       0       0       0       0       0       0       
- 6       1       0       1       0       0       0       1       1       1       
- 7       1       0       1       0       0       0       1       1       0       
- 8       1       0       0       0       0       0       1       1       1       
- 9       1       0       1       0       0       1       1       1       1       
- 
-If the value of a particular digit and a particular cell index is set to 1, the digit is a possibility in the cell, else not.
 
 The whole mutable code runs inside the `runST` function. `runST` take an operation in `ST` monad and executes it, making sure that the mutable references created inside it cannot escape the scope of `runST`. This is done using a type-system trickery called [Rank-2 types]. 
 
-Inside the `ST` operation, we start with creating a mutable vector of `Word16`s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit `1`--`9`, setting the right bit of the right value of the mutable vector. During this, we mutate the vector directly using the `Data.Vector.Unboxed.Mutable.unsafeModify` function. In the end of the `ST` operation, we freeze the mutable vector to return an immutable version of it. Outside `runST`, we convert the immutable vector to a list. Notice how this code is quite similar to how we'd write it in [imperative programming] languages like C or Java.
+Inside the `ST` operation, we start with creating a mutable vector of `Word16`s of size 9 with all its values initially set to zero. We also initialize a mutable reference to keep track of the cell index we are on. Then we run two nested for loops, going over each cell and each digit `1`--`9`, setting the right bit of the right index of the mutable vector. During this, we mutate the vector directly using the `Data.Vector.Unboxed.Mutable.unsafeModify` function. At the end of the `ST` operation, we freeze the mutable vector to return an immutable version of it. Outside `runST`, we convert the immutable vector to a list. Notice how this code is quite similar to how we'd write it in [imperative programming] languages like C or Java[^imperative].
 
 It is easy to use this function now to rewrite `exclusivePossibilities`:
 
@@ -820,7 +823,7 @@ It is easy to use this function now to rewrite `exclusivePossibilities`:
      prepend ~[y] ys = y:ys
 ```
 
-We replace the nested two-fold operation with `cellIndicesList`. Then we replace some map related function with the corresponding list ones because `cellIndicesList` returns a list. We also replace the `length` function call on cell indices with `Data.Bits.popCount` function call as indices are represented as a `Word16` now.
+We replace the nested two-fold operation with `cellIndicesList`. Then we replace some map related function with the corresponding list ones because `cellIndicesList` returns a list. We also replace the `length` function call on cell indices with `Data.Bits.popCount` function call as the indices are represented as `Word16` now.
 
 That is it. Let's build and run it now:
 
@@ -845,23 +848,30 @@ Cost Centre              Src                                  %time  %alloc
 `cellIndicesList.\`      Sudoku.hs:(83,42)-(90,37)              5.5     3.5
 `pruneCells.cells`       Sudoku.hs:115:5-40                     5.0    10.4
 
-The run time is spread quite evenly over all the functions and there are no hotspots anymore. We stop the optimizations at this point[^code-ref-mutvec]. Let's see how far we have come up.
+The run time is spread quite evenly over all the functions now and there are no hotspots anymore. We stop the optimizations at this point[^code-ref-mutvec]. Let's see how far we have come up.
 
 ## Comparison of Implementations
+
+Below is a table showing the speedups we got with each new implementation:
 
 Implementation          Run Time (s)         Incremental Speedup     Cumulative Speedup
 ----------------      --------------      ----------------------   --------------------
 Simple                         47450                          1x                     1x
-Exclusive Pruning             258.97                     183.23x                183.23x
-BitSet                          76.5                       3.39x                620.26x
-Vector                         58.46                       1.31x                811.67x
-Mutable Vector                 36.44                        1.6x               1302.14x
+Exclusive Pruning             258.97                     183.23x                   183x
+BitSet                         69.44                       3.73x                   683x
+Vector                         57.67                       1.20x                   823x
+Mutable Vector                 35.04                       1.65x                  1354x
 
-![Run Time Chart](/images/fast-sudoku-solver-in-haskell-3/runtime_chart.png)
+The first improvement over the simple solution got us the most major speedup of 183x. After that, we followed the profiler, fixing bottlenecks by using the right data structures. We got quite significant speedup over the naive list-based solution, leading to drop in the run time from 259 seconds to 35 seconds. In total, we have done over a thousand time improvement in the run time since the first solution!
 
+## Conclusion
 
+In this post, we improved upon our list-based Sudoku solution from the [last time]. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the occasion. We ended up using BitSets and Vectors --- both immutable and mutable variety --- for different parts of the code and we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we'll explore the parallel programming facilities in Haskell.
+
+The code till now is available [here][10]. Discuss this post on [r/haskell].
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
+[last time]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /drafts/fast-sudoku-solver-in-haskell-3/
@@ -908,6 +918,7 @@ Mutable Vector                 36.44                        1.6x               1
 [8]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Bits.html#v:countTrailingZeros
 [9]: https://hackage.haskell.org/package/vector-0.12.0.1/docs/Data-Vector-Unboxed.html#t:Unbox
 [10]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/4a9a1531d5780e7abc7d5ab2a26dccbf34382031
+[11]: https://vaibhavsagar.com/blog/2017/05/29/imperative-haskell/
 
 [^machinespec]: All the runs were done on my MacBook Pro from 2014 with 2.2 GHz Intel Core i7 CPU and 16 GB memory.
 
@@ -924,3 +935,5 @@ Mutable Vector                 36.44                        1.6x               1
 [^laziness]: We see Haskell's laziness at work here. In the code for the `fixM` function, the `(==)` function is nested inside the `(>>=)` function but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the `(==)` function causes the `(>>=)` function to be evaluated.
 
 [^unbox]: Unboxed vectors have some [restrictions][9] on the kind of values that can be put into them but `Word16` already follows those restrictions so we are good.
+
+[^imperative]: Haskell can be a pretty good imperative programming language using the `ST` monad. [This article][11] shows how to implement some algorithms which require mutable data stuctures in Haskell.
