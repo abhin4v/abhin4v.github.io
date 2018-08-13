@@ -112,7 +112,7 @@
       
       <li class="header post-comments">
         <span class="fa fa-comment fa-fw" aria-hidden="true"></span>
-        <a href="#comment-container">0 comments</a>
+        <a href="#comment-container">1 comments</a>
       </li>
       
       <li class="header post-download">
@@ -1351,8 +1351,21 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 
 
 <div id="comment-container">
-  <h3>0 comments</h3>
+  <h3>1 comments</h3>
   <div class="comments">
+  
+      <article class="comment level-0">
+  <div id="comment-b8e633e0-9f04-11e8-9eea-d14ec2a4b658">
+    <input type="submit" value="Reply" name="Sylvain###b8e633e0-9f04-11e8-9eea-d14ec2a4b658">
+    <img class="avatar" src="https://www.gravatar.com/avatar/c7d6befd815b9dfabeefa9660ff3077e?d=mm&s=60">
+    <span>
+      <h4 class="author">Sylvain</h4>
+      <div class="date" title="2018-08-13T14:25:26.974Z">August 13, 2018</div>
+    </span>
+  </div>
+  <div class="message"><p>Nice post! Have you considered replacing the Cell datatype with: “newtype Cell = Cell Word16”. Then you can either use a spare bit to encode Fixed/Possible. Or alternatively use “isFixed x = popCount x == 1” if popCount is fast enough.</p></div>
+</article>
+
   
   </div>
   <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments" id="comment-form">
