@@ -186,6 +186,12 @@ article.post {
         min-width: 60%;
       }
     }
+    blockquote {
+      margin: auto 1em;
+      ul {
+        padding-left: 1em;
+      }
+    }
   }
 }
 
@@ -213,7 +219,7 @@ article.post {
     .twitter-share-button, .post-comments, .post-download {
       display: none!important;
     }
-    p, li {
+    p, li, blockquote {
       page-break-inside: avoid;
     }
     pre {
