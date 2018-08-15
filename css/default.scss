@@ -13,6 +13,7 @@
 
 html {
   overflow-x: hidden;
+  font-size: 16px;
 }
 
 body {
@@ -24,6 +25,10 @@ body {
   line-height: 1.5em;
   background-color: $background-color;
   color: $text-color;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-font-smoothing: antialiased !important;
+  text-rendering: optimizeLegibility !important;
 
   > main {
     padding: 0 1em;
@@ -67,6 +72,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 p {
   margin-bottom: 1.2em;
+  text-align: justify;
 }
 pre {
   padding: 0.2em;

@@ -131,6 +131,17 @@ article.post {
   }
 }
 
+body.article-page {
+  article.post {
+    section.body p:first-child::first-letter {
+      float: left;
+      font-size: 4.5em;
+      line-height: 0.7em;
+      margin: 0.15em 0.15em 0 0;
+    }
+  }
+}
+
 .no-js div.twitter-button {
   display: none;
 }

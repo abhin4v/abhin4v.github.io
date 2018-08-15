@@ -11,7 +11,7 @@
         <meta name="twitter:creator" content="@abhin4v">
 
         <meta property="og:url" content="$full_url$">
-        <meta property="og:type" content="$if(page_type)$$page_type$$else$wesbite$endif$">
+        <meta property="og:type" content="$if(page_type)$$page_type$$else$website$endif$">
         <meta property="og:title" content="$title$">
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
@@ -71,7 +71,7 @@
         </script>
         <!-- End Matomo Code -->
     </head>
-    <body>
+    <body class="$if(page_type)$$page_type$$else$website$endif$-page">
         <noscript>
           <img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" alt="" />
         </noscript>
