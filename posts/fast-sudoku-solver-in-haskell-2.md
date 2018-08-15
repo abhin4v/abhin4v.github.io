@@ -396,7 +396,7 @@ So, both the versions run about 10% faster without the threading options. I susp
 
 ## Conclusion
 
-In this post, we improved upon our simple Sudoku solution from the [last time]. We discovered and implemented a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. Discuss this post on [r/haskell].
+In this post, we improved upon our simple Sudoku solution from the [last time]. We discovered and implemented a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. Discuss this post on [r/haskell] or comment below.
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
 [last time]: /posts/fast-sudoku-solver-in-haskell-1/
