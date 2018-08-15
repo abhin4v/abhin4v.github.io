@@ -857,7 +857,7 @@ The first improvement over the simple solution got us the most major speedup of 
 
 ## Conclusion
 
-In this post, we improved upon our list-based Sudoku solution from the [last time]. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the case. We ended up using BitSets and Vectors --- both immutable and mutable varieties --- for the different parts of the code. Finally, we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we'll explore the parallel programming facilities in Haskell. The code till now is available [here][10]. Discuss this post on [r/haskell].
+In this post, we improved upon our list-based Sudoku solution from the [last time]. We profiled the code at each step, found the bottlenecks and fixed them by choosing the right data structure for the case. We ended up using BitSets and Vectors --- both immutable and mutable varieties --- for the different parts of the code. Finally, we sped up our program by 7.4 times. Can we go even faster? How about using all those other CPU cores which have been lying idle? Come back for the next post in this series where we'll explore the parallel programming facilities in Haskell. The code till now is available [here][10]. Discuss this post on [r/haskell] or comment below.
 
 [previous part]: /posts/fast-sudoku-solver-in-haskell-2/
 [last time]: /posts/fast-sudoku-solver-in-haskell-2/
