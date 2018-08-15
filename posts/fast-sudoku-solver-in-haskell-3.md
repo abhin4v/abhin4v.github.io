@@ -918,8 +918,8 @@ In this post, we improved upon our list-based Sudoku solution from the [last tim
 
 [^prev-post-note]: A lot of the code in this post references the code from the previous posts, including showing diffs. So, please read the previous posts if you have not already done so.
 
-[^code-ref-set]: The code for the BitSet based implementation can be found [here][5].
-[^code-ref-vec]: The code for the vector based implementation can be found [here][7].
+[^code-ref-set]: The code for the BitSet based implementa&shy;tion can be found [here][5].
+[^code-ref-vec]: The code for the vector based implementa&shy;tion can be found [here][7].
 [^code-ref-mutvec]: The code for the mutable vector based implementation can be found [here][10].
 
 [^laziness]: We see Haskell's laziness at work here. In the code for the `fixM` function, the `(==)` function is nested inside the `(>>=)` function, but because of laziness, they are actually evaluated in the reverse order. The evaluation of parameters for the `(==)` function causes the `(>>=)` function to be evaluated.

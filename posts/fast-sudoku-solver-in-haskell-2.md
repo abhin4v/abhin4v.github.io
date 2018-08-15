@@ -428,4 +428,4 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 
 [^speedup]: Speedup calculation: 116.7 / 100 * 49151 / 282.98 = 202.7
 
-[^exmap]: We use [Data.Map.Strict] as the map implementation.
+[^exmap]: We use [Data.Map.Strict] as the map imple&shy;mentation.

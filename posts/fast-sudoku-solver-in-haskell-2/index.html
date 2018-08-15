@@ -68,7 +68,7 @@
         </script>
         <!-- End Matomo Code -->
     </head>
-    <body>
+    <body class="article-page">
         <noscript>
           <img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" alt />
         </noscript>
@@ -515,7 +515,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <li id="fn2"><p>At least 17 cells must be pre-filled in a Sudoku puzzle for it to have a unique solution. So 17-clue puzzles are the most difficult of all puzzles. <a href="https://arxiv.org/pdf/1201.0749v2.pdf" target="_blank" rel="noopener">This paper</a> by McGuire, Tugemann and Civario gives the proof of the same.<a href="#fnref2" class="footnote-back">↩</a></p></li>
 <li id="fn3"><p>“Single” as in <a href="https://en.wikipedia.org/wiki/Single_child" target="_blank" rel="noopener">“Single child”</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p>Reverse application operation is not used much in Haskell. But it is the preferred way of function chaining in some other functional programming languages like <a href="https://clojuredocs.org/clojure.core/-%3E" target="_blank" rel="noopener">Clojure</a>, <a href="https://msdn.microsoft.com/en-us/visualfsharpdocs/conceptual/operators.%5b-h%5d-%5d%5b't1,'u%5d-function-%5bfsharp%5d" target="_blank" rel="noopener">FSharp</a>, and <a href="https://hexdocs.pm/elixir/Kernel.html#%7C%3E/2" target="_blank" rel="noopener">Elixir</a>.<a href="#fnref4" class="footnote-back">↩</a></p></li>
-<li id="fn5"><p>We use <a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html" target="_blank" rel="noopener">Data.Map.Strict</a> as the map implementation.<a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn5"><p>We use <a href="https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html" target="_blank" rel="noopener">Data.Map.Strict</a> as the map imple­mentation.<a href="#fnref5" class="footnote-back">↩</a></p></li>
 <li id="fn6"><p>We need to run <code>pruneCellsByFixed</code> and <code>pruneCellsByExclusives</code> repeatedly using <code>fixM</code> because an unsettled row can lead to wrong solutions.</p>
 <p>Imagine a row which just got a <code>9</code> fixed because of <code>pruneCellsByFixed</code>. If we don’t run the function again, the row may be left with one non-fixed cell with a <code>9</code>. When we run this row through <code>pruneCellsByExclusives</code>, it’ll consider the <code>9</code> in the non-fixed cell as a Single and fix it. This will lead to two <code>9</code>s in the same row, causing the solution to fail.<a href="#fnref6" class="footnote-back">↩</a></p></li>
 <li id="fn7"><p>Speedup calculation: 116.7 / 100 * 49151 / 282.98 = 202.7<a href="#fnref7" class="footnote-back">↩</a></p></li>
