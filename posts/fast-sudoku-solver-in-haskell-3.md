@@ -875,11 +875,11 @@ In this post, we improved upon our list-based Sudoku solution from the [last tim
 [hash array mapped trie]: https://en.wikipedia.org/wiki/Hash_array_mapped_trie
 [`Data.IntSet`]: https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-IntSet.html
 [radix tree]: https://en.wikipedia.org/wiki/Radix_tree
-[`Data.Word`]: https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html
+[`Data.Word`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Word.html
 [_BitSet_]: https://en.wikipedia.org/wiki/Bitset
 [bits]: https://en.wikipedia.org/wiki/Bit
-[`Data.Word.Word16`]: https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Word.html#t:Word16
-[`Data.Bits`]: https://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Bits.html
+[`Data.Word.Word16`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Word.html#t:Word16
+[`Data.Bits`]: https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Bits.html
 [_Cost Centre_ annotations]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/profiling.html#inserting-cost-centres-by-hand
 [`Data.Map.Strict`]: https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html
 [Vector]: https://hackage.haskell.org/package/vector-0.12.0.1
