@@ -15,7 +15,6 @@ RUN set -xe \
     && cd _site \
     && git checkout master \
     && git pull origin master \
-    && git ls-files | grep -v 'pdfs/posts/' | xargs -r git rm \
     && cd .. \
     && stack exec site build \
     && cd _site \
