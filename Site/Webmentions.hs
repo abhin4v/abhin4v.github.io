@@ -8,6 +8,7 @@ import Data.Aeson (FromJSON(..), genericParseJSON, decode')
 import Data.Aeson.Casing (aesonPrefix, aesonDrop, snakeCase)
 import Data.Function (on)
 import Data.List (sortBy, nubBy)
+import Data.Maybe (fromMaybe)
 import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Time (UTCTime, defaultTimeLocale, formatTime)
@@ -58,7 +59,7 @@ sourceName source
   | "reddit.com" `T.isInfixOf` source = "reddit/r/" <> (parts !! 4)
   | "mailchi.mp" `T.isInfixOf` source = parts !! 3
   | "github.com" `T.isInfixOf` source = "github/" <> (parts !! 3) <> "/" <> (parts !! 4)
-  | otherwise                         = parts !! 2
+  | otherwise                         = fromMaybe (parts !! 2) $ T.stripPrefix "www." (parts !! 2)
     where
       parts = T.splitOn "/" source
 
