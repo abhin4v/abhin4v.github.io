@@ -3,10 +3,7 @@
     $if(reply_allowed)$<input type="submit" value="Reply" name="$name$###$id$">$endif$
     <img class="avatar" src="https://www.gravatar.com/avatar/$email$?d=retro&s=60">
     <span>
-      <h4 class="author">$name$</h4>
-      $if(author_reply)$
-      <span class="author-badge">Author</span>
-      $endif$
+      <h4 class="author $if(author_reply)$post-author$endif$" $if(author_reply)$title="Author"$endif$>$name$</h4>
       <div class="date" title="$datetime$">$date$</div>
     </span>
   </div>

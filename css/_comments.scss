@@ -94,14 +94,11 @@
     font-size: 1.25em;
     line-height: 1;
   }
-  .author-badge {
-    font-size: smaller;
-    background-color: #ffdab9;
-    padding: 0 0.5em;
-    border-radius: 5px;
-    position: relative;
-    top: -0.4em;
-}
+  .post-author {
+    -webkit-box-shadow: 0 7px 0px -2px #a091d1b3;
+    -moz-box-shadow: 0 7px 0px -2px #a091d1b3;
+    box-shadow: 0 7px 0px -2px #a091d1b3;
+  }
   &.level-0 {
     margin-left: 0.5em;
     border-left: 0.3em solid #ff69b4;
