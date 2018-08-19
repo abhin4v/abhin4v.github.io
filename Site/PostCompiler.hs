@@ -2,11 +2,10 @@
 module Site.PostCompiler where
 
 import Control.Monad (foldM, void)
-import Data.List (stripPrefix, sortBy, intercalate, (\\))
+import Data.List (stripPrefix, sortOn, intercalate, (\\))
 import Data.Maybe (fromJust, fromMaybe)
 import qualified Data.Map.Strict as Map
 import Data.Monoid ((<>))
-import Data.Ord (comparing)
 import qualified Data.Tree as Tree
 import Hakyll hiding (relativizeUrls)
 import Site.ERT
@@ -150,7 +149,7 @@ sortComments items = do
   return . map (itemIdentifierMap Map.!) . concatMap Tree.flatten $ commentIDForest
   where
     sortByDate xs =
-      map fst . sortBy (comparing snd)
+      map fst . sortOn snd
       <$> mapM (\ x -> (x,) <$> getMetadataField' x "date") xs
 
 itemAfter, itemBefore :: Eq a => [a] -> a -> Maybe a

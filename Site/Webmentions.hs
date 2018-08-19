@@ -3,7 +3,6 @@
 
 module Site.Webmentions where
 
-import Control.Arrow ((&&&))
 import Control.Exception (try, SomeException)
 import Data.Aeson (FromJSON(..), genericParseJSON, decode')
 import Data.Aeson.Casing (aesonPrefix, aesonDrop, snakeCase)
@@ -33,11 +32,11 @@ instance FromJSON Webmentions where
 
 getWebmentions :: String -> IO (Maybe Webmentions)
 getWebmentions postSlug =
-  fmap dedupLinks <$> go "https" "posts" <> go "https" "drafts" <> go "http" "posts" <> go "http" "drafts"
+  fmap (dedupLinks . transform) <$> go "https" "posts" <> go "https" "drafts" <> go "http" "posts" <> go "http" "drafts"
   where
     go scheme prefix = parseRequest (mentionsURL scheme prefix) >>= try . httpLBS >>= \case
       Left (_ :: SomeException) -> return Nothing
-      Right resp -> return . fmap transform . decode' . getResponseBody $ resp
+      Right resp -> return . decode' . getResponseBody $ resp
 
     mentionsURL scheme prefix =
       "https://webmention.io/api/mentions?target=" <>
@@ -45,7 +44,7 @@ getWebmentions postSlug =
 
     transform Webmentions{..} =
       (\links -> Webmentions {wmLinks = links})
-      . sortBy (comparing (linkVerifiedDate &&& linkSource))
+      . sortBy (comparing linkVerifiedDate <> comparing linkSource)
       . map cleanupLink
       $ wmLinks
 
