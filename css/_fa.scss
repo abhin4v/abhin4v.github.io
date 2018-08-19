@@ -51,4 +51,16 @@
       }
     }
   }
+  #mentions-container, #comment-container {
+    h2, h3 {
+      a {
+        &.ref-link:after {
+          @extend %ref-link;
+        }
+        &.top-link:after {
+          @extend %top-link;
+        }
+      }
+    }
+  }
 }
