@@ -15,7 +15,6 @@ import qualified Data.Text as T
 import Data.Tree (Forest, Tree(Node))
 import Data.Monoid ((<>), mconcat)
 import Data.Function (on)
-import Data.Maybe (fromMaybe)
 
 import Text.Blaze.Html (preEscapedToHtml, (!))
 import Text.Blaze.Html.Renderer.String (renderHtml)
@@ -53,7 +52,7 @@ markupHeader (Node (Header _ (ident, _, keyvals) inline) headers)
     render x  = case runPure $ writeHtml5String def (Pandoc nullMeta [Plain x]) of
                   Right h -> h
                   Left err -> error (show err)
-    section   = fromMaybe (render inline) . fmap T.pack . lookup "toc" $ keyvals
+    section   = maybe (render inline) T.pack . lookup "toc" $ keyvals
     link      = H.a ! A.href (H.toValue $ "#" ++ ident) $ preEscapedToHtml section
 markupHeader _ = error "what"
 
