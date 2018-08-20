@@ -697,7 +697,7 @@
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per puzzle. This is pretty slow but we’ll get around to making it faster in the subsequent posts.</p>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="fast-sudoku-solver-in-haskell-1">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. Discuss this post on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a> or comment below.</p>
+<p>In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we’ll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available <a href="https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/0ef77341a10fcc25926301ee47b931d92959c0fa" target="_blank" rel="noopener">here</a>. Discuss this post on <a href="https://www.reddit.com/r/haskell/comments/8uapij/fast_sudoku_solver_in_haskell/" target="_blank" rel="noopener">r/haskell</a> or <a href="#comment-container">leave a comment</a>.</p>
 <section class="footnotes">
 <hr />
 <ol>
@@ -722,6 +722,46 @@
     </section>
 </article>
 <meta itemprop="url" content="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">
+
+
+<div id="comment-container">
+  <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments" id="comment-form">
+    <a id="cancel-reply">Cancel Reply</a>
+    <h3>Got suggestions, corrections, or thoughts? Post a comment!</h3>
+    <fieldset>
+      <input name="options[slug]" type="hidden" value="fast-sudoku-solver-in-haskell-1">
+      <input id="comment-redirect" name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">
+      <input type="hidden" name="options[reCaptcha][siteKey]" value="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV">
+      <input type="hidden" name="options[reCaptcha][secret]" value="xE425Zd96uokSf/t1saMqEvj17HfjYJ4+/gv6B4uqA+PxiCjwSb8BUYeWrIBRKrz+YRLCkC53qSa9HYfBNWohuI1+9SBpw5XJ9WJkilJ/DaSjWP9FsKQM9OLdMDgGo8fUQ3hlfs4svgBzItjOitabrjvYI4u0k4RTsq5ccYISeo=">
+      <input type="hidden" id="comment-parent" name="fields[reply_to]" value>
+      <textarea id="comment-text" name="fields[message]" required placeholder="Comment"></textarea>
+      <span style="font-size: smaller">
+        <a href="https://kramdown.gettalong.org/quickref.html" target="_blank" rel="noopener">Markdown</a> is allowed
+      </span>
+      <input name="fields[name]" type="text" required placeholder="Name">
+      <input name="fields[email]" type="email" required placeholder="Email">
+      <div style="font-size: smaller; margin-bottom: 1em;">
+          Email is used just to show an avatar image and is not displayed or stored
+      </div>
+      <div class="g-recaptcha" data-sitekey="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV"></div>
+      <div style="font-size: smaller;">Comments are moderated. They will appear below after they are approved.</div>
+      <input id="comment-form-submit" type="submit" value="Post Comment">
+      <span id="comment-form-message"></span>
+    </fieldset>
+  </form>
+  <div class="comments">
+    <h3>0 comments
+      <a href="#top" class="top-link" title="Back to top"></a>
+    </h3>
+    
+  </div>
+</div>
+<script src="//abhinavsarkar.net/js/comment-form.js" defer async></script>
+<script src="https://www.google.com/recaptcha/api.js" defer async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
+<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@6.1.0/promise.min.js" defer async></script>
+
+
 
 <div id="mentions-container">
   <h3>8 mentions
@@ -771,44 +811,6 @@
   
   </ul>
 </div>
-
-
-<div id="comment-container">
-  <h3>0 comments
-    <a href="#top" class="top-link" title="Back to top"></a>
-  </h3>
-  <div class="comments">
-  
-  </div>
-  <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments" id="comment-form">
-    <a id="cancel-reply">Cancel Reply</a>
-    <h3>Leave a comment</h3>
-    <p>Comments are moderated. They will appear here after they are approved.</p>
-    <fieldset>
-      <input name="options[slug]" type="hidden" value="fast-sudoku-solver-in-haskell-1">
-      <input id="comment-redirect" name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/">
-      <input type="hidden" name="options[reCaptcha][siteKey]" value="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV">
-      <input type="hidden" name="options[reCaptcha][secret]" value="xE425Zd96uokSf/t1saMqEvj17HfjYJ4+/gv6B4uqA+PxiCjwSb8BUYeWrIBRKrz+YRLCkC53qSa9HYfBNWohuI1+9SBpw5XJ9WJkilJ/DaSjWP9FsKQM9OLdMDgGo8fUQ3hlfs4svgBzItjOitabrjvYI4u0k4RTsq5ccYISeo=">
-      <input type="hidden" id="comment-parent" name="fields[reply_to]" value>
-      <textarea id="comment-text" name="fields[message]" required placeholder="Comment"></textarea>
-      <span style="font-size: smaller">
-        <a href="https://kramdown.gettalong.org/quickref.html" target="_blank" rel="noopener">Markdown</a> is allowed
-      </span>
-      <input name="fields[name]" type="text" required placeholder="Name">
-      <input name="fields[email]" type="email" required placeholder="Email">
-      <div style="font-size: smaller; margin-bottom: 1em;">
-          Email is used just to show an avatar image and is not displayed or stored
-      </div>
-      <div class="g-recaptcha" data-sitekey="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV"></div>
-      <input id="comment-form-submit" type="submit" value="Post Comment">
-      <span id="comment-form-message"></span>
-    </fieldset>
-  </form>
-</div>
-<script src="//abhinavsarkar.net/js/comment-form.js" defer async></script>
-<script src="https://www.google.com/recaptcha/api.js" defer async></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
-<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@6.1.0/promise.min.js" defer async></script>
 
 
 <ul class="pager">

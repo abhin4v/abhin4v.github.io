@@ -709,7 +709,7 @@ It took about 117 seconds to solve a hundred puzzles, so, about 1.2 seconds per 
 
 ## Conclusion
 
-In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we'll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available [here][7]. Discuss this post on [r/haskell] or comment below.
+In this rather verbose article, we learned how to write a simple Sudoku solver in Haskell step-by-step. In the later parts of this series, we'll delve into profiling the solution and figuring out better algorithms and data structures to solve Sudoku more efficiently. The code till now is available [here][7]. Discuss this post on [r/haskell] or [leave a comment].
 
 [Sudoku]: https://en.wikipedia.org/wiki/Sudoku
 [Haskell]: https://www.haskell.org/
@@ -724,6 +724,7 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /posts/fast-sudoku-solver-in-haskell-3/
+[leave a comment]: #comment-container
 
 [1]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [2]: https://en.wikipedia.org/wiki/State_space_search
