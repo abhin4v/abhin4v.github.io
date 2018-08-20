@@ -724,7 +724,7 @@ In this rather verbose article, we learned how to write a simple Sudoku solver i
 [Fast Sudoku Solver in Haskell #1: A Simple Solution]: /posts/fast-sudoku-solver-in-haskell-1/
 [Fast Sudoku Solver in Haskell #2: A 200x Faster Solution]: /posts/fast-sudoku-solver-in-haskell-2/
 [Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures]: /posts/fast-sudoku-solver-in-haskell-3/
-[leave a comment]: #comment-container
+[leave a comment]: /posts/fast-sudoku-solver-in-haskell-1/#comment-container
 
 [1]: https://en.wikipedia.org/wiki/Constraint_satisfaction_problem
 [2]: https://en.wikipedia.org/wiki/State_space_search

@@ -739,4 +739,4 @@ In this tutorial we learned how to create a simple JSON REST web service written
 [`purescript-logging`]: https://pursuit.purescript.org/packages/purescript-logging
 [1]: https://github.com/abhin4v/ps-simple-rest-service
 [2]: https://www.reddit.com/r/purescript/comments/73gc9g/writing_a_simple_rest_service_in_purescript_part/
-[leave a comment]: #comment-container
+[leave a comment]: /posts/ps-simple-rest-service-2/#comment-container

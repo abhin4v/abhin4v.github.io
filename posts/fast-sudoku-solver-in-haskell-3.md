@@ -897,7 +897,7 @@ In this post, we improved upon our list-based Sudoku solution from the [last tim
 [Rank-2 types]: https://web.archive.org/web/20180813050307/https://prime.haskell.org/wiki/Rank2Types
 [imperative programming]: https://en.wikipedia.org/wiki/Imperative_programming
 [r/haskell]: https://www.reddit.com/r/haskell/comments/96y0xa/fast_sudoku_solver_in_haskell_3_picking_the_right/
-[leave a comment]: #comment-container
+[leave a comment]: /posts/fast-sudoku-solver-in-haskell-3/#comment-container
 
 [1]: /files/sudoku17.txt.bz2
 [2]: /posts/fast-sudoku-solver-in-haskell-2/#a-little-forward-a-little-backward
