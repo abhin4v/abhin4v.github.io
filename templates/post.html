@@ -47,36 +47,13 @@
     </section>
 </article>
 <meta itemprop="url" content="$full_url$">
-$if(mentions_enabled)$
-<div id="mentions-container">
-  <h3>$mention_count$ mentions
-    <a href="#top" class="top-link" title="Back to top"></a>
-  </h3>
-  <ul>
-  $for(mention_links)$
-    <li class="mention" id="#mention-$link_id$">
-      <a href="$link_source$" target="_blank" rel="noopener">$link_source_name$</a>
-      <span class="date">$link_date$</span>
-    </li>
-  $endfor$
-  </ul>
-</div>
-$endif$
+
 $if(comments_enabled)$
 <div id="comment-container">
-  <h3>$comment_count$ comments
-    <a href="#top" class="top-link" title="Back to top"></a>
-  </h3>
-  <div class="comments">
-  $for(comments)$
-      $body$
-  $endfor$
-  </div>
   <form method="POST" action="https://api.staticman.net/v2/entry/abhin4v/abhin4v.github.io/source/comments"
         id="comment-form">
     <a id="cancel-reply">Cancel Reply</a>
-    <h3>Leave a comment</h3>
-    <p>Comments are moderated. They will appear here after they are approved.</p>
+    <h3>Got suggestions, corrections, or thoughts? Post a comment!</h3>
     <fieldset>
       <input name="options[slug]" type="hidden" value="$post_slug$">
       <input id="comment-redirect" name="options[redirect]" type="hidden" value="$full_url$">
@@ -93,15 +70,40 @@ $if(comments_enabled)$
           Email is used just to show an avatar image and is not displayed or stored
       </div>
       <div class="g-recaptcha" data-sitekey="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV"></div>
+      <div style="font-size: smaller;">Comments are moderated. They will appear below after they are approved.</div>
       <input id="comment-form-submit" type="submit" value="Post Comment">
       <span id="comment-form-message"></span>
     </fieldset>
   </form>
+  <div class="comments">
+    <h3>$comment_count$ comments
+      <a href="#top" class="top-link" title="Back to top"></a>
+    </h3>
+    $for(comments)$
+      $body$
+    $endfor$
+  </div>
 </div>
 <script src="/js/comment-form.js" defer async></script>
 <script src="https://www.google.com/recaptcha/api.js" defer async></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@6.1.0/promise.min.js" defer async></script>
+$endif$
+
+$if(mentions_enabled)$
+<div id="mentions-container">
+  <h3>$mention_count$ mentions
+    <a href="#top" class="top-link" title="Back to top"></a>
+  </h3>
+  <ul>
+  $for(mention_links)$
+    <li class="mention" id="#mention-$link_id$">
+      <a href="$link_source$" target="_blank" rel="noopener">$link_source_name$</a>
+      <span class="date">$link_date$</span>
+    </li>
+  $endfor$
+  </ul>
+</div>
 $endif$
 
 <ul class="pager">

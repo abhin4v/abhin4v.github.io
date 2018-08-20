@@ -64,6 +64,8 @@
 }
 
 .comments {
+  border-top: 1px solid $border-color;
+
   hr {
     width: 50%;
   }

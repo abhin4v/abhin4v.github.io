@@ -396,7 +396,7 @@ So, both the versions run about 10% faster without the threading options. I susp
 
 ## Conclusion
 
-In this post, we improved upon our simple Sudoku solution from the [last time]. We discovered and implemented a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. Discuss this post on [r/haskell] or comment below.
+In this post, we improved upon our simple Sudoku solution from the [last time]. We discovered and implemented a new strategy to prune cells, and we achieved a 200x speedup. But profiling shows that we still have many possibilities for improvements. We'll work on that and more in the upcoming posts in this series. The code till now is available [here][2]. Discuss this post on [r/haskell] or [leave a comment].
 
 [first part]: /posts/fast-sudoku-solver-in-haskell-1/
 [last time]: /posts/fast-sudoku-solver-in-haskell-1/
@@ -417,6 +417,7 @@ In this post, we improved upon our simple Sudoku solution from the [last time]. 
 [Elixir]: https://hexdocs.pm/elixir/Kernel.html#|%3E/2
 [r/haskell]: https://www.reddit.com/r/haskell/comments/8xyfad/fast_sudoku_solver_in_haskell_2_a_200x_faster/
 [Data.Map.Strict]: https://hackage.haskell.org/package/containers-0.6.0.1/docs/Data-Map-Strict.html
+[leave a comment]: #comment-container
 
 [1]: /files/sudoku17.txt.bz2
 [2]: https://code.abhinavsarkar.net/abhin4v/hasdoku/src/commit/9d6eb18229f905c52cb4c98b569abb70757ba022
