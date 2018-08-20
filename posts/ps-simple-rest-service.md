@@ -913,4 +913,4 @@ That concludes the first part of the two-part tutorial. We learned how to set up
 [10]: https://github.com/abhin4v/ps-simple-rest-service/tree/9fdfe3a15508a3c29bd4bc96310fcf52b1022678
 [11]: https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined
 [12]: https://www.reddit.com/r/purescript/comments/737bg1/writing_a_simple_rest_service_in_purescript/
-[leave a comment]: #comment-container
+[leave a comment]: /posts/ps-simple-rest-service/#comment-container
