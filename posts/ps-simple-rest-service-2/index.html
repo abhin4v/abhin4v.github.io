@@ -38,6 +38,15 @@
         <link rel="webmention" href="https://webmention.io/abhinavsarkar.net/webmention" />
         <link rel="alternate" type="application/atom+xml" title="abhinavsarkar.net" href="https://abhinavsarkar.net/feed.xml">
 
+        <script>
+        (function() {
+          var allowedDomains = ["localhost", "127.0.0.1", "abhinavsarkar.net"];
+          if (allowedDomains.indexOf(window.location.hostname) == -1) {
+            window.location.host = "abhinavsarkar.net:80";
+          }
+        })();
+        </script>
+
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
         <link rel="stylesheet" href="//abhinavsarkar.net/css/default.css">
         <link rel="stylesheet" href="//abhinavsarkar.net/css/syntax.css">
