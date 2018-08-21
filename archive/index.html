@@ -40,7 +40,11 @@
         (function() {
           var allowedDomains = ["localhost", "127.0.0.1", "abhinavsarkar.net"];
           if (allowedDomains.indexOf(window.location.hostname) == -1) {
-            window.location.host = "abhinavsarkar.net:80";
+            if (window.location.protocol == "http:") {
+              location.host = "abhinavsarkar.net:80";
+            } else {
+              location.host = "abhinavsarkar.net:443";
+            }
           }
         })();
         </script>
