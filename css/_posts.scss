@@ -174,10 +174,37 @@ body.article-page {
 
   li {
     list-style: none;
+    margin-bottom: 1em;
+  }
+  .post-link {
+    margin-bottom: 0.2em;
   }
   .post-date {
     font-size: smaller;
-    padding-left: 1.2em;
+  }
+  ul.post-tags {
+    display: inline;
+    padding: initial;
+
+    li {
+      display: inline;
+      margin-right: 0.2em;
+
+      a {
+        color: $text-color;
+        font-size: smaller;
+        padding-top: 0.1em;
+        padding-bottom: 0.1em;
+        padding-left: 0.3em;
+        padding-right: 0.3em;
+        border: 1px solid lighten($link-hover-color, 20%);
+        border-radius: 0.35em;
+
+        &:hover {
+          color: $link-color;
+        }
+      }
+    }
   }
 }
 

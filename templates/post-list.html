@@ -1,10 +1,13 @@
 <ul class="postlist">
     $for(posts)$
         <li>
-          <span class="fa fa-chevron-right" aria-hidden="true"></span>
-          <a href="$url$">$title$</a>
-          <br/>
-          <span class="post-date">$date$</span>
+          <div class="post-link"><a href="$url$">$title$</a></div>
+          <div>
+            <span class="post-date">$date$</span>
+            <ul class="post-tags">
+                $for(tags_list)$<li><a href="/tags/$tag$/">$tag$</a></li>$endfor$
+            </ul>
+          </div>
         </li>
     $endfor$
 </ul>
