@@ -4,5 +4,7 @@
     <h2>Tags</h2>
     $taglist$
   </aside>
-  $partial("templates/post-list.html")$
+  $for(posts)$
+    $body$
+  $endfor$
 </div>

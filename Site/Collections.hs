@@ -1,8 +1,12 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, TupleSections, ScopedTypeVariables #-}
 module Site.Collections where
 
+import Control.Monad (forM)
+import Data.Function (on)
 import Data.Monoid ((<>))
+import Data.List (groupBy)
 import Data.String (fromString)
+import Data.Time (formatTime, defaultTimeLocale)
 import Hakyll hiding (relativizeUrls, renderAtom)
 import Site.PostCompiler
 import Site.Sitemap
@@ -20,10 +24,10 @@ collections tags env = do
     let title = "Posts tagged ‘" ++ tag ++ "’"
     route indexHTMLRoute
     compile $ do
-      posts <- recentFirst =<< loadAll pattrn
+      posts <- groupPostsByYear =<< recentFirst =<< loadAll pattrn
       let ctx = constField "title" title <>
                 constField "tag" tag <>
-                listField "posts" postCtx (return posts) <>
+                listField "posts" defaultContext (return posts) <>
                 siteContext
 
       makeItem ""
@@ -46,10 +50,10 @@ collections tags env = do
     create ["archive.html"] $ do
       route indexHTMLRoute
       compile $ do
-        posts <- recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
-        let archiveCtx = listField "posts" postCtx (return posts) <>
+        posts <- groupPostsByYear =<< recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
+        let archiveCtx = listField "posts" defaultContext (return posts) <>
                          tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
-                         constField "title" "Archive"             <>
+                         constField "title" "Archive" <>
                          siteContext
 
         makeItem ""
@@ -110,6 +114,20 @@ collections tags env = do
       postCtxWithTags tags <>
       field "post_ert" (fmap itemBody . flip loadSnapshot "ert" . itemIdentifier) <>
       field "comment_count" (fmap itemBody . flip loadSnapshot "comment_count" . itemIdentifier)
+
+    getPostYear post =
+      formatTime defaultTimeLocale "%Y" <$> getItemUTC defaultTimeLocale (itemIdentifier post)
+
+    groupPostsByYear posts = do
+      postsByYear <- groupBy ((==) `on` snd) <$> mapM (\p -> (p,) <$> getPostYear p) posts
+      forM postsByYear $ \postYears -> do
+        let posts = map fst postYears
+            year = head . map snd $ postYears
+            ctx = listField "posts" postCtx (return posts) <>
+                  constField "year" year <>
+                  siteContext
+
+        makeItem "" >>= loadAndApplyTemplate "templates/post-list.html" ctx
 
 feedCtx :: Context String
 feedCtx =  bodyField "description" <> field "url" postUrl <> postCtx <> siteContext
