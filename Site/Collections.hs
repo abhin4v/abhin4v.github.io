@@ -62,6 +62,22 @@ collections tags env = do
           >>= relativizeUrls env
           >>= removeIndexHtml
 
+  -- drafts
+  create ["drafts.html"] $ do
+    route indexHTMLRoute
+    compile $ do
+      posts <- groupPostsByYear =<< recentFirst =<< loadAllSnapshots ("drafts/*.md" .&&. hasNoVersion) "content"
+      let archiveCtx = listField "posts" defaultContext (return posts) <>
+                        tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
+                        constField "title" "Drafts"             <>
+                        siteContext
+
+      makeItem ""
+        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
+        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
+        >>= relativizeUrls env
+        >>= removeIndexHtml
+
   -- posts index
   create ["posts.html"] $ do
     route indexHTMLRoute

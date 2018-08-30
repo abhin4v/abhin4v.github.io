@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 module Site.Posts where
 
-import Data.Monoid ((<>))
 import Hakyll hiding (relativizeUrls)
 import Site.Comments
 import Site.PostCompiler
@@ -31,22 +30,7 @@ posts tags env = do
       makeItem $ Redirect ("/" ++ path ++ "/")
 
 drafts :: Tags -> String -> Rules ()
-drafts tags env = do
+drafts tags env =
   match "drafts/*.md" $ do
     route indexHTMLRoute
     compileDrafts tags env =<< getMatches "drafts/*.md"
-
-  create ["drafts.html"] $ do
-    route indexHTMLRoute
-    compile $ do
-      posts <- recentFirst =<< loadAllSnapshots ("drafts/*.md" .&&. hasNoVersion) "content"
-      let archiveCtx = listField "posts" postCtx (return posts) <>
-                       tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
-                       constField "title" "Drafts"             <>
-                       siteContext
-
-      makeItem ""
-        >>= loadAndApplyTemplate "templates/archive.html" archiveCtx
-        >>= loadAndApplyTemplate "templates/default.html" archiveCtx
-        >>= relativizeUrls env
-        >>= removeIndexHtml
