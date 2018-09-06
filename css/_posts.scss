@@ -191,14 +191,10 @@ body.article-page {
       margin-right: 0.2em;
 
       a {
-        color: $text-color;
+        color: lighten($text-color, 20%);
         font-size: smaller;
-        padding-top: 0.1em;
-        padding-bottom: 0.1em;
-        padding-left: 0.3em;
-        padding-right: 0.3em;
-        border: 1px solid lighten($link-hover-color, 20%);
-        border-radius: 0.35em;
+        padding-left: 0.1em;
+        padding-right: 0.1em;
 
         &:hover {
           color: $link-color;
