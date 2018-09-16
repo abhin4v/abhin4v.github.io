@@ -9,11 +9,12 @@ import Data.Monoid ((<>))
 import qualified Data.Tree as Tree
 import Hakyll hiding (relativizeUrls)
 import Site.ERT
+import Site.Pandoc
 import Site.TOC
 import Site.Util
 import qualified Site.Webmentions as WM
 import System.FilePath.Posix (takeBaseName, takeDirectory)
-import Text.Pandoc.Definition (Pandoc, Inline(Link, Image, Span), Block(Header, Table, Div), nullAttr)
+import Text.Pandoc.Definition (Pandoc)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
@@ -181,43 +182,4 @@ postContentTransforms postSlug alignment =
   . walk mkScrollableTables
   . tableOfContents alignment
   . walk blankTargetLinks
-
-blankTargetLinks :: Inline -> Inline
-blankTargetLinks (Link (ident, classes, props) children (url, title)) =
-  Link (ident, classes, props') children (url, title)
-  where
-    localUrlStartChars :: String
-    localUrlStartChars = "/#.?"
-
-    props' = if head url `elem` localUrlStartChars
-      then props
-      else props <> [("target", "_blank"), ("rel", "noopener")]
-blankTargetLinks x = x
-
-addHeaderTracking :: String -> Block -> Block
-addHeaderTracking postSlug (Header level attr@(ident, cls, kvs) content) =
-  if level == 2
-  then Header level (ident, cls, kvs <> trackingAttrs) content
-  else Header level attr content
-  where
-    trackingAttrs = [ ("data-track-content", "")
-                    , ("data-content-name", ident)
-                    , ("data-content-piece", postSlug)]
-addHeaderTracking _ x = x
-
-linkHeaders :: Block -> Block
-linkHeaders (Header level attr@(ident, _, _) content) =
-  Header level attr $ content <>
-                      [ Link ("", ["ref-link"], []) [] ("#" <> ident, "")
-                      , Link ("", ["top-link"], []) [] ("#top", "Back to top")
-                      ]
-linkHeaders x = x
-
-linkImages :: Inline -> Inline
-linkImages (Image (_, _, _) elems (url, _)) =
-  Link ("", ["img-link"], []) [Image ("",[],[]) [] (url, ""), Span nullAttr elems] (url, "")
-linkImages x = x
-
-mkScrollableTables :: Block -> Block
-mkScrollableTables table@Table{} = Div ("", ["scrollable-table"], []) [table]
-mkScrollableTables x             = x
+  . walk expandWikiLinks

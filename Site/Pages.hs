@@ -2,8 +2,9 @@
 module Site.Pages where
 
 import Hakyll hiding (relativizeUrls)
-import Site.Util
+import Site.Pandoc
 import Site.PostCompiler
+import Site.Util
 import Text.Pandoc.Definition (Pandoc)
 import Text.Pandoc.Walk (walk)
 

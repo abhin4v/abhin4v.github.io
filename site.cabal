@@ -33,6 +33,7 @@ executable site
                   , Site.ERT
                   , Site.Webmentions
                   , Site.Pages
+                  , Site.Pandoc
                   , Site.Posts
                   , Site.PostCompiler
                   , Site.Readings
