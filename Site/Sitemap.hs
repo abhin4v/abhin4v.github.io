@@ -51,13 +51,14 @@ showFreq = map toLower . show
 generateSitemap :: SitemapConfiguration -> Compiler (Item String)
 generateSitemap config = do
     ids <- getMatches "**"
-    urls <- filter draftFilter . filter extFilter . catMaybes <$> mapM routeWithMod ids
+    urls <- filter notFoundPageFilter . filter draftFilter . filter extFilter . catMaybes <$> mapM routeWithMod ids
     let urlset = xmlUrlSet config urls
     makeItem $ ppcTopElement prettyConfigPP urlset
     where
         exts = sitemapExtensions config
         extFilter (p,_) = takeExtensions p `elem` exts
         draftFilter (p,_) = not ("drafts" `isInfixOf` p)
+        notFoundPageFilter (p,_) = not ("404" `isInfixOf` p)
         routeWithMod i = do
             mtime <- itemModTime i
             rt <- getRoute i
