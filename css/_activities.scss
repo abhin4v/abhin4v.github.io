@@ -1,13 +1,22 @@
 .activity {
+  margin-bottom: -0.3em;
   .link {
     display: inline-block;
     width: 2em;
     margin: auto;
+    a {
+      position: relative;
+      bottom: -0.03em;
+      &:hover {
+        color: $link-hover-color;
+      }
+    }
   }
   .date {
-    font-size: smaller;
+    font-size: 0.8em;
     display: inline-block;
-    width: 6em;
+    width: 3.2em;
+    color: lighten($text-color, 30%);
   }
   .bar {
     display: inline-block;
@@ -21,14 +30,9 @@
     display: inline;
 
     li {
-      display: inline;
-      &::after {
-        content: " | ";
-      }
-      &:last-child {
-        &::after {
-          content: "";
-        }
+      display: none;
+      &[title="Distance"] {
+        display: inline;
       }
     }
   }
@@ -39,9 +43,6 @@
   }
   .link a {
     color: #FF8C61;
-    &:hover {
-      color: $link-hover-color;
-    }
   }
 }
 .run {
@@ -50,13 +51,5 @@
   }
   .link a {
     color: #9E85D2;
-    &:hover {
-      color: $link-hover-color;
-    }
-  }
-}
-@media screen and(max-width: 600px) {
-  .bar {
-    display: none!important;
   }
 }

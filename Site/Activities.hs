@@ -54,7 +54,7 @@ getActivities feedURL =
                           . fromJust
                           . lookup "Distance"
                           $ desc
-              activityEffort = if activityType == "ride" then rawEffort * 0.25 else rawEffort
+              activityEffort = if activityType == "ride" then rawEffort else rawEffort * 4.0
           return Activity { activityName   = activityName
                           , activityType   = activityType
                           , activityEffort = activityEffort
@@ -104,5 +104,5 @@ activities env = do
               , activityField "eff" $ show . activityEffort
               , activityField "url" activityURL
               , activityField "desc" activityDesc
-              , activityField "date" (formatTime defaultTimeLocale "%b %e, %Y" . activityTime)
+              , activityField "date" (formatTime defaultTimeLocale "%b %e" . activityTime)
               ]
