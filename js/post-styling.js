@@ -118,3 +118,32 @@
 
   style();
 }());
+
+(function() {
+  function highlight() {
+    if (typeof hljs !== 'undefined') {
+      hljs.initHighlightingOnLoad();
+      hljs.initLineNumbersOnLoad({
+        singleLine: true
+      });
+    } else {
+      window.setTimeout(highlight, 500);
+    }
+  }
+
+  function setupFeatherlight() {
+    if (typeof jQuery !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
+      if (jQuery("a.img-link").length > 0) {
+        loadStyleSheet("https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.css");
+        jQuery.getScript("https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.js", function() {
+          jQuery("a.img-link").attr("data-featherlight", "image");
+        });
+      }
+    } else {
+      window.setTimeout(setupFeatherlight, 500);
+    }
+  }
+
+  highlight();
+  setupFeatherlight();
+}());
