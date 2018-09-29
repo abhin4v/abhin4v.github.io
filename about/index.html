@@ -129,17 +129,9 @@
             <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank" rel="noopener">Source</a>
         </footer>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.1.0/highlightjs-line-numbers.min.js"></script>
-    <script src="https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.js"></script>
     <script src="https://use.fontawesome.com/85d14c6c2b.js"></script>
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
-      hljs.initHighlightingOnLoad();
-      hljs.initLineNumbersOnLoad({
-        singleLine: true
-      });
 
       function loadStyleSheet(src) {
         if (document.createStyleSheet){
@@ -154,7 +146,6 @@
         for (var i = 0; i < window.asn_ss.length; i++) {
           loadStyleSheet(window.asn_ss[i]);
         }
-        jQuery("a.img-link").attr("data-featherlight", "image");
       });
     </script>
     <style type="text/css" media="print">
