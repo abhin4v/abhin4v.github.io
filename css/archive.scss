@@ -1,0 +1,68 @@
+@import "consts";
+
+#archive {
+  .taglist {
+    float: right;
+    max-width: 28%;
+    padding-left: 2%;
+    position: relative;
+    top: -3.5em;
+
+    h2 {
+      margin: 0.3em auto;
+    }
+  }
+
+  .postlist {
+    margin-right: 30%;
+  }
+}
+
+.postlist {
+  padding-left: 0.2em;
+
+  li {
+    list-style: none;
+    margin-bottom: 1em;
+  }
+  .post-date {
+    font-size: smaller;
+  }
+  ul.post-tags {
+    display: inline;
+    padding: initial;
+
+    li {
+      display: inline;
+      margin-right: 0.2em;
+
+      a {
+        color: lighten($text-color, 20%);
+        font-size: smaller;
+        padding-left: 0.1em;
+        padding-right: 0.1em;
+
+        &:hover {
+          color: $link-color;
+        }
+      }
+    }
+  }
+}
+
+
+
+@media screen and(max-width: 740px) {
+  #archive {
+    .taglist {
+      float: none;
+      max-width: none;
+      top: 0px;
+      padding-left: 0px;
+    }
+
+    .postlist {
+      margin-right: auto;
+    }
+  }
+}

@@ -1,0 +1,35 @@
+@import "consts";
+@import "posts";
+
+#home-posts {
+    hr {
+        margin: 1em 30%;
+        &:last-child {
+            display: none;
+        }
+    }
+    h3 {
+        margin: 0.5em 0;
+    }
+    article.post {
+        header {
+            margin-bottom: 0;
+            a {
+                color: $text-color
+            }
+        }
+    }
+    .footnoteRef {
+        display: none;
+    }
+}
+
+@media screen and(max-width: 900px) {
+    #home-posts {
+        article.post {
+            section.header {
+                text-align: right;
+            }
+        }
+    }
+}

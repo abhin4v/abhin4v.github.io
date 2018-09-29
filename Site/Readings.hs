@@ -119,6 +119,7 @@ readings env = do
                   listField "books_on_hold" bookFields (mapM makeItem booksOnHold) <>
                   listField "books_reading" bookFields (mapM makeItem booksReading) <>
                   constField "title" "Readings" <>
+                  constField "page_type" "readings" <>
                   siteContext
 
         makeItem ""

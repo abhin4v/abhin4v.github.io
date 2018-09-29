@@ -1,0 +1,11 @@
+#ref-sites {
+  ul {
+    padding-left: 1em;
+    li {
+      list-style: none;
+      &:before {
+        content: "> ";
+      }
+    }
+  }
+}

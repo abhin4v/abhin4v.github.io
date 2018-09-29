@@ -1,0 +1,110 @@
+.no-js {
+  div.sourceCode {
+    overflow-x: auto;
+  }
+  table.sourceCode, tr.sourceCode {
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+    border: none;
+  }
+  td {
+    &.lineNumbers, &.sourceCode {
+      margin: 0;
+      padding: 0;
+      vertical-align: baseline;
+      border: none;
+    }
+  }
+  table.sourceCode {
+    width: 100%;
+    line-height: 100%;
+    background-color: #f8f8f8;
+  }
+  td {
+    &.lineNumbers {
+      text-align: right;
+      padding-right: 4px;
+      padding-left: 4px;
+      color: #aaaaaa;
+      border-right: 1px solid #aaaaaa;
+    }
+    &.sourceCode {
+      padding-left: 5px;
+    }
+  }
+  pre {
+    background-color: #f8f8f8;
+  }
+  code {
+    background-color: #f8f8f8;
+    span {
+      &.kw {
+        color: #204a87;
+        font-weight: bold;
+      }
+      &.dt {
+        color: #204a87;
+      }
+      &.dv, &.bn, &.fl {
+        color: #0000cf;
+      }
+      &.ch, &.st {
+        color: #4e9a06;
+      }
+      &.co {
+        color: #8f5902;
+        font-style: italic;
+      }
+      &.ot {
+        color: #8f5902;
+      }
+      &.al {
+        color: #ef2929;
+      }
+      &.fu {
+        color: #000000;
+      }
+      &.er {
+        color: #a40000;
+        font-weight: bold;
+      }
+      &.wa {
+        color: #8f5902;
+        font-weight: bold;
+        font-style: italic;
+      }
+      &.cn, &.sc {
+        color: #000000;
+      }
+      &.vs, &.ss {
+        color: #4e9a06;
+      }
+      &.im {}
+      &.va {
+        color: #000000;
+      }
+      &.cf {
+        color: #204a87;
+        font-weight: bold;
+      }
+      &.op {
+        color: #ce5c00;
+        font-weight: bold;
+      }
+      &.pp {
+        color: #8f5902;
+        font-style: italic;
+      }
+      &.ex {}
+      &.at {
+        color: #c4a000;
+      }
+      &.do, &.an, &.cv, &.in {
+        color: #8f5902;
+        font-weight: bold;
+        font-style: italic;
+      }
+    }
+  }
+}

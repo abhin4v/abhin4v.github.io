@@ -1,15 +1,6 @@
 @import "consts";
 @import "fa";
 @import "navigation";
-@import "comments";
-@import "toc";
-@import "activities";
-@import "readings";
-@import "archive";
-@import "sidenotes";
-@import "pager";
-@import "posts";
-@import "webmentions";
 
 html {
   overflow-x: hidden;
@@ -177,17 +168,5 @@ em {
   > span {
     position: relative;
     bottom: -0.1em;
-  }
-}
-
-#ref-sites {
-  ul {
-    padding-left: 1em;
-    li {
-      list-style: none;
-      &:before {
-        content: "> ";
-      }
-    }
   }
 }

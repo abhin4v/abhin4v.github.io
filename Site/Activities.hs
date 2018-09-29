@@ -88,6 +88,7 @@ activities env = do
 
         let ctx = listField "activities" activityCtx (mapM makeItem activities') <>
                   constField "title" "Activities" <>
+                  constField "page_type" "activities" <>
                   siteContext
 
         makeItem ""

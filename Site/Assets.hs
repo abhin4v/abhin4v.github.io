@@ -43,7 +43,7 @@ assets = do
   -- scss files
   scssDependencies <- makePatternDependency "css/_*.scss"
   rulesExtraDependencies [scssDependencies] $
-    match "css/default.scss" $ do
+    match (fromRegex "css/[^_]+.scss") $ do
       route $ setExtension "css"
       compile (fmap compressCss <$> sassCompiler)
 

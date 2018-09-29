@@ -25,8 +25,9 @@ collections tags env = do
     route indexHTMLRoute
     compile $ do
       posts <- groupPostsByYear =<< recentFirst =<< loadAll pattrn
-      let ctx = constField "title" title <>
-                constField "tag" tag <>
+      let ctx = constField "title" title                        <>
+                constField "page_type" "archive"                <>
+                constField "tag" tag                            <>
                 listField "posts" defaultContext (return posts) <>
                 siteContext
 
@@ -54,6 +55,7 @@ collections tags env = do
         let archiveCtx = listField "posts" defaultContext (return posts) <>
                          tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
                          constField "title" "Archive" <>
+                         constField "page_type" "archive" <>
                          siteContext
 
         makeItem ""
@@ -69,7 +71,8 @@ collections tags env = do
       posts <- groupPostsByYear =<< recentFirst =<< loadAllSnapshots ("drafts/*.md" .&&. hasNoVersion) "content"
       let archiveCtx = listField "posts" defaultContext (return posts) <>
                         tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
-                        constField "title" "Drafts"             <>
+                        constField "title" "Drafts" <>
+                        constField "page_type" "archive" <>
                         siteContext
 
       makeItem ""
@@ -116,8 +119,9 @@ collections tags env = do
           morePosts = morePostCountW <> " more post" <> (if morePostCount == 1 then "" else "s")
       let indexCtx =
             listField "posts" postCtx (return posts) <>
-            constField "title" "Home"                                                                 <>
-            constField "more_posts" morePosts                                                         <>
+            constField "title" "Home"                <>
+            constField "page_type" "website"         <>
+            constField "more_posts" morePosts        <>
             siteContext
 
       getResourceBody

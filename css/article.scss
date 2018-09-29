@@ -1,0 +1,198 @@
+@import "consts";
+@import "posts";
+@import "comments";
+@import "toc";
+@import "sidenotes";
+@import "pager";
+@import "webmentions";
+@import "syntax";
+
+article.post {
+    a.img-link {
+        text-decoration: none;
+        color: inherit;
+        img {
+            border: 1px solid #ddd;
+            margin: 0px auto;
+            display: block;
+            padding: 0.2em;
+            max-width: 100%;
+        }
+        span {
+            display: block;
+            text-align: center;
+            font-size: 0.8em;
+        }
+    }
+    td.hljs-ln-code {
+        padding-left: 0.5em;
+    }
+    td.hljs-ln-numbers {
+        color: brown;
+        vertical-align: top;
+        border-right: 1px solid #aaa;
+        padding-right: 0.5em;
+        font-size: smaller;
+    }
+    pre {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        background-color: #fafafa;
+        border: solid #f3f3f3;
+        border-width: 2px 0;
+        position: relative;
+    }
+    small {
+        pre {
+            white-space: pre;
+            code {
+                overflow-x: scroll;
+                overflow-y: hidden;
+                display: flex;
+            }
+        }
+    }
+    .footnotes {
+        p {
+            margin-top: 0.5em;
+            margin-bottom: 0.5em;
+            line-height: normal;
+        }
+        ol::before {
+            content: "Footnotes";
+            margin-left: -2em;
+        }
+        blockquote {
+            margin: auto;
+        }
+    }
+    .scrollable-table {
+        overflow-x: auto;
+    }
+    blockquote {
+        border-left: 10px solid #ccc;
+        padding: 0 0.5em;
+
+        p {
+            margin: 0.7em auto;
+        }
+    }
+    .twitter-button {
+        line-height: 0.8em;
+    }
+    .source {
+        font-size: 0.8em;
+    }
+    section.body > .scrollable-table table {
+        border-collapse: collapse;
+        min-width: 40%;
+        th {
+            font-weight: bold;
+        }
+        td, th {
+            padding: 0.2em 1em;
+        }
+        thead {
+            border-top: 2px solid lighten($text-color, 30%);
+            border-bottom: 2px solid lighten($text-color, 30%);
+            display: table-row-group;
+        }
+        tbody {
+            tr {
+                border-bottom: 1px solid lighten($text-color, 30%);
+            }
+        }
+    }
+}
+
+body.article-page {
+    article.post {
+        section.body > p:first-child::first-letter {
+            float: left;
+            font-size: 4.5em;
+            line-height: 0.7em;
+            margin: 0.1em 0.15em 0 0;
+        }
+    }
+}
+
+.no-js div.twitter-button {
+    display: none;
+}
+
+@media screen and(max-width: 640px) {
+    article.post {
+        section.body {
+            > .scrollable-table table {
+                td, th {
+                    padding: 0.2em 0.2em;
+                }
+                min-width: 60%;
+            }
+        }
+        blockquote {
+            margin: auto 1em;
+            ul {
+                padding-left: 1em;
+            }
+        }
+    }
+}
+
+@media screen and(max-width: 900px) {
+    #home-posts {
+        article.post {
+            section.header {
+                text-align: right;
+            }
+        }
+    }
+}
+
+@media print {
+    article.post {
+        h1 {
+            font-size: 2.7em!important;
+        }
+        .twitter-share-button, .post-comments, .post-download {
+            display: none!important;
+        }
+        p, li, blockquote {
+            page-break-inside: avoid;
+        }
+        pre {
+            border: none!important;
+            page-break-inside: avoid;
+        }
+        small {
+            font-size: 0.76em;
+            pre {
+                white-space: pre-wrap;
+                code {
+                    overflow-x: hidden;
+                }
+            }
+        }
+        .source {
+            display: none!important;
+        }
+        ul.headers {
+            display: block;
+            li {
+                display: list-item;
+                text-align: right;
+            }
+        }
+        section.body {
+            > .scrollable-table table {
+                page-break-inside: avoid;
+            }
+            a:after {
+                display: none!important;
+            }
+        }
+        td.hljs-ln-numbers {
+            border-right: none;
+        }
+    }
+}
