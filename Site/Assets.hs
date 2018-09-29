@@ -17,7 +17,8 @@ assets = do
   -- 404
   match "404.html" $ do
     route idRoute
-    compile $ pandocCompiler
+    compile $ getResourceBody
+      >>= applyAsTemplate siteContext
       >>= loadAndApplyTemplate "templates/default.html" siteContext
 
   -- images

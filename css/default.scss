@@ -1,5 +1,4 @@
 @import "consts";
-@import "fa";
 @import "navigation";
 
 html {
@@ -161,12 +160,28 @@ em {
 .feed-icon {
   float: right;
   color: $text-color!important;
-  margin-top: 0.7em;
   &:hover {
     color: $link-color!important;
   }
-  > span {
-    position: relative;
-    bottom: -0.1em;
+  > svg {
+    width: 1.5em;
+    height: 1.5em;
+    margin-bottom: -1em;
+  }
+}
+
+.assist-icon {
+  width: 0.8em;
+  height: 0.8em;
+  &.tags {
+    width: 1em;
+    height: 1em;
+    margin-bottom: -0.2em;
+  }
+  &.arrow-right {
+    margin-bottom: -0.2em;
+    width: 1em;
+    height: 1em;
+    fill: $link-color;
   }
 }
