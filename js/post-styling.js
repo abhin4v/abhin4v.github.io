@@ -121,12 +121,8 @@
 
 (function() {
   function highlight() {
-    if (typeof hljs !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
+    if (typeof loadStyleSheet !== 'undefined') {
       loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
-      hljs.initHighlightingOnLoad();
-      hljs.initLineNumbersOnLoad({
-        singleLine: true
-      });
     } else {
       window.setTimeout(highlight, 500);
     }
