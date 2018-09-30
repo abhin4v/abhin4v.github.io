@@ -52,7 +52,6 @@
         </script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-        <link rel="stylesheet" href="//abhinavsarkar.net/css/default.css">
         <link rel="stylesheet" href="//abhinavsarkar.net/css/article.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif|Cardo">
 
@@ -864,8 +863,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.1.0/highlightjs-line-numbers.min.js"></script>
 <script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
 <script>
-  window.asn_ss = window.asn_ss || [];
-  window.asn_ss.push("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
   window.setTimeout(function() {
       if (window.twttr == undefined) {
         document.getElementsByClassName("twitter-button")[0].setAttribute("style", "display: none");
@@ -891,13 +888,6 @@
           jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
         }
       }
-
-      jQuery(document).ready(function() {
-        window.asn_ss = window.asn_ss || [];
-        for (var i = 0; i < window.asn_ss.length; i++) {
-          loadStyleSheet(window.asn_ss[i]);
-        }
-      });
     </script>
     <style type="text/css" media="print">
       @page {

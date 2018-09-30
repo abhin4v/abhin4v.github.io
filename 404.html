@@ -50,8 +50,7 @@
         </script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
-        <link rel="stylesheet" href="/css/default.css">
-        
+        <link rel="stylesheet" href="/css/website.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Fira+Mono|Lato|Noto+Serif|Cardo">
 
         <!-- Matomo -->
@@ -122,13 +121,6 @@
           jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
         }
       }
-
-      jQuery(document).ready(function() {
-        window.asn_ss = window.asn_ss || [];
-        for (var i = 0; i < window.asn_ss.length; i++) {
-          loadStyleSheet(window.asn_ss[i]);
-        }
-      });
     </script>
     <style type="text/css" media="print">
       @page {
