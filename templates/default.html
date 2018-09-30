@@ -120,13 +120,6 @@
           jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
         }
       }
-
-      jQuery(document).ready(function() {
-        window.asn_ss = window.asn_ss || [];
-        for (var i = 0; i < window.asn_ss.length; i++) {
-          loadStyleSheet(window.asn_ss[i]);
-        }
-      });
     </script>
     <style type="text/css" media="print">
       @page {
