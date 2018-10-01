@@ -159,11 +159,15 @@
         }
       }
 
-      jQuery(window).ready(function() {
+      jQuery(window).ready(function setGenTime() {
         if (window.performance && window.performance.timing) {
           var t = window.performance.timing;
           var elapsed = t.loadEventEnd - t.navigationStart;
-          jQuery("#gen-time").text("in " + elapsed + " ms");
+          if (elapsed >= 0) {
+            jQuery("#gen-time").text("| Served in " + elapsed + " ms");
+          } else {
+            window.setTimeout(setGenTime, 1000);
+          }
         }
       });
     </script>
