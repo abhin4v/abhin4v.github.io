@@ -41,7 +41,7 @@
       }
 
       jQuery(document).ready(function() {
-        loadStyleSheet("https://cdn.rawgit.com/DKirwan/calendar-heatmap/7d1b971f/src/calendar-heatmap.css");
+        loadStyleSheet("/css/calendar-heatmap.css");
 
         fetch("/files/activities.json")
         .then(function(response) {

@@ -131,8 +131,8 @@
   function setupFeatherlight() {
     if (typeof jQuery !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
       if (jQuery("a.img-link").length > 0) {
-        loadStyleSheet("https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.css");
-        jQuery.getScript("https://cdn.rawgit.com/noelboss/featherlight/1.7.9/release/featherlight.min.js", function() {
+        loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.css");
+        jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.js", function() {
           jQuery("a.img-link").attr("data-featherlight", "image");
         });
       }
