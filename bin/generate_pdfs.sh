@@ -8,7 +8,7 @@ sleep 5
 
 git status --short
 
-CSS_CHANGED=`git status --short | grep "css/"`
+CSS_CHANGED=`git status --short | grep "css/article.css"`
 if [ -z "$CSS_CHANGED" -a "$CSS_CHANGED" == "" ]; then
   git status --short | \
     grep "posts/.*" | \
