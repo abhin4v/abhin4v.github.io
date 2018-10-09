@@ -5,7 +5,7 @@
   margin-bottom: -0.3em;
   .link {
     display: inline-block;
-    width: 2em;
+    width: 2.4em;
     margin: auto;
     a {
       position: relative;
@@ -54,5 +54,13 @@
   }
   .link a {
     color: #9E85D2;
+  }
+}
+.walk {
+  .bar {
+    background-color: #5fc042;
+  }
+  .link a {
+    color: #5fc042;
   }
 }

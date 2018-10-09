@@ -39,7 +39,7 @@ getActivities feedURL =
         forM rssItems $ \RSSItem {..} -> do
           t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
           let activityName = T.unpack $ fromJust rssItemTitle
-              activityType = if "Ride" `isInfixOf` activityName then "ride" else "run"
+              activityType = getActivityType activityName
               desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
                      . splitOn ", "
                      . head
@@ -64,6 +64,11 @@ getActivities feedURL =
                           }
       _ -> error "Impossible"
   where
+    getActivityType activityName
+      | "Ride" `isInfixOf` activityName = "ride"
+      | "Walk" `isInfixOf` activityName = "walk"
+      | otherwise = "run"
+
     renderDesc :: [(String, String)] -> String
     renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) ->
       H.li ! A.title (toValue k) $ H.toHtml $ cleanVal k v
