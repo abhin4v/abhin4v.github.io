@@ -17,6 +17,7 @@ RUN set -xe \
     && git pull origin master \
     && cd .. \
     && stack exec site build \
+    && apt-get update && apt-get install tree && tree photos \
     && cd _site \
     && git add --all \
     && bash ../bin/generate_pdfs.sh \
