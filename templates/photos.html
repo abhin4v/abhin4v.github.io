@@ -1,0 +1,73 @@
+<h1>$title$</h1>
+
+<section class="photos">
+    $for(photos)$
+    <a href="/$orig$" class="img-link col-$col$">
+        <picture class="photo">
+            <source srcset="/$xlarge$" media="(min-width: 1680px)">
+            <source srcset="/$large$" media="(min-width: 960px)">
+            <source srcset="/$medium$" media="(min-width: 640px)">
+            <img src="/$small$">
+        </picture>
+    </a>
+    $endfor$
+</section>
+<script>
+(function(){
+  var colCount = 3;
+
+  function colHeight(colSel) {
+    return jQuery(".photos " + colSel + " img")
+      .map(function() { return jQuery(this).outerHeight(true); })
+      .get()
+      .reduce(function (acc, x) { return acc + x; });
+  }
+
+  function setColHeightOnResize() {
+    clearTimeout(window.resizedFinished);
+    window.resizedFinished = setTimeout(function(){
+        setColHeight();
+    }, 250);
+  }
+
+  function setColHeight() {
+    if (typeof jQuery !== 'undefined') {
+        var heights = [...Array(colCount).keys()].map(function (c) { return colHeight(".col-" + c); });
+        jQuery(".photos")
+            .height(Math.max(...heights) + 25)
+            .css("column-fill", "auto");
+        jQuery(window).resize(setColHeightOnResize);
+        jQuery(".photo img").on("load", setColHeightOnResize);
+    } else {
+      window.setTimeout(setColHeight, 500);
+    }
+  }
+
+  function setupFeatherlight() {
+    if (typeof jQuery !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
+      if (jQuery("a.img-link").length > 0) {          
+        loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.css");
+        loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.css");
+
+        jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.js", function() {
+          jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/2.0.0/jquery.mobile-events.min.js", function() {
+            jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.js", function() {
+              jQuery('a.img-link').featherlightGallery({
+                previousIcon: '«',
+                nextIcon: '»',
+                galleryFadeIn: 300,
+                openSpeed: 300
+              });
+            });
+          });
+        });
+      }
+    } else {
+      window.setTimeout(setupFeatherlight, 500);
+    }
+  }
+
+  setupFeatherlight();
+  setColHeight();
+}());
+</script>

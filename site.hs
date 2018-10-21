@@ -7,6 +7,7 @@ import Site.Activities
 import Site.Assets
 import Site.Collections
 import Site.Pages
+import Site.Photos
 import Site.Posts
 import Site.Readings
 import System.Environment (lookupEnv)
@@ -25,6 +26,7 @@ main = do
     collections tags env
     activities env
     readings env
+    photos env
 
     -- templates
     match "templates/*" $ compile templateBodyCompiler

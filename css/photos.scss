@@ -1,0 +1,34 @@
+@import "default";
+@import "consts";
+
+body.photos-page {
+    main {
+        max-width: unset;
+        margin-left: unset;
+        margin-right: unset;
+        padding: 0 0.5vw;
+
+        h1 {
+            text-align: center;
+        }
+
+        .photos {
+            text-align: center;
+            line-height: 0;
+
+            -webkit-column-count: 3;
+            -webkit-column-gap: 0.5vw;
+            -moz-column-count: 3;
+            -moz-column-gap: 0.5vw;
+            column-count: 3;
+            column-gap: 0.5vw;
+            column-fill: balance;
+
+            .photo img {
+                width: 100% !important;
+                height: auto !important;
+                margin-bottom: 0.5vw;
+            }
+        }
+    }
+}

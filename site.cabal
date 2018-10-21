@@ -26,6 +26,9 @@ executable site
                   , numerals
                   , aeson
                   , aeson-casing
+                  , thumbnail-plus
+                  , data-default
+                  , resourcet
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections
@@ -34,6 +37,7 @@ executable site
                   , Site.Webmentions
                   , Site.Pages
                   , Site.Pandoc
+                  , Site.Photos
                   , Site.Posts
                   , Site.PostCompiler
                   , Site.Readings
