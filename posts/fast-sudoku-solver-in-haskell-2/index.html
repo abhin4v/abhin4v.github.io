@@ -367,92 +367,92 @@
 </div>
 <p>Voilà! We have found a Single <code>4</code> and a set of Triplets <code>2</code>, <code>3</code> and <code>8</code>. You can go over the puzzle row and verify that this indeed is the case.</p>
 <p>Translating this logic to Haskell is quite easy now:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" data-line-number="1"><span class="ot">isPossible ::</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">isPossible (<span class="dt">Possible</span> _) <span class="fu">=</span> <span class="dt">True</span></a>
-<a class="sourceLine" id="cb11-3" data-line-number="3">isPossible _            <span class="fu">=</span> <span class="dt">False</span></a>
-<a class="sourceLine" id="cb11-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb11-5" data-line-number="5"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]]</a>
-<a class="sourceLine" id="cb11-6" data-line-number="6">exclusivePossibilities row <span class="fu">=</span></a>
-<a class="sourceLine" id="cb11-7" data-line-number="7">  <span class="co">-- input</span></a>
-<a class="sourceLine" id="cb11-8" data-line-number="8">  row</a>
-<a class="sourceLine" id="cb11-9" data-line-number="9">  <span class="co">-- [Possible [4,6,9], Fixed 1, Fixed 5, Possible [6,9], Fixed 7, Possible [2,3,6,8,9],</span></a>
-<a class="sourceLine" id="cb11-10" data-line-number="10">  <span class="co">-- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]</span></a>
-<a class="sourceLine" id="cb11-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb11-12" data-line-number="12">  <span class="co">-- step 1</span></a>
-<a class="sourceLine" id="cb11-13" data-line-number="13">  <span class="fu">&amp;</span> zip [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>]</a>
-<a class="sourceLine" id="cb11-14" data-line-number="14">  <span class="co">-- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),</span></a>
-<a class="sourceLine" id="cb11-15" data-line-number="15">  <span class="co">-- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),</span></a>
-<a class="sourceLine" id="cb11-16" data-line-number="16">  <span class="co">-- (9,Possible [2,3,6,8,9])]</span></a>
-<a class="sourceLine" id="cb11-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb11-18" data-line-number="18">  <span class="co">-- step 2</span></a>
-<a class="sourceLine" id="cb11-19" data-line-number="19">  <span class="fu">&amp;</span> filter (isPossible <span class="fu">.</span> snd)</a>
-<a class="sourceLine" id="cb11-20" data-line-number="20">  <span class="co">-- [(1,Possible [4,6,9]),(4,Possible [6,9]),(6,Possible [2,3,6,8,9]),</span></a>
-<a class="sourceLine" id="cb11-21" data-line-number="21">  <span class="co">-- (7,Possible [6,9]), (8,Possible [2,3,6,8,9]),(9,Possible [2,3,6,8,9])]</span></a>
-<a class="sourceLine" id="cb11-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb11-23" data-line-number="23">  <span class="co">-- step 3</span></a>
-<a class="sourceLine" id="cb11-24" data-line-number="24">  <span class="fu">&amp;</span> Data.List.foldl'</a>
-<a class="sourceLine" id="cb11-25" data-line-number="25">      (\acc <span class="fu">~</span>(i, <span class="dt">Possible</span> xs) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb11-26" data-line-number="26">        Data.List.foldl' (\acc' x <span class="ot">-&gt;</span> Map.insertWith prepend x [i] acc') acc xs)</a>
-<a class="sourceLine" id="cb11-27" data-line-number="27">      Map.empty</a>
-<a class="sourceLine" id="cb11-28" data-line-number="28">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(6,[9,8,7,6,4,1]),(8,[9,8,6]),</span></a>
-<a class="sourceLine" id="cb11-29" data-line-number="29">  <span class="co">-- (9,[9,8,7,6,4,1])]</span></a>
-<a class="sourceLine" id="cb11-30" data-line-number="30"></a>
-<a class="sourceLine" id="cb11-31" data-line-number="31">  <span class="co">-- step 4</span></a>
-<a class="sourceLine" id="cb11-32" data-line-number="32">  <span class="fu">&amp;</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> length)</a>
-<a class="sourceLine" id="cb11-33" data-line-number="33">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(8,[9,8,6])]</span></a>
-<a class="sourceLine" id="cb11-34" data-line-number="34"></a>
-<a class="sourceLine" id="cb11-35" data-line-number="35">  <span class="co">-- step 5</span></a>
-<a class="sourceLine" id="cb11-36" data-line-number="36">  <span class="fu">&amp;</span> Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty</a>
-<a class="sourceLine" id="cb11-37" data-line-number="37">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
-<a class="sourceLine" id="cb11-38" data-line-number="38"></a>
-<a class="sourceLine" id="cb11-39" data-line-number="39">  <span class="co">-- step 6</span></a>
-<a class="sourceLine" id="cb11-40" data-line-number="40">  <span class="fu">&amp;</span> Map.filterWithKey (\is xs <span class="ot">-&gt;</span> length is <span class="fu">==</span> length xs)</a>
-<a class="sourceLine" id="cb11-41" data-line-number="41">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
-<a class="sourceLine" id="cb11-42" data-line-number="42"></a>
-<a class="sourceLine" id="cb11-43" data-line-number="43">  <span class="co">-- step 7</span></a>
-<a class="sourceLine" id="cb11-44" data-line-number="44">  <span class="fu">&amp;</span> Map.elems</a>
-<a class="sourceLine" id="cb11-45" data-line-number="45">  <span class="co">-- [[4],[8,3,2]]</span></a>
-<a class="sourceLine" id="cb11-46" data-line-number="46">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb11-47" data-line-number="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">isPossible ::</span> <span class="dt">Cell</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb11-2" title="2">isPossible (<span class="dt">Possible</span> _) <span class="fu">=</span> <span class="dt">True</span></a>
+<a class="sourceLine" id="cb11-3" title="3">isPossible _            <span class="fu">=</span> <span class="dt">False</span></a>
+<a class="sourceLine" id="cb11-4" title="4"></a>
+<a class="sourceLine" id="cb11-5" title="5"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [[<span class="dt">Int</span>]]</a>
+<a class="sourceLine" id="cb11-6" title="6">exclusivePossibilities row <span class="fu">=</span></a>
+<a class="sourceLine" id="cb11-7" title="7">  <span class="co">-- input</span></a>
+<a class="sourceLine" id="cb11-8" title="8">  row</a>
+<a class="sourceLine" id="cb11-9" title="9">  <span class="co">-- [Possible [4,6,9], Fixed 1, Fixed 5, Possible [6,9], Fixed 7, Possible [2,3,6,8,9],</span></a>
+<a class="sourceLine" id="cb11-10" title="10">  <span class="co">-- Possible [6,9], Possible [2,3,6,8,9], Possible [2,3,6,8,9]]</span></a>
+<a class="sourceLine" id="cb11-11" title="11"></a>
+<a class="sourceLine" id="cb11-12" title="12">  <span class="co">-- step 1</span></a>
+<a class="sourceLine" id="cb11-13" title="13">  <span class="fu">&amp;</span> <span class="fu">zip</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">9</span>]</a>
+<a class="sourceLine" id="cb11-14" title="14">  <span class="co">-- [(1,Possible [4,6,9]),(2,Fixed 1),(3,Fixed 5),(4,Possible [6,9]),(5,Fixed 7),</span></a>
+<a class="sourceLine" id="cb11-15" title="15">  <span class="co">-- (6,Possible [2,3,6,8,9]),(7,Possible [6,9]),(8,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-16" title="16">  <span class="co">-- (9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-17" title="17"></a>
+<a class="sourceLine" id="cb11-18" title="18">  <span class="co">-- step 2</span></a>
+<a class="sourceLine" id="cb11-19" title="19">  <span class="fu">&amp;</span> <span class="fu">filter</span> (isPossible <span class="fu">.</span> <span class="fu">snd</span>)</a>
+<a class="sourceLine" id="cb11-20" title="20">  <span class="co">-- [(1,Possible [4,6,9]),(4,Possible [6,9]),(6,Possible [2,3,6,8,9]),</span></a>
+<a class="sourceLine" id="cb11-21" title="21">  <span class="co">-- (7,Possible [6,9]), (8,Possible [2,3,6,8,9]),(9,Possible [2,3,6,8,9])]</span></a>
+<a class="sourceLine" id="cb11-22" title="22"></a>
+<a class="sourceLine" id="cb11-23" title="23">  <span class="co">-- step 3</span></a>
+<a class="sourceLine" id="cb11-24" title="24">  <span class="fu">&amp;</span> Data.List.foldl'</a>
+<a class="sourceLine" id="cb11-25" title="25">      (\acc <span class="fu">~</span>(i, <span class="dt">Possible</span> xs) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb11-26" title="26">        Data.List.foldl' (\acc' x <span class="ot">-&gt;</span> Map.insertWith prepend x [i] acc') acc xs)</a>
+<a class="sourceLine" id="cb11-27" title="27">      Map.empty</a>
+<a class="sourceLine" id="cb11-28" title="28">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(6,[9,8,7,6,4,1]),(8,[9,8,6]),</span></a>
+<a class="sourceLine" id="cb11-29" title="29">  <span class="co">-- (9,[9,8,7,6,4,1])]</span></a>
+<a class="sourceLine" id="cb11-30" title="30"></a>
+<a class="sourceLine" id="cb11-31" title="31">  <span class="co">-- step 4</span></a>
+<a class="sourceLine" id="cb11-32" title="32">  <span class="fu">&amp;</span> Map.filter ((<span class="fu">&lt;</span> <span class="dv">4</span>) <span class="fu">.</span> <span class="fu">length</span>)</a>
+<a class="sourceLine" id="cb11-33" title="33">  <span class="co">-- fromList [(2,[9,8,6]),(3,[9,8,6]),(4,[1]),(8,[9,8,6])]</span></a>
+<a class="sourceLine" id="cb11-34" title="34"></a>
+<a class="sourceLine" id="cb11-35" title="35">  <span class="co">-- step 5</span></a>
+<a class="sourceLine" id="cb11-36" title="36">  <span class="fu">&amp;</span> Map.foldlWithKey'(\acc x is <span class="ot">-&gt;</span> Map.insertWith prepend is [x] acc) Map.empty</a>
+<a class="sourceLine" id="cb11-37" title="37">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-38" title="38"></a>
+<a class="sourceLine" id="cb11-39" title="39">  <span class="co">-- step 6</span></a>
+<a class="sourceLine" id="cb11-40" title="40">  <span class="fu">&amp;</span> Map.filterWithKey (\is xs <span class="ot">-&gt;</span> <span class="fu">length</span> is <span class="fu">==</span> <span class="fu">length</span> xs)</a>
+<a class="sourceLine" id="cb11-41" title="41">  <span class="co">-- fromList [([1],[4]),([9,8,6],[8,3,2])]</span></a>
+<a class="sourceLine" id="cb11-42" title="42"></a>
+<a class="sourceLine" id="cb11-43" title="43">  <span class="co">-- step 7</span></a>
+<a class="sourceLine" id="cb11-44" title="44">  <span class="fu">&amp;</span> Map.elems</a>
+<a class="sourceLine" id="cb11-45" title="45">  <span class="co">-- [[4],[8,3,2]]</span></a>
+<a class="sourceLine" id="cb11-46" title="46">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb11-47" title="47">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
 <p>We extract the <code>isPossible</code> function to the top level from the <code>nextGrids</code> function for reuse. Then we write the <code>exclusivePossibilities</code> function which finds the Exclusives in the input row. This function is written using the reverse application operator <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Function.html#v:-38-" target="_blank" rel="noopener"><code>(&amp;)</code></a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> instead of the usual <code>($)</code> operator so that we can read it from top to bottom. We also show the intermediate values for a sample input after every step in the function chain.</p>
 <p>The nub of the function lies in step 3 (pun intended). We do a nested fold over all the non-fixed cells and all the possible digits in them to compute the map<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> which represents the first table. Thereafter, we filter the map to keep only the entries with length less than four (step 4). Then we flip it to create a new map which represents the second table (step 5). Finally, we filter the flipped map for the entries where the cell count is same as the digit count (step 6) to arrive at the final table. The step 7 just gets the values in the map which is the list of all the Exclusives in the input row.</p>
 <h2 id="pruning-the-cells-exclusively" data-track-content data-content-name="pruning-the-cells-exclusively" data-content-piece="fast-sudoku-solver-in-haskell-2">Pruning the Cells, Exclusively<a href="#pruning-the-cells-exclusively" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>To start with, we extract some reusable code from the previous <code>pruneCells</code> function and rename it to <code>pruneCellsByFixed</code>:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="ot">makeCell ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Cell</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2">makeCell ys <span class="fu">=</span> <span class="kw">case</span> ys <span class="kw">of</span></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3">  []  <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4">  [y] <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Fixed</span> y</a>
-<a class="sourceLine" id="cb12-5" data-line-number="5">  _   <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> ys</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="ot">pruneCellsByFixed ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
-<a class="sourceLine" id="cb12-8" data-line-number="8">pruneCellsByFixed cells <span class="fu">=</span> traverse pruneCell cells</a>
-<a class="sourceLine" id="cb12-9" data-line-number="9">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb12-10" data-line-number="10">    fixeds <span class="fu">=</span> [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> cells]</a>
-<a class="sourceLine" id="cb12-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12">    pruneCell (<span class="dt">Possible</span> xs) <span class="fu">=</span> makeCell (xs <span class="dt">Data.List</span><span class="fu">.</span>\\ fixeds)</a>
-<a class="sourceLine" id="cb12-13" data-line-number="13">    pruneCell x             <span class="fu">=</span> <span class="dt">Just</span> x</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="ot">makeCell ::</span> [<span class="dt">Int</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Cell</span></a>
+<a class="sourceLine" id="cb12-2" title="2">makeCell ys <span class="fu">=</span> <span class="kw">case</span> ys <span class="kw">of</span></a>
+<a class="sourceLine" id="cb12-3" title="3">  []  <span class="ot">-&gt;</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb12-4" title="4">  [y] <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Fixed</span> y</a>
+<a class="sourceLine" id="cb12-5" title="5">  _   <span class="ot">-&gt;</span> <span class="dt">Just</span> <span class="fu">$</span> <span class="dt">Possible</span> ys</a>
+<a class="sourceLine" id="cb12-6" title="6"></a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="ot">pruneCellsByFixed ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb12-8" title="8">pruneCellsByFixed cells <span class="fu">=</span> <span class="fu">traverse</span> pruneCell cells</a>
+<a class="sourceLine" id="cb12-9" title="9">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-10" title="10">    fixeds <span class="fu">=</span> [x <span class="fu">|</span> <span class="dt">Fixed</span> x <span class="ot">&lt;-</span> cells]</a>
+<a class="sourceLine" id="cb12-11" title="11"></a>
+<a class="sourceLine" id="cb12-12" title="12">    pruneCell (<span class="dt">Possible</span> xs) <span class="fu">=</span> makeCell (xs <span class="dt">Data.List</span><span class="fu">.</span>\\ fixeds)</a>
+<a class="sourceLine" id="cb12-13" title="13">    pruneCell x             <span class="fu">=</span> <span class="dt">Just</span> x</a></code></pre></div>
 <p>Now we write the <code>pruneCellsByExclusives</code> function which uses the <code>exclusivePossibilities</code> function to prune the cells:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="ot">pruneCellsByExclusives ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
-<a class="sourceLine" id="cb13-2" data-line-number="2">pruneCellsByExclusives cells <span class="fu">=</span> <span class="kw">case</span> exclusives <span class="kw">of</span></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3">  [] <span class="ot">-&gt;</span> <span class="dt">Just</span> cells</a>
-<a class="sourceLine" id="cb13-4" data-line-number="4">  _  <span class="ot">-&gt;</span> traverse pruneCell cells</a>
-<a class="sourceLine" id="cb13-5" data-line-number="5">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-6" data-line-number="6">    exclusives    <span class="fu">=</span> exclusivePossibilities cells</a>
-<a class="sourceLine" id="cb13-7" data-line-number="7">    allExclusives <span class="fu">=</span> concat exclusives</a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb13-9" data-line-number="9">    pruneCell cell<span class="fu">@</span>(<span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> cell</a>
-<a class="sourceLine" id="cb13-10" data-line-number="10">    pruneCell cell<span class="fu">@</span>(<span class="dt">Possible</span> xs)</a>
-<a class="sourceLine" id="cb13-11" data-line-number="11">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span> makeCell intersection</a>
-<a class="sourceLine" id="cb13-12" data-line-number="12">      <span class="fu">|</span> otherwise                      <span class="fu">=</span> <span class="dt">Just</span> cell</a>
-<a class="sourceLine" id="cb13-13" data-line-number="13">      <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-14" data-line-number="14">        intersection <span class="fu">=</span> xs <span class="ot">`Data.List.intersect`</span> allExclusives</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="ot">pruneCellsByExclusives ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb13-2" title="2">pruneCellsByExclusives cells <span class="fu">=</span> <span class="kw">case</span> exclusives <span class="kw">of</span></a>
+<a class="sourceLine" id="cb13-3" title="3">  [] <span class="ot">-&gt;</span> <span class="dt">Just</span> cells</a>
+<a class="sourceLine" id="cb13-4" title="4">  _  <span class="ot">-&gt;</span> <span class="fu">traverse</span> pruneCell cells</a>
+<a class="sourceLine" id="cb13-5" title="5">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-6" title="6">    exclusives    <span class="fu">=</span> exclusivePossibilities cells</a>
+<a class="sourceLine" id="cb13-7" title="7">    allExclusives <span class="fu">=</span> <span class="fu">concat</span> exclusives</a>
+<a class="sourceLine" id="cb13-8" title="8"></a>
+<a class="sourceLine" id="cb13-9" title="9">    pruneCell cell<span class="fu">@</span>(<span class="dt">Fixed</span> _) <span class="fu">=</span> <span class="dt">Just</span> cell</a>
+<a class="sourceLine" id="cb13-10" title="10">    pruneCell cell<span class="fu">@</span>(<span class="dt">Possible</span> xs)</a>
+<a class="sourceLine" id="cb13-11" title="11">      <span class="fu">|</span> intersection <span class="ot">`elem`</span> exclusives <span class="fu">=</span> makeCell intersection</a>
+<a class="sourceLine" id="cb13-12" title="12">      <span class="fu">|</span> <span class="fu">otherwise</span>                      <span class="fu">=</span> <span class="dt">Just</span> cell</a>
+<a class="sourceLine" id="cb13-13" title="13">      <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-14" title="14">        intersection <span class="fu">=</span> xs <span class="ot">`Data.List.intersect`</span> allExclusives</a></code></pre></div>
 <p><code>pruneCellsByExclusives</code> works exactly as shown in the examples above. We first find the list of Exclusives in the given cells. If there are no Exclusives, there’s nothing to do and we just return the cells. If we find any Exclusives, we <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse" target="_blank" rel="noopener"><code>traverse</code></a> the cells, pruning each cell to only the intersection of the possible digits in the cell and Exclusive digits. That’s it! We reuse the <code>makeCell</code> function to create a new cell with the intersection.</p>
 <p>As the final step, we rewrite the <code>pruneCells</code> function by combining both the functions.</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="ot">fixM ::</span> (<span class="dt">Eq</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (t <span class="ot">-&gt;</span> m t) <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> m t</a>
-<a class="sourceLine" id="cb14-2" data-line-number="2">fixM f x <span class="fu">=</span> f x <span class="fu">&gt;&gt;=</span> \x' <span class="ot">-&gt;</span> <span class="kw">if</span> x' <span class="fu">==</span> x <span class="kw">then</span> return x <span class="kw">else</span> fixM f x'</a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
-<a class="sourceLine" id="cb14-5" data-line-number="5">pruneCells cells <span class="fu">=</span> fixM pruneCellsByFixed cells <span class="fu">&gt;&gt;=</span> fixM pruneCellsByExclusives</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="ot">fixM ::</span> (<span class="dt">Eq</span> t, <span class="dt">Monad</span> m) <span class="ot">=&gt;</span> (t <span class="ot">-&gt;</span> m t) <span class="ot">-&gt;</span> t <span class="ot">-&gt;</span> m t</a>
+<a class="sourceLine" id="cb14-2" title="2">fixM f x <span class="fu">=</span> f x <span class="fu">&gt;&gt;=</span> \x' <span class="ot">-&gt;</span> <span class="kw">if</span> x' <span class="fu">==</span> x <span class="kw">then</span> <span class="fu">return</span> x <span class="kw">else</span> fixM f x'</a>
+<a class="sourceLine" id="cb14-3" title="3"></a>
+<a class="sourceLine" id="cb14-4" title="4"><span class="ot">pruneCells ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> <span class="dt">Maybe</span> [<span class="dt">Cell</span>]</a>
+<a class="sourceLine" id="cb14-5" title="5">pruneCells cells <span class="fu">=</span> fixM pruneCellsByFixed cells <span class="fu">&gt;&gt;=</span> fixM pruneCellsByExclusives</a></code></pre></div>
 <p>We have extracted <code>fixM</code> as a top level function from the <code>pruneGrid</code> function. Just like the <code>pruneGrid'</code> function, we need to use monadic bind (<a href="https://hackage.haskell.org/package/base-4.10.1.0/docs/Control-Monad.html#v:-62--62--61-" target="_blank" rel="noopener"><code>&gt;&gt;=</code></a>) to chain the two pruning steps. We also use <code>fixM</code> to apply each step repeatedly till the pruned cells settle<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a>.</p>
 <p>No further code changes are required. It is time to check out the improvements.</p>
 <h2 id="faster-than-a-speeding-bullet" data-track-content data-content-name="faster-than-a-speeding-bullet" data-content-piece="fast-sudoku-solver-in-haskell-2">Faster than a Speeding Bullet!<a href="#faster-than-a-speeding-bullet" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>

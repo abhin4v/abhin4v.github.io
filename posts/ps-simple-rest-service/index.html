@@ -159,94 +159,94 @@
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#setting-up">Setting Up</a></li><li><a href="#types-first">Types First</a></li><li><a href="#persisting-it">Persisting It</a></li><li><a href="#serving-it">Serving It</a><ol><li><a href="#getting-a-user">Getting a User</a></li><li><a href="#deleting-a-user">Deleting a User</a></li><li><a href="#creating-a-user">Creating a User</a></li><li><a href="#updating-a-user">Updating a User</a></li><li><a href="#listing-all-users">Listing all Users</a></li></ol></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="setting-up" data-track-content data-content-name="setting-up" data-content-piece="ps-simple-rest-service">Setting Up<a href="#setting-up" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with installing PureScript and the required tools. This assumes that we have <a href="https://nodejs.org" target="_blank" rel="noopener">node</a> and <a href="https://www.npmjs.com" target="_blank" rel="noopener">npm</a> installed on our machine.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1">$ <span class="fu">mkdir</span> -p ~/.local/</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">$ <span class="ex">npm</span> install -g purescript pulp bower --prefix ~/.local/</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1">$ <span class="fu">mkdir</span> -p ~/.local/</a>
+<a class="sourceLine" id="cb1-2" title="2">$ <span class="ex">npm</span> install -g purescript pulp bower --prefix ~/.local/</a></code></pre></div>
 <p><a href="https://github.com/purescript-contrib/pulp" target="_blank" rel="noopener">Pulp</a> is a build tool for PureScript projects and <a href="http://bower.io" target="_blank" rel="noopener">bower</a> is a package manager used to get PureScript libraries. We’ll have to add <code>~/.local/bin</code> in our <code>$PATH</code> (if it is not already added) to access the binaries installed.</p>
 <p>Let’s create a directory for our project and make Pulp initialize it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1">$ <span class="fu">mkdir</span> ps-simple-rest-service</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">$ <span class="bu">cd</span> ps-simple-rest-service</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">$ <span class="ex">pulp</span> init</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">$ <span class="fu">ls</span></a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"><span class="ex">bower.json</span>  bower_components  src  test</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">$ <span class="fu">cat</span> bower.json</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="kw">{</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  <span class="st">&quot;name&quot;</span>: <span class="st">&quot;ps-simple-rest-service&quot;</span>,</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">  <span class="st">&quot;ignore&quot;</span>:<span class="bu"> [</span></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">    <span class="st">&quot;**/.*&quot;</span>,</a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">    <span class="st">&quot;node_modules&quot;</span>,</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12">    <span class="st">&quot;bower_components&quot;</span>,</a>
-<a class="sourceLine" id="cb2-13" data-line-number="13">    <span class="st">&quot;output&quot;</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">  ],</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15">  <span class="st">&quot;dependencies&quot;</span>: {</a>
-<a class="sourceLine" id="cb2-16" data-line-number="16">    <span class="st">&quot;purescript-prelude&quot;</span>: <span class="st">&quot;^3.1.0&quot;</span>,</a>
-<a class="sourceLine" id="cb2-17" data-line-number="17">    <span class="st">&quot;purescript-console&quot;</span>: <span class="st">&quot;^3.0.0&quot;</span></a>
-<a class="sourceLine" id="cb2-18" data-line-number="18">  },</a>
-<a class="sourceLine" id="cb2-19" data-line-number="19">  <span class="st">&quot;devDependencies&quot;</span>: {</a>
-<a class="sourceLine" id="cb2-20" data-line-number="20">    <span class="st">&quot;purescript-psci-support&quot;</span>: <span class="st">&quot;^3.0.0&quot;</span></a>
-<a class="sourceLine" id="cb2-21" data-line-number="21">  }</a>
-<a class="sourceLine" id="cb2-22" data-line-number="22">}</a>
-<a class="sourceLine" id="cb2-23" data-line-number="23">$ ls bower_components</a>
-<a class="sourceLine" id="cb2-24" data-line-number="24">purescript-console  purescript-eff  purescript-prelude purescript-psci-support</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="fu">mkdir</span> ps-simple-rest-service</a>
+<a class="sourceLine" id="cb2-2" title="2">$ <span class="bu">cd</span> ps-simple-rest-service</a>
+<a class="sourceLine" id="cb2-3" title="3">$ <span class="ex">pulp</span> init</a>
+<a class="sourceLine" id="cb2-4" title="4">$ <span class="fu">ls</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="ex">bower.json</span>  bower_components  src  test</a>
+<a class="sourceLine" id="cb2-6" title="6">$ <span class="fu">cat</span> bower.json</a>
+<a class="sourceLine" id="cb2-7" title="7"><span class="kw">{</span></a>
+<a class="sourceLine" id="cb2-8" title="8">  <span class="st">&quot;name&quot;</span>: <span class="st">&quot;ps-simple-rest-service&quot;</span>,</a>
+<a class="sourceLine" id="cb2-9" title="9">  <span class="st">&quot;ignore&quot;</span>:<span class="bu"> [</span></a>
+<a class="sourceLine" id="cb2-10" title="10">    <span class="st">&quot;**/.*&quot;</span>,</a>
+<a class="sourceLine" id="cb2-11" title="11">    <span class="st">&quot;node_modules&quot;</span>,</a>
+<a class="sourceLine" id="cb2-12" title="12">    <span class="st">&quot;bower_components&quot;</span>,</a>
+<a class="sourceLine" id="cb2-13" title="13">    <span class="st">&quot;output&quot;</span></a>
+<a class="sourceLine" id="cb2-14" title="14">  ],</a>
+<a class="sourceLine" id="cb2-15" title="15">  <span class="st">&quot;dependencies&quot;</span>: {</a>
+<a class="sourceLine" id="cb2-16" title="16">    <span class="st">&quot;purescript-prelude&quot;</span>: <span class="st">&quot;^3.1.0&quot;</span>,</a>
+<a class="sourceLine" id="cb2-17" title="17">    <span class="st">&quot;purescript-console&quot;</span>: <span class="st">&quot;^3.0.0&quot;</span></a>
+<a class="sourceLine" id="cb2-18" title="18">  },</a>
+<a class="sourceLine" id="cb2-19" title="19">  <span class="st">&quot;devDependencies&quot;</span>: {</a>
+<a class="sourceLine" id="cb2-20" title="20">    <span class="st">&quot;purescript-psci-support&quot;</span>: <span class="st">&quot;^3.0.0&quot;</span></a>
+<a class="sourceLine" id="cb2-21" title="21">  }</a>
+<a class="sourceLine" id="cb2-22" title="22">}</a>
+<a class="sourceLine" id="cb2-23" title="23">$ ls bower_components</a>
+<a class="sourceLine" id="cb2-24" title="24">purescript-console  purescript-eff  purescript-prelude purescript-psci-support</a></code></pre></div>
 <p>Pulp creates the basic project structure for us. <code>src</code> directory will contain the source while the <code>test</code> directory will contain the tests. <code>bower.json</code> contains the PureScript libraries as dependencies which are downloaded and installed in the <code>bower_components</code> directory.</p>
 <div class="page-break">
 
 </div>
 <h2 id="types-first" data-track-content data-content-name="types-first" data-content-piece="ps-simple-rest-service">Types First<a href="#types-first" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>First, we create the types needed in <code>src/SimpleService/Types.purs</code>:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Types</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb3-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb3-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Data.Foreign.Class</span> (class <span class="dt">Decode</span>, class <span class="dt">Encode</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6"><span class="kw">import</span> <span class="dt">Data.Foreign.Generic</span> (defaultOptions, genericDecode, genericEncode)</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Data.Generic.Rep</span> (class <span class="dt">Generic</span>)</a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">import</span> <span class="dt">Data.Generic.Rep.Show</span> (genericShow)</a>
-<a class="sourceLine" id="cb3-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb3-10" data-line-number="10"><span class="kw">type</span> <span class="dt">UserID</span> <span class="fu">=</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb3-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb3-12" data-line-number="12"><span class="kw">newtype</span> <span class="dt">User</span> <span class="fu">=</span> <span class="dt">User</span></a>
-<a class="sourceLine" id="cb3-13" data-line-number="13">  {<span class="ot"> id   ::</span> <span class="dt">UserID</span></a>
-<a class="sourceLine" id="cb3-14" data-line-number="14">  ,<span class="ot"> name ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb3-15" data-line-number="15">  }</a>
-<a class="sourceLine" id="cb3-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb3-17" data-line-number="17">derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <span class="dt">Generic</span> <span class="dt">User</span> _</a>
-<a class="sourceLine" id="cb3-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb3-19" data-line-number="19"><span class="kw">instance</span><span class="ot"> showUser ::</span> <span class="dt">Show</span> <span class="dt">User</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-20" data-line-number="20">  show <span class="fu">=</span> genericShow</a>
-<a class="sourceLine" id="cb3-21" data-line-number="21"></a>
-<a class="sourceLine" id="cb3-22" data-line-number="22"><span class="kw">instance</span><span class="ot"> decodeUser ::</span> <span class="dt">Decode</span> <span class="dt">User</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-23" data-line-number="23">  decode <span class="fu">=</span> genericDecode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a>
-<a class="sourceLine" id="cb3-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb3-25" data-line-number="25"><span class="kw">instance</span><span class="ot"> encodeUser ::</span> <span class="dt">Encode</span> <span class="dt">User</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb3-26" data-line-number="26">  encode <span class="fu">=</span> genericEncode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">module</span> <span class="dt">SimpleService.Types</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-2" title="2"></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb3-4" title="4"></a>
+<a class="sourceLine" id="cb3-5" title="5"><span class="kw">import</span> <span class="dt">Data.Foreign.Class</span> (class <span class="dt">Decode</span>, class <span class="dt">Encode</span>)</a>
+<a class="sourceLine" id="cb3-6" title="6"><span class="kw">import</span> <span class="dt">Data.Foreign.Generic</span> (defaultOptions, genericDecode, genericEncode)</a>
+<a class="sourceLine" id="cb3-7" title="7"><span class="kw">import</span> <span class="dt">Data.Generic.Rep</span> (class <span class="dt">Generic</span>)</a>
+<a class="sourceLine" id="cb3-8" title="8"><span class="kw">import</span> <span class="dt">Data.Generic.Rep.Show</span> (genericShow)</a>
+<a class="sourceLine" id="cb3-9" title="9"></a>
+<a class="sourceLine" id="cb3-10" title="10"><span class="kw">type</span> <span class="dt">UserID</span> <span class="fu">=</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb3-11" title="11"></a>
+<a class="sourceLine" id="cb3-12" title="12"><span class="kw">newtype</span> <span class="dt">User</span> <span class="fu">=</span> <span class="dt">User</span></a>
+<a class="sourceLine" id="cb3-13" title="13">  {<span class="ot"> id   ::</span> <span class="dt">UserID</span></a>
+<a class="sourceLine" id="cb3-14" title="14">  ,<span class="ot"> name ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb3-15" title="15">  }</a>
+<a class="sourceLine" id="cb3-16" title="16"></a>
+<a class="sourceLine" id="cb3-17" title="17">derive <span class="kw">instance</span><span class="ot"> genericUser ::</span> <span class="dt">Generic</span> <span class="dt">User</span> _</a>
+<a class="sourceLine" id="cb3-18" title="18"></a>
+<a class="sourceLine" id="cb3-19" title="19"><span class="kw">instance</span><span class="ot"> showUser ::</span> <span class="dt">Show</span> <span class="dt">User</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-20" title="20">  <span class="fu">show</span> <span class="fu">=</span> genericShow</a>
+<a class="sourceLine" id="cb3-21" title="21"></a>
+<a class="sourceLine" id="cb3-22" title="22"><span class="kw">instance</span><span class="ot"> decodeUser ::</span> <span class="dt">Decode</span> <span class="dt">User</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-23" title="23">  decode <span class="fu">=</span> genericDecode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a>
+<a class="sourceLine" id="cb3-24" title="24"></a>
+<a class="sourceLine" id="cb3-25" title="25"><span class="kw">instance</span><span class="ot"> encodeUser ::</span> <span class="dt">Encode</span> <span class="dt">User</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb3-26" title="26">  encode <span class="fu">=</span> genericEncode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a></code></pre></div>
 <p>We are using the generic support for PureScript types from the <a href="https://pursuit.purescript.org/packages/purescript-generics-rep" target="_blank" rel="noopener"><code>purescript-generics-rep</code></a> and <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic" target="_blank" rel="noopener"><code>purescript-foreign-generic</code></a> libraries to encode and decode the <code>User</code> type to JSON. We install the library by running the following command:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1">$ <span class="ex">bower</span> install purescript-foreign-generic --save</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" title="1">$ <span class="ex">bower</span> install purescript-foreign-generic --save</a></code></pre></div>
 <p>Now we can load up the module in the PureScript REPL and try out the JSON conversion features:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="fu">$</span> pulp repl</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
-<a class="sourceLine" id="cb5-3" data-line-number="3"><span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span>}</a>
-<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="fu">&gt;</span> user</a>
-<a class="sourceLine" id="cb5-5" data-line-number="5">(<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</a>
-<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foreign.Generic</span></a>
-<a class="sourceLine" id="cb5-8" data-line-number="8"><span class="fu">&gt;</span> userJSON <span class="fu">=</span> encodeJSON user</a>
-<a class="sourceLine" id="cb5-9" data-line-number="9"><span class="fu">&gt;</span> userJSON</a>
-<a class="sourceLine" id="cb5-10" data-line-number="10"><span class="st">&quot;{\&quot;name\&quot;:\&quot;Abhinav\&quot;,\&quot;id\&quot;:1}&quot;</span></a>
-<a class="sourceLine" id="cb5-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb5-12" data-line-number="12"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foreign</span></a>
-<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Except.Trans</span></a>
-<a class="sourceLine" id="cb5-14" data-line-number="14"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Identity</span></a>
-<a class="sourceLine" id="cb5-15" data-line-number="15"><span class="fu">&gt;</span> dUser <span class="fu">=</span> decodeJSON<span class="ot"> userJSON ::</span> <span class="dt">F</span> <span class="dt">User</span></a>
-<a class="sourceLine" id="cb5-16" data-line-number="16"><span class="fu">&gt;</span> eUser <span class="fu">=</span> <span class="kw">let</span> (<span class="dt">Identity</span> eUser) <span class="fu">=</span> runExceptT <span class="fu">$</span> dUser <span class="kw">in</span> eUser</a>
-<a class="sourceLine" id="cb5-17" data-line-number="17"><span class="fu">&gt;</span> eUser</a>
-<a class="sourceLine" id="cb5-18" data-line-number="18">(<span class="dt">Right</span> (<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }))</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">$</span> pulp repl</a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { <span class="fu">id:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span>}</a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="fu">&gt;</span> user</a>
+<a class="sourceLine" id="cb5-5" title="5">(<span class="dt">User</span> { <span class="fu">id:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</a>
+<a class="sourceLine" id="cb5-6" title="6"></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foreign.Generic</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="fu">&gt;</span> userJSON <span class="fu">=</span> encodeJSON user</a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="fu">&gt;</span> userJSON</a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="st">&quot;{\&quot;name\&quot;:\&quot;Abhinav\&quot;,\&quot;id\&quot;:1}&quot;</span></a>
+<a class="sourceLine" id="cb5-11" title="11"></a>
+<a class="sourceLine" id="cb5-12" title="12"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foreign</span></a>
+<a class="sourceLine" id="cb5-13" title="13"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Except.Trans</span></a>
+<a class="sourceLine" id="cb5-14" title="14"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Identity</span></a>
+<a class="sourceLine" id="cb5-15" title="15"><span class="fu">&gt;</span> dUser <span class="fu">=</span> decodeJSON<span class="ot"> userJSON ::</span> <span class="dt">F</span> <span class="dt">User</span></a>
+<a class="sourceLine" id="cb5-16" title="16"><span class="fu">&gt;</span> eUser <span class="fu">=</span> <span class="kw">let</span> (<span class="dt">Identity</span> eUser) <span class="fu">=</span> runExceptT <span class="fu">$</span> dUser <span class="kw">in</span> eUser</a>
+<a class="sourceLine" id="cb5-17" title="17"><span class="fu">&gt;</span> eUser</a>
+<a class="sourceLine" id="cb5-18" title="18">(<span class="dt">Right</span> (<span class="dt">User</span> { <span class="fu">id:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }))</a></code></pre></div>
 <p>We use <code>encodeJSON</code> and <code>decodeJSON</code> functions from the <a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.Generic" target="_blank" rel="noopener"><code>Data.Foreign.Generic</code></a> module to encode and decode the <code>User</code> instance to JSON. The return type of <code>decodeJSON</code> is a bit complicated as it needs to return the parsing errors too. In this case, the decoding returns no errors and we get back a <code>Right</code> with the correctly parsed <code>User</code> instance.</p>
 <h2 id="persisting-it" data-track-content data-content-name="persisting-it" data-content-piece="ps-simple-rest-service">Persisting It<a href="#persisting-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Next, we add the support for saving a <code>User</code> instance to a Postgres database. First, we install the required libraries using bower and npm: <a href="https://github.com/brianc/node-postgres" target="_blank" rel="noopener"><code>pg</code></a> for Javascript bindings to call Postgres, <a href="https://pursuit.purescript.org/packages/purescript-aff" target="_blank" rel="noopener"><code>purescript-aff</code></a> for asynchronous processing and <a href="https://pursuit.purescript.org/packages/purescript-postgresql-client" target="_blank" rel="noopener"><code>purescript-postgresql-client</code></a> for PureScript wrapper over <code>pg</code>:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" data-line-number="1">$ <span class="ex">npm</span> init -y</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2">$ <span class="ex">npm</span> install pg@6.4.0 --save</a>
-<a class="sourceLine" id="cb6-3" data-line-number="3">$ <span class="ex">bower</span> install purescript-aff --save</a>
-<a class="sourceLine" id="cb6-4" data-line-number="4">$ <span class="ex">bower</span> install purescript-postgresql-client --save</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb6-1" title="1">$ <span class="ex">npm</span> init -y</a>
+<a class="sourceLine" id="cb6-2" title="2">$ <span class="ex">npm</span> install pg@6.4.0 --save</a>
+<a class="sourceLine" id="cb6-3" title="3">$ <span class="ex">bower</span> install purescript-aff --save</a>
+<a class="sourceLine" id="cb6-4" title="4">$ <span class="ex">bower</span> install purescript-postgresql-client --save</a></code></pre></div>
 <p>Before writing the code, we create the database and the <code>users</code> table using the command-line Postgres client:</p>
 <pre><code>$ psql postgres
 psql (9.5.4)
@@ -267,211 +267,211 @@ simple_service=# \d users
 Indexes:
     &quot;users_pkey&quot; PRIMARY KEY, btree (id)</code></pre>
 <p>Now we add support for converting a <code>User</code> instance to-and-from an SQL row by adding the following code in the <code>src/SimpleService/Types.purs</code> file:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="kw">import</span> <span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span></a>
-<a class="sourceLine" id="cb8-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Data.Either</span> (<span class="dt">Either</span>(..))</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> (class <span class="dt">FromSQLRow</span>, class <span class="dt">ToSQLRow</span>, fromSQLValue, toSQLValue)</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb8-5" data-line-number="5"><span class="co">-- code written earlier</span></a>
-<a class="sourceLine" id="cb8-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw">instance</span><span class="ot"> userFromSQLRow ::</span> <span class="dt">FromSQLRow</span> <span class="dt">User</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-8" data-line-number="8">  fromSQLRow [id, name] <span class="fu">=</span></a>
-<a class="sourceLine" id="cb8-9" data-line-number="9">    <span class="dt">User</span> <span class="fu">&lt;$&gt;</span> ({ id<span class="fu">:</span> _, name<span class="fu">:</span> _} <span class="fu">&lt;$&gt;</span> fromSQLValue id <span class="fu">&lt;*&gt;</span> fromSQLValue name)</a>
-<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb8-11" data-line-number="11">  fromSQLRow xs <span class="fu">=</span> <span class="dt">Left</span> <span class="fu">$</span> <span class="st">&quot;Row has &quot;</span> <span class="fu">&lt;&gt;</span> show n <span class="fu">&lt;&gt;</span> <span class="st">&quot; fields, expecting 2.&quot;</span></a>
-<a class="sourceLine" id="cb8-12" data-line-number="12">    <span class="kw">where</span> n <span class="fu">=</span> Array.length xs</a>
-<a class="sourceLine" id="cb8-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb8-14" data-line-number="14"><span class="kw">instance</span><span class="ot"> userToSQLRow ::</span> <span class="dt">ToSQLRow</span> <span class="dt">User</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-15" data-line-number="15">  toSQLRow (<span class="dt">User</span> {id, name}) <span class="fu">=</span> [toSQLValue id, toSQLValue name]</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">import</span> <span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span></a>
+<a class="sourceLine" id="cb8-2" title="2"><span class="kw">import</span> <span class="dt">Data.Either</span> (<span class="dt">Either</span>(..))</a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> (class <span class="dt">FromSQLRow</span>, class <span class="dt">ToSQLRow</span>, fromSQLValue, toSQLValue)</a>
+<a class="sourceLine" id="cb8-4" title="4"></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="co">-- code written earlier</span></a>
+<a class="sourceLine" id="cb8-6" title="6"></a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="kw">instance</span><span class="ot"> userFromSQLRow ::</span> <span class="dt">FromSQLRow</span> <span class="dt">User</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-8" title="8">  fromSQLRow [<span class="fu">id</span>, name] <span class="fu">=</span></a>
+<a class="sourceLine" id="cb8-9" title="9">    <span class="dt">User</span> <span class="fu">&lt;$&gt;</span> ({ <span class="fu">id:</span> _, name<span class="fu">:</span> _} <span class="fu">&lt;$&gt;</span> fromSQLValue <span class="fu">id</span> <span class="fu">&lt;*&gt;</span> fromSQLValue name)</a>
+<a class="sourceLine" id="cb8-10" title="10"></a>
+<a class="sourceLine" id="cb8-11" title="11">  fromSQLRow xs <span class="fu">=</span> <span class="dt">Left</span> <span class="fu">$</span> <span class="st">&quot;Row has &quot;</span> <span class="fu">&lt;&gt;</span> <span class="fu">show</span> n <span class="fu">&lt;&gt;</span> <span class="st">&quot; fields, expecting 2.&quot;</span></a>
+<a class="sourceLine" id="cb8-12" title="12">    <span class="kw">where</span> n <span class="fu">=</span> Array.length xs</a>
+<a class="sourceLine" id="cb8-13" title="13"></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="kw">instance</span><span class="ot"> userToSQLRow ::</span> <span class="dt">ToSQLRow</span> <span class="dt">User</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-15" title="15">  toSQLRow (<span class="dt">User</span> {<span class="fu">id</span>, name}) <span class="fu">=</span> [toSQLValue <span class="fu">id</span>, toSQLValue name]</a></code></pre></div>
 <p>We can try out the persistence support in the REPL:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">$</span> pulp repl</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="dt">PSCi</span>, version <span class="fl">0.11</span><span class="fu">.</span><span class="dv">6</span></a>
-<a class="sourceLine" id="cb9-3" data-line-number="3"><span class="dt">Type</span> <span class="fu">:?</span> for help</a>
-<a class="sourceLine" id="cb9-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb9-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb9-6" data-line-number="6"><span class="fu">&gt;</span></a>
-<a class="sourceLine" id="cb9-7" data-line-number="7"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
-<a class="sourceLine" id="cb9-8" data-line-number="8"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (launchAff, liftEff')</a>
-<a class="sourceLine" id="cb9-9" data-line-number="9"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
-<a class="sourceLine" id="cb9-10" data-line-number="10"><span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }</a>
-<a class="sourceLine" id="cb9-11" data-line-number="11"><span class="fu">&gt;</span> databaseConfig <span class="fu">=</span> {user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span>, password<span class="fu">:</span> <span class="st">&quot;&quot;</span>, host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>, port<span class="fu">:</span> <span class="dv">5432</span>, database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span>, max<span class="fu">:</span> <span class="dv">10</span>, idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>}</a>
-<a class="sourceLine" id="cb9-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb9-13" data-line-number="13"><span class="fu">&gt;</span> <span class="fu">:</span>paste</a>
-<a class="sourceLine" id="cb9-14" data-line-number="14">… void <span class="fu">$</span> launchAff <span class="kw">do</span></a>
-<a class="sourceLine" id="cb9-15" data-line-number="15">…   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
-<a class="sourceLine" id="cb9-16" data-line-number="16">…   PG.withConnection pool <span class="fu">$</span> \conn <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb9-17" data-line-number="17">…     PG.execute conn (<span class="dt">PG.Query</span> <span class="st">&quot;insert into users (id, name) values ($1, $2)&quot;</span>) user</a>
-<a class="sourceLine" id="cb9-18" data-line-number="18">…</a>
-<a class="sourceLine" id="cb9-19" data-line-number="19">unit</a>
-<a class="sourceLine" id="cb9-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb9-21" data-line-number="21"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foldable</span> (for_)</a>
-<a class="sourceLine" id="cb9-22" data-line-number="22"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (logShow)</a>
-<a class="sourceLine" id="cb9-23" data-line-number="23"><span class="fu">&gt;</span> <span class="fu">:</span>paste</a>
-<a class="sourceLine" id="cb9-24" data-line-number="24">… void <span class="fu">$</span> launchAff <span class="kw">do</span></a>
-<a class="sourceLine" id="cb9-25" data-line-number="25">…   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
-<a class="sourceLine" id="cb9-26" data-line-number="26">…   PG.withConnection pool <span class="fu">$</span> \conn <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb9-27" data-line-number="27">…<span class="ot">     users ::</span> <span class="dt">Array</span> <span class="dt">User</span> <span class="ot">&lt;-</span> PG.query conn (<span class="dt">PG.Query</span> <span class="st">&quot;select id, name from users where id = $1&quot;</span>) (<span class="dt">PG.Row1</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb9-28" data-line-number="28">…     liftEff' <span class="fu">$</span> void <span class="fu">$</span> for_ users logShow</a>
-<a class="sourceLine" id="cb9-29" data-line-number="29">…</a>
-<a class="sourceLine" id="cb9-30" data-line-number="30">unit</a>
-<a class="sourceLine" id="cb9-31" data-line-number="31">(<span class="dt">User</span> { id<span class="fu">:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</a></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">$</span> pulp repl</a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="dt">PSCi</span>, version <span class="fl">0.11</span><span class="fu">.</span><span class="dv">6</span></a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="dt">Type</span> <span class="fu">:?</span> for help</a>
+<a class="sourceLine" id="cb9-4" title="4"></a>
+<a class="sourceLine" id="cb9-5" title="5"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb9-6" title="6"><span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb9-7" title="7"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
+<a class="sourceLine" id="cb9-8" title="8"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (launchAff, liftEff')</a>
+<a class="sourceLine" id="cb9-9" title="9"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
+<a class="sourceLine" id="cb9-10" title="10"><span class="fu">&gt;</span> user <span class="fu">=</span> <span class="dt">User</span> { <span class="fu">id:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> }</a>
+<a class="sourceLine" id="cb9-11" title="11"><span class="fu">&gt;</span> databaseConfig <span class="fu">=</span> {user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span>, password<span class="fu">:</span> <span class="st">&quot;&quot;</span>, host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span>, port<span class="fu">:</span> <span class="dv">5432</span>, database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span>, <span class="fu">max:</span> <span class="dv">10</span>, idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span>}</a>
+<a class="sourceLine" id="cb9-12" title="12"></a>
+<a class="sourceLine" id="cb9-13" title="13"><span class="fu">&gt;</span> <span class="fu">:</span>paste</a>
+<a class="sourceLine" id="cb9-14" title="14">… void <span class="fu">$</span> launchAff <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-15" title="15">…   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
+<a class="sourceLine" id="cb9-16" title="16">…   PG.withConnection pool <span class="fu">$</span> \conn <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-17" title="17">…     PG.execute conn (<span class="dt">PG.Query</span> <span class="st">&quot;insert into users (id, name) values ($1, $2)&quot;</span>) user</a>
+<a class="sourceLine" id="cb9-18" title="18">…</a>
+<a class="sourceLine" id="cb9-19" title="19">unit</a>
+<a class="sourceLine" id="cb9-20" title="20"></a>
+<a class="sourceLine" id="cb9-21" title="21"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Data.Foldable</span> (for_)</a>
+<a class="sourceLine" id="cb9-22" title="22"><span class="fu">&gt;</span> <span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (logShow)</a>
+<a class="sourceLine" id="cb9-23" title="23"><span class="fu">&gt;</span> <span class="fu">:</span>paste</a>
+<a class="sourceLine" id="cb9-24" title="24">… void <span class="fu">$</span> launchAff <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-25" title="25">…   pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
+<a class="sourceLine" id="cb9-26" title="26">…   PG.withConnection pool <span class="fu">$</span> \conn <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb9-27" title="27">…<span class="ot">     users ::</span> <span class="dt">Array</span> <span class="dt">User</span> <span class="ot">&lt;-</span> PG.query conn (<span class="dt">PG.Query</span> <span class="st">&quot;select id, name from users where id = $1&quot;</span>) (<span class="dt">PG.Row1</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb9-28" title="28">…     liftEff' <span class="fu">$</span> void <span class="fu">$</span> for_ users logShow</a>
+<a class="sourceLine" id="cb9-29" title="29">…</a>
+<a class="sourceLine" id="cb9-30" title="30">unit</a>
+<a class="sourceLine" id="cb9-31" title="31">(<span class="dt">User</span> { <span class="fu">id:</span> <span class="dv">1</span>, name<span class="fu">:</span> <span class="st">&quot;Abhinav&quot;</span> })</a></code></pre></div>
 <p>We create the <code>databaseConfig</code> record with the configs needed to connect to the database. Using the record, we create a new Postgres connection pool (<code>PG.newPool</code>) and get a connection from it (<code>PG.withConnection</code>). We call <code>PG.execute</code> with the connection, the SQL insert query for the users table and the <code>User</code> instance, to insert the user into the table. All of this is done inside <a href="https://pursuit.purescript.org/packages/purescript-aff/3.1.0/docs/Control.Monad.Aff#v:launchAff" target="_blank" rel="noopener"><code>launchAff</code></a> which takes care of sequencing the callbacks correctly to make the asynchronous code look synchronous.</p>
 <p>Similarly, in the second part, we query the table using <code>PG.query</code> function by calling it with a connection, the SQL select query and the <code>User</code> ID as the query parameter. It returns an <code>Array</code> of users which we log to the console using the <code>logShow</code> function.</p>
 <p>We use this experiment to write the persistence related code in the <code>src/SimpleService/Persistence.purs</code> file:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Persistence</span></a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">  ( insertUser</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">  , findUser</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">  , updateUser</a>
-<a class="sourceLine" id="cb10-5" data-line-number="5">  , deleteUser</a>
-<a class="sourceLine" id="cb10-6" data-line-number="6">  , listUsers</a>
-<a class="sourceLine" id="cb10-7" data-line-number="7">  ) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb10-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb10-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb10-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb10-11" data-line-number="11"><span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (<span class="dt">Aff</span>)</a>
-<a class="sourceLine" id="cb10-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span></a>
-<a class="sourceLine" id="cb10-13" data-line-number="13"><span class="kw">import</span> <span class="dt">Data.Maybe</span> (<span class="dt">Maybe</span>)</a>
-<a class="sourceLine" id="cb10-14" data-line-number="14"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
-<a class="sourceLine" id="cb10-15" data-line-number="15"><span class="kw">import</span> <span class="dt">SimpleService.Types</span> (<span class="dt">User</span>(..), <span class="dt">UserID</span>)</a>
-<a class="sourceLine" id="cb10-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb10-17" data-line-number="17"><span class="ot">insertUserQuery ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb10-18" data-line-number="18">insertUserQuery <span class="fu">=</span> <span class="st">&quot;insert into users (id, name) values ($1, $2)&quot;</span></a>
-<a class="sourceLine" id="cb10-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb10-20" data-line-number="20"><span class="ot">findUserQuery ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb10-21" data-line-number="21">findUserQuery <span class="fu">=</span> <span class="st">&quot;select id, name from users where id = $1&quot;</span></a>
-<a class="sourceLine" id="cb10-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb10-23" data-line-number="23"><span class="ot">updateUserQuery ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb10-24" data-line-number="24">updateUserQuery <span class="fu">=</span> <span class="st">&quot;update users set name = $1 where id = $2&quot;</span></a>
-<a class="sourceLine" id="cb10-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb10-26" data-line-number="26"><span class="ot">deleteUserQuery ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb10-27" data-line-number="27">deleteUserQuery <span class="fu">=</span> <span class="st">&quot;delete from users where id = $1&quot;</span></a>
-<a class="sourceLine" id="cb10-28" data-line-number="28"></a>
-<a class="sourceLine" id="cb10-29" data-line-number="29"><span class="ot">listUsersQuery ::</span> <span class="dt">String</span></a>
-<a class="sourceLine" id="cb10-30" data-line-number="30">listUsersQuery <span class="fu">=</span> <span class="st">&quot;select id, name from users&quot;</span></a>
-<a class="sourceLine" id="cb10-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb10-32" data-line-number="32"><span class="ot">insertUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">User</span></a>
-<a class="sourceLine" id="cb10-33" data-line-number="33">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb10-34" data-line-number="34">insertUser conn user <span class="fu">=</span></a>
-<a class="sourceLine" id="cb10-35" data-line-number="35">  PG.execute conn (<span class="dt">PG.Query</span> insertUserQuery) user</a>
-<a class="sourceLine" id="cb10-36" data-line-number="36"></a>
-<a class="sourceLine" id="cb10-37" data-line-number="37"><span class="ot">findUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">UserID</span></a>
-<a class="sourceLine" id="cb10-38" data-line-number="38">         <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Maybe</span> <span class="dt">User</span>)</a>
-<a class="sourceLine" id="cb10-39" data-line-number="39">findUser conn userID <span class="fu">=</span></a>
-<a class="sourceLine" id="cb10-40" data-line-number="40">  map Array.head <span class="fu">$</span> PG.query conn (<span class="dt">PG.Query</span> findUserQuery) (<span class="dt">PG.Row1</span> userID)</a>
-<a class="sourceLine" id="cb10-41" data-line-number="41"></a>
-<a class="sourceLine" id="cb10-42" data-line-number="42"><span class="ot">updateUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">User</span></a>
-<a class="sourceLine" id="cb10-43" data-line-number="43">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb10-44" data-line-number="44">updateUser conn (<span class="dt">User</span> {id, name}) <span class="fu">=</span></a>
-<a class="sourceLine" id="cb10-45" data-line-number="45">  PG.execute conn (<span class="dt">PG.Query</span> updateUserQuery) (<span class="dt">PG.Row2</span> name id)</a>
-<a class="sourceLine" id="cb10-46" data-line-number="46"></a>
-<a class="sourceLine" id="cb10-47" data-line-number="47"><span class="ot">deleteUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">UserID</span></a>
-<a class="sourceLine" id="cb10-48" data-line-number="48">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb10-49" data-line-number="49">deleteUser conn userID <span class="fu">=</span></a>
-<a class="sourceLine" id="cb10-50" data-line-number="50">  PG.execute conn (<span class="dt">PG.Query</span> deleteUserQuery) (<span class="dt">PG.Row1</span> userID)</a>
-<a class="sourceLine" id="cb10-51" data-line-number="51"></a>
-<a class="sourceLine" id="cb10-52" data-line-number="52"><span class="ot">listUsers ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Connection</span></a>
-<a class="sourceLine" id="cb10-53" data-line-number="53">          <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Array</span> <span class="dt">User</span>)</a>
-<a class="sourceLine" id="cb10-54" data-line-number="54">listUsers conn <span class="fu">=</span></a>
-<a class="sourceLine" id="cb10-55" data-line-number="55">  PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></a></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">module</span> <span class="dt">SimpleService.Persistence</span></a>
+<a class="sourceLine" id="cb10-2" title="2">  ( insertUser</a>
+<a class="sourceLine" id="cb10-3" title="3">  , findUser</a>
+<a class="sourceLine" id="cb10-4" title="4">  , updateUser</a>
+<a class="sourceLine" id="cb10-5" title="5">  , deleteUser</a>
+<a class="sourceLine" id="cb10-6" title="6">  , listUsers</a>
+<a class="sourceLine" id="cb10-7" title="7">  ) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-8" title="8"></a>
+<a class="sourceLine" id="cb10-9" title="9"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb10-10" title="10"></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (<span class="dt">Aff</span>)</a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="kw">import</span> <span class="dt">Data.Array</span> <span class="kw">as</span> <span class="dt">Array</span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="kw">import</span> <span class="dt">Data.Maybe</span> (<span class="dt">Maybe</span>)</a>
+<a class="sourceLine" id="cb10-14" title="14"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
+<a class="sourceLine" id="cb10-15" title="15"><span class="kw">import</span> <span class="dt">SimpleService.Types</span> (<span class="dt">User</span>(..), <span class="dt">UserID</span>)</a>
+<a class="sourceLine" id="cb10-16" title="16"></a>
+<a class="sourceLine" id="cb10-17" title="17"><span class="ot">insertUserQuery ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb10-18" title="18">insertUserQuery <span class="fu">=</span> <span class="st">&quot;insert into users (id, name) values ($1, $2)&quot;</span></a>
+<a class="sourceLine" id="cb10-19" title="19"></a>
+<a class="sourceLine" id="cb10-20" title="20"><span class="ot">findUserQuery ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb10-21" title="21">findUserQuery <span class="fu">=</span> <span class="st">&quot;select id, name from users where id = $1&quot;</span></a>
+<a class="sourceLine" id="cb10-22" title="22"></a>
+<a class="sourceLine" id="cb10-23" title="23"><span class="ot">updateUserQuery ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb10-24" title="24">updateUserQuery <span class="fu">=</span> <span class="st">&quot;update users set name = $1 where id = $2&quot;</span></a>
+<a class="sourceLine" id="cb10-25" title="25"></a>
+<a class="sourceLine" id="cb10-26" title="26"><span class="ot">deleteUserQuery ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb10-27" title="27">deleteUserQuery <span class="fu">=</span> <span class="st">&quot;delete from users where id = $1&quot;</span></a>
+<a class="sourceLine" id="cb10-28" title="28"></a>
+<a class="sourceLine" id="cb10-29" title="29"><span class="ot">listUsersQuery ::</span> <span class="dt">String</span></a>
+<a class="sourceLine" id="cb10-30" title="30">listUsersQuery <span class="fu">=</span> <span class="st">&quot;select id, name from users&quot;</span></a>
+<a class="sourceLine" id="cb10-31" title="31"></a>
+<a class="sourceLine" id="cb10-32" title="32"><span class="ot">insertUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">User</span></a>
+<a class="sourceLine" id="cb10-33" title="33">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb10-34" title="34">insertUser conn user <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-35" title="35">  PG.execute conn (<span class="dt">PG.Query</span> insertUserQuery) user</a>
+<a class="sourceLine" id="cb10-36" title="36"></a>
+<a class="sourceLine" id="cb10-37" title="37"><span class="ot">findUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">UserID</span></a>
+<a class="sourceLine" id="cb10-38" title="38">         <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Maybe</span> <span class="dt">User</span>)</a>
+<a class="sourceLine" id="cb10-39" title="39">findUser conn userID <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-40" title="40">  <span class="fu">map</span> Array.head <span class="fu">$</span> PG.query conn (<span class="dt">PG.Query</span> findUserQuery) (<span class="dt">PG.Row1</span> userID)</a>
+<a class="sourceLine" id="cb10-41" title="41"></a>
+<a class="sourceLine" id="cb10-42" title="42"><span class="ot">updateUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">User</span></a>
+<a class="sourceLine" id="cb10-43" title="43">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb10-44" title="44">updateUser conn (<span class="dt">User</span> {<span class="fu">id</span>, name}) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-45" title="45">  PG.execute conn (<span class="dt">PG.Query</span> updateUserQuery) (<span class="dt">PG.Row2</span> name <span class="fu">id</span>)</a>
+<a class="sourceLine" id="cb10-46" title="46"></a>
+<a class="sourceLine" id="cb10-47" title="47"><span class="ot">deleteUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Connection</span> <span class="ot">-&gt;</span> <span class="dt">UserID</span></a>
+<a class="sourceLine" id="cb10-48" title="48">           <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb10-49" title="49">deleteUser conn userID <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-50" title="50">  PG.execute conn (<span class="dt">PG.Query</span> deleteUserQuery) (<span class="dt">PG.Row1</span> userID)</a>
+<a class="sourceLine" id="cb10-51" title="51"></a>
+<a class="sourceLine" id="cb10-52" title="52"><span class="ot">listUsers ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Connection</span></a>
+<a class="sourceLine" id="cb10-53" title="53">          <span class="ot">-&gt;</span> <span class="dt">Aff</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff) (<span class="dt">Array</span> <span class="dt">User</span>)</a>
+<a class="sourceLine" id="cb10-54" title="54">listUsers conn <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-55" title="55">  PG.query conn (<span class="dt">PG.Query</span> listUsersQuery) <span class="dt">PG.Row0</span></a></code></pre></div>
 <h2 id="serving-it" data-track-content data-content-name="serving-it" data-content-piece="ps-simple-rest-service">Serving It<a href="#serving-it" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can now write a simple HTTP API over the persistence layer using <a href="https://expressjs.com" target="_blank" rel="noopener">Express</a> to provide CRUD functionality for users. Let’s install Express and <a href="https://pursuit.purescript.org/packages/purescript-express" target="_blank" rel="noopener">purescript-express</a>, the PureScript wrapper over it:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" data-line-number="1">$ <span class="ex">npm</span> install express --save</a>
-<a class="sourceLine" id="cb11-2" data-line-number="2">$ <span class="ex">bower</span> install purescript-express --save</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb11-1" title="1">$ <span class="ex">npm</span> install express --save</a>
+<a class="sourceLine" id="cb11-2" title="2">$ <span class="ex">bower</span> install purescript-express --save</a></code></pre></div>
 <h3 id="getting-a-user">Getting a User<a href="#getting-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>We do this top-down. First, we change <code>src/Main.purs</code> to run the HTTP server by providing the server port and database configuration:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" data-line-number="1"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb12-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb12-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb12-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb12-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Control.Monad.Eff</span> (<span class="dt">Eff</span>)</a>
-<a class="sourceLine" id="cb12-6" data-line-number="6"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (<span class="dt">CONSOLE</span>)</a>
-<a class="sourceLine" id="cb12-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
-<a class="sourceLine" id="cb12-8" data-line-number="8"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>)</a>
-<a class="sourceLine" id="cb12-9" data-line-number="9"><span class="kw">import</span> <span class="dt">SimpleService.Server</span> (runServer)</a>
-<a class="sourceLine" id="cb12-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb12-11" data-line-number="11"><span class="ot">main ::</span> forall eff<span class="fu">.</span> <span class="dt">Eff</span> (<span class="ot"> console ::</span> <span class="dt">CONSOLE</span></a>
-<a class="sourceLine" id="cb12-12" data-line-number="12">                        ,<span class="ot"> express ::</span> <span class="dt">EXPRESS</span></a>
-<a class="sourceLine" id="cb12-13" data-line-number="13">                        ,<span class="ot"> postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span></a>
-<a class="sourceLine" id="cb12-14" data-line-number="14">                        <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb12-15" data-line-number="15">main <span class="fu">=</span> runServer port databaseConfig</a>
-<a class="sourceLine" id="cb12-16" data-line-number="16">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb12-17" data-line-number="17">    port <span class="fu">=</span> <span class="dv">4000</span></a>
-<a class="sourceLine" id="cb12-18" data-line-number="18">    databaseConfig <span class="fu">=</span> { user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span></a>
-<a class="sourceLine" id="cb12-19" data-line-number="19">                     , password<span class="fu">:</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb12-20" data-line-number="20">                     , host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span></a>
-<a class="sourceLine" id="cb12-21" data-line-number="21">                     , port<span class="fu">:</span> <span class="dv">5432</span></a>
-<a class="sourceLine" id="cb12-22" data-line-number="22">                     , database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span></a>
-<a class="sourceLine" id="cb12-23" data-line-number="23">                     , max<span class="fu">:</span> <span class="dv">10</span></a>
-<a class="sourceLine" id="cb12-24" data-line-number="24">                     , idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span></a>
-<a class="sourceLine" id="cb12-25" data-line-number="25">                     }</a></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-2" title="2"></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb12-4" title="4"></a>
+<a class="sourceLine" id="cb12-5" title="5"><span class="kw">import</span> <span class="dt">Control.Monad.Eff</span> (<span class="dt">Eff</span>)</a>
+<a class="sourceLine" id="cb12-6" title="6"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (<span class="dt">CONSOLE</span>)</a>
+<a class="sourceLine" id="cb12-7" title="7"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
+<a class="sourceLine" id="cb12-8" title="8"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>)</a>
+<a class="sourceLine" id="cb12-9" title="9"><span class="kw">import</span> <span class="dt">SimpleService.Server</span> (runServer)</a>
+<a class="sourceLine" id="cb12-10" title="10"></a>
+<a class="sourceLine" id="cb12-11" title="11"><span class="ot">main ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">Eff</span> (<span class="ot"> console ::</span> <span class="dt">CONSOLE</span></a>
+<a class="sourceLine" id="cb12-12" title="12">                        ,<span class="ot"> express ::</span> <span class="dt">EXPRESS</span></a>
+<a class="sourceLine" id="cb12-13" title="13">                        ,<span class="ot"> postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span></a>
+<a class="sourceLine" id="cb12-14" title="14">                        <span class="fu">|</span> eff) <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb12-15" title="15">main <span class="fu">=</span> runServer port databaseConfig</a>
+<a class="sourceLine" id="cb12-16" title="16">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb12-17" title="17">    port <span class="fu">=</span> <span class="dv">4000</span></a>
+<a class="sourceLine" id="cb12-18" title="18">    databaseConfig <span class="fu">=</span> { user<span class="fu">:</span> <span class="st">&quot;abhinav&quot;</span></a>
+<a class="sourceLine" id="cb12-19" title="19">                     , password<span class="fu">:</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb12-20" title="20">                     , host<span class="fu">:</span> <span class="st">&quot;localhost&quot;</span></a>
+<a class="sourceLine" id="cb12-21" title="21">                     , port<span class="fu">:</span> <span class="dv">5432</span></a>
+<a class="sourceLine" id="cb12-22" title="22">                     , database<span class="fu">:</span> <span class="st">&quot;simple_service&quot;</span></a>
+<a class="sourceLine" id="cb12-23" title="23">                     , <span class="fu">max:</span> <span class="dv">10</span></a>
+<a class="sourceLine" id="cb12-24" title="24">                     , idleTimeoutMillis<span class="fu">:</span> <span class="dv">1000</span></a>
+<a class="sourceLine" id="cb12-25" title="25">                     }</a></code></pre></div>
 <p>Next, we wire up the server routes to the handlers in <code>src/SimpleService/Server.purs</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Server</span> (runServer) <span class="kw">where</span></a>
-<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb13-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb13-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (runAff)</a>
-<a class="sourceLine" id="cb13-6" data-line-number="6"><span class="kw">import</span> <span class="dt">Control.Monad.Eff</span> (<span class="dt">Eff</span>)</a>
-<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Class</span> (liftEff)</a>
-<a class="sourceLine" id="cb13-8" data-line-number="8"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (<span class="dt">CONSOLE</span>, log, logShow)</a>
-<a class="sourceLine" id="cb13-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
-<a class="sourceLine" id="cb13-10" data-line-number="10"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, get, listenHttp)</a>
-<a class="sourceLine" id="cb13-11" data-line-number="11"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>)</a>
-<a class="sourceLine" id="cb13-12" data-line-number="12"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (getUser)</a>
-<a class="sourceLine" id="cb13-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb13-14" data-line-number="14"><span class="ot">app ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb13-15" data-line-number="15">app pool <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb13-16" data-line-number="16">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
-<a class="sourceLine" id="cb13-17" data-line-number="17"></a>
-<a class="sourceLine" id="cb13-18" data-line-number="18"><span class="ot">runServer ::</span> forall eff<span class="fu">.</span></a>
-<a class="sourceLine" id="cb13-19" data-line-number="19">             <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb13-20" data-line-number="20">          <span class="ot">-&gt;</span> <span class="dt">PG.PoolConfiguration</span></a>
-<a class="sourceLine" id="cb13-21" data-line-number="21">          <span class="ot">-&gt;</span> <span class="dt">Eff</span> (<span class="ot"> express ::</span> <span class="dt">EXPRESS</span></a>
-<a class="sourceLine" id="cb13-22" data-line-number="22">                 ,<span class="ot"> postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span></a>
-<a class="sourceLine" id="cb13-23" data-line-number="23">                 ,<span class="ot"> console ::</span> <span class="dt">CONSOLE</span></a>
-<a class="sourceLine" id="cb13-24" data-line-number="24">                 <span class="fu">|</span> eff ) <span class="dt">Unit</span></a>
-<a class="sourceLine" id="cb13-25" data-line-number="25">runServer port databaseConfig <span class="fu">=</span>  void <span class="fu">$</span> runAff logShow pure <span class="kw">do</span></a>
-<a class="sourceLine" id="cb13-26" data-line-number="26">  pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
-<a class="sourceLine" id="cb13-27" data-line-number="27">  <span class="kw">let</span> app' <span class="fu">=</span> app pool</a>
-<a class="sourceLine" id="cb13-28" data-line-number="28">  void <span class="fu">$</span> liftEff <span class="fu">$</span> listenHttp app' port \_ <span class="ot">-&gt;</span> log <span class="fu">$</span> <span class="st">&quot;Server listening on :&quot;</span> <span class="fu">&lt;&gt;</span> show port</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">module</span> <span class="dt">SimpleService.Server</span> (runServer) <span class="kw">where</span></a>
+<a class="sourceLine" id="cb13-2" title="2"></a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb13-4" title="4"></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="kw">import</span> <span class="dt">Control.Monad.Aff</span> (runAff)</a>
+<a class="sourceLine" id="cb13-6" title="6"><span class="kw">import</span> <span class="dt">Control.Monad.Eff</span> (<span class="dt">Eff</span>)</a>
+<a class="sourceLine" id="cb13-7" title="7"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Class</span> (liftEff)</a>
+<a class="sourceLine" id="cb13-8" title="8"><span class="kw">import</span> <span class="dt">Control.Monad.Eff.Console</span> (<span class="dt">CONSOLE</span>, log, logShow)</a>
+<a class="sourceLine" id="cb13-9" title="9"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
+<a class="sourceLine" id="cb13-10" title="10"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, get, listenHttp)</a>
+<a class="sourceLine" id="cb13-11" title="11"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>)</a>
+<a class="sourceLine" id="cb13-12" title="12"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (getUser)</a>
+<a class="sourceLine" id="cb13-13" title="13"></a>
+<a class="sourceLine" id="cb13-14" title="14"><span class="ot">app ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb13-15" title="15">app pool <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb13-16" title="16">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
+<a class="sourceLine" id="cb13-17" title="17"></a>
+<a class="sourceLine" id="cb13-18" title="18"><span class="ot">runServer ::</span> <span class="kw">forall</span> eff<span class="fu">.</span></a>
+<a class="sourceLine" id="cb13-19" title="19">             <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb13-20" title="20">          <span class="ot">-&gt;</span> <span class="dt">PG.PoolConfiguration</span></a>
+<a class="sourceLine" id="cb13-21" title="21">          <span class="ot">-&gt;</span> <span class="dt">Eff</span> (<span class="ot"> express ::</span> <span class="dt">EXPRESS</span></a>
+<a class="sourceLine" id="cb13-22" title="22">                 ,<span class="ot"> postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span></a>
+<a class="sourceLine" id="cb13-23" title="23">                 ,<span class="ot"> console ::</span> <span class="dt">CONSOLE</span></a>
+<a class="sourceLine" id="cb13-24" title="24">                 <span class="fu">|</span> eff ) <span class="dt">Unit</span></a>
+<a class="sourceLine" id="cb13-25" title="25">runServer port databaseConfig <span class="fu">=</span>  void <span class="fu">$</span> runAff logShow <span class="fu">pure</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb13-26" title="26">  pool <span class="ot">&lt;-</span> PG.newPool databaseConfig</a>
+<a class="sourceLine" id="cb13-27" title="27">  <span class="kw">let</span> app' <span class="fu">=</span> app pool</a>
+<a class="sourceLine" id="cb13-28" title="28">  void <span class="fu">$</span> liftEff <span class="fu">$</span> listenHttp app' port \_ <span class="ot">-&gt;</span> <span class="fu">log</span> <span class="fu">$</span> <span class="st">&quot;Server listening on :&quot;</span> <span class="fu">&lt;&gt;</span> <span class="fu">show</span> port</a></code></pre></div>
 <p><code>runServer</code> creates a PostgreSQL connection pool and passes it to the <code>app</code> function which creates the Express application, which in turn, binds it to the handler <code>getUser</code>. Then it launches the HTTP server by calling <code>listenHttp</code>.</p>
 <p>Finally, we write the actual <code>getUser</code> handler in <code>src/SimpleService/Handler.purs</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Handler</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb14-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb14-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb14-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb14-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Control.Monad.Aff.Class</span> (liftAff)</a>
-<a class="sourceLine" id="cb14-6" data-line-number="6"><span class="kw">import</span> <span class="dt">Data.Foreign.Class</span> (encode)</a>
-<a class="sourceLine" id="cb14-7" data-line-number="7"><span class="kw">import</span> <span class="dt">Data.Int</span> (fromString)</a>
-<a class="sourceLine" id="cb14-8" data-line-number="8"><span class="kw">import</span> <span class="dt">Data.Maybe</span> (<span class="dt">Maybe</span>(..))</a>
-<a class="sourceLine" id="cb14-9" data-line-number="9"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
-<a class="sourceLine" id="cb14-10" data-line-number="10"><span class="kw">import</span> <span class="dt">Node.Express.Handler</span> (<span class="dt">Handler</span>)</a>
-<a class="sourceLine" id="cb14-11" data-line-number="11"><span class="kw">import</span> <span class="dt">Node.Express.Request</span> (getRouteParam)</a>
-<a class="sourceLine" id="cb14-12" data-line-number="12"><span class="kw">import</span> <span class="dt">Node.Express.Response</span> (end, sendJson, setStatus)</a>
-<a class="sourceLine" id="cb14-13" data-line-number="13"><span class="kw">import</span> <span class="dt">SimpleService.Persistence</span> <span class="kw">as</span> <span class="dt">P</span></a>
-<a class="sourceLine" id="cb14-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb14-15" data-line-number="15"><span class="ot">getUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb14-16" data-line-number="16">getUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb14-17" data-line-number="17">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
-<a class="sourceLine" id="cb14-18" data-line-number="18">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
-<a class="sourceLine" id="cb14-19" data-line-number="19">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID must be an integer: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
-<a class="sourceLine" id="cb14-20" data-line-number="20">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> liftAff (PG.withConnection pool <span class="fu">$</span> flip P.findUser userId) <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb14-21" data-line-number="21">      <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
-<a class="sourceLine" id="cb14-22" data-line-number="22">      <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</a>
-<a class="sourceLine" id="cb14-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb14-24" data-line-number="24"><span class="ot">respond ::</span> forall eff a<span class="fu">.</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Handler</span> eff</a>
-<a class="sourceLine" id="cb14-25" data-line-number="25">respond status body <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb14-26" data-line-number="26">  setStatus status</a>
-<a class="sourceLine" id="cb14-27" data-line-number="27">  sendJson body</a>
-<a class="sourceLine" id="cb14-28" data-line-number="28"></a>
-<a class="sourceLine" id="cb14-29" data-line-number="29"><span class="ot">respondNoContent ::</span> forall eff<span class="fu">.</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> eff</a>
-<a class="sourceLine" id="cb14-30" data-line-number="30">respondNoContent status <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb14-31" data-line-number="31">  setStatus status</a>
-<a class="sourceLine" id="cb14-32" data-line-number="32">  end</a></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">module</span> <span class="dt">SimpleService.Handler</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb14-2" title="2"></a>
+<a class="sourceLine" id="cb14-3" title="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb14-4" title="4"></a>
+<a class="sourceLine" id="cb14-5" title="5"><span class="kw">import</span> <span class="dt">Control.Monad.Aff.Class</span> (liftAff)</a>
+<a class="sourceLine" id="cb14-6" title="6"><span class="kw">import</span> <span class="dt">Data.Foreign.Class</span> (encode)</a>
+<a class="sourceLine" id="cb14-7" title="7"><span class="kw">import</span> <span class="dt">Data.Int</span> (fromString)</a>
+<a class="sourceLine" id="cb14-8" title="8"><span class="kw">import</span> <span class="dt">Data.Maybe</span> (<span class="dt">Maybe</span>(..))</a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="kw">import</span> <span class="dt">Database.PostgreSQL</span> <span class="kw">as</span> <span class="dt">PG</span></a>
+<a class="sourceLine" id="cb14-10" title="10"><span class="kw">import</span> <span class="dt">Node.Express.Handler</span> (<span class="dt">Handler</span>)</a>
+<a class="sourceLine" id="cb14-11" title="11"><span class="kw">import</span> <span class="dt">Node.Express.Request</span> (getRouteParam)</a>
+<a class="sourceLine" id="cb14-12" title="12"><span class="kw">import</span> <span class="dt">Node.Express.Response</span> (end, sendJson, setStatus)</a>
+<a class="sourceLine" id="cb14-13" title="13"><span class="kw">import</span> <span class="dt">SimpleService.Persistence</span> <span class="kw">as</span> <span class="dt">P</span></a>
+<a class="sourceLine" id="cb14-14" title="14"></a>
+<a class="sourceLine" id="cb14-15" title="15"><span class="ot">getUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb14-16" title="16">getUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb14-17" title="17">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
+<a class="sourceLine" id="cb14-18" title="18">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
+<a class="sourceLine" id="cb14-19" title="19">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID must be an integer: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
+<a class="sourceLine" id="cb14-20" title="20">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> liftAff (PG.withConnection pool <span class="fu">$</span> <span class="fu">flip</span> P.findUser userId) <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb14-21" title="21">      <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { <span class="fu">error:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
+<a class="sourceLine" id="cb14-22" title="22">      <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</a>
+<a class="sourceLine" id="cb14-23" title="23"></a>
+<a class="sourceLine" id="cb14-24" title="24"><span class="ot">respond ::</span> <span class="kw">forall</span> eff a<span class="fu">.</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Handler</span> eff</a>
+<a class="sourceLine" id="cb14-25" title="25">respond status body <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb14-26" title="26">  setStatus status</a>
+<a class="sourceLine" id="cb14-27" title="27">  sendJson body</a>
+<a class="sourceLine" id="cb14-28" title="28"></a>
+<a class="sourceLine" id="cb14-29" title="29"><span class="ot">respondNoContent ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> eff</a>
+<a class="sourceLine" id="cb14-30" title="30">respondNoContent status <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb14-31" title="31">  setStatus status</a>
+<a class="sourceLine" id="cb14-32" title="32">  end</a></code></pre></div>
 <p><code>getUser</code> validates the route parameter for valid user ID, sending error HTTP responses in case of failures. It then calls <code>findUser</code> to find the user and returns appropriate response.</p>
 <p>We can test this on the command-line using <a href="https://httpie.org" target="_blank" rel="noopener">HTTPie</a>. We run <code>pulp --watch run</code> in one terminal to start the server with file watching, and test it from another terminal:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" data-line-number="1">$ <span class="ex">pulp</span> --watch run</a>
-<a class="sourceLine" id="cb15-2" data-line-number="2"><span class="ex">*</span> Building project in ps-simple-rest-service</a>
-<a class="sourceLine" id="cb15-3" data-line-number="3"><span class="ex">*</span> Build successful.</a>
-<a class="sourceLine" id="cb15-4" data-line-number="4"><span class="ex">Server</span> listening on :4000</a></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb15-1" title="1">$ <span class="ex">pulp</span> --watch run</a>
+<a class="sourceLine" id="cb15-2" title="2"><span class="ex">*</span> Building project in ps-simple-rest-service</a>
+<a class="sourceLine" id="cb15-3" title="3"><span class="ex">*</span> Build successful.</a>
+<a class="sourceLine" id="cb15-4" title="4"><span class="ex">Server</span> listening on :4000</a></code></pre></div>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/user/1 # should return the user we created earlier
 HTTP/1.1 200 OK
 Connection: keep-alive
@@ -511,33 +511,33 @@ X-Powered-By: Express
 }</code></pre>
 <h3 id="deleting-a-user">Deleting a User<a href="#deleting-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p><code>deleteUser</code> handler is similar. We add the route in the <code>app</code> function in the <code>src/SimpleService/Server.purs</code> file:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb19-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, listenHttp)</a>
-<a class="sourceLine" id="cb19-3" data-line-number="3"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (deleteUser, getUser)</a>
-<a class="sourceLine" id="cb19-4" data-line-number="4"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb19-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb19-6" data-line-number="6"><span class="ot">app ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb19-7" data-line-number="7">app pool <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb19-8" data-line-number="8">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
-<a class="sourceLine" id="cb19-9" data-line-number="9">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
-<a class="sourceLine" id="cb19-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb19-11" data-line-number="11"><span class="co">-- previous code</span></a></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb19-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, listenHttp)</a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (deleteUser, getUser)</a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb19-5" title="5"></a>
+<a class="sourceLine" id="cb19-6" title="6"><span class="ot">app ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb19-7" title="7">app pool <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb19-8" title="8">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
+<a class="sourceLine" id="cb19-9" title="9">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
+<a class="sourceLine" id="cb19-10" title="10"></a>
+<a class="sourceLine" id="cb19-11" title="11"><span class="co">-- previous code</span></a></code></pre></div>
 <p>And we add the handler in the <code>src/SimpleService/Handler.purs</code> file:</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" data-line-number="1"><span class="ot">deleteUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb20-2" data-line-number="2">deleteUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-3" data-line-number="3">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
-<a class="sourceLine" id="cb20-4" data-line-number="4">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-5" data-line-number="5">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID must be an integer: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
-<a class="sourceLine" id="cb20-6" data-line-number="6">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb20-7" data-line-number="7">      found <span class="ot">&lt;-</span> liftAff <span class="fu">$</span> PG.withConnection pool \conn <span class="ot">-&gt;</span> PG.withTransaction conn <span class="kw">do</span></a>
-<a class="sourceLine" id="cb20-8" data-line-number="8">        P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb20-9" data-line-number="9">          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure false</a>
-<a class="sourceLine" id="cb20-10" data-line-number="10">          <span class="dt">Just</span> _  <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb20-11" data-line-number="11">            P.deleteUser conn userId</a>
-<a class="sourceLine" id="cb20-12" data-line-number="12">            pure true</a>
-<a class="sourceLine" id="cb20-13" data-line-number="13">      <span class="kw">if</span> found</a>
-<a class="sourceLine" id="cb20-14" data-line-number="14">        <span class="kw">then</span> respondNoContent <span class="dv">204</span></a>
-<a class="sourceLine" id="cb20-15" data-line-number="15">        <span class="kw">else</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb20-1" title="1"><span class="ot">deleteUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb20-2" title="2">deleteUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb20-3" title="3">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
+<a class="sourceLine" id="cb20-4" title="4">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
+<a class="sourceLine" id="cb20-5" title="5">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID must be an integer: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
+<a class="sourceLine" id="cb20-6" title="6">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-7" title="7">      found <span class="ot">&lt;-</span> liftAff <span class="fu">$</span> PG.withConnection pool \conn <span class="ot">-&gt;</span> PG.withTransaction conn <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-8" title="8">        P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb20-9" title="9">          <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">pure</span> false</a>
+<a class="sourceLine" id="cb20-10" title="10">          <span class="dt">Just</span> _  <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb20-11" title="11">            P.deleteUser conn userId</a>
+<a class="sourceLine" id="cb20-12" title="12">            <span class="fu">pure</span> true</a>
+<a class="sourceLine" id="cb20-13" title="13">      <span class="kw">if</span> found</a>
+<a class="sourceLine" id="cb20-14" title="14">        <span class="kw">then</span> respondNoContent <span class="dv">204</span></a>
+<a class="sourceLine" id="cb20-15" title="15">        <span class="kw">else</span> respond <span class="dv">404</span> { <span class="fu">error:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a></code></pre></div>
 <p>After the usual validations on the route param, <code>deleteUser</code> tries to find the user by the given user ID and if found, it deletes the user. Both the persistence related functions are run inside a single SQL transaction using <code>PG.withTransaction</code> function. <code>deleteUser</code> return 404 status if the user is not found, else it returns 204 status.</p>
 <p>Let’s try it out:</p>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/user/1
@@ -587,58 +587,58 @@ X-Powered-By: Express
 </div>
 <h3 id="creating-a-user">Creating a User<a href="#creating-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p><code>createUser</code> handler is a bit more involved. First, we add an Express middleware to parse the body of the request as JSON. We use <a href="https://github.com/expressjs/body-parser" target="_blank" rel="noopener"><code>body-parser</code></a> for this and access it through PureScript <a href="https://github.com/purescript/documentation/blob/master/guides/FFI.md" target="_blank" rel="noopener">FFI</a>. We create a new file <code>src/SimpleService/Middleware/BodyParser.js</code> with the content:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb25-1" data-line-number="1"><span class="st">&quot;use strict&quot;</span><span class="op">;</span></a>
-<a class="sourceLine" id="cb25-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb25-3" data-line-number="3"><span class="kw">var</span> bodyParser <span class="op">=</span> <span class="at">require</span>(<span class="st">&quot;body-parser&quot;</span>)<span class="op">;</span></a>
-<a class="sourceLine" id="cb25-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb25-5" data-line-number="5"><span class="va">exports</span>.<span class="at">jsonBodyParser</span> <span class="op">=</span> <span class="va">bodyParser</span>.<span class="at">json</span>(<span class="op">{</span></a>
-<a class="sourceLine" id="cb25-6" data-line-number="6">  <span class="dt">limit</span><span class="op">:</span> <span class="st">&quot;5mb&quot;</span></a>
-<a class="sourceLine" id="cb25-7" data-line-number="7"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode javascript"><code class="sourceCode javascript"><a class="sourceLine" id="cb25-1" title="1"><span class="st">&quot;use strict&quot;</span><span class="op">;</span></a>
+<a class="sourceLine" id="cb25-2" title="2"></a>
+<a class="sourceLine" id="cb25-3" title="3"><span class="kw">var</span> bodyParser <span class="op">=</span> <span class="at">require</span>(<span class="st">&quot;body-parser&quot;</span>)<span class="op">;</span></a>
+<a class="sourceLine" id="cb25-4" title="4"></a>
+<a class="sourceLine" id="cb25-5" title="5"><span class="va">exports</span>.<span class="at">jsonBodyParser</span> <span class="op">=</span> <span class="va">bodyParser</span>.<span class="at">json</span>(<span class="op">{</span></a>
+<a class="sourceLine" id="cb25-6" title="6">  <span class="dt">limit</span><span class="op">:</span> <span class="st">&quot;5mb&quot;</span></a>
+<a class="sourceLine" id="cb25-7" title="7"><span class="op">}</span>)<span class="op">;</span></a></code></pre></div>
 <p>And write a wrapper for it in the file <code>src/SimpleService/Middleware/BodyParser.purs</code> with the content:</p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" data-line-number="1"><span class="kw">module</span> <span class="dt">SimpleService.Middleware.BodyParser</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb26-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
-<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Function.Uncurried</span> (<span class="dt">Fn3</span>)</a>
-<a class="sourceLine" id="cb26-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">ExpressM</span>, <span class="dt">Response</span>, <span class="dt">Request</span>)</a>
-<a class="sourceLine" id="cb26-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb26-7" data-line-number="7">foreign <span class="kw">import</span> jsonBodyParser ::</a>
-<a class="sourceLine" id="cb26-8" data-line-number="8">  forall e<span class="fu">.</span> <span class="dt">Fn3</span> <span class="dt">Request</span> <span class="dt">Response</span> (<span class="dt">ExpressM</span> e <span class="dt">Unit</span>) (<span class="dt">ExpressM</span> e <span class="dt">Unit</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">module</span> <span class="dt">SimpleService.Middleware.BodyParser</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb26-2" title="2"></a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="kw">import</span> <span class="dt">Prelude</span></a>
+<a class="sourceLine" id="cb26-4" title="4"><span class="kw">import</span> <span class="dt">Data.Function.Uncurried</span> (<span class="dt">Fn3</span>)</a>
+<a class="sourceLine" id="cb26-5" title="5"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">ExpressM</span>, <span class="dt">Response</span>, <span class="dt">Request</span>)</a>
+<a class="sourceLine" id="cb26-6" title="6"></a>
+<a class="sourceLine" id="cb26-7" title="7">foreign <span class="kw">import</span> jsonBodyParser ::</a>
+<a class="sourceLine" id="cb26-8" title="8">  <span class="kw">forall</span> e<span class="fu">.</span> <span class="dt">Fn3</span> <span class="dt">Request</span> <span class="dt">Response</span> (<span class="dt">ExpressM</span> e <span class="dt">Unit</span>) (<span class="dt">ExpressM</span> e <span class="dt">Unit</span>)</a></code></pre></div>
 <p>We also install the <code>body-parser</code> npm dependency:</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb27-1" data-line-number="1">$ <span class="ex">npm</span> install --save body-parser</a></code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb27-1" title="1">$ <span class="ex">npm</span> install --save body-parser</a></code></pre></div>
 <p>Next, we change the <code>app</code> function in the <code>src/SimpleService/Server.purs</code> file to add the middleware and the route:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb28-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, listenHttp, post, useExternal)</a>
-<a class="sourceLine" id="cb28-3" data-line-number="3"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser)</a>
-<a class="sourceLine" id="cb28-4" data-line-number="4"><span class="kw">import</span> <span class="dt">SimpleService.Middleware.BodyParser</span> (jsonBodyParser)</a>
-<a class="sourceLine" id="cb28-5" data-line-number="5"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb28-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb28-7" data-line-number="7"><span class="ot">app ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb28-8" data-line-number="8">app pool <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb28-9" data-line-number="9">  useExternal jsonBodyParser</a>
-<a class="sourceLine" id="cb28-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb28-11" data-line-number="11">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
-<a class="sourceLine" id="cb28-12" data-line-number="12">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
-<a class="sourceLine" id="cb28-13" data-line-number="13">  post <span class="st">&quot;/v1/users&quot;</span> <span class="fu">$</span> createUser pool</a></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb28-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb28-2" title="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, listenHttp, post, useExternal)</a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser)</a>
+<a class="sourceLine" id="cb28-4" title="4"><span class="kw">import</span> <span class="dt">SimpleService.Middleware.BodyParser</span> (jsonBodyParser)</a>
+<a class="sourceLine" id="cb28-5" title="5"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb28-6" title="6"></a>
+<a class="sourceLine" id="cb28-7" title="7"><span class="ot">app ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb28-8" title="8">app pool <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb28-9" title="9">  useExternal jsonBodyParser</a>
+<a class="sourceLine" id="cb28-10" title="10"></a>
+<a class="sourceLine" id="cb28-11" title="11">  get <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> getUser pool</a>
+<a class="sourceLine" id="cb28-12" title="12">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
+<a class="sourceLine" id="cb28-13" title="13">  post <span class="st">&quot;/v1/users&quot;</span> <span class="fu">$</span> createUser pool</a></code></pre></div>
 <p>And finally, we write the handler in the <code>src/SimpleService/Handler.purs</code> file:</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb29-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Data.Either</span> (<span class="dt">Either</span>(..))</a>
-<a class="sourceLine" id="cb29-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Data.Foldable</span> (intercalate)</a>
-<a class="sourceLine" id="cb29-4" data-line-number="4"><span class="kw">import</span> <span class="dt">Data.Foreign</span> (renderForeignError)</a>
-<a class="sourceLine" id="cb29-5" data-line-number="5"><span class="kw">import</span> <span class="dt">Node.Express.Request</span> (getBody, getRouteParam)</a>
-<a class="sourceLine" id="cb29-6" data-line-number="6"><span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
-<a class="sourceLine" id="cb29-7" data-line-number="7"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb29-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb29-9" data-line-number="9"><span class="ot">createUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb29-10" data-line-number="10">createUser pool <span class="fu">=</span> getBody <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb29-11" data-line-number="11">  <span class="dt">Left</span> errs <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> intercalate <span class="st">&quot;, &quot;</span> <span class="fu">$</span> map renderForeignError errs}</a>
-<a class="sourceLine" id="cb29-12" data-line-number="12">  <span class="dt">Right</span> u<span class="fu">@</span>(<span class="dt">User</span> user) <span class="ot">-&gt;</span></a>
-<a class="sourceLine" id="cb29-13" data-line-number="13">    <span class="kw">if</span> user<span class="fu">.</span>id <span class="fu">&lt;=</span> <span class="dv">0</span></a>
-<a class="sourceLine" id="cb29-14" data-line-number="14">      <span class="kw">then</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID must be positive: &quot;</span> <span class="fu">&lt;&gt;</span> show user<span class="fu">.</span>id}</a>
-<a class="sourceLine" id="cb29-15" data-line-number="15">      <span class="kw">else</span> <span class="kw">if</span> user<span class="fu">.</span>name <span class="fu">==</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb29-16" data-line-number="16">        <span class="kw">then</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User name must not be empty&quot;</span> }</a>
-<a class="sourceLine" id="cb29-17" data-line-number="17">        <span class="kw">else</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb29-18" data-line-number="18">          liftAff (PG.withConnection pool <span class="fu">$</span> flip P.insertUser u)</a>
-<a class="sourceLine" id="cb29-19" data-line-number="19">          respondNoContent <span class="dv">201</span></a></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb29-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb29-2" title="2"><span class="kw">import</span> <span class="dt">Data.Either</span> (<span class="dt">Either</span>(..))</a>
+<a class="sourceLine" id="cb29-3" title="3"><span class="kw">import</span> <span class="dt">Data.Foldable</span> (intercalate)</a>
+<a class="sourceLine" id="cb29-4" title="4"><span class="kw">import</span> <span class="dt">Data.Foreign</span> (renderForeignError)</a>
+<a class="sourceLine" id="cb29-5" title="5"><span class="kw">import</span> <span class="dt">Node.Express.Request</span> (getBody, getRouteParam)</a>
+<a class="sourceLine" id="cb29-6" title="6"><span class="kw">import</span> <span class="dt">SimpleService.Types</span></a>
+<a class="sourceLine" id="cb29-7" title="7"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb29-8" title="8"></a>
+<a class="sourceLine" id="cb29-9" title="9"><span class="ot">createUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb29-10" title="10">createUser pool <span class="fu">=</span> getBody <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb29-11" title="11">  <span class="dt">Left</span> errs <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> intercalate <span class="st">&quot;, &quot;</span> <span class="fu">$</span> <span class="fu">map</span> renderForeignError errs}</a>
+<a class="sourceLine" id="cb29-12" title="12">  <span class="dt">Right</span> u<span class="fu">@</span>(<span class="dt">User</span> user) <span class="ot">-&gt;</span></a>
+<a class="sourceLine" id="cb29-13" title="13">    <span class="kw">if</span> user<span class="fu">.id</span> <span class="fu">&lt;=</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb29-14" title="14">      <span class="kw">then</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID must be positive: &quot;</span> <span class="fu">&lt;&gt;</span> <span class="fu">show</span> user<span class="fu">.id</span>}</a>
+<a class="sourceLine" id="cb29-15" title="15">      <span class="kw">else</span> <span class="kw">if</span> user<span class="fu">.</span>name <span class="fu">==</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb29-16" title="16">        <span class="kw">then</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User name must not be empty&quot;</span> }</a>
+<a class="sourceLine" id="cb29-17" title="17">        <span class="kw">else</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb29-18" title="18">          liftAff (PG.withConnection pool <span class="fu">$</span> <span class="fu">flip</span> P.insertUser u)</a>
+<a class="sourceLine" id="cb29-19" title="19">          respondNoContent <span class="dv">201</span></a></code></pre></div>
 <p><code>createUser</code> calls <a href="https://pursuit.purescript.org/packages/purescript-express/0.5.2/docs/Node.Express.Request#v:getBody" target="_blank" rel="noopener"><code>getBody</code></a> which has type signature <code>forall e a. (Decode a) =&gt; HandlerM (express :: EXPRESS | e) (Either MultipleErrors a)</code>. It returns either a list of parsing errors or a parsed instance, which in our case is a <code>User</code>. In case of errors, we just return the errors rendered as string with a 422 status. If we get a parsed <code>User</code> instance, we do some validations on it, returning appropriate error messages. If all validations pass, we create the user in the database by calling <code>insertUser</code> from the persistence layer and respond with a status 201.</p>
 <p>We can try it out:</p>
 <pre class="http"><code>$ http POST http://localhost:4000/v1/users name=&quot;abhinav&quot;
@@ -687,62 +687,62 @@ X-Powered-By: Express
 <p>First try returns a parsing failure because we didn’t provide the <code>id</code> field. Second try is a validation failure because the name was empty. Third try is a success which we confirm by doing a <code>GET</code> request next.</p>
 <h3 id="updating-a-user">Updating a User<a href="#updating-a-user" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>We want to allow a user’s name to be updated through the API, but not the user’s ID. So we add a new type to <code>src/SimpleService/Types.purs</code> to represent a possible change in user’s name:</p>
-<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb34-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb34-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Data.Foreign.NullOrUndefined</span> (<span class="dt">NullOrUndefined</span>)</a>
-<a class="sourceLine" id="cb34-3" data-line-number="3"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb34-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb34-5" data-line-number="5"><span class="kw">newtype</span> <span class="dt">UserPatch</span> <span class="fu">=</span> <span class="dt">UserPatch</span> {<span class="ot"> name ::</span> <span class="dt">NullOrUndefined</span> <span class="dt">String</span> }</a>
-<a class="sourceLine" id="cb34-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb34-7" data-line-number="7">derive <span class="kw">instance</span><span class="ot"> genericUserPatch ::</span> <span class="dt">Generic</span> <span class="dt">UserPatch</span> _</a>
-<a class="sourceLine" id="cb34-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb34-9" data-line-number="9"><span class="kw">instance</span><span class="ot"> decodeUserPatch ::</span> <span class="dt">Decode</span> <span class="dt">UserPatch</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb34-10" data-line-number="10">  decode <span class="fu">=</span> genericDecode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a></code></pre></div>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb34-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb34-2" title="2"><span class="kw">import</span> <span class="dt">Data.Foreign.NullOrUndefined</span> (<span class="dt">NullOrUndefined</span>)</a>
+<a class="sourceLine" id="cb34-3" title="3"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb34-4" title="4"></a>
+<a class="sourceLine" id="cb34-5" title="5"><span class="kw">newtype</span> <span class="dt">UserPatch</span> <span class="fu">=</span> <span class="dt">UserPatch</span> {<span class="ot"> name ::</span> <span class="dt">NullOrUndefined</span> <span class="dt">String</span> }</a>
+<a class="sourceLine" id="cb34-6" title="6"></a>
+<a class="sourceLine" id="cb34-7" title="7">derive <span class="kw">instance</span><span class="ot"> genericUserPatch ::</span> <span class="dt">Generic</span> <span class="dt">UserPatch</span> _</a>
+<a class="sourceLine" id="cb34-8" title="8"></a>
+<a class="sourceLine" id="cb34-9" title="9"><span class="kw">instance</span><span class="ot"> decodeUserPatch ::</span> <span class="dt">Decode</span> <span class="dt">UserPatch</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb34-10" title="10">  decode <span class="fu">=</span> genericDecode <span class="fu">$</span> defaultOptions { unwrapSingleConstructors <span class="fu">=</span> true }</a></code></pre></div>
 <p><a href="https://pursuit.purescript.org/packages/purescript-foreign-generic/4.3.0/docs/Data.Foreign.NullOrUndefined#t:NullOrUndefined" target="_blank" rel="noopener"><code>NullOrUndefined</code></a> is a wrapper over <code>Maybe</code> with added support for Javascript <code>null</code> and <code>undefined</code> values. We define <code>UserPatch</code> as having a possibly null (or undefined) <code>name</code> field.</p>
 <p>Now we can add the corresponding handler in <code>src/SimpleService/Handlers.purs</code>:</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb35-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb35-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Data.Foreign.NullOrUndefined</span> (unNullOrUndefined)</a>
-<a class="sourceLine" id="cb35-3" data-line-number="3"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb35-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb35-5" data-line-number="5"><span class="ot">updateUser ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb35-6" data-line-number="6">updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-7" data-line-number="7">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
-<a class="sourceLine" id="cb35-8" data-line-number="8">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-9" data-line-number="9">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User ID must be positive: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
-<a class="sourceLine" id="cb35-10" data-line-number="10">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> getBody <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-11" data-line-number="11">      <span class="dt">Left</span> errs <span class="ot">-&gt;</span> respond <span class="dv">422</span> { error<span class="fu">:</span> intercalate <span class="st">&quot;, &quot;</span> <span class="fu">$</span> map renderForeignError errs}</a>
-<a class="sourceLine" id="cb35-12" data-line-number="12">      <span class="dt">Right</span> (<span class="dt">UserPatch</span> userPatch) <span class="ot">-&gt;</span> <span class="kw">case</span> unNullOrUndefined userPatch<span class="fu">.</span>name <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-13" data-line-number="13">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respondNoContent <span class="dv">204</span></a>
-<a class="sourceLine" id="cb35-14" data-line-number="14">        <span class="dt">Just</span> userName <span class="ot">-&gt;</span> <span class="kw">if</span> userName <span class="fu">==</span> <span class="st">&quot;&quot;</span></a>
-<a class="sourceLine" id="cb35-15" data-line-number="15">          <span class="kw">then</span> respond <span class="dv">422</span> { error<span class="fu">:</span> <span class="st">&quot;User name must not be empty&quot;</span> }</a>
-<a class="sourceLine" id="cb35-16" data-line-number="16">          <span class="kw">else</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb35-17" data-line-number="17">            savedUser <span class="ot">&lt;-</span> liftAff <span class="fu">$</span> PG.withConnection pool \conn <span class="ot">-&gt;</span> PG.withTransaction conn <span class="kw">do</span></a>
-<a class="sourceLine" id="cb35-18" data-line-number="18">              P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-19" data-line-number="19">                <span class="dt">Nothing</span> <span class="ot">-&gt;</span> pure <span class="dt">Nothing</span></a>
-<a class="sourceLine" id="cb35-20" data-line-number="20">                <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb35-21" data-line-number="21">                  <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })</a>
-<a class="sourceLine" id="cb35-22" data-line-number="22">                  P.updateUser conn user'</a>
-<a class="sourceLine" id="cb35-23" data-line-number="23">                  pure <span class="fu">$</span> <span class="dt">Just</span> user'</a>
-<a class="sourceLine" id="cb35-24" data-line-number="24">            <span class="kw">case</span> savedUser <span class="kw">of</span></a>
-<a class="sourceLine" id="cb35-25" data-line-number="25">              <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { error<span class="fu">:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
-<a class="sourceLine" id="cb35-26" data-line-number="26">              <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</a></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb35-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb35-2" title="2"><span class="kw">import</span> <span class="dt">Data.Foreign.NullOrUndefined</span> (unNullOrUndefined)</a>
+<a class="sourceLine" id="cb35-3" title="3"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb35-4" title="4"></a>
+<a class="sourceLine" id="cb35-5" title="5"><span class="ot">updateUser ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb35-6" title="6">updateUser pool <span class="fu">=</span> getRouteParam <span class="st">&quot;id&quot;</span> <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-7" title="7">  <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID is required&quot;</span> }</a>
+<a class="sourceLine" id="cb35-8" title="8">  <span class="dt">Just</span> sUserId <span class="ot">-&gt;</span> <span class="kw">case</span> fromString sUserId <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-9" title="9">    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User ID must be positive: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
+<a class="sourceLine" id="cb35-10" title="10">    <span class="dt">Just</span> userId <span class="ot">-&gt;</span> getBody <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-11" title="11">      <span class="dt">Left</span> errs <span class="ot">-&gt;</span> respond <span class="dv">422</span> { <span class="fu">error:</span> intercalate <span class="st">&quot;, &quot;</span> <span class="fu">$</span> <span class="fu">map</span> renderForeignError errs}</a>
+<a class="sourceLine" id="cb35-12" title="12">      <span class="dt">Right</span> (<span class="dt">UserPatch</span> userPatch) <span class="ot">-&gt;</span> <span class="kw">case</span> unNullOrUndefined userPatch<span class="fu">.</span>name <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-13" title="13">        <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respondNoContent <span class="dv">204</span></a>
+<a class="sourceLine" id="cb35-14" title="14">        <span class="dt">Just</span> userName <span class="ot">-&gt;</span> <span class="kw">if</span> userName <span class="fu">==</span> <span class="st">&quot;&quot;</span></a>
+<a class="sourceLine" id="cb35-15" title="15">          <span class="kw">then</span> respond <span class="dv">422</span> { <span class="fu">error:</span> <span class="st">&quot;User name must not be empty&quot;</span> }</a>
+<a class="sourceLine" id="cb35-16" title="16">          <span class="kw">else</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb35-17" title="17">            savedUser <span class="ot">&lt;-</span> liftAff <span class="fu">$</span> PG.withConnection pool \conn <span class="ot">-&gt;</span> PG.withTransaction conn <span class="kw">do</span></a>
+<a class="sourceLine" id="cb35-18" title="18">              P.findUser conn userId <span class="fu">&gt;&gt;=</span> <span class="kw">case</span> _ <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-19" title="19">                <span class="dt">Nothing</span> <span class="ot">-&gt;</span> <span class="fu">pure</span> <span class="dt">Nothing</span></a>
+<a class="sourceLine" id="cb35-20" title="20">                <span class="dt">Just</span> (<span class="dt">User</span> user) <span class="ot">-&gt;</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb35-21" title="21">                  <span class="kw">let</span> user' <span class="fu">=</span> <span class="dt">User</span> (user { name <span class="fu">=</span> userName })</a>
+<a class="sourceLine" id="cb35-22" title="22">                  P.updateUser conn user'</a>
+<a class="sourceLine" id="cb35-23" title="23">                  <span class="fu">pure</span> <span class="fu">$</span> <span class="dt">Just</span> user'</a>
+<a class="sourceLine" id="cb35-24" title="24">            <span class="kw">case</span> savedUser <span class="kw">of</span></a>
+<a class="sourceLine" id="cb35-25" title="25">              <span class="dt">Nothing</span> <span class="ot">-&gt;</span> respond <span class="dv">404</span> { <span class="fu">error:</span> <span class="st">&quot;User not found with id: &quot;</span> <span class="fu">&lt;&gt;</span> sUserId }</a>
+<a class="sourceLine" id="cb35-26" title="26">              <span class="dt">Just</span> user <span class="ot">-&gt;</span> respond <span class="dv">200</span> (encode user)</a></code></pre></div>
 <p>After checking for a valid user ID as before, we get the decoded request body as a <code>UserPatch</code> instance. If the path does not have the <code>name</code> field or has it as <code>null</code>, there is nothing to do and we respond with a 204 status. If the user’s name is present in the patch, we validate it for non-emptiness. Then, within a database transaction, we try to find the user with the given ID, responding with a 404 status if the user is not found. If the user is found, we update the user’s name in the database, and respond with a 200 status and the saved user encoded as the JSON response body.</p>
 <p>Finally, we can add the route to our server’s router in <code>src/SimpleService/Server.purs</code> to make the functionality available:</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb36-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb36-2" data-line-number="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, http, listenHttp, post, useExternal)</a>
-<a class="sourceLine" id="cb36-3" data-line-number="3"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>, <span class="dt">Method</span>(..))</a>
-<a class="sourceLine" id="cb36-4" data-line-number="4"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser, updateUser)</a>
-<a class="sourceLine" id="cb36-5" data-line-number="5"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb36-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb36-7" data-line-number="7"><span class="ot">app ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb36-8" data-line-number="8">app pool <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb36-9" data-line-number="9">  useExternal jsonBodyParser</a>
-<a class="sourceLine" id="cb36-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb36-11" data-line-number="11">  get <span class="st">&quot;/v1/user/:id&quot;</span>    <span class="fu">$</span> getUser pool</a>
-<a class="sourceLine" id="cb36-12" data-line-number="12">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
-<a class="sourceLine" id="cb36-13" data-line-number="13">  post <span class="st">&quot;/v1/users&quot;</span>      <span class="fu">$</span> createUser pool</a>
-<a class="sourceLine" id="cb36-14" data-line-number="14">  patch <span class="st">&quot;/v1/user/:id&quot;</span>  <span class="fu">$</span> updateUser pool</a>
-<a class="sourceLine" id="cb36-15" data-line-number="15">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb36-16" data-line-number="16">    patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb36-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb36-2" title="2"><span class="kw">import</span> <span class="dt">Node.Express.App</span> (<span class="dt">App</span>, delete, get, http, listenHttp, post, useExternal)</a>
+<a class="sourceLine" id="cb36-3" title="3"><span class="kw">import</span> <span class="dt">Node.Express.Types</span> (<span class="dt">EXPRESS</span>, <span class="dt">Method</span>(..))</a>
+<a class="sourceLine" id="cb36-4" title="4"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser, updateUser)</a>
+<a class="sourceLine" id="cb36-5" title="5"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb36-6" title="6"></a>
+<a class="sourceLine" id="cb36-7" title="7"><span class="ot">app ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb36-8" title="8">app pool <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb36-9" title="9">  useExternal jsonBodyParser</a>
+<a class="sourceLine" id="cb36-10" title="10"></a>
+<a class="sourceLine" id="cb36-11" title="11">  get <span class="st">&quot;/v1/user/:id&quot;</span>    <span class="fu">$</span> getUser pool</a>
+<a class="sourceLine" id="cb36-12" title="12">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
+<a class="sourceLine" id="cb36-13" title="13">  post <span class="st">&quot;/v1/users&quot;</span>      <span class="fu">$</span> createUser pool</a>
+<a class="sourceLine" id="cb36-14" title="14">  patch <span class="st">&quot;/v1/user/:id&quot;</span>  <span class="fu">$</span> updateUser pool</a>
+<a class="sourceLine" id="cb36-15" title="15">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb36-16" title="16">    patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</a></code></pre></div>
 <p>We can try it out now:</p>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/user/1
 HTTP/1.1 200 OK
@@ -806,25 +806,25 @@ X-Powered-By: Express
 <h3 id="listing-all-users">Listing all Users<a href="#listing-all-users" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <p>Listing all users is quite simple since it doesn’t require us to take any request parameter.</p>
 <p>We add the handler to the <code>src/SimpleService/Handler.purs</code> file:</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb42-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb42-2" data-line-number="2"><span class="ot">listUsers ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb42-3" data-line-number="3">listUsers pool <span class="fu">=</span> liftAff (PG.withConnection pool P.listUsers) <span class="fu">&gt;&gt;=</span> encode <span class="fu">&gt;&gt;&gt;</span> respond <span class="dv">200</span></a></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb42-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb42-2" title="2"><span class="ot">listUsers ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">Handler</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb42-3" title="3">listUsers pool <span class="fu">=</span> liftAff (PG.withConnection pool P.listUsers) <span class="fu">&gt;&gt;=</span> encode <span class="fu">&gt;&gt;&gt;</span> respond <span class="dv">200</span></a></code></pre></div>
 <p>And the route to the <code>src/SimpleService/Server.purs</code> file:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb43-1" data-line-number="1"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb43-2" data-line-number="2"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser, listUsers, updateUser)</a>
-<a class="sourceLine" id="cb43-3" data-line-number="3"><span class="co">-- previous code</span></a>
-<a class="sourceLine" id="cb43-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb43-5" data-line-number="5"><span class="ot">app ::</span> forall eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
-<a class="sourceLine" id="cb43-6" data-line-number="6">app pool <span class="fu">=</span> <span class="kw">do</span></a>
-<a class="sourceLine" id="cb43-7" data-line-number="7">  useExternal jsonBodyParser</a>
-<a class="sourceLine" id="cb43-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb43-9" data-line-number="9">  get <span class="st">&quot;/v1/user/:id&quot;</span>    <span class="fu">$</span> getUser pool</a>
-<a class="sourceLine" id="cb43-10" data-line-number="10">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
-<a class="sourceLine" id="cb43-11" data-line-number="11">  post <span class="st">&quot;/v1/users&quot;</span>      <span class="fu">$</span> createUser pool</a>
-<a class="sourceLine" id="cb43-12" data-line-number="12">  patch <span class="st">&quot;/v1/user/:id&quot;</span>  <span class="fu">$</span> updateUser pool</a>
-<a class="sourceLine" id="cb43-13" data-line-number="13">  get <span class="st">&quot;/v1/users&quot;</span>       <span class="fu">$</span> listUsers pool</a>
-<a class="sourceLine" id="cb43-14" data-line-number="14">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb43-15" data-line-number="15">    patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb43-1" title="1"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb43-2" title="2"><span class="kw">import</span> <span class="dt">SimpleService.Handler</span> (createUser, deleteUser, getUser, listUsers, updateUser)</a>
+<a class="sourceLine" id="cb43-3" title="3"><span class="co">-- previous code</span></a>
+<a class="sourceLine" id="cb43-4" title="4"></a>
+<a class="sourceLine" id="cb43-5" title="5"><span class="ot">app ::</span> <span class="kw">forall</span> eff<span class="fu">.</span> <span class="dt">PG.Pool</span> <span class="ot">-&gt;</span> <span class="dt">App</span> (<span class="ot">postgreSQL ::</span> <span class="dt">PG.POSTGRESQL</span> <span class="fu">|</span> eff)</a>
+<a class="sourceLine" id="cb43-6" title="6">app pool <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb43-7" title="7">  useExternal jsonBodyParser</a>
+<a class="sourceLine" id="cb43-8" title="8"></a>
+<a class="sourceLine" id="cb43-9" title="9">  get <span class="st">&quot;/v1/user/:id&quot;</span>    <span class="fu">$</span> getUser pool</a>
+<a class="sourceLine" id="cb43-10" title="10">  delete <span class="st">&quot;/v1/user/:id&quot;</span> <span class="fu">$</span> deleteUser pool</a>
+<a class="sourceLine" id="cb43-11" title="11">  post <span class="st">&quot;/v1/users&quot;</span>      <span class="fu">$</span> createUser pool</a>
+<a class="sourceLine" id="cb43-12" title="12">  patch <span class="st">&quot;/v1/user/:id&quot;</span>  <span class="fu">$</span> updateUser pool</a>
+<a class="sourceLine" id="cb43-13" title="13">  get <span class="st">&quot;/v1/users&quot;</span>       <span class="fu">$</span> listUsers pool</a>
+<a class="sourceLine" id="cb43-14" title="14">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb43-15" title="15">    patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</a></code></pre></div>
 <p>And that’s it. We can test this endpoint:</p>
 <pre class="http"><code>$ http POST http://localhost:4000/v1/users id:=2 name=sarkarabhinav
 HTTP/1.1 201 Created
