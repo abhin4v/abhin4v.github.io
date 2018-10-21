@@ -11,7 +11,6 @@ ENV ENV=CI
 ADD . .
 RUN set -xe \
     && echo "127.0.0.1	abhinavsarkar.net" >> /etc/hosts \
-    && apt-get update && apt-get install tree && tree \
     && stack --no-terminal build --fast -j2 \
     && cd _site \
     && git checkout master \
