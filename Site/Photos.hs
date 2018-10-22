@@ -3,7 +3,7 @@ module Site.Photos (photos) where
 
 import Data.Char (toLower)
 import Data.Function (on)
-import Data.List (isPrefixOf, sort, groupBy, permutations, minimumBy, transpose)
+import Data.List (isPrefixOf, sort, groupBy, permutations, minimumBy, transpose, isInfixOf)
 import Data.List.Split (splitOn, chunksOf)
 import Data.Ord (comparing)
 import Control.Monad (forM_)
@@ -13,7 +13,7 @@ import Data.Default (def)
 import qualified Graphics.ThumbnailPlus as T
 import Hakyll hiding (relativizeUrls)
 import Site.Util
-import System.Directory (copyFile, listDirectory)
+import System.Directory (copyFile, listDirectory, removeFile)
 import System.FilePath (takeBaseName, takeExtension, (</>), (<.>))
 
 thumbSizes :: [Int]
@@ -31,8 +31,12 @@ createThumbnails photosDir thumbsDir = do
                   <$> listDirectory photosDir
     let newPhotoPaths =
             filter (\f -> not $ any (takeBaseName f `isPrefixOf`) thumbPaths) photoPaths
+        oldThumbPaths = map (thumbsDir </>)
+            . filter (\f -> not $ any (takeWhile (/= '-') (takeBaseName f) `isInfixOf`) photoPaths) 
+            $ thumbPaths
 
     runResourceT $ forM_ newPhotoPaths $ createPhotoThumbnails thumbsDir
+    forM_ oldThumbPaths $ \f -> removeFile f >> putStrLn ("Deleted thumb: " ++ f)
 
     sortThumbs
         . zipWith (:) photoPaths
