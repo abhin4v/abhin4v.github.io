@@ -33,7 +33,7 @@ createThumbnails photosDir thumbsDir = do
             filter (\f -> not $ any (takeBaseName f `isPrefixOf`) thumbPaths) photoPaths
 
     runResourceT $ forM_ newPhotoPaths $ createPhotoThumbnails thumbsDir
-    
+
     sortThumbs
         . zipWith (:) photoPaths
         . map (\ts -> take (length thumbSizes) $ ts ++ repeat (last ts))

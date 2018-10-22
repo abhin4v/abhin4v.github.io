@@ -43,20 +43,20 @@
     });
   }
 
-  function sidenotedEnabled() {
+  function sidenotesEnabled() {
     return jQuery(".footnotes").length != 0
       && window.location.search.indexOf("nosidenotes") == -1;
   }
 
   function unstyleFootnotes() {
-    if (sidenotedEnabled()) {
+    if (sidenotesEnabled()) {
       jQuery("body").removeClass("sidenotes");
       jQuery(".footnote-ref").css("display", "initial");
     }
   }
 
   function styleFootnotes() {
-    if (sidenotedEnabled()) {
+    if (sidenotesEnabled()) {
       var jq = jQuery;
 
       if (jq(window).width() > 1500) {
@@ -96,7 +96,7 @@
       if (window.__absr__loaded) {
         doStyle();
       } else {
-        jQuery(window).on("load", function() {
+        jQuery(document).ready(function() {
           doStyle();
           window.__absr__loaded = true;
           jQuery(window).resize(restyleOnResize);
@@ -115,6 +115,7 @@
   window.onbeforeprint = unstyle;
   window.onafterprint = style;
   window.__absr__style = style;
+  window.__absr__loaded = false;
 
   style();
 }());
