@@ -100,7 +100,7 @@ photos env = do
         create ["photos.html"] $ do
             route indexHTMLRoute
             compile $ do
-                thumbs <- unsafeCompiler $ createThumbnails "photos/images" "photos/images/thumbs"
+                thumbs <- unsafeCompiler $ createThumbnails "photos/images" "photos/thumbs"
                 let ctx = listField "photos" photoFields (mapM makeItem thumbs) <>
                           constField "title" "Photos" <>
                           constField "page_type" "photos" <>
