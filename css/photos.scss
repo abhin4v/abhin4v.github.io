@@ -6,7 +6,7 @@ body.photos-page {
         max-width: unset;
         margin-left: unset;
         margin-right: unset;
-        padding: 0 0.5vw;
+        padding: 0 0.25vw;
 
         h1 {
             text-align: center;
@@ -16,18 +16,20 @@ body.photos-page {
             text-align: center;
             line-height: 0;
 
-            -webkit-column-count: 3;
-            -webkit-column-gap: 0.5vw;
-            -moz-column-count: 3;
-            -moz-column-gap: 0.5vw;
-            column-count: 3;
-            column-gap: 0.5vw;
-            column-fill: balance;
+            table {
+              border-collapse: collapse;
+            }
 
-            .photo img {
-                width: 100% !important;
-                height: auto !important;
-                margin-bottom: 0.5vw;
+            .photocol {
+              width: 33%;
+              vertical-align: top;
+              padding: 0 0.25vw;
+
+              .photo img {
+                  width: 100% !important;
+                  height: auto !important;
+                  margin-bottom: 0.5vw;
+              }
             }
         }
     }
