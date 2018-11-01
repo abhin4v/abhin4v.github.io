@@ -29,6 +29,7 @@ executable site
                   , thumbnail-plus
                   , data-default
                   , resourcet
+                  , random-shuffle
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections

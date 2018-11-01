@@ -1,20 +1,21 @@
 {-# LANGUAGE RecordWildCards, OverloadedStrings, TupleSections #-}
 module Site.Photos (photos) where
 
+import Control.Monad (forM_)
+import Control.Monad.IO.Class (liftIO)
+import Control.Monad.Trans.Resource (runResourceT, MonadResource)
 import Data.Char (toLower)
+import Data.Default (def)
 import Data.Function (on)
 import Data.List (isPrefixOf, sort, groupBy, permutations, minimumBy, transpose, isInfixOf)
 import Data.List.Split (splitOn, chunksOf)
 import Data.Ord (comparing)
-import Control.Monad (forM_)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Resource (runResourceT, MonadResource)
-import Data.Default (def)
 import qualified Graphics.ThumbnailPlus as T
 import Hakyll hiding (relativizeUrls)
 import Site.Util
 import System.Directory (copyFile, listDirectory, removeFile)
 import System.FilePath (takeBaseName, takeExtension, (</>), (<.>))
+import System.Random.Shuffle (shuffleM)
 
 thumbSizes :: [Int]
 thumbSizes = [200, 300, 500, 800]
@@ -40,14 +41,15 @@ createThumbnails photosDir thumbsDir = do
   runResourceT $ forM_ newPhotoPaths $ createPhotoThumbnails thumbsDir
   forM_ oldThumbPaths $ \f -> removeFile f >> putStrLn ("Deleted thumb: " ++ f)
 
-  sortThumbs
-    . zipWith (:) photoPaths
+  thumbs <- zipWith (:) photoPaths
     . map (\ts -> take (length thumbSizes) $ ts ++ repeat (last ts))
     . groupBy ((==) `on` take 32 . takeBaseName)
     . sort
     . map (thumbsDir </>)
     . filter ((`elem` [".jpg", ".png"]) . takeExtension)
     <$> listDirectory thumbsDir
+
+  sortThumbs <$> shuffleM thumbs
 
 sortThumbs :: [Thumbs] -> [[Thumbs]]
 sortThumbs = map (filter (not . null))
@@ -62,8 +64,10 @@ sortThumbs = map (filter (not . null))
 
     sortThumbRow heights = unzip
       . minimumBy (comparing (variance . map fst))
-      . map (zipWith (\h t -> (h + thumbHeight t, t)) heights . (++ repeat []))
+      . map (zipWith (\h t -> (h + thumbHeight t, t)) heights)
       . permutations
+      . take columnCount
+      . (++ repeat [])
 
     thumbHeight []    = 0
     thumbHeight thumb =
@@ -96,9 +100,7 @@ createPhotoThumbnails thumbsDir photoPath = do
     e -> liftIO $ putStrLn $ "Error: " ++ show e
   where
     sizes = map (\s -> (T.Size s s, Nothing)) thumbSizes
-    config = def { T.thumbnailSizes = sizes
-                  , T.reencodeOriginal = T.Never
-                  }
+    config = def { T.thumbnailSizes = sizes , T.reencodeOriginal = T.Never }
 
 photos :: String -> Rules ()
 photos env = do
