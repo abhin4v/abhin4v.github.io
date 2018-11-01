@@ -25,11 +25,30 @@ body.photos-page {
               vertical-align: top;
               padding: 0 0.25vw;
 
-              .photo img {
-                  width: 100% !important;
-                  height: auto !important;
-                  margin-bottom: 0.5vw;
+              .ratio-box {
+                position: relative;
+                max-height: 0;
+                display: block;
+                width: 100%;
+                margin-bottom: 0.5vw;
+
+                img {
+                  position: relative;
+                  top: 0;
+                  left: 0;
+                  width: 100%;
+                  height: 100%;
+                  display: block;
+                }
               }
+            }
+
+            .lazyload, .lazyloading {
+              opacity: 0;
+            }
+            .lazyloaded {
+              opacity: 1;
+              transition: opacity 300ms;
             }
         }
     }

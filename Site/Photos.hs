@@ -67,14 +67,18 @@ sortThumbs = map (filter (not . null))
 
     thumbHeight []    = 0
     thumbHeight thumb =
-      let [w,h] = splitOn "x" . drop 33 . takeBaseName . head . tail $ thumb
-      in read h * fromIntegral (head thumbSizes) / read w
+      let (w,h) = thumbDims . head . tail $ thumb
+      in h * fromIntegral (head thumbSizes) / w
 
     variance [] = 0
     variance xs = let avg = sum xs / fromIntegral (length xs)
       in sum (map (\x -> sqr (x - avg)) xs)
 
     sqr x = x * x
+
+thumbDims :: FilePath -> (Double, Double)
+thumbDims path = let [w,h] = splitOn "x" . drop 33 . takeBaseName $ path
+  in (read h, read w)
 
 createPhotoThumbnails :: MonadResource m => FilePath -> FilePath -> m ()
 createPhotoThumbnails thumbsDir photoPath = do
@@ -124,4 +128,6 @@ photos env = do
                 , photoField "medium" (!! 2)
                 , photoField "large" (!! 3)
                 , photoField "xlarge" (!! 4)
+                , photoField "padding" (show . calcPadding)
                 ]
+    calcPadding ~(_:p:_) = let (w,h) = thumbDims p in w / h * 100

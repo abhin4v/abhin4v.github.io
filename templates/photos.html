@@ -7,12 +7,23 @@
     <td class="photocol">
       $for(photos)$
       <a href="/$orig$" class="img-link">
-        <picture class="photo">
-          <source srcset="/$xlarge$" media="(min-width: 1680px)">
-          <source srcset="/$large$" media="(min-width: 960px)">
-          <source srcset="/$medium$" media="(min-width: 640px)">
-          <img src="/$small$">
+        <div class="ratio-box" style="padding-bottom: $padding$%">
+          <picture class="photo">
+          <source data-srcset="/$xlarge$" media="(min-width: 1680px)">
+          <source data-srcset="/$large$" media="(min-width: 960px)">
+          <source data-srcset="/$medium$" media="(min-width: 640px)">
+          <img data-sizes="auto" data-src="/$small$" class="lazyload">
         </picture>
+        </div>
+
+        <noscript>
+          <picture class="photo">
+            <source srcset="/$xlarge$" media="(min-width: 1680px)">
+            <source srcset="/$large$" media="(min-width: 960px)">
+            <source srcset="/$medium$" media="(min-width: 640px)">
+            <img src="/$small$">
+          </picture>
+        </noscript>
       </a>
       $endfor$
     </td>
@@ -20,6 +31,8 @@
     </tr>
   </table>
 </section>
+<script src="/js/lazysizes.js"></script>
+<script src="/js/lazysizes.unload.js"></script>
 <script>
 (function(){
   function getPhotos() {
@@ -41,24 +54,22 @@
 
   function setupFeatherlight() {
     if (typeof jQuery !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
-      if (jQuery("a.img-link").length > 0) {
-        loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.css");
-        loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.css");
+      loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.css");
+      loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.css");
 
-        jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.js", function() {
-          jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/2.0.0/jquery.mobile-events.min.js", function() {
-            jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.js", function() {
-              getPhotos().featherlightGallery({
-                previousIcon: '«',
-                nextIcon: '»',
-                galleryFadeIn: 300,
-                openSpeed: 300,
-                loading: 'Loading ...'
-              });
+      jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.js", function() {
+        jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/2.0.0/jquery.mobile-events.min.js", function() {
+          jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.js", function() {
+            getPhotos().featherlightGallery({
+              previousIcon: '«',
+              nextIcon: '»',
+              galleryFadeIn: 300,
+              openSpeed: 300,
+              loading: 'Loading ...'
             });
           });
         });
-      }
+      });
     } else {
       window.setTimeout(setupFeatherlight, 500);
     }
