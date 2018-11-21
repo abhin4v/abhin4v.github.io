@@ -1,0 +1,19 @@
+<h1>Talk » $title$</h1>
+<h2>$event$</h2>
+
+<div class='embed-container'>
+  $if(youtube_thumb)$
+  <a href="http://www.youtube.com/watch?v=$youtube_id$" target="_blank" rel="noopener">
+    <img src="http://img.youtube.com/vi/$youtube_id$/maxresdefault.jpg">
+  </a>
+  $else$
+  <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/$youtube_id$" 
+    frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  $endif$
+</div>
+
+$body$
+
+<h3>Slides</h3>
+<script async class="speakerdeck-embed" data-id="$speakerdeck_id$" data-ratio="$speakerdeck_ratio$" src="//speakerdeck.com/assets/embed.js">
+</script>

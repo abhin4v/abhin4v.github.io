@@ -47,8 +47,8 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [nilenso]: https://nilenso.com
 [Capillary Technologies]: https://www.capillarytech.com
 [FICO]: http://www.fico.com/
-[Moving People with Clojure]: https://www.youtube.com/watch?v=3y7xzH8jB8A
-[Introduction To Concurrency In Haskell]: https://www.youtube.com/watch?v=uVK3t-5wWew
+[Moving People with Clojure]: /talks/moving-people-with-clojure/
+[Introduction To Concurrency In Haskell]: /talks/intro-to-conc-in-haskell/
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
 [2]: https://web.archive.org/web/20160629192412/https://metarefresh.talkfunnel.com/2015/1326-a-quick-and-hopefully-painless-ride-through-reactj
 [email]: mailto:abhinav@abhinavsarkar.net

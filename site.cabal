@@ -43,6 +43,7 @@ executable site
                   , Site.PostCompiler
                   , Site.Readings
                   , Site.Sitemap
+                  , Site.Talks
                   , Site.TOC
                   , Site.Util
   ghc-options:      -threaded -Wall -Wno-name-shadowing -Wno-type-defaults

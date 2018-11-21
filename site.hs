@@ -10,6 +10,7 @@ import Site.Pages
 import Site.Photos
 import Site.Posts
 import Site.Readings
+import Site.Talks
 import System.Environment (lookupEnv)
 
 main :: IO ()
@@ -27,6 +28,7 @@ main = do
     activities env
     readings env
     photos env
+    talks env
 
     -- templates
     match "templates/*" $ compile templateBodyCompiler
