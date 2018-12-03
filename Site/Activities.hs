@@ -54,7 +54,7 @@ getActivities feedURL =
                           . fromJust
                           . lookup "Distance"
                           $ desc
-              activityEffort = if activityType == "ride" then rawEffort else rawEffort * 4.0
+              activityEffort = (if activityType == "ride" then rawEffort else rawEffort * 4.0) * 0.6
           return Activity { activityName   = activityName
                           , activityType   = activityType
                           , activityEffort = activityEffort
