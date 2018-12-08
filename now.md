@@ -2,9 +2,11 @@
 title: Now
 page_type: profile
 ---
-# What I'm doing now
+# What I'm Doing Now
 
 I'm living in Bangalore, India and working at [Flipkart].
+
+![](/photos/images/267877f8859da046870a2342b70e2cf6.jpg)
 
 ## Conferences
 
