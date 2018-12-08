@@ -11,9 +11,16 @@ import Text.Pandoc.Walk (walk)
 pages :: String -> Rules ()
 pages env = do
   -- about page
-  match (fromList ["about.md"]) $ do
+  page "about" "about.md" env
+
+  -- now page
+  page "now" "now.md" env
+
+page :: String -> Identifier -> String -> Rules ()
+page pageName pageFile env =
+  match (fromList [pageFile]) $ do
     route indexHTMLRoute
-    compile $ contentCompiler (pageContentTransforms "about")
+    compile $ contentCompiler (pageContentTransforms pageName)
       >>= loadAndApplyTemplate "templates/default.html" siteContext
       >>= relativizeUrls env
 
