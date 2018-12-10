@@ -12,8 +12,8 @@ I'm living in Bangalore, India and working at [Flipkart].
 
 I'm preparing for presenting talks at two upcoming conferences:
 
-1. [Many Ways to Concur] - Functional Conf 2018, Bangalore
-2. [Introduction to Concurrency in Clojure] - In/Clojure 2019, Bangalore
+1. [Many Ways to Concur] - [Functional Conf 2018], Bangalore
+2. [Introduction to Concurrency in Clojure] - [In/Clojure 2019], Bangalore
 
 ## Advent of Code 2018
 
@@ -31,7 +31,9 @@ I'm planning to write more programming focussed blog posts. The last post for my
 
 [Flipkart]: https://www.flipkart.com/about-us
 [Many Ways to Concur]: https://confengine.com/functional-conf-2018/proposal/7749/many-ways-to-concur
-[Introduction to Concurrency in Clojure]: https://inclojure.org/#schedule
+[Functional Conf 2018]: https://functionalconf.com/
+[In/Clojure 2019]: https://inclojure.org/
+[Introduction to Concurrency in Clojure]: https://www.papercall.io/speakers/20386/speaker_talks/95251-introduction-to-concurrency-in-clojure
 [Advent of Code 2018]: https://adventofcode.com/2018
 [creative problem solving]: https://github.com/abhin4v/aoc18/
 [training]: /activities/
