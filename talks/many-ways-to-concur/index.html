@@ -10,9 +10,9 @@
         <meta name="twitter:card" content="summary">
         <meta name="twitter:creator" content="@abhin4v">
 
-        <meta property="og:url" content="https://abhinavsarkar.net/talks/intro-to-conc-in-haskell/">
+        <meta property="og:url" content="https://abhinavsarkar.net/talks/many-ways-to-concur/">
         <meta property="og:type" content="talk">
-        <meta property="og:title" content="Introduction to Concurrency in Haskell">
+        <meta property="og:title" content="Many Ways to Concur">
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
@@ -24,11 +24,11 @@
         <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
         <meta name="HandheldFriendly" content="True">
 
-        <title>Introduction to Concurrency in Haskell | abhinavsarkar.net</title>
+        <title>Many Ways to Concur | abhinavsarkar.net</title>
 
         <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
         <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
-        <link rel="canonical" href="https://abhinavsarkar.net/talks/intro-to-conc-in-haskell/">
+        <link rel="canonical" href="https://abhinavsarkar.net/talks/many-ways-to-concur/">
         <link rel="me" href="https://abhinavsarkar.net/about/" type="text/html">
         <link rel="me" href="https://twitter.com/abhin4v">
         <link rel="me" href="https://github.com/abhin4v">
@@ -101,22 +101,21 @@
         </header>
 
         <main role="main">
-            <h1>Talk » Introduction to Concurrency in Haskell</h1>
-<h2>Functional Conf 2015, Bengaluru</h2>
+            <h1>Talk » Many Ways to Concur</h1>
+<h2>Functional Conf 2018, Bangalore</h2>
 
 
-<div class="embed-container">
-  
-  <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/uVK3t-5wWew" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-  
-</div>
 
-
-<p>Haskell is widely known as a functional programming language which is great to write pure (non I/O) code and immutable data structures. But it is not well known that it has a great support for a wide variety of concurrency models too.</p>
-<p>In this talk we explore the various concurrency models and primitives supported by Haskell including green threads, mutable variables, channels and software transactional memory. We see how the purity, laziness, and the strong type system of Haskell come together, and help write clean and modular concurrent code. We explore these by writing a mutli-user chat server with support for private and channel chatting.</p>
+<p>Easy concurrency is one of the main prophesied benefits of the modern functional programming (FP) languages. But the implementation of concurrency differs widely between different FP languages. In this talk, we shall explore the methods and primitives of concurrency across three FP languages: Haskell, Erlang, and Clojure (with core.async).</p>
+<p>We shall learn about and compare the trade-offs between</p>
+<ul>
+<li>the green threads and STM channels oriented concurrency of Haskell</li>
+<li>everything-is-a-process and message-passing actor pattern of Erlang</li>
+<li>macro-based CSP of Clojure/core.async</li>
+</ul>
 
 <h3>Slides</h3>
-<script async class="speakerdeck-embed" data-id="bcbf9a544894420699a16821e5a59074" data-ratio="1.37081659973226" src="//speakerdeck.com/assets/embed.js">
+<script async class="speakerdeck-embed" data-id="526c233305b94e9ea8485e562a7ccfa7" data-ratio="1.33333333333333" src="//speakerdeck.com/assets/embed.js">
 </script>
 
         </main>
