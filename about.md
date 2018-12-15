@@ -8,6 +8,7 @@ I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, Indi
 
 Here are some talks and workshops I have presented in various conferences:
 
+1. [Many Ways to Concur] - Functional Conf 2018, Bangalore
 1. [Moving People with Clojure] - EuroClojure 2017, Berlin
 1. [Introduction to Concurrency in Haskell] - Functional Conf 2015, Bangalore
 1. [A Slow (and Hopefully Heedful) Ride Through ReactJS and Flux][1] - JSFoo 2015, Bangalore
@@ -47,10 +48,13 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [nilenso]: https://nilenso.com
 [Capillary Technologies]: https://www.capillarytech.com
 [FICO]: http://www.fico.com/
+
+[Many Ways to Concur]: /talks/many-ways-to-concur/
 [Moving People with Clojure]: /talks/moving-people-with-clojure/
 [Introduction To Concurrency In Haskell]: /talks/intro-to-conc-in-haskell/
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
 [2]: https://web.archive.org/web/20160629192412/https://metarefresh.talkfunnel.com/2015/1326-a-quick-and-hopefully-painless-ride-through-reactj
+
 [email]: mailto:abhinav@abhinavsarkar.net
 [master]: https://github.com/abhin4v/abhin4v.github.io/tree/master
 [source]: https://github.com/abhin4v/abhin4v.github.io/tree/source

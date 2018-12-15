@@ -1,6 +1,7 @@
 <h1>Talk » $title$</h1>
 <h2>$event$</h2>
 
+$if(youtube_id)$
 <div class='embed-container'>
   $if(youtube_thumb)$
   <a href="http://www.youtube.com/watch?v=$youtube_id$" target="_blank" rel="noopener">
@@ -11,6 +12,7 @@
     frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   $endif$
 </div>
+$endif$
 
 $body$
 
