@@ -126,7 +126,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M.09 0c-.06 0-.09.04-.09.09v5.81c0 .05.04.09.09.09h5.91l2 2v-7.91c0-.06-.04-.09-.09-.09h-7.81z"></path>
         </svg>
-        <a href="#comment-container">1 comments</a>
+        <a href="#comment-container">2 comments</a>
       </li>
       
       <li class="header post-download">
@@ -768,7 +768,7 @@
     </fieldset>
   </form>
   <div class="comments">
-    <h3>1 comments
+    <h3>2 comments
       <a href="#top" class="top-link" title="Back to top"></a>
     </h3>
     
@@ -782,6 +782,19 @@
     </span>
   </div>
   <div class="message"><p>I’m really enjoying this and trying to follow along but I’m wondering is the <code>case xs Data.List.\\ fixeds of case...</code> part has a mistake? I can’t seem to figure how to make this bit work but the same thing is present in your source code all through the history so it seems like it must have worked at some point. Any help or clarification would be much appreciated!</p></div>
+</article>
+
+    
+      <article class="comment level-1">
+  <div id="comment-ecd14f50-01a6-11e9-bdf0-35d18cce6106">
+    <input type="submit" value="Reply" name="Abhinav Sarkar###ecd14f50-01a6-11e9-bdf0-35d18cce6106">
+    <img class="avatar" src="https://www.gravatar.com/avatar/4d29918c109bc75d2a1fd8420660d72b?d=retro&s=60">
+    <span>
+      <h4 class="author post-author" title="Author">Abhinav Sarkar</h4>
+      <div class="date" title="2018-12-17T02:53:26.795Z">December 17, 2018</div>
+    </span>
+  </div>
+  <div class="message"><p>Hey Liam. <code>Data.List.\\</code> is a legitimate function. You can see it in the docs <a href="http://hackage.haskell.org/package/base/docs/Data-List.html#v:-92--92-">here</a>. Make sure that you are importing the module correctly like this: <code>import qualified Data.List</code>. It should work. If not, can you please tell what error you are getting?</p></div>
 </article>
 
     
