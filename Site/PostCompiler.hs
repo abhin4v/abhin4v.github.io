@@ -157,8 +157,8 @@ itemAfter, itemBefore :: Eq a => [a] -> a -> Maybe a
 itemAfter xs x  = lookup x $ zip xs (tail xs)
 itemBefore xs x = lookup x $ zip (tail xs) xs
 
-readerOptions :: ReaderOptions
-readerOptions = defaultHakyllReaderOptions {
+noHTMLreaderOptions :: ReaderOptions
+noHTMLreaderOptions = defaultHakyllReaderOptions {
     readerExtensions = disableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
   }
 
@@ -168,11 +168,18 @@ writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceO
 readContentWithPandoc :: Compiler (Item Pandoc)
 readContentWithPandoc = getResourceBody >>= readPandocWith defaultHakyllReaderOptions
 
+readContentWithPandocWith :: ReaderOptions -> Compiler (Item Pandoc)
+readContentWithPandocWith readerOptions = getResourceBody >>= readPandocWith readerOptions
+
 pandocContentCompiler :: (Pandoc -> Pandoc) -> Item Pandoc -> Compiler (Item String)
 pandocContentCompiler transform = return . writePandocWith writerOptions . fmap transform
 
 contentCompiler :: (Pandoc -> Pandoc) -> Compiler (Item String)
 contentCompiler transform = readContentWithPandoc >>= pandocContentCompiler transform
+
+contentCompilerWith :: ReaderOptions -> WriterOptions -> (Pandoc -> Pandoc) -> Compiler (Item String)
+contentCompilerWith readerOp writerOp transform =
+  writePandocWith writerOp . fmap transform <$> readContentWithPandocWith readerOp
 
 postContentTransforms :: String -> String -> Pandoc -> Pandoc
 postContentTransforms postSlug alignment =
