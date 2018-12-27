@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en" class="no-js" prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta name="copyright" content="Abhinav Sarkar">
+        <meta name="robots" content="index,follow">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="jqi6GjA_kvmDkzCQwNJIPilm810Wwt6P0wsDmiSKmqk">
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:creator" content="@abhin4v">
+
+        <meta property="og:url" content="https://abhinavsarkar.net/drafts/solving-aoc3-with-haskell-interval-trees/">
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="No Matter How You Slice It with Haskell and Interval Trees">
+        <meta property="og:locale" content="en_US">
+        <meta property="og:site_name" content="abhinavsarkar.net">
+        
+        <meta name="keywords" content="haskell, aoc, aoc18, programming">
+        
+        
+        <meta name="description" content="Solving Advent of Code Puzzle 3 --- " No Matter How You Slice It" --- with Haskell and Interval Trees.">
+        <meta property="og:description" content="Solving Advent of Code Puzzle 3 --- " No Matter How You Slice It" --- with Haskell and Interval Trees.">
+        
+        <meta name="language" content="EN">
+        <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
+        <meta name="HandheldFriendly" content="True">
+
+        <title>No Matter How You Slice It with Haskell and Interval Trees | abhinavsarkar.net</title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
+        <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
+        <link rel="canonical" href="https://abhinavsarkar.net/drafts/solving-aoc3-with-haskell-interval-trees/">
+        <link rel="me" href="https://abhinavsarkar.net/about/" type="text/html">
+        <link rel="me" href="https://twitter.com/abhin4v">
+        <link rel="me" href="https://github.com/abhin4v">
+        <link rel="pingback" href="https://webmention.io/abhinavsarkar.net/xmlrpc" />
+        <link rel="webmention" href="https://webmention.io/abhinavsarkar.net/webmention" />
+        <link rel="alternate" type="application/atom+xml" title="abhinavsarkar.net" href="https://abhinavsarkar.net/feed.xml">
+
+        <script>
+        (function() {
+          var allowedDomains = ["localhost", "127.0.0.1", "abhinavsarkar.net"];
+          if (allowedDomains.indexOf(window.location.hostname) == -1) {
+            if (window.location.protocol == "http:") {
+              location.host = "abhinavsarkar.net:80";
+            } else {
+              location.host = "abhinavsarkar.net:443";
+            }
+          }
+        })();
+        </script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" media="preload" onload="if (media != 'all') media = 'all';">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/article.css" media="preload" onload="if (media != 'all') media = 'all';">
+        <noscript>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+          <link rel="stylesheet" href="//abhinavsarkar.net/css/article.css">
+        </noscript>
+
+        <!-- Matomo -->
+        <script type="text/javascript">
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          _paq.push(['trackVisibleContentImpressions']);
+          (function() {
+            var u="//anna.abhinavsarkar.net/";
+            _paq.push(['setTrackerUrl', u+'piwik.php']);
+            _paq.push(['setSiteId', '1']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <!-- End Matomo Code -->
+    </head>
+    <body class="article-page">
+        <noscript>
+          <img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" alt />
+        </noscript>
+        <header>
+            <nav id="topnav">
+                <span class="logo">
+                  <a href="//abhinavsarkar.net/">abhinavsarkar.net</a>
+                  <label for="menu-toggle" class="label-toggle">
+                    <svg height="1em" version="1.1" viewBox="0 0 25 25" width="1em" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g id="hamburger-round">
+                        <path d="M0,4 C0,2.8954305 0.889763236,2 2.00359486,2 L22.9964051,2 C24.10296,2 25,2.88772964 25,4 C25,5.1045695 24.1102368,6 22.9964051,6 L2.00359486,6 C0.897039974,6 0,5.11227036 0,4 L0,4 Z M0,12 C0,10.8954305 0.889763236,10 2.00359486,10 L22.9964051,10 C24.10296,10 25,10.8877296 25,12 C25,13.1045695 24.1102368,14 22.9964051,14 L2.00359486,14 C0.897039974,14 0,13.1122704 0,12 L0,12 Z M0,20 C0,18.8954305 0.889763236,18 2.00359486,18 L22.9964051,18 C24.10296,18 25,18.8877296 25,20 C25,21.1045695 24.1102368,22 22.9964051,22 L2.00359486,22 C0.897039974,22 0,21.1122704 0,20 L0,20 Z" id="hamburger"></path>
+                      </g>
+                    </svg>
+                  </label>
+                </span>
+                <span class="links">
+                  <input type="checkbox" id="menu-toggle">
+                  <a href="//abhinavsarkar.net/about/">About Me</a>
+                  <a href="//abhinavsarkar.net/archive/">Archive</a>
+                  <a href="//abhinavsarkar.net/activities/">Activities</a>
+                  <a href="//abhinavsarkar.net/photos/">Photos</a>
+                  <a href="//abhinavsarkar.net/readings/">Readings</a>
+                  <a href="//abhinavsarkar.net/now/">Now</a>
+                </span>
+            </nav>
+        </header>
+
+        <main role="main">
+            <article itemscope itemtype="http://schema.org/Article" class="post">
+    <header>
+        <h1 itemprop="name" id="#top">No Matter How You Slice It with Haskell and Interval Trees</h1>
+    </header>
+
+    <ul class="headers">
+      <li class="header post-publish-date">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M6 0l-1 1 2 2 1-1-2-2zm-2 2l-4 4v2h2l4-4-2-2z"></path>
+        </svg>
+        <span itemprop="datePublished" content="2018-12-25">December 25, 2018</span>
+      </li>
+      <li class="header post-ert">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
+        </svg>
+        A four minute read
+      </li>
+      
+      <li class="header post-download">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M3 0v3h-2l3 3 3-3h-2v-3h-2zm-3 7v1h8v-1h-8z"></path>
+        </svg>
+        <a href="//abhinavsarkar.net/pdfs/posts/solving-aoc3-with-haskell-interval-trees.pdf" download rel="nofollow">Download</a>
+      </li>
+      <li class="header post-tags">
+        
+        <svg class="assist-icon tags" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M0 0v2l3 3 1.5-1.5.5-.5-2-2-1-1h-2zm3.41 0l3 3-1.19 1.22.78.78 2-2-3-3h-1.59zm-1.91 1c.28 0 .5.22.5.5s-.22.5-.5.5-.5-.22-.5-.5.22-.5.5-.5z" transform="translate(0 1)"></path>
+        </svg> Tags: <a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>
+        
+      </li>
+      <li class="header twitter-button">
+        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-via="abhin4v" data-dnt="true" data-show-count="false">Tweet</a>
+      </li>
+    </ul>
+
+    <section itemprop="articleBody" class="body">
+        <p>Here’s a condensed version of the third puzzle — <a href="https://adventofcode.com/2018/day/3" target="_blank" rel="noopener">“No Matter How You Slice It”</a> — from <a href="https://adventofcode.com/2018/" target="_blank" rel="noopener">Advent of Code 2018</a>:</p>
+<blockquote>
+<p>The whole piece of fabric the Elfs are working on is a very large square. Each Elf has made a claim about which area of fabric would be ideal for Santa’s suit. All claims have an ID and consist of a single rectangle with edges parallel to the edges of the fabric.</p>
+<p>A claim like <code>#123 @ 3,2: 5x4</code> means that claim ID 123 specifies a rectangle 3 inches from the left edge, 2 inches from the top edge, 5 inches wide, and 4 inches tall. The problem is that many of the claims overlap, causing two or more claims to cover part of the same areas.</p>
+<p><em>How many square inches of fabric are within two or more claims?</em></p>
+</blockquote>
+<p>Let’s solve this with Haskell.</p>
+<!--more-->
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#grokking-the-input">Grokking the Input</a></li><li><a href="#brute-force-solution">Brute-force Solution</a></li></ol></nav>
+<h2 id="grokking-the-input" data-track-content data-content-name="grokking-the-input" data-content-piece="solving-aoc3-with-haskell-interval-trees">Grokking the Input<a href="#grokking-the-input" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>First, let’s get the imports out of the way:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb1-1" title="1"><span class="ot">{-# LANGUAGE Strict #-}</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb1-3" title="3"></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="kw">import</span> <span class="dt">Control.Applicative</span> (some)</a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="kw">import</span> <span class="dt">Data.Bits</span> (<span class="dt">Bits</span>(shift))</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="kw">import</span> <span class="dt">Data.Function</span> (on)</a>
+<a class="sourceLine" id="cb1-7" title="7"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Set</span> <span class="kw">as</span> <span class="dt">Set</span></a>
+<a class="sourceLine" id="cb1-8" title="8"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Tree</span> <span class="kw">as</span> <span class="dt">T</span></a>
+<a class="sourceLine" id="cb1-9" title="9"><span class="kw">import</span> <span class="dt">Data.List</span> (maximumBy, foldl', sort, sortOn)</a>
+<a class="sourceLine" id="cb1-10" title="10"><span class="kw">import</span> <span class="dt">Data.Ord</span> (comparing)</a>
+<a class="sourceLine" id="cb1-11" title="11"><span class="kw">import</span> <span class="dt">Text.Parsec</span> <span class="kw">hiding</span> (<span class="dt">Empty</span>)</a></code></pre></div>
+<p>A claim is a rectangle with an ID. Let’s define a type for it.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">Claim</span> <span class="fu">=</span> <span class="dt">Claim</span> {<span class="ot"> claimID     ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-2" title="2">                   ,<span class="ot"> claimLeft   ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-3" title="3">                   ,<span class="ot"> claimTop    ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-4" title="4">                   ,<span class="ot"> claimWidth  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-5" title="5">                   ,<span class="ot"> claimHeight ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-6" title="6">                   }</a>
+<a class="sourceLine" id="cb2-7" title="7"></a>
+<a class="sourceLine" id="cb2-8" title="8"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-9" title="9">  (<span class="fu">==</span>) <span class="fu">=</span> (<span class="fu">==</span>) <span class="ot">`on`</span> claimID</a>
+<a class="sourceLine" id="cb2-10" title="10"></a>
+<a class="sourceLine" id="cb2-11" title="11"><span class="kw">instance</span> <span class="dt">Ord</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-12" title="12">  <span class="fu">compare</span> <span class="fu">=</span> <span class="fu">compare</span> <span class="ot">`on`</span> claimID</a>
+<a class="sourceLine" id="cb2-13" title="13"></a>
+<a class="sourceLine" id="cb2-14" title="14"><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-15" title="15">  <span class="fu">show</span> (<span class="dt">Claim</span> <span class="fu">id</span> l t w h) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb2-16" title="16">    <span class="st">&quot;&lt;#&quot;</span> <span class="fu">++</span> <span class="fu">show</span> <span class="fu">id</span> <span class="fu">++</span> <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb2-17" title="17">    <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> l <span class="fu">++</span> <span class="st">&quot;,&quot;</span> <span class="fu">++</span> <span class="fu">show</span> t <span class="fu">++</span> <span class="st">&quot;)-&quot;</span></a>
+<a class="sourceLine" id="cb2-18" title="18">    <span class="fu">++</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> (l<span class="fu">+</span>w) <span class="fu">++</span> <span class="st">&quot;,&quot;</span> <span class="fu">++</span> <span class="fu">show</span> (t<span class="fu">+</span>h) <span class="fu">++</span> <span class="st">&quot;)&gt;&quot;</span></a></code></pre></div>
+<p>Since each claim is uniquely identified with an ID, we use the ID to equate and order claims. The <code>Show</code> instance of <code>Claim</code> shows the top-left and bottom-right coordinates of a claim along with the ID, as demonstrated by this session in GHCi:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> claim <span class="fu">=</span> <span class="dt">Claim</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">12</span> <span class="dv">32</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">print</span> claim</a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="fu">&lt;#</span><span class="dv">1</span> (<span class="dv">3</span>,<span class="dv">4</span>)<span class="fu">-</span>(<span class="dv">15</span>,<span class="dv">36</span>)<span class="fu">&gt;</span></a></code></pre></div>
+<p>The <a href="https://adventofcode.com/2018/day/3/input" target="_blank" rel="noopener">input</a> for the puzzle is one claim per line. Let’s write a quick parser to parse an input line to a <code>Claim</code> value. We use the <a href="http://hackage.haskell.org/package/parsec" target="_blank" rel="noopener">parsec</a><a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> parser combinator library for the same.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb4-1" title="1"><span class="ot">claimParser ::</span> <span class="dt">Parsec</span> <span class="dt">String</span> () <span class="dt">Claim</span></a>
+<a class="sourceLine" id="cb4-2" title="2">claimParser <span class="fu">=</span></a>
+<a class="sourceLine" id="cb4-3" title="3">  (\<span class="fu">id</span> (l,t) (w,h) <span class="ot">-&gt;</span> <span class="dt">Claim</span> <span class="fu">id</span> l t w h)</a>
+<a class="sourceLine" id="cb4-4" title="4">  <span class="fu">&lt;$&gt;</span> (idP <span class="fu">&lt;*</span> spaces <span class="fu">&lt;*</span> char <span class="ch">'@'</span> <span class="fu">&lt;*</span> spaces)</a>
+<a class="sourceLine" id="cb4-5" title="5">  <span class="fu">&lt;*&gt;</span> (posP <span class="fu">&lt;*</span> char <span class="ch">':'</span> <span class="fu">&lt;*</span> spaces)</a>
+<a class="sourceLine" id="cb4-6" title="6">  <span class="fu">&lt;*&gt;</span> dimP</a>
+<a class="sourceLine" id="cb4-7" title="7">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb4-8" title="8">    intP <span class="fu">=</span> <span class="fu">read</span> <span class="fu">&lt;$&gt;</span> some digit</a>
+<a class="sourceLine" id="cb4-9" title="9">    idP  <span class="fu">=</span> char <span class="ch">'#'</span> <span class="fu">*&gt;</span> intP</a>
+<a class="sourceLine" id="cb4-10" title="10">    posP <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> (intP <span class="fu">&lt;*</span> char <span class="ch">','</span>) <span class="fu">&lt;*&gt;</span> intP</a>
+<a class="sourceLine" id="cb4-11" title="11">    dimP <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> (intP <span class="fu">&lt;*</span> char <span class="ch">'x'</span>) <span class="fu">&lt;*&gt;</span> intP</a></code></pre></div>
+<p>Let’s see it in action in the REPL:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb5-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> parse claimParser <span class="st">&quot;&quot;</span> <span class="st">&quot;#123 @ 3,2: 5x4&quot;</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="dt">Right</span> <span class="fu">&lt;#</span><span class="dv">123</span> (<span class="dv">3</span>,<span class="dv">2</span>)<span class="fu">-</span>(<span class="dv">8</span>,<span class="dv">6</span>)<span class="fu">&gt;</span></a></code></pre></div>
+<p>Nice. Now, we can write the function to parse the whole puzzle input:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">readInput ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Claim</span>]</a>
+<a class="sourceLine" id="cb6-2" title="2">readInput input <span class="fu">=</span> <span class="kw">case</span> <span class="fu">traverse</span> (parse claimParser <span class="st">&quot;&quot;</span>) <span class="fu">$</span> <span class="fu">lines</span> input <span class="kw">of</span></a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="dt">Left</span> e   <span class="ot">-&gt;</span> <span class="fu">error</span> (<span class="fu">show</span> e)</a>
+<a class="sourceLine" id="cb6-4" title="4">  <span class="dt">Right</span> rs <span class="ot">-&gt;</span> rs</a></code></pre></div>
+<p>Back to GHCi:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> input <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input&quot;</span></a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">mapM_</span> <span class="fu">print</span> <span class="fu">.</span> <span class="fu">take</span> <span class="dv">5</span> <span class="fu">$</span> readInput input</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="fu">&lt;#</span><span class="dv">1</span> (<span class="dv">179</span>,<span class="dv">662</span>)<span class="fu">-</span>(<span class="dv">195</span>,<span class="dv">689</span>)<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="fu">&lt;#</span><span class="dv">2</span> (<span class="dv">609</span>,<span class="dv">961</span>)<span class="fu">-</span>(<span class="dv">634</span>,<span class="dv">982</span>)<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="fu">&lt;#</span><span class="dv">3</span> (<span class="dv">73</span>,<span class="dv">376</span>)<span class="fu">-</span>(<span class="dv">96</span>,<span class="dv">404</span>)<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="fu">&lt;#</span><span class="dv">4</span> (<span class="dv">599</span>,<span class="dv">405</span>)<span class="fu">-</span>(<span class="dv">625</span>,<span class="dv">430</span>)<span class="fu">&gt;</span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="fu">&lt;#</span><span class="dv">5</span> (<span class="dv">28</span>,<span class="dv">933</span>)<span class="fu">-</span>(<span class="dv">47</span>,<span class="dv">962</span>)<span class="fu">&gt;</span></a></code></pre></div>
+<p>It works! Off to the actual solution now.</p>
+<h2 id="brute-force-solution" data-track-content data-content-name="brute-force-solution" data-content-piece="solving-aoc3-with-haskell-interval-trees">Brute-force Solution<a href="#brute-force-solution" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>One simple way to solve this puzzle is to go through each 1x1 cell in the whole sheet and check if more than one claim contains them. This is a brute-force solution with no cleverness, but it will serve as a baseline for the later solutions. For this solution, first we need to find out the size of the sheet by going over all the claims:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">sheetSize ::</span> [<span class="dt">Claim</span>] <span class="ot">-&gt;</span> (<span class="dt">Int</span>, <span class="dt">Int</span>)</a>
+<a class="sourceLine" id="cb8-2" title="2">sheetSize claims <span class="fu">=</span> (calcBound claimRight, calcBound claimBottom)</a>
+<a class="sourceLine" id="cb8-3" title="3">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-4" title="4">    claimRight  (<span class="dt">Claim</span> _ l _ w _) <span class="fu">=</span> l <span class="fu">+</span> w</a>
+<a class="sourceLine" id="cb8-5" title="5">    claimBottom (<span class="dt">Claim</span> _ _ t _ h) <span class="fu">=</span> t <span class="fu">+</span> h</a>
+<a class="sourceLine" id="cb8-6" title="6">    calcBound f <span class="fu">=</span> f (maximumBy (comparing f) claims)</a></code></pre></div>
+<p>We calculate the width and height of the sheet by finding the claims with furthest right and bottom boundaries. Let’s run this over the input file in GHCi:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> input <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input&quot;</span></a>
+<a class="sourceLine" id="cb9-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> claims <span class="fu">=</span> readInput input</a>
+<a class="sourceLine" id="cb9-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> sheetSize claims</a>
+<a class="sourceLine" id="cb9-4" title="4">(<span class="dv">1000</span>,<span class="dv">1000</span>)</a></code></pre></div>
+<p>So our sheet is a 1000x1000 square. Now, let’s write a function to find out if a cell is contained in more than one claims.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb10-1" title="1"><span class="ot">isOverlapCell ::</span> [<span class="dt">Claim</span>] <span class="ot">-&gt;</span> (<span class="dt">Int</span>, <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Bool</span></a>
+<a class="sourceLine" id="cb10-2" title="2">isOverlapCell claims cell <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-3" title="3">  (<span class="fu">&gt;</span> <span class="dv">1</span>) <span class="fu">.</span> <span class="fu">length</span> <span class="fu">.</span> <span class="fu">filter</span> (cellInClaim cell) <span class="fu">$</span> claims</a>
+<a class="sourceLine" id="cb10-4" title="4">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb10-5" title="5">    cellInClaim (x, y) (<span class="dt">Claim</span> _ l t w h) <span class="fu">=</span></a>
+<a class="sourceLine" id="cb10-6" title="6">      l <span class="fu">&lt;=</span> x <span class="fu">&amp;&amp;</span> (l<span class="fu">+</span>w) <span class="fu">&gt;=</span> (x<span class="fu">+</span><span class="dv">1</span>) <span class="fu">&amp;&amp;</span> t <span class="fu">&lt;=</span> y <span class="fu">&amp;&amp;</span> (t<span class="fu">+</span>h) <span class="fu">&gt;=</span> (y<span class="fu">+</span><span class="dv">1</span>)</a></code></pre></div>
+<p><code>cellInClaim</code> function checks if a cell lies within a claim by comparing the cell and claim boundaries. Then, from all the claims we filter the ones which contain the given cell. If there is more than one such claim, the cell is an overlap cell.</p>
+<p>With these functions done, writing the brute-force solver is easy:</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">bruteForceOverlapArea ::</span> [<span class="dt">Claim</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb11-2" title="2">bruteForceOverlapArea claims <span class="fu">=</span></a>
+<a class="sourceLine" id="cb11-3" title="3">  <span class="kw">let</span> (width, height) <span class="fu">=</span> sheetSize claims</a>
+<a class="sourceLine" id="cb11-4" title="4">      cells           <span class="fu">=</span> [(i, j) <span class="fu">|</span> i <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="fu">..</span>width<span class="fu">-</span><span class="dv">1</span>], j <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="fu">..</span>height<span class="fu">-</span><span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb11-5" title="5">      overlapArea     <span class="fu">=</span> <span class="fu">length</span> <span class="fu">.</span> <span class="fu">filter</span> (isOverlapCell claims) <span class="fu">$</span> cells</a>
+<a class="sourceLine" id="cb11-6" title="6">  <span class="kw">in</span> overlapArea</a></code></pre></div>
+<p>We go over all cell in the sheet and check if they are overlap cells. The overlap area is simply the count of such cells. Let’s write the main function to finish this up:</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
+<a class="sourceLine" id="cb12-2" title="2">main <span class="fu">=</span> <span class="kw">do</span></a>
+<a class="sourceLine" id="cb12-3" title="3">  claims <span class="ot">&lt;-</span> readInput <span class="fu">&lt;$&gt;</span> <span class="fu">getContents</span></a>
+<a class="sourceLine" id="cb12-4" title="4">  <span class="kw">let</span> overlapArea <span class="fu">=</span> bruteForceOverlapArea claims</a>
+<a class="sourceLine" id="cb12-5" title="5">  <span class="fu">putStrLn</span> <span class="fu">$</span> <span class="st">&quot;Overlap Area = &quot;</span> <span class="fu">++</span> <span class="fu">show</span> overlapArea</a></code></pre></div>
+<p>Now, we compile and run this on the puzzle input:</p>
+<pre class="plain"><code>$ ghc -O2 --make *.hs -o overlap-area
+Linking overlap-area ...
+$ cat input | time ./overlap-area
+Overlap Area = 109143
+       14.35 real        14.30 user         0.03 sys</code></pre>
+<p>The answer <em>109143</em> is correct; I’ve verified it with the <em>Advent of Code</em> website. It takes about 14 seconds to brute-force solve the puzzle on my 2015 MacBook pro laptop.</p>
+<p>Next, let’s see how we can improve the run time with a special data structure.</p>
+<section class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>You can learn more about parsec and parsing in general from <a href="http://book.realworldhaskell.org/read/using-parsec.html" target="_blank" rel="noopener">these</a> <a href="http://kunigami.wordpress.com/2014/01/21/an-introduction-to-the-parsec-library" target="_blank" rel="noopener">tutorials</a>.<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</section>
+    </section>
+    <section class="source">
+        
+          Posted by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
+        
+      <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/solving-aoc3-with-haskell-interval-trees.md" target="_blank" rel="noopener" style="float: right;">
+        Post history
+      </a>
+    </section>
+</article>
+<meta itemprop="url" content="https://abhinavsarkar.net/drafts/solving-aoc3-with-haskell-interval-trees/">
+
+
+
+
+
+<ul class="pager">
+  <li class="previous">
+    
+    <a href="//abhinavsarkar.net/drafts/fast-sudoku-solver-in-haskell-4/" title="Previous">
+      <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+        <path d="M4 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z" transform="translate(1)"></path>
+      </svg>
+      <span class="ind">Previous</span> <br>
+      <span class="title">Fast Sudoku Solver in Haskell #4: Going Faster with Parallelism</span>
+    </a>
+    
+  </li>
+
+  <li class="next">
+    
+  </li>
+</ul>
+
+<script src="//abhinavsarkar.net/js/post-styling.js" defer async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.1.0/highlightjs-line-numbers.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
+<script>
+  hljs.initHighlightingOnLoad();
+  hljs.initLineNumbersOnLoad({
+    singleLine: true
+  });
+
+  window.setTimeout(function() {
+      if (window.twttr == undefined) {
+        document.getElementsByClassName("twitter-button")[0].setAttribute("style", "display: none");
+      }
+    }, 3000);
+</script>
+
+        </main>
+
+        <footer>
+            <span style="float: left">© 2017-2018, Abhinav Sarkar</span>
+            Generated by <a href="http://jaspervdj.be/hakyll" target="_blank" rel="noopener">Hakyll</a>
+            <span id="gen-time" class="hide-small"></span> |
+            <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank" rel="noopener">Source</a>
+        </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      document.documentElement.className = document.documentElement.className.replace("no-js","js");
+
+      function loadStyleSheet(src) {
+        if (document.createStyleSheet){
+          document.createStyleSheet(src);
+        } else {
+          jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
+        }
+      }
+
+      jQuery(window).ready(function setGenTime() {
+        if (window.performance && window.performance.timing) {
+          var t = window.performance.timing;
+          var elapsed = t.loadEventEnd - t.navigationStart;
+          if (elapsed >= 0) {
+            jQuery("#gen-time").text("| Served in " + elapsed + " ms");
+          } else {
+            window.setTimeout(setGenTime, 1000);
+          }
+        }
+      });
+    </script>
+    <style type="text/css" media="print">
+      @page {
+        size: A4;
+        margin: 12mm 17mm 12mm 17mm;
+      }
+    </style>
+  </body>
+</html>
