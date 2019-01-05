@@ -37,9 +37,14 @@ assets = do
     compile copyFileCompiler
 
   -- js
-  match "js/*" $ do
+  match ("js/*.js" .&&. complement "js/*.min.js") $ do
    route   idRoute
    compile compressJsCompiler
+
+  -- .min.js
+  match "js/*.min.js" $ do
+    route   idRoute
+    compile copyFileCompiler
 
   -- css files
   match "css/*.css" $ do
