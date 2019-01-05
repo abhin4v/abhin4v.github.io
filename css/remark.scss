@@ -1,0 +1,16 @@
+@import "fonts";
+@import "apron";
+@import "adirondack";
+@import "descartes";
+
+.remark-slide-content {
+  &.big-h1 h1 {
+    font-size: 7rem;
+    margin: 0;
+  }
+  &.fullcover h1 {
+    height: 100%;
+    top: 0;
+    padding-top: calc(50% - 1.5em);
+  }
+}

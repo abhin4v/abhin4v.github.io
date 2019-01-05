@@ -5,7 +5,7 @@ import Hakyll hiding (relativizeUrls)
 import Site.Util
 
 talks :: String -> Rules ()
-talks env =
+talks env = do
   match "talks/*.md" $ do
     route indexHTMLRoute
     compile $ do
@@ -19,3 +19,7 @@ talks env =
         >>= loadAndApplyTemplate "templates/default.html" talkCtx
         >>= relativizeUrls env
         >>= removeIndexHtml
+
+  match "talks/*/*" $ do
+    route   idRoute
+    compile copyFileCompiler
