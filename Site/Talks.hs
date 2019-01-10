@@ -20,6 +20,17 @@ talks env = do
         >>= relativizeUrls env
         >>= removeIndexHtml
 
-  match "slides/*/*" $ do
+  match ("slides/*/*" .&&. complement "slides/*/*.md") $ do
     route   idRoute
     compile copyFileCompiler
+
+  match "slides/*/*.md" $ do
+    route dirIndexHTMLRoute
+    compile $ do
+      let slidesCtx =
+            boolField "live_reload" (const $ env == "DEV") <>
+            constField "page_type" "slides" <>
+            siteContext
+      getResourceBody
+        >>= loadAndApplyTemplate "templates/slides.html" slidesCtx
+        >>= relativizeUrls env

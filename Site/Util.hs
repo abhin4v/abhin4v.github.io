@@ -27,6 +27,12 @@ customRoute fileName = H.customRoute createIndexRoute
     createIndexRoute ident = let p = toFilePath ident
       in takeDirectory p </> takeBaseName p </> fileName
 
+dirIndexHTMLRoute :: Routes
+dirIndexHTMLRoute = H.customRoute createDirIndexRoute
+  where
+    createDirIndexRoute ident =
+      takeDirectory (toFilePath ident) </> "index.html"
+
 removeIndexHtml :: Item String -> Compiler (Item String)
 removeIndexHtml item = return $ fmap (withUrls removeIndexURL) item
 

@@ -1,0 +1,318 @@
+---
+title: Clojure Concurrency Patterns
+---
+
+class: roomy big-h1 no-footer
+
+# Clojure
+# Concurrency
+# Patterns
+.right[## Abhinav Sarkar
+```clojure
+(((IN/Clojure Bengaluru 2019)))
+```]
+
+---
+class: title fogscreen fullbleed fullcover no-footer big-h1
+background-image: url(/slides/clojure-concurrency-patterns/flipkart_logo.jpg)
+
+# Flipkart
+
+---
+class: title fogscreen fullbleed fullcover no-footer big-h1
+background-image: url(/slides/clojure-concurrency-patterns/nilenso.png)
+
+# Nilenso
+
+---
+class: title
+
+# Time
+
+???
+So why are we here? We are here because of time.
+
+Without time, programming would be so much simpler.
+
+Here is a sample program without time:
+
+---
+class: no-heading
+
+```clojure
+(defn pass-time [person]
+   (-> person
+      (assoc :hair-color :gray)
+      (update :age inc)))
+```
+
+???
+It doesn't matter when you run this code, it'll always return the same answer given a fixed input.
+
+In other words, it's deterministic.
+
+But the real world is not that simple.
+
+In real world, we have values that change over time.
+
+---
+
+# Values and Identities
+
+```clojure
+user=> (def abhinav {:hair-color :black :age 33})
+#'user/abhinav
+```
+
+???
+Here `abhinav` is the me inside the program. Its my identity.
+Its value is my current hair color and age.
+
+The way it is written now, it is not possible to change the value, because values are immutable in clojure.
+
+--
+
+```clojure
+user=> (def abhinav
+  #_=>   (atom {:hair-color :black :age 33}))
+#'user/abhinav
+user=> (swap! abhinav pass-time)
+{:hair-color :gray, :age 34}
+```
+
+???
+`abhinav` is still the identity but its value is set to an atom which is a reference type in clojure which allows us to change the value over time.
+
+In imperative language, this distinction of identity and value is forgotten and the concepts are conflated together as a mutable value.
+
+Mutable values are fine too but soon we have to deal with:
+
+---
+class: title
+
+# Concurrency
+
+---
+
+class: quote big
+
+> Concurrency is a program-structuring technique in which there are multiple threads of control which execute "at the same time".
+  
+— Simon Marlow, Parallel and Concurrent Programming in Haskell
+
+???
+
+- the effects of the execution of these multiple operations are interleaved
+- concurrency is non-deterministic
+- concurrency lets us utilize the processing power more effectively
+- concurrency allows programs to be modular
+- concurrency is not same as parallelism
+
+---
+
+# Thread
+
+- Thread is a sequence of instructions along with a context.
+- In case of clojure on JVM, the threading model is provided by the JVM which only supports OS threads.
+
+???
+
+- Run by processors, Managed by schedulers
+- There are different kinds of threads depending on what is scheduling them
+- OS threads are scheduled by the OS kernel.
+- Without threads, we need to use a event loop mechanism with events and callback
+- This makes code very difficult to work with AKA callback hell
+
+---
+class: no-heading
+
+```clojure
+user=> (def t (Thread. #(println "hello")))
+#'user/t
+user=> (.start t)
+hello
+nil
+```
+
+---
+class: no-heading
+
+```clojure
+user=> (import java.util.concurrent.Executors)
+java.util.concurrent.Executors
+user=> (def tp (Executors/newSingleThreadExecutor))
+#'user/tp
+user=> (.submit tp #(println "hello"))
+hello
+#object[java.util.concurrent.FutureTask ...]
+```
+
+---
+class: no-heading
+
+```clojure
+user=> (future (println "hello"))
+hello
+#object[clojure.core$future_call$reify__6962 ...]
+```
+
+--
+
+```clojure
+user=> (def f (future (do
+  #_=>                   (println "hello")
+  #_=>                   12345)))
+hello
+#'user/f
+user=> (deref f)
+12345
+```
+
+???
+
+- both the threadpool version and macro version return us a "future" value
+- till the thread is not done, we can wait on the future using `deref`
+- when the thread is done, the future resolves to the return value of the thread.
+- future is set only once and the value is cached forever
+- in all of these examples, printing was done from a thread different than the REPL main thread
+- with great concurrency comes great
+
+---
+class: title
+
+# Synchronization
+
+---
+
+# Synchronization
+
+- The process by which multiple threads agree on *some things* at *some time*. 
+- For example:
+  - timing: forking and joining threads
+  - value of a variable
+  - a sequence of steps to execute
+  - access to a shared resource
+
+---
+class: pv-7
+
+| ⌄ Time / Things >| One value  | Multiple values     |
+|------------------|------------|---------------------|
+| Synchronous      | Lock, Atom | Multiple locks, Ref |
+| Asynchronous     | Agent      | CRDTs, Raft/Paxos   |
+
+---
+
+# Lock
+
+- An easy way of synchronization.
+- Prevent concurrent access to critical sections/memory.
+- Do not compose.
+
+???
+
+- Threads share memory addresses.
+- Locks work like locks on room door. You get inside and lock the door. No one else can get into the room till you unlock it.
+
+---
+class: no-heading
+
+```clojure
+user=> (def lock (Object.))
+#'user/lock
+user=> (locking lock (println "locked hello"))
+locked hello
+nil
+```
+
+---
+class: compact no-heading
+
+```clojure
+user=> (import java.util.concurrent.locks.ReentrantLock)
+java.util.concurrent.locks.ReentrantLock
+user=> (def lock (ReentrantLock.))
+#'user/lock
+user=> (try
+  #_=>   (.lock lock)
+  #_=>   (println "locked hello")
+  #_=>   (finally
+  #_=>     (.unlock lock)))
+locked hello
+nil
+```
+
+???
+
+- With locking, we need to be careful about when and in what order to take lock and to release them
+- Wrong locking can lead to deadlock, starvation, etc.
+
+---
+
+# Atom
+
+- Atoms are references which change atomically and immediately.
+- Simplest of all reference types.
+- Do not compose.
+
+???
+
+- Changes are visible to all threads at the same time.
+
+---
+class: no-heading
+
+```clojure
+user=> (def abhinav
+  #_=>   (atom {:hair-color :black :age 33}))
+#'user/abhinav
+user=> (swap! abhinav pass-time)
+{:hair-color :gray, :age 34}
+user=> (reset! abhinav {:hair-color :none :age 33})
+{:hair-color :none, :age 33}
+user=> @abhinav
+{:hair-color :none, :age 33}
+```
+
+---
+class: compact
+
+```java
+package clojure.lang;
+import java.util.concurrent.atomic.AtomicReference;
+
+final public class Atom {
+  private final AtomicReference state;
+
+  public Atom(Object o) { state = new AtomicReference(o); }
+
+  public Object deref() { return state.get(); }
+
+  public Object swap(IFn f) {
+    for (;;) {
+      Object v = deref();
+      Object newv = f.invoke(v);
+      if (state.compareAndSet(v, newv)) {
+        notifyWatches(v, newv);
+        return newv;
+      }
+    }
+  }
+}
+```
+
+???
+
+- compareAndSet invokes an atomic hardware instruction to set the new value after comparing the current value with passed old value
+- if the old value matches, the new value is set and CAS returns true.
+- else CAS returns false and for loop try again, infinitely
+- CAS is the basic of non-blocking concurrency algorithm and data structures
+- something called watches here?
+
+---
+
+# Atom
+
+- Most ubiquitous concurrency feature used in Clojure.
+- Use cases: dynamic configs, database connections, simple caches.
+- Do not call swap with long running or non-idempotent functions.

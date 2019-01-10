@@ -17,11 +17,26 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    blockquote {
-      font-size: 1.5em;
-    }
     blockquote + p {
       text-align: right;
     }
+  }
+  &.big {
+    blockquote {
+      font-size: 1.5em;
+    }
+  }
+  &.no-heading {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+  li {
+    list-style: "» ";
+  }
+  table {
+    display: table;
+  }
+  em {
+    border-bottom: 2px solid #333;
   }
 }
