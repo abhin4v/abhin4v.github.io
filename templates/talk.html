@@ -17,5 +17,13 @@ $endif$
 $body$
 
 <h3>Slides</h3>
+$if(speakerdeck_id)$
 <script async class="speakerdeck-embed" data-id="$speakerdeck_id$" data-ratio="$speakerdeck_ratio$" src="//speakerdeck.com/assets/embed.js">
 </script>
+$endif$
+$if(slides_path)$
+<div class="slides-container">
+  <iframe src="/slides/$slides_path$/" allowfullscreen allow="fullscreen"></iframe>
+</div>
+<small>Click on the slide above and use arrow keys to navigate. Press <code>f</code> to view in full screen mode.</small>
+$endif$
