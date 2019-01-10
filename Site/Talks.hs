@@ -20,6 +20,6 @@ talks env = do
         >>= relativizeUrls env
         >>= removeIndexHtml
 
-  match "talks/*/*" $ do
+  match "slides/*/*" $ do
     route   idRoute
     compile copyFileCompiler
