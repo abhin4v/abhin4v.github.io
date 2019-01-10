@@ -202,6 +202,11 @@ class: pv-7
 | Asynchronous     | Agent      | CRDTs, Raft/Paxos   |
 
 ---
+class: title
+
+# Lock
+
+---
 
 # Lock
 
@@ -246,6 +251,12 @@ nil
 
 - With locking, we need to be careful about when and in what order to take lock and to release them
 - Wrong locking can lead to deadlock, starvation, etc.
+- Fortunately, Clojure has many features for supporing concurrency without locks
+
+---
+class: title
+
+# Atom
 
 ---
 
@@ -316,3 +327,98 @@ final public class Atom {
 - Most ubiquitous concurrency feature used in Clojure.
 - Use cases: dynamic configs, database connections, simple caches.
 - Do not call swap with long running or non-idempotent functions.
+
+???
+
+- need concurrent access? start with atom
+- long running functions will get run again and again because short running functions may change the atom value in between
+- functions with side-effects may cause the side-effects to execute multiple times
+
+---
+class: title
+
+# Agent
+
+---
+
+# Agent
+
+- Agents, like Atoms, are references which support atomic changes.
+- But the changes are made in an asynchronous fashion.
+- Do not compose.
+
+---
+
+class: no-heading
+
+```clojure
+user=> (def counter (agent 0))
+#'user/counter
+user=> (let [numbers [1 9 3 4 5 5 4 44 4 2 5 6 7]]
+
+user=> (dotimes [i 10]
+  #_=>   (send counter inc))
+nil
+user=> (await counter)
+nil
+user=> (println @counter)
+10
+nil
+```
+
+???
+- create an agent initialized to 0
+- add x to the current value
+- wait until all sent actions are done
+- should have the answer
+- an agent hold an internal state like atom
+- like swap in atoms, you can send a function to an agent
+- but the functions send to agents are not executed immediately
+- instead they are put in a queue in the order they are sent to the agent
+- and executed one by one, never concurrently
+- this makes sure that functions are never executed multiple times like atom
+
+---
+
+# Agents are not Actors
+
+```erlang
+-module(counter).
+-export([loop/1]).
+
+loop(N) -> receive
+  {inc} -> loop(N+1);
+  {get, Sender} -> Sender ! N, loop(N)
+end.
+
+> Pid = spawn(counter, loop, [0]).
+> Pid ! {inc}.
+> Pid ! {get, self()}.
+> receive Value -> io:fwrite("~p~n", [Value]) end.
+1
+```
+
+???
+
+- Actor only has certain behaviors which are specific by the actor itself
+- Agent can behave in any way depending on the function sent to it
+- Only way to get the value inside an actor is to send it a message with another actor's id to which it can send its value to.
+- Agent state is directly accessible at all times
+- Agents are reactive, not autonomous - there is no message loop and no blocking receive.
+- Actor and agent both have an internal queue for the functions and messages sent to them respectively
+
+---
+
+# Agents
+
+- Can be used for any state that does not require strict consistency for reads:
+  - Counters (e.g. message rates in event processing)
+  - Collections (e.g. recently processed events)
+- Can be used for offloading arbitrary computations to a thread pool using `send-via`.
+- Uses an unbounded queue, so too many functions enqueued in it may cause OOM.
+
+???
+
+- send is backed by a fixed thread pool of size 2 * number of processors
+- so use send for only short running functions
+- if the function is expected to run for long time, use send-off instead which runs it on a cached thread pool
