@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="copyright" content="Abhinav Sarkar">
+    <meta name="robots" content="index,follow">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta name="language" content="EN">
+    <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
+    <meta name="HandheldFriendly" content="True">
+
+    <title>Clojure Concurrency and You | abhinavsarkar.net</title>
+    <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="//abhinavsarkar.net/css/remark.css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: roomy big-h1 no-footer
+
+# Clojure,
+# Concurrency,
+# And You
+.right[## Abhinav Sarkar
+```clojure
+(((IN/Clojure Bengaluru 2019)))
+```]
+
+---
+class: title fogscreen fullbleed fullcover no-footer big-h1
+background-image: url(/slides/clojure-concurrency-patterns/flipkart_logo.jpg)
+
+# Flipkart
+
+---
+class: title fogscreen fullbleed fullcover no-footer big-h1
+background-image: url(/slides/clojure-concurrency-patterns/nilenso.png)
+
+# Nilenso
+
+---
+class: title
+
+# Time
+
+???
+So why are we here? We are here because of time.
+
+Without time, programming would be so much simpler.
+
+Here is a sample program without time:
+
+---
+class: no-heading
+
+```clojure
+(defn pass-time [person]
+   (-> person
+      (assoc :hair-color :gray)
+      (update :age inc)))
+```
+
+???
+It doesn't matter when you run this code, it'll always return the same answer given a fixed input.
+
+In other words, it's deterministic.
+
+But the real world is not that simple.
+
+In real world, we have values that change over time.
+
+---
+
+# Values and Identities
+
+```clojure
+user=> (def abhinav {:hair-color :black :age 33})
+#'user/abhinav
+```
+
+???
+Here `abhinav` is the me inside the program. Its my identity.
+Its value is my current hair color and age.
+
+The way it is written now, it is not possible to change the value, because values are immutable in clojure.
+
+--
+
+```clojure
+user=> (def abhinav
+  #_=>   (atom {:hair-color :black :age 33}))
+#'user/abhinav
+user=> (swap! abhinav pass-time)
+{:hair-color :gray, :age 34}
+```
+
+???
+`abhinav` is still the identity but its value is set to an atom which is a reference type in clojure which allows us to change the value over time.
+
+In imperative language, this distinction of identity and value is forgotten and the concepts are conflated together as a mutable value.
+
+Mutable values are fine too but soon we have to deal with:
+
+---
+class: title
+
+# Concurrency
+
+---
+
+class: quote big
+
+> Concurrency is a program-structuring technique in which there are multiple threads of control which execute "at the same time".
+
+— Simon Marlow, Parallel and Concurrent Programming in Haskell
+
+???
+
+- the effects of the execution of these multiple operations are interleaved
+- concurrency is non-deterministic
+- concurrency lets us utilize the processing power more effectively
+- concurrency allows programs to be modular
+- concurrency is not same as parallelism
+
+---
+
+# Thread
+
+- Thread is a sequence of instructions along with a context.
+- In case of clojure on JVM, the threading model is provided by the JVM which only supports OS threads.
+
+???
+
+- Run by processors, Managed by schedulers
+- There are different kinds of threads depending on what is scheduling them
+- OS threads are scheduled by the OS kernel.
+- Without threads, we need to use a event loop mechanism with events and callback
+- This makes code very difficult to work with AKA callback hell
+
+---
+class: compact fs-75pct
+
+```javascript
+fs.readdir(source, function (err, files) {
+  if (err) {
+    console.log('Error finding files: ' + err);
+  } else {
+    files.forEach(function (filename, fileIndex) {
+      console.log(filename);
+      gm(source + filename).size(function (err, values) {
+        if (err) {
+          console.log('Error identifying file size: ' + err);
+        } else {
+          console.log(filename + ' : ' + values);
+          aspect = (values.width / values.height);
+          widths.forEach(function (width, widthIndex) {
+            height = Math.round(width / aspect);
+            console.log('resizing ' + filename + 'to ' + height + 'x' + height);
+            this.resize(width, height).write(dest + 'w' + width + '_' + filename,
+              function(err) {
+                if (err)
+                  console.log('Error writing file: ' + err);
+              });
+          }.bind(this));
+        }
+      });
+    });
+  }
+});
+```
+
+---
+class: no-heading
+
+```clojure
+user=> (def t (Thread. #(println "hello")))
+#'user/t
+user=> (.start t)
+hello
+nil
+```
+
+---
+class: no-heading
+
+```clojure
+user=> (import java.util.concurrent.Executors)
+java.util.concurrent.Executors
+user=> (def tp (Executors/newSingleThreadExecutor))
+#'user/tp
+user=> (.submit tp #(println "hello"))
+hello
+#object[java.util.concurrent.FutureTask ...]
+```
+
+---
+class: no-heading
+
+```clojure
+user=> (future (println "hello"))
+hello
+#object[clojure.core$future_call$reify__6962 ...]
+```
+
+--
+
+```clojure
+user=> (def f (future (do
+  #_=>                   (println "hello")
+  #_=>                   12345)))
+hello
+#'user/f
+user=> (deref f)
+12345
+```
+
+???
+
+- both the threadpool version and macro version return us a "future" value
+- till the thread is not done, we can wait on the future using `deref`
+- when the thread is done, the future resolves to the return value of the thread.
+- future is set only once and the value is cached forever
+- in all of these examples, printing was done from a thread different than the REPL main thread
+- with great concurrency comes great
+
+---
+class: title
+
+# Synchronization
+
+---
+
+# Synchronization
+
+- The process by which multiple threads agree on *some things* at *some time*.
+- For example:
+  - timing: forking and joining threads
+  - value of a variable
+  - a sequence of steps to execute
+  - access to a shared resource
+
+---
+class: pv-7
+
+| ⌄ Time / Things >| One value  | Multiple values     |
+|------------------|------------|---------------------|
+| Synchronous      | Lock, Atom | Multiple locks, Ref |
+| Asynchronous     | Agent      | CRDTs, Raft/Paxos   |
+
+---
+class: title
+
+# Lock
+
+---
+
+# Lock
+
+- An easy way of synchronization.
+- Prevent concurrent access to critical sections/memory.
+- Do not compose.
+
+???
+
+- Threads share memory addresses.
+- Locks work like locks on room door. You get inside and lock the door. No one else can get into the room till you unlock it.
+
+---
+class: no-heading
+
+```clojure
+user=> (def lock (Object.))
+#'user/lock
+user=> (locking lock (println "locked hello"))
+locked hello
+nil
+```
+
+---
+class: compact no-heading
+
+```clojure
+user=> (import java.util.concurrent.locks.ReentrantLock)
+java.util.concurrent.locks.ReentrantLock
+user=> (def lock (ReentrantLock.))
+#'user/lock
+user=> (try
+  #_=>   (.lock lock)
+  #_=>   (println "locked hello")
+  #_=>   (finally
+  #_=>     (.unlock lock)))
+locked hello
+nil
+```
+
+???
+
+- With locking, we need to be careful about when and in what order to take lock and to release them
+- Wrong locking can lead to deadlock, starvation, etc.
+- Fortunately, Clojure has many features for supporing concurrency without locks
+
+---
+class: title
+
+# Atom
+
+---
+
+# Atom
+
+- Atoms are references which change atomically and immediately.
+- Simplest of all reference types.
+- Do not compose.
+
+???
+
+- Changes are visible to all threads at the same time.
+
+---
+class: no-heading
+
+```clojure
+user=> (def abhinav
+  #_=>   (atom {:hair-color :black :age 33}))
+#'user/abhinav
+user=> (swap! abhinav pass-time)
+{:hair-color :gray, :age 34}
+user=> (reset! abhinav {:hair-color :none :age 33})
+{:hair-color :none, :age 33}
+user=> @abhinav
+{:hair-color :none, :age 33}
+```
+
+---
+class: compact
+
+```java
+package clojure.lang;
+import java.util.concurrent.atomic.AtomicReference;
+
+final public class Atom {
+  private final AtomicReference state;
+
+  public Atom(Object o) { state = new AtomicReference(o); }
+
+  public Object deref() { return state.get(); }
+
+  public Object swap(IFn f) {
+    for (;;) {
+      Object v = deref();
+      Object newv = f.invoke(v);
+      if (state.compareAndSet(v, newv)) {
+        notifyWatches(v, newv);
+        return newv;
+      }
+    }
+  }
+}
+```
+
+???
+
+- compareAndSet invokes an atomic hardware instruction to set the new value after comparing the current value with passed old value
+- if the old value matches, the new value is set and CAS returns true.
+- else CAS returns false and for loop try again, infinitely
+- CAS is the basic of non-blocking concurrency algorithm and data structures
+- something called watches here?
+
+---
+
+# Atom
+
+- Most ubiquitous concurrency feature used in Clojure.
+- Use cases: dynamic configs, database connections, simple caches.
+- Do not call swap with long running or non-idempotent functions.
+
+???
+
+- need concurrent access? start with atom
+- long running functions will get run again and again because short running functions may change the atom value in between
+- functions with side-effects may cause the side-effects to execute multiple times
+
+---
+class: title
+
+# Agent
+
+---
+
+# Agent
+
+- Agents, like Atoms, are references which support atomic changes.
+- But the changes are made in an asynchronous fashion.
+- Do not compose.
+
+---
+
+class: no-heading
+
+```clojure
+user=> (def counter (agent 0))
+#'user/counter
+user=> (let [numbers [1 9 3 4 5 5 4 44 4 2 5 6 7]]
+
+user=> (dotimes [i 10]
+  #_=>   (send counter inc))
+nil
+user=> (await counter)
+nil
+user=> (println @counter)
+10
+nil
+```
+
+???
+- create an agent initialized to 0
+- add x to the current value
+- wait until all sent actions are done
+- should have the answer
+- an agent hold an internal state like atom
+- like swap in atoms, you can send a function to an agent
+- but the functions send to agents are not executed immediately
+- instead they are put in a queue in the order they are sent to the agent
+- and executed one by one, never concurrently
+- this makes sure that functions are never executed multiple times like atom
+
+---
+
+# Agents are not Actors
+
+```erlang
+-module(counter).
+-export([loop/1]).
+
+loop(N) -> receive
+  {inc} -> loop(N+1);
+  {get, Sender} -> Sender ! N, loop(N)
+end.
+
+> Pid = spawn(counter, loop, [0]).
+> Pid ! {inc}.
+> Pid ! {get, self()}.
+> receive Value -> io:fwrite("~p~n", [Value]) end.
+1
+```
+
+???
+
+- Actor only has certain behaviors which are specific by the actor itself
+- Agent can behave in any way depending on the function sent to it
+- Only way to get the value inside an actor is to send it a message with another actor's id to which it can send its value to.
+- Agent state is directly accessible at all times
+- Agents are reactive, not autonomous - there is no message loop and no blocking receive.
+- Actor and agent both have an internal queue for the functions and messages sent to them respectively
+
+---
+
+# Agents
+
+- Can be used for any state that does not require strict consistency for reads:
+  - Counters (e.g. message rates in event processing)
+  - Collections (e.g. recently processed events)
+- Can be used for offloading arbitrary computations to a thread pool using `send-via`.
+- Uses an unbounded queue, so too many functions enqueued in it may cause OOM.
+
+???
+
+- send is backed by a fixed thread pool of size 2 * number of processors
+- so use send for only short running functions
+- if the function is expected to run for long time, use send-off instead which runs it on a cached thread pool
+- So we have seen two ways of handling individual references. What if we want to change multiple of them at once? Are we left to the mercy of multiple locks and issues that come with them? No! In clojure, we have:
+
+---
+class: title
+
+# Refs
+
+---
+class: compact
+
+# Refs and Software Transactional Memory
+
+- Refs allows changing multiple references together in a single atomic operation.
+- **Atomicity**: All the state changes become visible to all the threads at once.
+- **Consistency**: All the state changes can be validated before allowing the transaction to commit.
+- **Isolation**: The atomic operation is completely unaffected by whatever other threads are doing.
+
+???
+ - No threads ever see inconsistent half-done states.
+ - It is as if STM operation takes a snapshot of the state of the world when it begins running, and then executes against that snapshot.
+ - Let's see a comparison with multiple locks.
+
+---
+
+![Bank Transfer](/slides/clojure-concurrency-patterns/bank_transfer.png# db pt-6)
+
+???
+
+- Let's take this example of transferring money between two accounts.
+- There can be a concurrent transfer in reverse direction too.
+
+---
+class: compact fs-85pct
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+class Account {
+    private int id, amount;
+    private Lock lock = new ReentrantLock();
+
+    Account(int id, int initialAmount) {
+        this.id = id;
+        this.amount = initialAmount;
+    }
+
+    public void withdraw(int n) {
+        this.lock.lock();
+        try { this.amount -= n; }
+        finally { this.lock.unlock(); }
+    }
+
+    public void deposit(int n) { this.withdraw(-n); }
+
+    public void transfer(Account other, int n) {
+        this.withdraw(n);
+        other.deposit(n);
+    }
+}
+```
+
+???
+
+- You may think that adding a lock like this will ensure safety but this transfer function is wrong.
+- in case of a concurrent reverse transfer, you'll end up with a deadlock.
+
+---
+class: compact fs-85pct
+
+```java
+class Account {
+    public void transfer(Account other, int n) {
+        if (this.id < other.id) {
+            this.lock.lock();
+            other.lock.lock();
+        } else {
+            other.lock.lock();
+            this.lock.lock();
+        }
+        try {
+            this.amount -= n;
+            other.amount += n;
+        } finally {
+            if (this.id < other.id) {
+                this.lock.unlock();
+                other.lock.unlock();
+            } else {
+                other.lock.unlock();
+                this.lock.unlock();
+            }
+        }
+    }
+}
+```
+
+???
+
+- the right way to do this is to acquire the locks in a deterministic order
+- in this case, the account id is used to make it sure
+- also note that you cannot reuse the existing deposit and withdraw functions because they release the lock.
+- this is too complicated and error prone and non-extensible
+
+---
+class: no-heading
+
+```clojure
+(def account1 (ref 100))
+(def account2 (ref 100))
+
+(defn withdraw [account amount]
+  (alter account - amount))
+
+(defn deposit [account amount]
+  (withdraw account (- amount)))
+
+(defn transfer [from to amount]
+  (dosync
+    (withdraw from amount)
+    (deposit to amount)))
+```
+
+---
+
+![](/slides/clojure-concurrency-patterns/clojure-stml.png# db w-100pct ph-4)
+
+.footer[
+- Source: https://www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/
+]
+
+???
+
+- So how does STM work?
+- there are many ways to do STMs
+  - locking/pessimistic
+  - lock-free/optimistic
+  - MVCC
+- Clojure uses MVCC
+- When a transaction is started via `dosync` the current values of the refs are captured in the transaction log.
+- These captured values are the value that (deref) will return for the duration of the transaction.
+- `alter` changes the captured values only
+- when the transaction commits, the values of refs changed with the transaction are compared to the actual values of the refs
+- if all the values are same, the transaction commits and the values in transaction log are written to the refs atomically.
+- else the transaction aborts and is retried automatically
+- there is no check done of read-only refs unless explicitly asked for by calling `ensure`
+- the transaction may be retried any number of times so do not do side-effecting things in them
+
+---
+
+![](/slides/clojure-concurrency-patterns/ref_history.png# db w-100pct ph-6 pv-6)
+
+.footer[
+- Source: https://mattias.niklewski.com/2014/04/stm.htm
+]
+
+???
+
+- A ref is a wrapper around a history of values, implemented as a doubly linked list. Each node contains a value and a write point, which is a unique timestamp.
+- Reading from a ref involves walking down its history list until a value is found that predates the transaction's starting point.
+- But the history lists are not of infinite length. By default they grow dynamically up to length 10. If a transaction cannot find a value with an early enough write point, it retries with an updated start point.
+- `commute` used like alter but does not cause write collisions. The idea is that if two transactions both alter a ref using a commutative function, the result is the same regardless of who commits first.
+
+---
+class: compact
+
+# Clojure STM vs. Haskell STM
+
+```haskell
+import System.IO
+import Control.Concurrent.STM
+
+type Account = TVar Int
+
+withdraw :: Account -> Int -> STM ()
+withdraw acc amount = do
+  bal <- readTVar acc
+  writeTVar acc (bal - amount)
+
+deposit :: Account -> Int -> STM ()
+deposit acc amount = withdraw acc (- amount)
+
+transfer :: Account -> Account -> Int -> IO ()
+transfer from to amount = atomically $ do
+  deposit to amount
+  withdraw from amount
+```
+
+???
+
+- Haskell STM is optimistic instead of MVCC
+- Haskell matches values read in a transaction too
+- Haskell STM gives capability to programmer to conditionally retry a transaction
+- Haskell type system ensures that you can't do IO in STM
+- Haskell STM gives an `orElse` function to run a different STM action first one fails- Haskell's algorithm guarantees true serializable isolation which is stronger than snapshot isolation which Clojure guarantees
+
+---
+class: compact
+
+# Refs and Software Transactional Memory
+
+- Best option for implementing in-memory transaction data stores
+  - Chat servers
+  - Multiplayer games
+- In-memory stream computation solutions
+- A long-running transaction may re-execute many times because it may be repeatedly aborted by shorter transactions.
+- Keeping history of values is expensive. Even more so when the values are not persistent collections.
+    </textarea>
+    <script src="//abhinavsarkar.net/js/remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        highlightStyle: 'atom-one-light',
+        slideNumberFormat: '%current%',
+        ratio: '4:3',
+        navigation: {
+          scroll: false
+        }
+      });
+    </script>
+    
+  </body>
+</html>
