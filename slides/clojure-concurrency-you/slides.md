@@ -15,13 +15,13 @@ class: roomy big-h1 no-footer
 
 ---
 class: title fogscreen fullbleed fullcover no-footer big-h1
-background-image: url(/slides/clojure-concurrency-patterns/flipkart_logo.jpg)
+background-image: url(/slides/clojure-concurrency-you/flipkart_logo.jpg)
 
 # Flipkart
 
 ---
 class: title fogscreen fullbleed fullcover no-footer big-h1
-background-image: url(/slides/clojure-concurrency-patterns/nilenso.png)
+background-image: url(/slides/clojure-concurrency-you/nilenso.png)
 
 # Nilenso
 
@@ -479,7 +479,7 @@ class: compact
 
 ---
 
-![Bank Transfer](/slides/clojure-concurrency-patterns/bank_transfer.png# db pt-6)
+![Bank Transfer](/slides/clojure-concurrency-you/bank_transfer.png# db pt-6)
 
 ???
 
@@ -579,7 +579,7 @@ class: no-heading
 
 ---
 
-![](/slides/clojure-concurrency-patterns/clojure-stml.png# db w-100pct ph-4)
+![](/slides/clojure-concurrency-you/clojure-stml.png# db w-100pct ph-4)
 
 .footer[
 - Source: https://www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/
@@ -604,7 +604,7 @@ class: no-heading
 
 ---
 
-![](/slides/clojure-concurrency-patterns/ref_history.png# db w-100pct ph-6 pv-6)
+![](/slides/clojure-concurrency-you/ref_history.png# db w-100pct ph-6 pv-6)
 
 .footer[
 - Source: https://mattias.niklewski.com/2014/04/stm.htm
@@ -661,3 +661,10 @@ class: compact
 - In-memory stream computation solutions
 - A long-running transaction may re-execute many times because it may be repeatedly aborted by shorter transactions.
 - Keeping history of values is expensive. Even more so when the values are not persistent collections.
+
+---
+class: big-h1 no-footer center mr-5 thank-you ph-1
+
+# Thank You
+## @abhin4v
+abhinavsarkar.net/talks/clojure-concurrency-you
