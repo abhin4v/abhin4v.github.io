@@ -126,7 +126,7 @@ class: quote big
 
 ---
 
-# Thread
+# Threads
 
 - Thread is a sequence of instructions along with a context.
 - In case of clojure on JVM, the threading model is provided by the JVM which only supports OS threads.
@@ -252,11 +252,11 @@ class: pv-7
 ---
 class: title
 
-# Lock
+# Locks
 
 ---
 
-# Lock
+# Locks
 
 - An easy way of synchronization.
 - Prevent concurrent access to critical sections/memory.
@@ -304,11 +304,11 @@ nil
 ---
 class: title
 
-# Atom
+# Atoms
 
 ---
 
-# Atom
+# Atoms
 
 - Atoms are references which change atomically and immediately.
 - Simplest of all reference types.
@@ -385,11 +385,11 @@ final public class Atom {
 ---
 class: title
 
-# Agent
+# Agents
 
 ---
 
-# Agent
+# Agents
 
 - Agents, like Atoms, are references which support atomic changes.
 - But the changes are made in an asynchronous fashion.
@@ -454,6 +454,7 @@ end.
 - Agent state is directly accessible at all times
 - Agents are reactive, not autonomous - there is no message loop and no blocking receive.
 - Actor and agent both have an internal queue for the functions and messages sent to them respectively
+- pulsar is a library to use erlang like actors in clojure
 
 ---
 
@@ -668,7 +669,7 @@ transfer from to amount = atomically $ do
 ---
 class: compact
 
-# Refs and Software Transactional Memory
+# Refs
 
 - Best option for implementing in-memory transaction data stores
   - Chat servers
@@ -676,6 +677,256 @@ class: compact
 - In-memory stream computation solutions
 - A long-running transaction may re-execute many times because it may be repeatedly aborted by shorter transactions.
 - Keeping history of values is expensive. Even more so when the values are not persistent collections.
+
+---
+class: title
+
+# core.async
+
+---
+
+# core.async and Communicating Sequential Processes
+
+- Independent threads of activity.
+- Synchronous communication through channels.
+- Multiplexing of channels with alternation.
+
+---
+
+![CSP](/slides/clojure-concurrency-you/csp.png# db w-100pct pv-5)
+
+.footer[
+  - Source: arild.github.io/csp-presentation]
+
+???
+- this image shows three processes running concurrently
+- process 1 and 2 are using a channel to communicate
+- process 1 reads from the empty channel and it blocks
+- later, process 2 writes to the channel and p1 resumes with the value that p2 wrote
+- similarly, p2 and p3 are using a common channel to communicate.
+- p2 writes to the channel and blocks till p3 reads from it later.
+- read and writes to channels server as synchronization points.
+
+---
+class: no-heading
+
+```clojure
+(go (println "hi"))
+
+(def echo-chan (chan))
+(go (println (<!-- echo-chan)))
+(go (-->! echo-chan "hello"))
+; => hello
+
+(def echo-chan (chan 10))
+```
+
+---
+class: no-heading
+
+```clojure
+(let [c1 (chan)
+      c2 (chan)
+      c3 (chan)]
+  (dotimes [n 3]
+    (go
+      (let [[v ch] (alts! [c1 c2 c3])]
+        (println "Read" v "from" ch))))
+  (go (>! c1 "hello"))
+  (go (>! c2 "allo")
+  (go (>! c2 "hola")))
+; => Read allo from #<ManyToManyChannel ...>
+; => Read hola from #<ManyToManyChannel ...>
+; => Read hello from #<ManyToManyChannel ...>
+```
+
+???
+
+- core.async is based on deep-walking macros.
+- go is a deep-walking macro that walks recursively through the entire code inside go blocks and transforms it into a state-machine
+- essentially, it compiles clojure code into a state machine form.
+- go threads are actually run on kernel threads.
+- but when they encounter a parking operation like putting into or getting from a channel, they are "parked".
+- at this point, the entire state of the stack including the local variables, the function reference, the current state and the state to resume at, everything is put into an array, wrapped into a callback function and put into the channel's internal queue.
+- when the corresponding resume event happens, put for get and get for put, the channel calls the callback, resuming the go-thread on some kernel thread.
+- this gives an illusion of green threads.
+- alts! is a little complicated with channel locking the callbacks using a shared lock.
+- I don't want to get into the internals of core.async anymore than this.
+- But I do want to show-off some great combinators which come with it.
+
+---
+class: fs-85pct
+
+# Multiplexing
+
+```clojure
+user=> (def input (chan 1))
+#'user/input
+user=> (def broadcast (mult input))
+#'user/broadcast
+user=> (dotimes [i 3]
+  #_=>   (let [output (chan 1)]
+  #_=>     (tap broadcast output)
+  #_=>     (go-loop []
+  #_=>       (if-let [v (&lt;! output)]
+  #_=>         (do (println i "Got!" v)
+  #_=>             (recur))
+  #_=>         (println "Exiting")))))
+nil
+```
+
+---
+class: fs-85pct
+
+# Multiplexing
+
+```clojure
+user=> (>!! input 42)
+true0 Got! 421
+
+2 Got! Got!42
+42
+user=> (>!! input 43)
+true
+01  Got!Got!  4343
+2
+Got! 43
+user=> (close! input)
+Exitingnil
+
+Exiting
+Exiting
+```
+
+???
+
+---
+class: fs-75pct
+
+# Publish-Subscribe
+
+```clojure
+user=> (def input (chan 1))
+#'user/input
+user=> (def p (pub input :tag))
+#'user/p
+user=> (let [c (chan 1)]
+  #_=>   (sub p :cats c)
+  #_=>   (go-loop []
+  #_=>     (if-let [v (&lt;! c)]
+  #_=>       (println "Cat guy got:" v)
+  #_=>       (println "Cat guy exiting"))))
+#object[clojure.core.async.impl.channels.ManyToManyChannel ...]
+user=> (let [c (chan 1)]
+  #_=>   (sub p :dogs c)
+  #_=>   (go-loop []
+  #_=>     (if-let [v (&lt;! c)]
+  #_=>       (println "Dog guy got:" v)
+  #_=>       (println "Dog guy exiting"))))
+#object[clojure.core.async.impl.channels.ManyToManyChannel ...]
+```
+
+---
+class: fs-85pct
+
+# Publish-Subscribe
+
+```clojure
+user=> (defn send-with-tags [msg]
+  #_=>   (doseq [tag (:tags msg)]
+  #_=>     (println "sending... " tag)
+  #_=>     (>!! input {:tag tag :msg (:msg msg)})))
+#'user/send-with-tags
+user=> (send-with-tags {:msg "New Cat Story" :tags [:cats]})
+sending...  :cats
+nil
+Cat guy got: {:tag :cats, :msg New Cat Story}
+user=> (send-with-tags {:msg "New Dog Story" :tags [:dogs]})
+sending...  :dogs
+nil
+Dog guy got: {:tag :dogs, :msg New Dog Story}
+```
+
+---
+class: fs-85pct
+
+# Publish-Subscribe
+
+```clojure
+user=> (let [c (chan 1)]
+  #_=>   (sub p :dogs c)
+  #_=>   (sub p :cats c)
+  #_=>   (go-loop []
+  #_=>     (if-let [v (&lt;! c)]
+  #_=>       (println "Cat/Dog guy got:" v)
+  #_=>       (println "Cat/Dog guy exiting"))))
+#object[clojure.core.async.impl.channels.ManyToManyChannel]
+```
+
+???
+
+- there are also merge and mix combinator to go reserve of mutliplexing and pub-sub, they allow us to join muliple channels into a single channel
+- merge is static after creation whereas mix allows more dynamic operations
+
+---
+
+# Pipelines
+
+```clojure
+(pipeline n to xf from close? ex-handler)
+(pipeline-async n to af from)
+(pipeline-blocking n to xf from close? ex-handler)
+```
+
+???
+
+- Takes elements from the from channel and supplies them to the to channel, subject to the transducer xf, with parallelism n.
+- other than these, channels also support the usual map and filter functions
+- We can create complete data transformation pipelines using these combinators
+
+---
+class: compact col-2
+# core.async vs Goroutines
+
+```go
+func fibonacci(c, q chan int) {
+  x, y := 0, 1
+  for {
+    select {
+    case c <- x:
+      x, y = y, x+y
+    case <-q:
+      fmt.Println("quit")
+      return
+    }
+  }
+}
+```
+
+```go
+func main() {
+  c := make(chan int)
+  quit := make(chan int)
+  go func() {
+    for i := 0; i < 10; i++ {
+      fmt.Println(<-c)
+    }
+    quit <- 0
+  }()
+  fibonacci(c, quit)
+}
+```
+
+???
+
+- go concurrency is built into the runtime where core.async is just a library based on macros
+- go uses actual green threads while c.a simulated green threads over OS threads
+- go has async IO built into the runtime while with clojure you need to use special libraries for it. c.a go thread can block if you do blocking IO in them
+- go has better scheduling algorithms for goroutines whereas c.a does no intelligent scheduling
+
+---
+
+# core.async
 
 ---
 class: big-h1 no-footer center mr-5 thank-you ph-1
