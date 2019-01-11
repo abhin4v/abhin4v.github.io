@@ -1,5 +1,6 @@
 ---
 title: Clojure Concurrency Patterns
+aspect_ratio: '4:3'
 ---
 
 class: roomy big-h1 no-footer
