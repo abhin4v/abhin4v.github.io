@@ -23,7 +23,11 @@ $if(speakerdeck_id)$
 $endif$
 $if(slides_path)$
 <div class="slides-container">
-  <iframe src="/slides/$slides_path$/" allowfullscreen allow="fullscreen"></iframe>
+  <iframe id="slides" src="/slides/$slides_path$/" allowfullscreen allow="fullscreen"></iframe>
+  <svg class="fullscreen-button" onclick="document.getElementById('slides').contentWindow.slideshow.toggleFullscreen()"
+       xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8">
+    <path d="M0 0v4l1.5-1.5 1.5 1.5 1-1-1.5-1.5 1.5-1.5h-4zm5 4l-1 1 1.5 1.5-1.5 1.5h4v-4l-1.5 1.5-1.5-1.5z" />
+  </svg>
 </div>
 <p class="inst">Click on the slide above and use the arrow keys to navigate. Press <code>f</code> to view in full screen mode.</p>
 $endif$

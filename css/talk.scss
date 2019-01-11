@@ -30,6 +30,17 @@
     height: 99%;
     border: 1px solid #aaa;
   }
+
+  .fullscreen-button {
+    z-index: 10;
+    position: absolute;
+    bottom: 7px;
+    right: 10px;
+    border: 1px solid #666;
+    padding: 3px;
+    background-color: #eee;
+    cursor: pointer;
+  }
 }
 
 p.inst {
