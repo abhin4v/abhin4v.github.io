@@ -1,13 +1,13 @@
 ---
-title: Clojure Concurrency Patterns
+title: Clojure Concurrency and You
 aspect_ratio: '4:3'
 ---
 
 class: roomy big-h1 no-footer
 
-# Clojure
-# Concurrency
-# Patterns
+# Clojure,
+# Concurrency,
+# And You
 .right[## Abhinav Sarkar
 ```clojure
 (((IN/Clojure Bengaluru 2019)))
@@ -98,7 +98,7 @@ class: title
 class: quote big
 
 > Concurrency is a program-structuring technique in which there are multiple threads of control which execute "at the same time".
-  
+
 — Simon Marlow, Parallel and Concurrent Programming in Haskell
 
 ???
@@ -123,6 +123,38 @@ class: quote big
 - OS threads are scheduled by the OS kernel.
 - Without threads, we need to use a event loop mechanism with events and callback
 - This makes code very difficult to work with AKA callback hell
+
+---
+class: compact fs-75pct
+
+```javascript
+fs.readdir(source, function (err, files) {
+  if (err) {
+    console.log('Error finding files: ' + err);
+  } else {
+    files.forEach(function (filename, fileIndex) {
+      console.log(filename);
+      gm(source + filename).size(function (err, values) {
+        if (err) {
+          console.log('Error identifying file size: ' + err);
+        } else {
+          console.log(filename + ' : ' + values);
+          aspect = (values.width / values.height);
+          widths.forEach(function (width, widthIndex) {
+            height = Math.round(width / aspect);
+            console.log('resizing ' + filename + 'to ' + height + 'x' + height);
+            this.resize(width, height).write(dest + 'w' + width + '_' + filename,
+              function(err) {
+                if (err)
+                  console.log('Error writing file: ' + err);
+              });
+          }.bind(this));
+        }
+      });
+    });
+  }
+});
+```
 
 ---
 class: no-heading
@@ -187,7 +219,7 @@ class: title
 
 # Synchronization
 
-- The process by which multiple threads agree on *some things* at *some time*. 
+- The process by which multiple threads agree on *some things* at *some time*.
 - For example:
   - timing: forking and joining threads
   - value of a variable
@@ -423,3 +455,209 @@ end.
 - send is backed by a fixed thread pool of size 2 * number of processors
 - so use send for only short running functions
 - if the function is expected to run for long time, use send-off instead which runs it on a cached thread pool
+- So we have seen two ways of handling individual references. What if we want to change multiple of them at once? Are we left to the mercy of multiple locks and issues that come with them? No! In clojure, we have:
+
+---
+class: title
+
+# Refs
+
+---
+class: compact
+
+# Refs and Software Transactional Memory
+
+- Refs allows changing multiple references together in a single atomic operation.
+- **Atomicity**: All the state changes become visible to all the threads at once.
+- **Consistency**: All the state changes can be validated before allowing the transaction to commit.
+- **Isolation**: The atomic operation is completely unaffected by whatever other threads are doing.
+
+???
+ - No threads ever see inconsistent half-done states.
+ - It is as if STM operation takes a snapshot of the state of the world when it begins running, and then executes against that snapshot.
+ - Let's see a comparison with multiple locks.
+
+---
+
+![Bank Transfer](/slides/clojure-concurrency-patterns/bank_transfer.png# db pt-6)
+
+???
+
+- Let's take this example of transferring money between two accounts.
+- There can be a concurrent transfer in reverse direction too.
+
+---
+class: compact fs-85pct
+
+```java
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+class Account {
+    private int id, amount;
+    private Lock lock = new ReentrantLock();
+
+    Account(int id, int initialAmount) {
+        this.id = id;
+        this.amount = initialAmount;
+    }
+
+    public void withdraw(int n) {
+        this.lock.lock();
+        try { this.amount -= n; }
+        finally { this.lock.unlock(); }
+    }
+
+    public void deposit(int n) { this.withdraw(-n); }
+
+    public void transfer(Account other, int n) {
+        this.withdraw(n);
+        other.deposit(n);
+    }
+}
+```
+
+???
+
+- You may think that adding a lock like this will ensure safety but this transfer function is wrong.
+- in case of a concurrent reverse transfer, you'll end up with a deadlock.
+
+---
+class: compact fs-85pct
+
+```java
+class Account {
+    public void transfer(Account other, int n) {
+        if (this.id < other.id) {
+            this.lock.lock();
+            other.lock.lock();
+        } else {
+            other.lock.lock();
+            this.lock.lock();
+        }
+        try {
+            this.amount -= n;
+            other.amount += n;
+        } finally {
+            if (this.id < other.id) {
+                this.lock.unlock();
+                other.lock.unlock();
+            } else {
+                other.lock.unlock();
+                this.lock.unlock();
+            }
+        }
+    }
+}
+```
+
+???
+
+- the right way to do this is to acquire the locks in a deterministic order
+- in this case, the account id is used to make it sure
+- also note that you cannot reuse the existing deposit and withdraw functions because they release the lock.
+- this is too complicated and error prone and non-extensible
+
+---
+class: no-heading
+
+```clojure
+(def account1 (ref 100))
+(def account2 (ref 100))
+
+(defn withdraw [account amount]
+  (alter account - amount))
+
+(defn deposit [account amount]
+  (withdraw account (- amount)))
+
+(defn transfer [from to amount]
+  (dosync
+    (withdraw from amount)
+    (deposit to amount)))
+```
+
+---
+
+![](/slides/clojure-concurrency-patterns/clojure-stml.png# db w-100pct ph-4)
+
+.footer[
+- Source: https://www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/
+]
+
+???
+
+- So how does STM work?
+- there are many ways to do STMs
+  - locking/pessimistic
+  - lock-free/optimistic
+  - MVCC
+- Clojure uses MVCC
+- When a transaction is started via `dosync` the current values of the refs are captured in the transaction log.
+- These captured values are the value that (deref) will return for the duration of the transaction.
+- `alter` changes the captured values only
+- when the transaction commits, the values of refs changed with the transaction are compared to the actual values of the refs
+- if all the values are same, the transaction commits and the values in transaction log are written to the refs atomically.
+- else the transaction aborts and is retried automatically
+- there is no check done of read-only refs unless explicitly asked for by calling `ensure`
+- the transaction may be retried any number of times so do not do side-effecting things in them
+
+---
+
+![](/slides/clojure-concurrency-patterns/ref_history.png# db w-100pct ph-6 pv-6)
+
+.footer[
+- Source: https://mattias.niklewski.com/2014/04/stm.htm
+]
+
+???
+
+- A ref is a wrapper around a history of values, implemented as a doubly linked list. Each node contains a value and a write point, which is a unique timestamp.
+- Reading from a ref involves walking down its history list until a value is found that predates the transaction's starting point.
+- But the history lists are not of infinite length. By default they grow dynamically up to length 10. If a transaction cannot find a value with an early enough write point, it retries with an updated start point.
+- `commute` used like alter but does not cause write collisions. The idea is that if two transactions both alter a ref using a commutative function, the result is the same regardless of who commits first.
+
+---
+class: compact
+
+# Clojure STM vs. Haskell STM
+
+```haskell
+import System.IO
+import Control.Concurrent.STM
+
+type Account = TVar Int
+
+withdraw :: Account -> Int -> STM ()
+withdraw acc amount = do
+  bal <- readTVar acc
+  writeTVar acc (bal - amount)
+
+deposit :: Account -> Int -> STM ()
+deposit acc amount = withdraw acc (- amount)
+
+transfer :: Account -> Account -> Int -> IO ()
+transfer from to amount = atomically $ do
+  deposit to amount
+  withdraw from amount
+```
+
+???
+
+- Haskell STM is optimistic instead of MVCC
+- Haskell matches values read in a transaction too
+- Haskell STM gives capability to programmer to conditionally retry a transaction
+- Haskell type system ensures that you can't do IO in STM
+- Haskell STM gives an `orElse` function to run a different STM action first one fails- Haskell's algorithm guarantees true serializable isolation which is stronger than snapshot isolation which Clojure guarantees
+
+---
+class: compact
+
+# Refs and Software Transactional Memory
+
+- Best option for implementing in-memory transaction data stores
+  - Chat servers
+  - Multiplayer games
+- In-memory stream computation solutions
+- A long-running transaction may re-execute many times because it may be repeatedly aborted by shorter transactions.
+- Keeping history of values is expensive. Even more so when the values are not persistent collections.

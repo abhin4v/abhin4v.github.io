@@ -26,6 +26,16 @@
       font-size: 1.5em;
     }
   }
+  &.fs-75pct {
+    code {
+      font-size: 75%;
+    }
+  }
+  &.fs-85pct {
+    code {
+      font-size: 85%;
+    }
+  }
   &.no-heading {
     padding-top: 6.5rem;
     padding-bottom: 6.5rem;
