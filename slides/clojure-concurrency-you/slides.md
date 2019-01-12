@@ -913,6 +913,16 @@ func main() {
 
 # core.async
 
+- Data transformation pipelines like ETL
+- Multi-user chat servers, game servers
+- More broadly, Staged Event Driven Architecture programs
+- With Clojurescript, it is a great replacement for callback for UI interactions
+
+--
+- Doing blocking IO in go-threads blocks them.
+- Error handling is complicated.
+- Too many pending puts or take may throw errors.
+
 ---
 class: big-h1 no-footer center mr-5 thank-you ph-1
 
