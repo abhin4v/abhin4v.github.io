@@ -940,7 +940,7 @@ func main() {
 ---
 class: no-footer center
 
-![clojure](/slides/clojure-concurrency-you/clojure.png# w-75pct)
+![clojure](/slides/clojure-concurrency-you/Clojure.png# w-75pct)
 
 ???
 
