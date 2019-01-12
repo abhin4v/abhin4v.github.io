@@ -2,6 +2,7 @@
 title: Introduction to Concurrency in Haskell
 event: Functional Conf 2015, Bengaluru
 description: "In this talk, we explore the various concurrency models and primitives supported by Haskell including green threads, mutable variables, channels and software transactional memory"
+tags_str: haskell, concurrency, functional-conf, talk
 youtube_id: uVK3t-5wWew
 speakerdeck_id: bcbf9a544894420699a16821e5a59074
 speakerdeck_ratio: 1.37081659973226
