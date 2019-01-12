@@ -8,6 +8,7 @@ I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, Indi
 
 Here are some talks and workshops I have presented in various conferences:
 
+1. [Clojure, Concurrency, and You] - In/Clojure 2019, Bangalore
 1. [Many Ways to Concur] - Functional Conf 2018, Bangalore
 1. [Moving People with Clojure] - EuroClojure 2017, Berlin
 1. [Introduction to Concurrency in Haskell] - Functional Conf 2015, Bangalore
@@ -49,6 +50,7 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Capillary Technologies]: https://www.capillarytech.com
 [FICO]: http://www.fico.com/
 
+[Clojure, Concurrency, and You]: /talks/clojure-concurrency-you/
 [Many Ways to Concur]: /talks/many-ways-to-concur/
 [Moving People with Clojure]: /talks/moving-people-with-clojure/
 [Introduction To Concurrency In Haskell]: /talks/intro-to-conc-in-haskell/
