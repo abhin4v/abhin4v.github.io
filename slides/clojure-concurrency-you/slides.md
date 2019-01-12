@@ -1,5 +1,5 @@
 ---
-title: Clojure Concurrency and You
+title: Clojure, Concurrency, and You
 aspect_ratio: '4:3'
 ---
 
@@ -12,18 +12,6 @@ class: roomy big-h1 no-footer
 ```clojure
 (((((IN/Clojure Bengaluru 2019)))))
 ```]
-
----
-class: title fogscreen fullbleed fullcover no-footer big-h1
-background-image: url(/slides/clojure-concurrency-you/flipkart_logo.jpg)
-
-# Flipkart
-
----
-class: title fogscreen fullbleed fullcover no-footer big-h1
-background-image: url(/slides/clojure-concurrency-you/nilenso.png)
-
-# Nilenso
 
 ???
 
@@ -924,10 +912,10 @@ func main() {
 
 # core.async
 
-- Data transformation pipelines like ETL
-- Multi-user chat servers, game servers
-- More broadly, Staged Event Driven Architecture programs
-- With Clojurescript, it is a great replacement for callback for UI interactions
+- Data transformation pipelines like ETL.
+- Multi-user chat servers, game servers.
+- More broadly, Staged Event Driven Architecture programs.
+- With Clojurescript, it is a great replacement for callback for UI interactions.
 
 --
 - Doing blocking IO in go-threads blocks them.

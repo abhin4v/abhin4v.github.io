@@ -40,8 +40,19 @@
     padding-top: 6.5rem;
     padding-bottom: 6.5rem;
   }
-  li {
-    list-style: "» ";
+  ul {
+    list-style: none;
+  }
+  li::before {
+    content: "» ";
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+  }
+  .footer {
+    li::before {
+      content: "";
+    }
   }
   table {
     display: table;
