@@ -25,7 +25,7 @@ class: roomy big-h1 no-footer
 # And You
 .right[## Abhinav Sarkar
 ```clojure
-(((IN/Clojure Bengaluru 2019)))
+(((((IN/Clojure Bengaluru 2019)))))
 ```]
 
 ---
@@ -39,6 +39,10 @@ class: title fogscreen fullbleed fullcover no-footer big-h1
 background-image: url(/slides/clojure-concurrency-you/nilenso.png)
 
 # Nilenso
+
+???
+
+- ask about concurrency experience
 
 ---
 class: title
@@ -123,13 +127,12 @@ class: quote big
 - concurrency lets us utilize the processing power more effectively
 - concurrency allows programs to be modular
 - concurrency is not same as parallelism
-
 ---
 
 # Threads
 
 - Thread is a sequence of instructions along with a context.
-- In case of clojure on JVM, the threading model is provided by the JVM which only supports OS threads.
+- In case of Clojure on JVM, the threading model is provided by the JVM which only supports OS threads.
 
 ???
 
@@ -224,6 +227,7 @@ user=> (deref f)
 - future is set only once and the value is cached forever
 - in all of these examples, printing was done from a thread different than the REPL main thread
 - with great concurrency comes great
+- **MARKER**: 5 min
 
 ---
 class: title
@@ -273,7 +277,8 @@ class: no-heading
 ```clojure
 user=> (def lock (Object.))
 #'user/lock
-user=> (locking lock (println "locked hello"))
+user=> (locking lock
+  #_=>   (println "locked hello"))
 locked hello
 nil
 ```
@@ -300,6 +305,7 @@ nil
 - With locking, we need to be careful about when and in what order to take lock and to release them
 - Wrong locking can lead to deadlock, starvation, etc.
 - Fortunately, Clojure has many features for supporing concurrency without locks
+- **MARKER**: 10 min
 
 ---
 class: title
@@ -362,6 +368,7 @@ final public class Atom {
 
 ???
 
+- a wrapper on AtomicReference
 - compareAndSet invokes an atomic hardware instruction to set the new value after comparing the current value with passed old value
 - if the old value matches, the new value is set and CAS returns true.
 - else CAS returns false and for loop try again, infinitely
@@ -381,6 +388,7 @@ final public class Atom {
 - need concurrent access? start with atom
 - long running functions will get run again and again because short running functions may change the atom value in between
 - functions with side-effects may cause the side-effects to execute multiple times
+- **MARKER**: 15 min
 
 ---
 class: title
@@ -402,8 +410,6 @@ class: no-heading
 ```clojure
 user=> (def counter (agent 0))
 #'user/counter
-user=> (let [numbers [1 9 3 4 5 5 4 44 4 2 5 6 7]]
-
 user=> (dotimes [i 10]
   #_=>   (send counter inc))
 nil
@@ -472,6 +478,7 @@ end.
 - so use send for only short running functions
 - if the function is expected to run for long time, use send-off instead which runs it on a cached thread pool
 - So we have seen two ways of handling individual references. What if we want to change multiple of them at once? Are we left to the mercy of multiple locks and issues that come with them? No! In clojure, we have:
+- **MARKER**: 20 min
 
 ---
 class: title
@@ -542,26 +549,24 @@ class Account {
 class: compact fs-85pct
 
 ```java
-class Account {
-    public void transfer(Account other, int n) {
+public void transfer(Account other, int n) {
+    if (this.id < other.id) {
+        this.lock.lock();
+        other.lock.lock();
+    } else {
+        other.lock.lock();
+        this.lock.lock();
+    }
+    try {
+        this.amount -= n;
+        other.amount += n;
+    } finally {
         if (this.id < other.id) {
-            this.lock.lock();
-            other.lock.lock();
+            this.lock.unlock();
+            other.lock.unlock();
         } else {
-            other.lock.lock();
-            this.lock.lock();
-        }
-        try {
-            this.amount -= n;
-            other.amount += n;
-        } finally {
-            if (this.id < other.id) {
-                this.lock.unlock();
-                other.lock.unlock();
-            } else {
-                other.lock.unlock();
-                this.lock.unlock();
-            }
+            other.lock.unlock();
+            this.lock.unlock();
         }
     }
 }
@@ -609,9 +614,9 @@ class: no-heading
   - lock-free/optimistic
   - MVCC
 - Clojure uses MVCC
-- When a transaction is started via `dosync` the current values of the refs are captured in the transaction log.
+- When a transaction is started via `dosync` the current values of the refs are captured in the transaction snapshot.
 - These captured values are the value that (deref) will return for the duration of the transaction.
-- `alter` changes the captured values only
+- `alter` changes the captured values in the snapshot only
 - when the transaction commits, the values of refs changed with the transaction are compared to the actual values of the refs
 - if all the values are same, the transaction commits and the values in transaction log are written to the refs atomically.
 - else the transaction aborts and is retried automatically
@@ -664,7 +669,8 @@ transfer from to amount = atomically $ do
 - Haskell matches values read in a transaction too
 - Haskell STM gives capability to programmer to conditionally retry a transaction
 - Haskell type system ensures that you can't do IO in STM
-- Haskell STM gives an `orElse` function to run a different STM action first one fails- Haskell's algorithm guarantees true serializable isolation which is stronger than snapshot isolation which Clojure guarantees
+- Haskell STM gives an `orElse` function to run a different STM action first one fails
+- Haskell's algorithm guarantees true serializable isolation which is stronger than snapshot isolation which Clojure guarantees
 
 ---
 class: compact
@@ -674,9 +680,13 @@ class: compact
 - Best option for implementing in-memory transaction data stores
   - Chat servers
   - Multiplayer games
-- In-memory stream computation solutions
+- In-memory stream computation solutions.
 - A long-running transaction may re-execute many times because it may be repeatedly aborted by shorter transactions.
 - Keeping history of values is expensive. Even more so when the values are not persistent collections.
+
+???
+
+- **MARKER**: 30 min
 
 ---
 class: title
@@ -714,8 +724,8 @@ class: no-heading
 (go (println "hi"))
 
 (def echo-chan (chan))
-(go (println (<!-- echo-chan)))
-(go (-->! echo-chan "hello"))
+(go (println (&lt;! echo-chan)))
+(go (>! echo-chan "hello"))
 ; => hello
 
 (def echo-chan (chan 10))
@@ -923,6 +933,7 @@ func main() {
 - go uses actual green threads while c.a simulated green threads over OS threads
 - go has async IO built into the runtime while with clojure you need to use special libraries for it. c.a go thread can block if you do blocking IO in them
 - go has better scheduling algorithms for goroutines whereas c.a does no intelligent scheduling
+- c.a comes with combinators for ease of programming
 
 ---
 
@@ -938,6 +949,9 @@ func main() {
 - Error handling is complicated.
 - Too many pending puts or take may throw errors.
 
+???
+- **MARKER**: 40 min
+
 ---
 class: no-footer center
 
@@ -946,6 +960,8 @@ class: no-footer center
 ???
 
 - clojure provides great features to simplify concurrent programming
+- Use them to structure your programs at a higher level than locks
+- Different techniques are suitable for different situations.
 
 ---
 
