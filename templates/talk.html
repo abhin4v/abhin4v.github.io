@@ -28,7 +28,6 @@ $if(slides_path)$
     Toggle Notes
   </button>
   <svg class="slide-control fullscreen-button"
-       onclick="document.getElementById('slides').contentWindow.slideshow.toggleFullscreen()"
        xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8">
     <path d="M0 0v4l1.5-1.5 1.5 1.5 1-1-1.5-1.5 1.5-1.5h-4zm5 4l-1 1 1.5 1.5-1.5 1.5h4v-4l-1.5 1.5-1.5-1.5z" />
   </svg>
@@ -59,7 +58,14 @@ $if(slides_path)$
 
     document.querySelector(".notes-button").addEventListener("click", function() {
       slideShow.togglePresenterMode();
+      slidesWindow.focus();
       _paq.push(['trackEvent', 'Slide', 'ToggleNotes', '$slides_path$']);
+    });
+
+    document.querySelector(".fullscreen-button").addEventListener("click", function() {
+      slideShow.toggleFullscreen();
+      slidesWindow.focus();
+      _paq.push(['trackEvent', 'Slide', 'ToggleFullScreen', '$slides_path$']);
     });
   });
 })();
