@@ -15,7 +15,7 @@
   }
 }
 
-.slides-container {
+#slides-container {
   position: relative;
   height: 0;
   overflow: hidden;
@@ -41,8 +41,21 @@
   }
 }
 
+@media screen and(max-width: 640px) {
+  #slides-container {
+    iframe {
+      border: 0.4vw solid #aaa;
+    }
+  }
+}
+
+#slides-progress {
+  cursor: pointer;
+  width: 100%;
+}
+
 p.inst {
   text-align: center;
   font-size: smaller;
-  margin: 0.3em;
+  margin: 0;
 }

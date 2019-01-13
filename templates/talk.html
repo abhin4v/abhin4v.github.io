@@ -22,12 +22,36 @@ $if(speakerdeck_id)$
 </script>
 $endif$
 $if(slides_path)$
-<div class="slides-container" style="padding-bottom: $inv_aratio$%">
+<div id="slides-container" style="padding-bottom: $inv_aratio$%">
   <iframe id="slides" src="/slides/$slides_path$/" allowfullscreen allow="fullscreen"></iframe>
   <svg class="fullscreen-button" onclick="document.getElementById('slides').contentWindow.slideshow.toggleFullscreen()"
        xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8">
     <path d="M0 0v4l1.5-1.5 1.5 1.5 1-1-1.5-1.5 1.5-1.5h-4zm5 4l-1 1 1.5 1.5-1.5 1.5h4v-4l-1.5 1.5-1.5-1.5z" />
   </svg>
 </div>
-<p class="inst">Click on the slide above and use the arrow keys to navigate. Press <code>f</code> to view in full screen mode.</p>
+<progress id="slides-progress" value="1" min="1" max="50"></progress>
+<p class="inst">Click on the slide above and use the arrow keys or tap on left/right to navigate.</p>
+<script type="text/javascript">
+(function() {
+  var slidesWindow = document.getElementById("slides").contentWindow;
+  slidesWindow.addEventListener("load", function() {
+    var slideShow = slidesWindow.slideshow;
+    var slideCount = slideShow.getSlideCount();
+
+    var progressBar = document.getElementById("slides-progress");
+    progressBar.addEventListener("click", function(e) { 
+      var percent = e.offsetX / e.srcElement.offsetWidth;
+      slideShow.gotoSlide(Math.max(1, Math.round(percent * slideCount)));
+    });
+
+    progressBar.max = slideCount;
+    progressBar.value = slideShow.getCurrentSlideIndex() + 1;
+
+    slideShow.on('showSlide', function (slide) {
+      var idx = slide.getSlideIndex();
+      progressBar.value = idx + 1;
+    });
+  });
+})();
+</script>
 $endif$
