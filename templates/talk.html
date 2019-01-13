@@ -50,6 +50,7 @@ $if(slides_path)$
     slideShow.on('showSlide', function (slide) {
       var idx = slide.getSlideIndex();
       progressBar.value = idx + 1;
+      _paq.push(['trackEvent', 'Slide', 'Show', idx + 1]);
     });
   });
 })();
