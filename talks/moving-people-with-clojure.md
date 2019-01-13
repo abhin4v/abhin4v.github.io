@@ -3,6 +3,7 @@ title: Moving People with Clojure
 event: EuroClojure 2017, Berlin
 description: "This talk covers Go-Jek's journey of rewriting Allocation Service - core of its business - in Clojure."
 tags_str: clojure, logistics, experience-report, euroclojure, talk
+page_image: "https://speakerd.s3.amazonaws.com/presentations/781617112b0e41b0b5e27232f122c6fb/slide_0.jpg?477355"
 youtube_id: 3y7xzH8jB8A
 youtube_thumb: true
 speakerdeck_id: 781617112b0e41b0b5e27232f122c6fb

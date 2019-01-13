@@ -3,6 +3,7 @@ title: Many Ways to Concur
 event: Functional Conf 2018, Bangalore
 description: "In this talk, we explore the methods and primitives of concurrency across three FP languages: Haskell, Erlang, and Clojure"
 tags_str: clojure, haskell, erlang, concurrency, functional-conf, talk
+page_image: "https://speakerd.s3.amazonaws.com/presentations/526c233305b94e9ea8485e562a7ccfa7/slide_0.jpg?481990"
 speakerdeck_id: 526c233305b94e9ea8485e562a7ccfa7
 speakerdeck_ratio: 1.33333333333333
 ---

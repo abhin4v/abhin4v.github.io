@@ -7,8 +7,13 @@
         <meta http-equiv="x-ua-compatible" content="ie=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="google-site-verification" content="jqi6GjA_kvmDkzCQwNJIPilm810Wwt6P0wsDmiSKmqk">
+        $if(page_image)$
+        <meta name="twitter:card" content="summary_large_image">
+        $else$
         <meta name="twitter:card" content="summary">
+        $endif$
         <meta name="twitter:creator" content="@abhin4v">
+        <meta name="twitter:title" content="$title$">
 
         <meta property="og:url" content="$full_url$">
         <meta property="og:type" content="$page_type$">
@@ -21,10 +26,17 @@
         $if(description)$
         <meta name="description" content="$description$">
         <meta property="og:description" content="$description$">
+        <meta name="twitter:description" content="$description$">
         $else$
         <meta name="description" content="Personal website of Abhinav Sarkar">
         <meta property="og:description" content="Personal website of Abhinav Sarkar">
+        <meta name="twitter:description" content="Personal website of Abhinav Sarkar">
         $endif$
+        $if(page_image)$
+        <meta property="og:image" content="$page_image$" />
+        <meta name="twitter:image:src" content="$page_image$" />
+        $endif$
+
         <meta name="language" content="EN">
         <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
         <meta name="HandheldFriendly" content="True">
