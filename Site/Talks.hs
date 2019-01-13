@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Site.Talks where
 
+import Data.Maybe (isJust)
 import Hakyll hiding (relativizeUrls)
 import Site.Util
 
@@ -9,10 +10,15 @@ talks env = do
   match "talks/*.md" $ do
     route indexHTMLRoute
     compile $ do
-      title <- flip getMetadataField' "title" =<< getUnderlying
+      ident    <- getUnderlying
+      title    <- getMetadataField' ident "title"
+      isRemark <- isJust <$> getMetadataField ident "slides_path"
+      aRatio   <- read <$> getMetadataField' ident "slides_ratio"
+
       let talkCtx =
             constField "page_type" "talk" <>
             constField "title" ("Talk » " ++  title) <>
+            (if isRemark then constField "inv_aratio" (invARatio aRatio) else mempty) <>
             siteContext
       pandocCompiler
         >>= loadAndApplyTemplate "templates/talk.html" talkCtx
@@ -34,3 +40,5 @@ talks env = do
       getResourceBody
         >>= loadAndApplyTemplate "templates/slides.html" slidesCtx
         >>= relativizeUrls env
+  where
+    invARatio = show . floor . (100 /)

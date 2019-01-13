@@ -17,8 +17,6 @@
 
 .slides-container {
   position: relative;
-  padding-bottom: 56.25%;
-  padding-top: 35px;
   height: 0;
   overflow: hidden;
 
@@ -28,16 +26,16 @@
     left: 0;
     width: 99%;
     height: 99%;
-    border: 1px solid #aaa;
+    border: 3px solid #aaa;
   }
 
   .fullscreen-button {
     z-index: 10;
     position: absolute;
-    bottom: 7px;
-    right: 10px;
+    bottom: 5px;
+    right: 7px;
     border: 1px solid #666;
-    padding: 3px;
+    padding: 1px;
     background-color: #eee;
     cursor: pointer;
   }

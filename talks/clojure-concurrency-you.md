@@ -5,6 +5,7 @@ description: "In this talk, we explore the various concurrency models and primit
 page_image: "https://abhinavsarkar.net/slides/clojure-concurrency-you/page.png"
 tags_str: clojure, concurrency, inclojure, talk
 slides_path: clojure-concurrency-you
+slides_ratio: 1.33333333333333
 ---
 Clojue is widely known as a functional programming language. But it has a great support for a wide variety of concurrency models too.
 

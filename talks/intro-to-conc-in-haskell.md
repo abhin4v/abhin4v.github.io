@@ -6,7 +6,7 @@ tags_str: haskell, concurrency, functional-conf, talk
 page_image: "https://speakerd.s3.amazonaws.com/presentations/bcbf9a544894420699a16821e5a59074/slide_0.jpg?311299"
 youtube_id: uVK3t-5wWew
 speakerdeck_id: bcbf9a544894420699a16821e5a59074
-speakerdeck_ratio: 1.37081659973226
+slides_ratio: 1.37081659973226
 ---
 Haskell is widely known as a functional programming language which is great to write pure (non I/O) code and immutable data structures. But it is not well known that it has a great support for a wide variety of concurrency models too.
 

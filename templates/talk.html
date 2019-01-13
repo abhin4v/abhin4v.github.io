@@ -18,11 +18,11 @@ $body$
 
 <h3>Slides</h3>
 $if(speakerdeck_id)$
-<script async class="speakerdeck-embed" data-id="$speakerdeck_id$" data-ratio="$speakerdeck_ratio$" src="//speakerdeck.com/assets/embed.js">
+<script async class="speakerdeck-embed" data-id="$speakerdeck_id$" data-ratio="$slides_ratio$" src="//speakerdeck.com/assets/embed.js">
 </script>
 $endif$
 $if(slides_path)$
-<div class="slides-container">
+<div class="slides-container" style="padding-bottom: $inv_aratio$%">
   <iframe id="slides" src="/slides/$slides_path$/" allowfullscreen allow="fullscreen"></iframe>
   <svg class="fullscreen-button" onclick="document.getElementById('slides').contentWindow.slideshow.toggleFullscreen()"
        xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 8 8">
