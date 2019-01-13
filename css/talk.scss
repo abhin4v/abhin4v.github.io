@@ -29,15 +29,24 @@
     border: 3px solid #aaa;
   }
 
-  .fullscreen-button {
+  .slide-control {
     z-index: 10;
     position: absolute;
-    bottom: 5px;
-    right: 7px;
     border: 1px solid #666;
     padding: 1px;
+    bottom: 5px;
     background-color: #eee;
     cursor: pointer;
+  }
+
+  .fullscreen-button {
+    right: 7px;
+  }
+
+  .notes-button {
+    right: 28px;
+    font-size: small;
+    padding: 1px 0.1em;
   }
 }
 
