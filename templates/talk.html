@@ -53,7 +53,7 @@ $if(slides_path)$
     slideShow.on('showSlide', function (slide) {
       var idx = slide.getSlideIndex();
       progressBar.value = idx + 1;
-      _paq.push(['trackEvent', 'Slide', 'Show', '$slides_path$', idx + 1]);
+      _paq.push(['trackEvent', 'Slide', 'Show', '$slides_path$-' + (idx + 1)]);
     });
 
     document.querySelector(".notes-button").addEventListener("click", function() {
