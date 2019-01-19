@@ -96,6 +96,11 @@ collections tags env = do
     route indexHTMLRoute
     compile $ makeItem $ Redirect "/about/"
 
+  -- slides index
+  create ["slides.html"] $ do
+    route indexHTMLRoute
+    compile $ makeItem $ Redirect "/about/"
+
   -- main feed
   create ["feed.xml"] $ do
     route idRoute
