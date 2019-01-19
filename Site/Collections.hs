@@ -91,13 +91,8 @@ collections tags env = do
     route indexHTMLRoute
     compile $ makeItem $ Redirect "/archive/"
 
-  -- talks index
-  create ["talks.html"] $ do
-    route indexHTMLRoute
-    compile $ makeItem $ Redirect "/about/"
-
-  -- slides index
-  create ["slides.html"] $ do
+  -- talks and slides index
+  create ["talks.html", "slides.html"] $ do
     route indexHTMLRoute
     compile $ makeItem $ Redirect "/about/"
 
