@@ -374,7 +374,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <a class="sourceLine" id="cb13-24" title="24">       <span class="fu">map</span> (Data.List.foldl' Data.Bits.setBit Data.Bits.zeroBits))</a>
 <a class="sourceLine" id="cb13-25" title="25">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb13-26" title="26">    prepend <span class="fu">~</span>[y] ys <span class="fu">=</span> y<span class="fu">:</span>ys</a></code></pre></div>
-<p>Here, <code>{-# SCC &quot;EP.zip&quot; #-}</code> is a <em>Cost Centre</em> annotation. <code>&quot;EP.zip&quot;</code> is the name we choose to give to this <em>Cost Centre</em>.</p>
+<p>Here, <code>{-# SCC "EP.zip" #-}</code> is a <em>Cost Centre</em> annotation. <code>"EP.zip"</code> is the name we choose to give to this <em>Cost Centre</em>.</p>
 <p>After profiling the code again, we get a different list of bottlenecks:</p>
 <div class="scrollable-table">
 <table>

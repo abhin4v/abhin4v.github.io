@@ -90,7 +90,7 @@ X-Powered-By: Express
 <a class="sourceLine" id="cb3-25" title="25">    sendJson {<span class="fu">error:</span> <span class="st">&quot;Route not found&quot;</span>}</a>
 <a class="sourceLine" id="cb3-26" title="26">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb3-27" title="27">    patch <span class="fu">=</span> http (<span class="dt">CustomMethod</span> <span class="st">&quot;patch&quot;</span>)</a></code></pre></div>
-<p><code>allRoutePattern</code> matches all routes because it uses a <code>&quot;/.*&quot;</code> <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="noopener">regular expression</a>. We place it as the last route to match all the otherwise unrouted requests. Let’s see what is the result:</p>
+<p><code>allRoutePattern</code> matches all routes because it uses a <code>"/.*"</code> <a href="https://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="noopener">regular expression</a>. We place it as the last route to match all the otherwise unrouted requests. Let’s see what is the result:</p>
 <pre class="http"><code>$ http GET http://localhost:4000/v1/random
 HTTP/1.1 404 Not Found
 Connection: keep-alive
