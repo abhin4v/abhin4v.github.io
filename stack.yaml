@@ -1,10 +1,12 @@
-resolver: lts-12.21
+resolver: lts-13.3
 packages:
 - .
 extra-deps:
-  - hakyll-sass-0.2.3
-  - numerals-0.4.1
+  - hakyll-4.12.5.0@sha256:f55a2e99e1c2c780d74222c174bfbe77c90e6453c8ba2465a722ea995b69a4da
+  - hakyll-sass-0.2.4@sha256:4d2fbd8b63f5ef15483fc6dda09e10eefd63b4f873ad38dec2a3607eb504a8ba
+  - numerals-0.4.1@sha256:f138b4a0efbde3b3c6cbccb788eff683cb8a5d046f449729712fd174c5ee8a78
+  - lrucache-1.2.0.1@sha256:18fc3d7052012c7ab3cd395160f34b53c5e1ec5379cc45185baf35b90ffadc2e
   - https://github.com/abhin4v/thumbnail-plus/archive/fc10600d3af19ccce7c69416e2ec33143faa4d37.zip
-  - https://github.com/jaspervdj/hakyll/archive/a7f72c5ab15862cb344ee5d7d81e128d0c5e8f85.zip
 flags: {}
 extra-package-dbs: []
+allow-newer: true
