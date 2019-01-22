@@ -10,6 +10,6 @@
     </author>
     <updated>$updated$</updated>
     <icon>$root$/images/favicon.ico</icon>
-    <rights>>© 2017-2018, $authorName$</rights>
+    <rights>>© 2017-2019, $authorName$</rights>
     $body$
 </feed>

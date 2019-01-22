@@ -56,7 +56,7 @@
           .css("padding", "1em 0px")
           .removeAttr("width")
           .removeAttr("height");
-        })
+        });
       });
     } else {
       window.setTimeout(showActivitiesCalendar, 1000);
