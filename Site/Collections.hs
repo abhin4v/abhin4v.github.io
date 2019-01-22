@@ -81,13 +81,8 @@ collections tags env = do
         >>= relativizeUrls env
         >>= removeIndexHtml
 
-  -- posts index
-  create ["posts.html"] $ do
-    route indexHTMLRoute
-    compile $ makeItem $ Redirect "/archive/"
-
-  -- tags index
-  create ["tags.html"] $ do
+  -- posts and tags index
+  create ["posts.html", "tags.html"] $ do
     route indexHTMLRoute
     compile $ makeItem $ Redirect "/archive/"
 
