@@ -45,7 +45,7 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Strava]: http://www.strava.com/athletes/3485865
 [Twitter]: https://twitter.com/abhin4v
 
-[Flipkart]: https://www.flipkart.com/about-us
+[Flipkart]: https://en.wikipedia.org/wiki/Flipkart
 [nilenso]: https://nilenso.com
 [Capillary Technologies]: https://www.capillarytech.com
 [FICO]: http://www.fico.com/
