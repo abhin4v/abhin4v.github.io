@@ -7,19 +7,22 @@
     <author>
         <name>Abhinav Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     <updated>2017-10-01T00:00:00Z</updated>
     <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
-    <rights>>© 2017-2019, Abhinav Sarkar</rights>
+    <rights>© 2017-2019, Abhinav Sarkar</rights>
     <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 2</title>
-    <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</id>
     <published>2017-10-01T00:00:00Z</published>
     <updated>2017-10-01T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
@@ -643,13 +646,15 @@ X-Powered-By: Express
 </entry>
 <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 1</title>
-    <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/ps-simple-rest-service/" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     

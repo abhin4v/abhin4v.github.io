@@ -7,19 +7,22 @@
     <author>
         <name>Abhinav Sarkar</name>
         <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     <updated>2018-08-13T00:00:00Z</updated>
     <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
-    <rights>>© 2017-2019, Abhinav Sarkar</rights>
+    <rights>© 2017-2019, Abhinav Sarkar</rights>
     <entry>
     <title>Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</title>
-    <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-3/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-3/" />
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-3/</id>
     <published>2018-08-13T00:00:00Z</published>
     <updated>2018-08-13T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
@@ -1243,13 +1246,15 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </entry>
 <entry>
     <title>Fast Sudoku Solver in Haskell #2: A 200x Faster Solution</title>
-    <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/" />
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</id>
     <published>2018-07-11T00:00:00Z</published>
     <updated>2018-07-11T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
@@ -1657,13 +1662,15 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </entry>
 <entry>
     <title>Fast Sudoku Solver in Haskell #1: A Simple Solution</title>
-    <link href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/" />
     <id>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</id>
     <published>2018-06-28T00:00:00Z</published>
     <updated>2018-06-28T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
@@ -2261,13 +2268,15 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </entry>
 <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 2</title>
-    <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/ps-simple-rest-service-2/" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</id>
     <published>2017-10-01T00:00:00Z</published>
     <updated>2017-10-01T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
@@ -2891,13 +2900,15 @@ X-Powered-By: Express
 </entry>
 <entry>
     <title>Writing a Simple REST Web Service in PureScript - Part 1</title>
-    <link href="https://abhinavsarkar.net/posts/ps-simple-rest-service/" />
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/ps-simple-rest-service/" />
     <id>https://abhinavsarkar.net/posts/ps-simple-rest-service/</id>
     <published>2017-09-29T00:00:00Z</published>
     <updated>2017-09-29T00:00:00Z</updated>
     
     <author>
         <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
     </author>
     
     
