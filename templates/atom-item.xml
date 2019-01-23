@@ -1,12 +1,14 @@
 <entry>
     <title>$title$</title>
-    <link href="$root$$url$" />
+    <link rel="alternate" href="$root$$url$" />
     <id>$root$$url$</id>
     <published>$published$</published>
     <updated>$updated$</updated>
     $if(author)$
     <author>
         <name>$author$</name>
+        <email>$authorEmail$</email>
+        <uri>$root$/about/</uri>
     </author>
     $endif$
     $for(tags_list)$
