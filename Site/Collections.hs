@@ -92,7 +92,7 @@ collections tags env = do
     compile $ makeItem $ Redirect "/about/"
 
   -- main feed
-  create ["feed.xml"] $ do
+  create ["feed.atom"] $ do
     route idRoute
     compile $
       loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"

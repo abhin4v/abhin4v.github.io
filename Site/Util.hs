@@ -19,7 +19,7 @@ indexHTMLRoute :: Routes
 indexHTMLRoute = customRoute "index.html"
 
 tagFeedRoute :: Routes
-tagFeedRoute = customRoute "feed.xml"
+tagFeedRoute = customRoute "feed.atom"
 
 customRoute :: String -> Routes
 customRoute fileName = H.customRoute createIndexRoute
