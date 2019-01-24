@@ -15,7 +15,7 @@
       margin-bottom: 0.5em;
 
       &[type="email"] {
-        min-width: 17rem;
+        min-width: 11rem;
         width: 50%;
         margin-right: 0.5em;
       }
@@ -34,5 +34,11 @@
 
   @media print {
     display: none!important;
+  }
+}
+
+.no-js {
+  .subscription-msg {
+    display: none;
   }
 }
