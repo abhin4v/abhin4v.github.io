@@ -1,0 +1,38 @@
+.subscription-msg {
+  border-top: 1px solid $border-color;
+
+  form#subscription {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    font-size: smaller;
+
+    input {
+      font-family: $text-ss-ff;
+      display: block;
+      padding: 0.3em 0.6em;
+      border: 1px solid $border-color;
+      margin-bottom: 0.5em;
+
+      &[type="email"] {
+        min-width: 17rem;
+        width: 50%;
+        margin-right: 0.5em;
+      }
+
+      &[type="submit"] {
+        background-color: #3e97ed;
+        color: #eee;
+        border: none;
+        cursor: pointer;
+        &:hover {
+          background-color: #bd24bb;
+        }
+      }
+    }
+  }
+
+  @media print {
+    display: none!important;
+  }
+}
