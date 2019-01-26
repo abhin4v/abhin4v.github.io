@@ -576,7 +576,7 @@ class: no-heading
 ![](/slides/clojure-concurrency-you/clojure-stml.png# db w-100pct ph-4)
 
 .footer[
-- Source: https://www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/
+- Source: [www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/](https://www.sw1nn.com/blog/2012/04/11/clojure-stm-what-why-how/)
 ]
 
 ???
@@ -601,7 +601,7 @@ class: no-heading
 ![](/slides/clojure-concurrency-you/ref_history.png# db w-100pct ph-6 pv-6)
 
 .footer[
-- Source: https://mattias.niklewski.com/2014/04/stm.htm
+- Source: [mattias.niklewski.com/2014/04/stm.htm](https://mattias.niklewski.com/2014/04/stm.htm)
 ]
 
 ???
@@ -679,7 +679,7 @@ class: title
 ![CSP](/slides/clojure-concurrency-you/csp.png# db w-100pct pv-5)
 
 .footer[
-  - Source: arild.github.io/csp-presentation]
+  - Source: [arild.github.io/csp-presentation](http://arild.github.io/csp-presentation)]
 
 ???
 - this image shows three processes running concurrently
@@ -951,6 +951,6 @@ class: no-footer center
 
 class: big-h1 no-footer center mr-5 thank-you ph-1
 
-# Thank You
-## @abhin4v
+# Thanks
+## [@abhin4v](https://twitter.com/abhin4v)
 abhinavsarkar.net/talks/clojure-concurrency-you

@@ -54,6 +54,9 @@ $body$
           click: true
         }
       });
+      document.querySelectorAll("a[href^='http']").forEach(function(a) {
+        a.target = "_blank";
+      });
     </script>
     $if(live_reload)$
     <script src="http://livejs.com/live.js#html,css"></script>
