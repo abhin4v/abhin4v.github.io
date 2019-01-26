@@ -953,4 +953,4 @@ class: big-h1 no-footer center mr-5 thank-you ph-1
 
 # Thanks
 ## [@abhin4v](https://twitter.com/abhin4v)
-abhinavsarkar.net/talks/clojure-concurrency-you
+abhinavsarkar.net/s/ccy

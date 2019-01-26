@@ -10,6 +10,7 @@ import Site.Pages
 import Site.Photos
 import Site.Posts
 import Site.Readings
+import Site.ShortURLs
 import Site.Talks
 import System.Environment (lookupEnv)
 
@@ -29,6 +30,7 @@ main = do
     readings env
     photos env
     talks env
+    shortURLs
 
     -- templates
     match "templates/*" $ compile templateBodyCompiler

@@ -42,6 +42,7 @@ executable site
                   , Site.Posts
                   , Site.PostCompiler
                   , Site.Readings
+                  , Site.ShortURLs
                   , Site.Sitemap
                   , Site.Talks
                   , Site.TOC
