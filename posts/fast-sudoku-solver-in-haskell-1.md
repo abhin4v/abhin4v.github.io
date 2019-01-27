@@ -4,6 +4,7 @@ date: 2018-06-28
 description: We write a Sudoku Solver in Haskell and optimize it to be fast
 tags: haskell, sudoku, programming, puzzle, nilenso
 author: Abhinav Sarkar
+next: /posts/fast-sudoku-solver-in-haskell-2/
 toc: right
 ---
 

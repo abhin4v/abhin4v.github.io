@@ -3,6 +3,7 @@ title: "Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures"
 date: 2018-08-13
 description: We make the Sudoku solution faster by using the right data structure
 tags: haskell, sudoku, programming, puzzle, nilenso
+prev: /posts/fast-sudoku-solver-in-haskell-2/
 author: Abhinav Sarkar
 toc: right
 ---
