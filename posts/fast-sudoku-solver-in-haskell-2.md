@@ -64,8 +64,7 @@ In a Sudoku puzzle, we have a partially filled 9x9 grid which we have to fill co
 
 Earlier, we followed a simple pruning algorithm which removed all the solved (or _fixed_) digits from neighbours of the fixed cells. We repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid _settled_). Here's an example of a grid before pruning:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -80,12 +79,10 @@ Earlier, we followed a simple pruning algorithm which removed all the solved (or
 | [123456789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 And here's the same grid when it settles after repeated pruning:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
@@ -100,7 +97,6 @@ And here's the same grid when it settles after repeated pruning:
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23      ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all their other possible values get eliminated.
 
@@ -110,13 +106,11 @@ This simple strategy follows directly from the constraints of Sudoku. But, are t
 
 Let's have a look at this sample row captured from a solution in progress:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 Notice how the sixth cell is the only one with `1` as a possibility in it. It is obvious that we should fix the sixth cell to `1` as we cannot place `1` in any other cell in the row. Let's call this the _Singles_[^singles] scenario.
 
@@ -129,43 +123,35 @@ This may take very long and lead to a longer solution time. Let's assume that we
 
 It turns out, we can generalize this pattern. Let's check out this sample row from middle of a solution:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 It is a bit difficult to notice with the naked eye but there's something special here too. The digits `5` and `7` occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, we can place `5` and `7` either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only `5` and `7` like this:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 This is the _Twins_ scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it is the _Triplets_ scenario, as in the example below:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 In this case, the triplet digits are `3`, `8` and `9`. And as before, we can prune the block by fixing these digits in their cells:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 Let's call these three scenarios _Exclusives_ in general.
 
@@ -177,13 +163,11 @@ Now that we have discovered these new strategies to prune cells, let's implement
 
 We can implement the three new strategies to prune cells as one function for each. However, we can actually implement all these strategies in a single function. But, this function is a bit more complex than the previous pruning function. So first, let's try to understand its working using tables. Let's take this sample row:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 First, we make a table mapping the digits to the cells in which they occur, excluding the fixed cells:
 
