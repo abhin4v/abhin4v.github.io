@@ -4,16 +4,16 @@
 
 html {
   overflow-x: hidden;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 body {
-  min-width: 23rem;
+  min-width: 19.5rem;
   margin: auto;
   padding-top: 0.1px;
   font-family: $text-ff;
   font-size: 1.1em;
-  line-height: 1.5em;
+  line-height: 1.45em;
   background-color: $background-color;
   color: $text-color;
   -moz-osx-font-smoothing: grayscale;
@@ -24,11 +24,12 @@ body {
   > main {
     padding: 0 1em;
     font-size: 1.1em;
-    max-width: 55rem;
+    max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
     h1, h2, h3, h4, h5, h6 {
       font-family: $header-ff;
+      color: darken($text-color, $amount: 10);
     }
   }
   > header {
@@ -47,7 +48,7 @@ body {
     }
   }
   > footer {
-    max-width: 55rem;
+    max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
     padding: 0 1em;
@@ -63,8 +64,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 p {
   margin-bottom: 1.2em;
-  text-align: justify;
-  hyphens: manual;
 }
 pre {
   padding: 0.2em;
@@ -75,7 +74,7 @@ pre {
   }
 }
 code {
-  font-size: 0.85em;
+  font-size: 0.8em;
   font-family: $code-ff;
 }
 pre {
@@ -128,6 +127,10 @@ em {
   body {
     font-family: $text-ss-ff;
     font-size: inherit;
+    line-height: 1.3em;
+    > main {
+      font-size: 1em;
+    }
   }
 }
 

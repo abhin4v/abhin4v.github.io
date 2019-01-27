@@ -81,6 +81,12 @@ article.post {
                 overflow-y: hidden;
                 display: flex;
             }
+            @media screen and (min-width: 55rem) {
+                &.overflow code {
+                  overflow-x: initial;
+                  overflow-y: initial;
+                }
+            }
         }
     }
     .footnotes {

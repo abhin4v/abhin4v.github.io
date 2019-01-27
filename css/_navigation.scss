@@ -4,7 +4,7 @@ nav#topnav {
   border-bottom: 1px solid $border-color;
   padding-bottom: 10px;
   padding-top: 10px;
-  max-width: 55rem;
+  max-width: 50rem;
   margin-left: auto;
   margin-right: auto;
 
@@ -50,7 +50,7 @@ nav#topnav {
   }
 }
 
-@media screen and(max-width: 42rem) {
+@media screen and(max-width: 700px) {
   nav#topnav {
     border-bottom: none;
     padding-bottom: 0px;

@@ -702,8 +702,6 @@ Cost Centre                   Src                                 %time  %alloc
 
 The double nested anonymous function mentioned before is still the biggest culprit but `fixM` has disappeared from the list. Let's tackle `exclusivePossibilities` now.
 
-<div class="page-break"></div>
-
 ## Rise of the Mutables
 
 Here's `exclusivePossibilities` again for reference:
