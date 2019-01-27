@@ -882,9 +882,6 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </table>
 </div>
 <p>The double nested anonymous function mentioned before is still the biggest culprit but <code>fixM</code> has disappeared from the list. Let’s tackle <code>exclusivePossibilities</code> now.</p>
-<div class="page-break">
-
-</div>
 <h2 id="rise-of-the-mutables" data-track-content data-content-name="rise-of-the-mutables" data-content-piece="fast-sudoku-solver-in-haskell-3">Rise of the Mutables<a href="#rise-of-the-mutables" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Here’s <code>exclusivePossibilities</code> again for reference:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" title="1"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>
@@ -1285,9 +1282,6 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>So, it took about 117 seconds to solve one hundred puzzles. At this speed, it would take about 16 hours to solve all the 49151 puzzles contained in the file. This is way too slow. We need to find ways to make it faster. Let’s go back to the drawing board.</p>
-<div class="page-break">
-
-</div>
 <h2 id="constraints-and-corollaries" data-track-content data-content-name="constraints-and-corollaries" data-content-piece="fast-sudoku-solver-in-haskell-2">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In a Sudoku puzzle, we have a partially filled 9x9 grid which we have to fill completely while following the constraints of the game.</p>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
@@ -1321,7 +1315,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
     and its solution</code></pre>
 <p>Earlier, we followed a simple pruning algorithm which removed all the solved (or <em>fixed</em>) digits from neighbours of the fixed cells. We repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid <em>settled</em>). Here’s an example of a grid before pruning:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
 | [123456789] 2           [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -1337,7 +1331,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <p></small></p>
 <p>And here’s the same grid when it settles after repeated pruning:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
 | [1   56789] 2           [  3 567 9] | [  3 567 9] [1 34 6 8 ] [1 345 789] | [    56789] [  3456789] [  3456 89] |
@@ -1353,13 +1347,10 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <p></small></p>
 <p>We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all their other possible values get eliminated.</p>
 <p>This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?</p>
-<div class="page-break">
-
-</div>
 <h2 id="singles-twins-and-triplets" data-track-content data-content-name="singles-twins-and-triplets" data-content-piece="fast-sudoku-solver-in-haskell-2">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s have a look at this sample row captured from a solution in progress:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
@@ -1372,25 +1363,25 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <p>This may take very long and lead to a longer solution time. Let’s assume that we recognize the Singles scenario while pruning cells and fix the cell to <code>1</code> right then. That would cut down the search tree by a lot and make the solution much faster.</p>
 <p>It turns out, we can generalize this pattern. Let’s check out this sample row from middle of a solution:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>It is a bit difficult to notice with the naked eye but there’s something special here too. The digits <code>5</code> and <code>7</code> occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, we can place <code>5</code> and <code>7</code> either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only <code>5</code> and <code>7</code> like this:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>This is the <em>Twins</em> scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it is the <em>Triplets</em> scenario, as in the example below:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>In this case, the triplet digits are <code>3</code>, <code>8</code> and <code>9</code>. And as before, we can prune the block by fixing these digits in their cells:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
@@ -1400,7 +1391,7 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 <h2 id="a-little-forward-a-little-backward" data-track-content data-content-name="a-little-forward-a-little-backward" data-content-piece="fast-sudoku-solver-in-haskell-2">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can implement the three new strategies to prune cells as one function for each. However, we can actually implement all these strategies in a single function. But, this function is a bit more complex than the previous pruning function. So first, let’s try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
@@ -1735,7 +1726,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <ol type="1">
 <li>Each cell contains either a single digit or has a set of possible digits. For example, a grid showing the possibilities of all non-filled cells for the sample puzzle above: <small></li>
 </ol>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
 | [123456789] 2           [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -1753,7 +1744,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <li>If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells. Neighboring cells are the other cells in the given cell’s row, column and sub-grid. For example, the grid after removing the fixed value <code>4</code> of the row-2-column-1 cell from its neighboring cells:</li>
 </ol>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [123 56789] [123 56789] [123 56789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] |
 | [123 56789] 2           [123 56789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -1770,7 +1761,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <ol start="3" type="1">
 <li>Repeat the previous step for all the cells that are have been solved (or <em>fixed</em>), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells: <small></li>
 </ol>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 678 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  678 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
 | [1   56789] 2           [  3 567 9] | [  3 567 9] [1 34 678 ] [1 345 789] | [    56789] [  3456789] [  3456 89] |
@@ -1787,7 +1778,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <ol start="4" type="1">
 <li>Continue till the grid <em>settles</em>, that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration: <small></li>
 </ol>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
 | [1   56789] 2           [  3 567 9] | [  3 567 9] [1 34 6 8 ] [1 345 789] | [    56789] [  3456789] [  3456 89] |
@@ -1903,7 +1894,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <p>We use the <a href="https://hackage.haskell.org/package/base-4.11.1.0/docs/Data-Traversable.html#v:traverse" target="_blank" rel="noopener"><code>traverse</code></a> function for pruning the cells so that a <code>Nothing</code> resulting from pruning one cell propagates to the entire list.</p>
 <p>Let’s take it for a spin in the <em>REPL</em>:</p>
 <p><small></p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb14-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb14-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities <span class="fu">$</span> [<span class="fu">head</span> grid] <span class="co">-- first row of the grid</span></a>
 <a class="sourceLine" id="cb14-3" title="3"><span class="dv">6</span>           [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] <span class="dv">1</span>           [<span class="dv">123456789</span>]</a>
 <a class="sourceLine" id="cb14-4" title="4"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities [fromJust <span class="fu">$</span> pruneCells <span class="fu">$</span> <span class="fu">head</span> grid] <span class="co">-- same row after pruning</span></a>
@@ -1913,7 +1904,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <h2 id="pruning-the-grid" data-track-content data-content-name="pruning-the-grid" data-content-piece="fast-sudoku-solver-in-haskell-1">Pruning the Grid<a href="#pruning-the-grid" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Pruning a grid requires us to prune each row, each column and each sub-grid. Let’s try to solve it in the <em>REPL</em> first:</p>
 <p><small></p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb15-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb15-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> <span class="fu">traverse</span> pruneCells grid</a>
 <a class="sourceLine" id="cb15-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb15-4" title="4"><span class="dv">6</span>           [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] [ <span class="dv">2345</span> <span class="dv">789</span>] <span class="dv">1</span>           [ <span class="dv">2345</span> <span class="dv">789</span>]</a>
@@ -1951,7 +1942,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb16-21" title="21"><span class="dv">2</span> <span class="dv">6</span> <span class="dv">4</span> <span class="dv">7</span> <span class="dv">1</span> <span class="dv">5</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">9</span></a></code></pre></div>
 <p>Pruning columns is easy now:</p>
 <p><small></p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb17-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb17-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> <span class="fu">fmap</span> Data.List.transpose <span class="fu">.</span> <span class="fu">traverse</span> pruneCells <span class="fu">.</span> Data.List.transpose <span class="fu">$</span> grid</a>
 <a class="sourceLine" id="cb17-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb17-4" title="4"><span class="dv">6</span>           [<span class="dv">1</span> <span class="dv">34</span> <span class="dv">6789</span>] [ <span class="dv">234567</span> <span class="dv">9</span>] [ <span class="dv">23</span> <span class="dv">567</span> <span class="dv">9</span>] [<span class="dv">1234</span> <span class="dv">678</span> ] [<span class="dv">12345</span> <span class="dv">789</span>] [<span class="dv">1</span>   <span class="dv">56789</span>] <span class="dv">1</span>           [<span class="dv">123456</span> <span class="dv">89</span>]</a>
@@ -2016,7 +2007,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb20-20" title="20"><span class="dv">2</span> <span class="dv">7</span> <span class="dv">4</span> <span class="dv">8</span> <span class="dv">3</span> <span class="dv">6</span> <span class="dv">1</span> <span class="dv">5</span> <span class="dv">9</span></a></code></pre></div>
 <p>Nice! Now writing the sub-grid pruning function is easy:</p>
 <p><small></p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb21-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb21-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> <span class="fu">fmap</span> subGridsToRows <span class="fu">.</span> <span class="fu">traverse</span> pruneCells <span class="fu">.</span> subGridsToRows <span class="fu">$</span> grid</a>
 <a class="sourceLine" id="cb21-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb21-4" title="4"><span class="dv">6</span>           [<span class="dv">1</span> <span class="dv">3</span> <span class="dv">5</span> <span class="dv">789</span>] [<span class="dv">1</span> <span class="dv">3</span> <span class="dv">5</span> <span class="dv">789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [<span class="dv">123456789</span>] [ <span class="dv">23456789</span>] <span class="dv">1</span>           [ <span class="dv">23456789</span>]</a>
@@ -2036,7 +2027,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb22-4" title="4">  <span class="fu">&gt;&gt;=</span> <span class="fu">fmap</span> Data.List.transpose <span class="fu">.</span> <span class="fu">traverse</span> pruneCells <span class="fu">.</span> Data.List.transpose</a>
 <a class="sourceLine" id="cb22-5" title="5">  <span class="fu">&gt;&gt;=</span> <span class="fu">fmap</span> subGridsToRows <span class="fu">.</span> <span class="fu">traverse</span> pruneCells <span class="fu">.</span> subGridsToRows</a></code></pre></div>
 <p>And the test: <small></p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb23-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb23-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> pruneGrid' grid</a>
 <a class="sourceLine" id="cb23-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb23-4" title="4"><span class="dv">6</span>           [  <span class="dv">3</span>   <span class="dv">789</span>] [  <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">234</span>  <span class="dv">78</span> ] [ <span class="dv">2345</span> <span class="dv">789</span>] [    <span class="dv">5</span> <span class="dv">789</span>] <span class="dv">1</span>           [ <span class="dv">2345</span>  <span class="dv">89</span>]</a>
@@ -2076,7 +2067,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 <a class="sourceLine" id="cb24-4" title="4">    fixM f x <span class="fu">=</span> f x <span class="fu">&gt;&gt;=</span> \x' <span class="ot">-&gt;</span> <span class="kw">if</span> x' <span class="fu">==</span> x <span class="kw">then</span> <span class="fu">return</span> x <span class="kw">else</span> fixM f x'</a></code></pre></div>
 <p>The crux of this code is the <code>fixM</code> function. It takes a monadic function <code>f</code> and an initial value, and recursively calls itself till the return value settles. Let’s do another round in the <em>REPL</em>:</p>
 <p><small></p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb25-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb25-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> pruneGrid grid</a>
 <a class="sourceLine" id="cb25-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb25-4" title="4"><span class="dv">6</span>           [  <span class="dv">3</span>   <span class="dv">789</span>] [  <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">234</span>   <span class="dv">8</span> ] [ <span class="dv">2345</span> <span class="dv">789</span>] [    <span class="dv">5</span> <span class="dv">789</span>] <span class="dv">1</span>           [ <span class="dv">2345</span>  <span class="dv">89</span>]</a>
@@ -2129,7 +2120,7 @@ $ head -n1000 sudoku17.txt | stack exec -- sudoku +RTS -p &gt; /dev/null</code><
 </ol>
 <p>Then all we are left with is replacing the non-fixed cell with its fixed and fixed/non-fixed choices, which we do with some math and some list traversal. A quick check on the <em>REPL</em>:</p>
 <p><small></p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell overflow"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" title="1"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid <span class="fu">=</span> readGrid <span class="st">&quot;6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6...&quot;</span></a>
 <a class="sourceLine" id="cb27-2" title="2"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="dt">Just</span> grid' <span class="fu">=</span> pruneGrid grid</a>
 <a class="sourceLine" id="cb27-3" title="3"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> <span class="fu">putStr</span> <span class="fu">$</span> showGridWithPossibilities grid'</a>
 <a class="sourceLine" id="cb27-4" title="4"><span class="dv">6</span>           [  <span class="dv">3</span>   <span class="dv">789</span>] [  <span class="dv">3</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">23</span> <span class="dv">5</span> <span class="dv">7</span> <span class="dv">9</span>] [ <span class="dv">234</span>   <span class="dv">8</span> ] [ <span class="dv">2345</span> <span class="dv">789</span>] [    <span class="dv">5</span> <span class="dv">789</span>] <span class="dv">1</span>           [ <span class="dv">2345</span>  <span class="dv">89</span>]</a>

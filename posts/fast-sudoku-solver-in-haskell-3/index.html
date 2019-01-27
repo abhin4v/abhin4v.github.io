@@ -1000,9 +1000,6 @@ $ cat sudoku17.txt | time stack exec sudoku &gt; /dev/null
 </table>
 </div>
 <p>The double nested anonymous function mentioned before is still the biggest culprit but <code>fixM</code> has disappeared from the list. Let’s tackle <code>exclusivePossibilities</code> now.</p>
-<div class="page-break">
-
-</div>
 <h2 id="rise-of-the-mutables" data-track-content data-content-name="rise-of-the-mutables" data-content-piece="fast-sudoku-solver-in-haskell-3">Rise of the Mutables<a href="#rise-of-the-mutables" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Here’s <code>exclusivePossibilities</code> again for reference:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb27-1" title="1"><span class="ot">exclusivePossibilities ::</span> [<span class="dt">Cell</span>] <span class="ot">-&gt;</span> [<span class="dt">Data.Word.Word16</span>]</a>

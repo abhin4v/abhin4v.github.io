@@ -58,7 +58,7 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 
 1. Each cell contains either a single digit or has a set of possible digits. For example, a grid showing the possibilities of all non-filled cells for the sample puzzle above:
 <small>
-``` {.plain .low-line-height}
+``` {.plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -78,7 +78,7 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 2. If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells. Neighboring cells are the other cells in the given cell's row, column and sub-grid. For example, the grid after removing the fixed value `4` of the row-2-column-1 cell from its neighboring cells:
 
 <small>
-``` {.plain .low-line-height}
+``` {.plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [123 56789] [123 56789] [123 56789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] |
@@ -97,7 +97,7 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 
 3. Repeat the previous step for all the cells that are have been solved (or _fixed_), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells:
 <small>
-``` {.plain .low-line-height}
+``` {.plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 678 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  678 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
@@ -116,7 +116,7 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 
 4. Continue till the grid _settles_, that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration:
 <small>
-``` {.plain .low-line-height}
+``` {.plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
@@ -270,7 +270,7 @@ We use the [`traverse`] function for pruning the cells so that a `Nothing` resul
 Let's take it for a spin in the _REPL_:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> putStr $ showGridWithPossibilities $ [head grid] -- first row of the grid
 6           [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] 1           [123456789]
@@ -286,7 +286,7 @@ It works! `6` and `1` are removed from the possibilities of the other cells. Now
 Pruning a grid requires us to prune each row, each column and each sub-grid. Let's try to solve it in the _REPL_ first:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = traverse pruneCells grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -333,7 +333,7 @@ How do we do the same thing for columns now? Since our representation for the gr
 Pruning columns is easy now:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = fmap Data.List.transpose . traverse pruneCells . Data.List.transpose $ grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -415,7 +415,7 @@ You can go over the code and the output and make yourself sure that it works. Al
 Nice! Now writing the sub-grid pruning function is easy:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = fmap subGridsToRows . traverse pruneCells . subGridsToRows $ grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -443,7 +443,7 @@ pruneGrid' grid =
 
 And the test:
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid' grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -491,7 +491,7 @@ pruneGrid = fixM pruneGrid'
 The crux of this code is the `fixM` function. It takes a monadic function `f` and an initial value, and recursively calls itself till the return value settles. Let's do another round in the _REPL_:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -554,7 +554,7 @@ b. the cell has more than two possible values, resulting in one fixed and one no
 Then all we are left with is replacing the non-fixed cell with its fixed and fixed/non-fixed choices, which we do with some math and some list traversal. A quick check on the _REPL_:
 
 <small>
-```haskell
+``` {.haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid grid
 *Main> putStr $ showGridWithPossibilities grid'

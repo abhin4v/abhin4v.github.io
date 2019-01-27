@@ -171,9 +171,6 @@
 ... output omitted ...
       116.70 real       198.09 user        94.46 sys</code></pre>
 <p>So, it took about 117 seconds to solve one hundred puzzles. At this speed, it would take about 16 hours to solve all the 49151 puzzles contained in the file. This is way too slow. We need to find ways to make it faster. Let’s go back to the drawing board.</p>
-<div class="page-break">
-
-</div>
 <h2 id="constraints-and-corollaries" data-track-content data-content-name="constraints-and-corollaries" data-content-piece="fast-sudoku-solver-in-haskell-2">Constraints and Corollaries<a href="#constraints-and-corollaries" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In a Sudoku puzzle, we have a partially filled 9x9 grid which we have to fill completely while following the constraints of the game.</p>
 <pre class="plain low-line-height"><code>+-------+-------+-------+
@@ -207,7 +204,7 @@
     and its solution</code></pre>
 <p>Earlier, we followed a simple pruning algorithm which removed all the solved (or <em>fixed</em>) digits from neighbours of the fixed cells. We repeated the pruning till the fixed and non-fixed values in the grid stopped changing (or the grid <em>settled</em>). Here’s an example of a grid before pruning:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
 | [123456789] 2           [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -223,7 +220,7 @@
 <p></small></p>
 <p>And here’s the same grid when it settles after repeated pruning:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
 | [1   56789] 2           [  3 567 9] | [  3 567 9] [1 34 6 8 ] [1 345 789] | [    56789] [  3456789] [  3456 89] |
@@ -239,13 +236,10 @@
 <p></small></p>
 <p>We see how the possibilities conflicting with the fixed values are removed. We also see how some of the non-fixed cells turn into fixed ones as all their other possible values get eliminated.</p>
 <p>This simple strategy follows directly from the constraints of Sudoku. But, are there more complex strategies which are implied indirectly?</p>
-<div class="page-break">
-
-</div>
 <h2 id="singles-twins-and-triplets" data-track-content data-content-name="singles-twins-and-triplets" data-content-piece="fast-sudoku-solver-in-haskell-2">Singles, Twins and Triplets<a href="#singles-twins-and-triplets" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s have a look at this sample row captured from a solution in progress:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | 4           [ 2   6 89] 7           | 3           [ 2  56  9] [12  56  9] | [    56 8 ] [ 2  56 8 ] [ 2  56 8 ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
@@ -258,25 +252,25 @@
 <p>This may take very long and lead to a longer solution time. Let’s assume that we recognize the Singles scenario while pruning cells and fix the cell to <code>1</code> right then. That would cut down the search tree by a lot and make the solution much faster.</p>
 <p>It turns out, we can generalize this pattern. Let’s check out this sample row from middle of a solution:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [1  4567 9] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [1  456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>It is a bit difficult to notice with the naked eye but there’s something special here too. The digits <code>5</code> and <code>7</code> occur only in the third and the ninth cells. Though they are accompanied by other digits in those cells, they are not present in any other cells. This means, we can place <code>5</code> and <code>7</code> either in the third or the ninth cell and no other cells. This implies that we can prune the third and ninth cells to have only <code>5</code> and <code>7</code> like this:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [1  4    9] 3           [    5 7  ] | [1  4   89] [1  4 6 89] [1  4 6 89] | [1  4   89] 2           [    5 7  ] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>This is the <em>Twins</em> scenario. As we can imagine, this pattern extends to groups of three digits and beyond. When three digits can be found only in three cells in a block, it is the <em>Triplets</em> scenario, as in the example below:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3 5  89] 6           | 1           [  34   89] [  34   89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
 <p>In this case, the triplet digits are <code>3</code>, <code>8</code> and <code>9</code>. And as before, we can prune the block by fixing these digits in their cells:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   45 7  ] [   45 7  ] [    5 7  ] | 2           [  3    89] 6           | 1           [  3    89] [  3    89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
@@ -286,7 +280,7 @@
 <h2 id="a-little-forward-a-little-backward" data-track-content data-content-name="a-little-forward-a-little-backward" data-content-piece="fast-sudoku-solver-in-haskell-2">A Little Forward, a Little Backward<a href="#a-little-forward-a-little-backward" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We can implement the three new strategies to prune cells as one function for each. However, we can actually implement all these strategies in a single function. But, this function is a bit more complex than the previous pruning function. So first, let’s try to understand its working using tables. Let’s take this sample row:</p>
 <p><small></p>
-<pre class="plain low-line-height"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
+<pre class="plain low-line-height overflow"><code>+-------------------------------------+-------------------------------------+-------------------------------------+
 | [   4 6  9] 1           5           | [     6  9] 7           [ 23  6 89] | [     6  9] [ 23  6 89] [ 23  6 89] |
 +-------------------------------------+-------------------------------------+-------------------------------------+</code></pre>
 <p></small></p>
