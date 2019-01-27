@@ -72,9 +72,9 @@ article.post {
         border: solid #f3f3f3;
         border-width: 2px 0;
         position: relative;
-    }
-    small {
-        pre {
+
+        &.small {
+            font-size: 80%;
             white-space: pre;
             code {
                 overflow-x: scroll;

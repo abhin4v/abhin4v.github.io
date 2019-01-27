@@ -67,8 +67,8 @@ Solving Sudoku is a [constraint satisfaction problem][1]. We are given a partial
 Each cell in the grid is member of one row, one column and one sub-grid (called _block_ in general). Digits in the pre-filled cells impose constraints on the rows, columns, and sub-grids they are part of. For example, if a cell contains `1` then no other cell in that cell's row, column or sub-grid can contain `1`. Given these constraints, we can devise a simple algorithm to solve Sudoku:
 
 1. Each cell contains either a single digit or has a set of possible digits. For example, a grid showing the possibilities of all non-filled cells for the sample puzzle above:
-<small>
-``` {.plain .low-line-height .overflow}
+
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123456789] [123456789] | [123456789] [123456789] [123456789] | [123456789] [123456789] [123456789] |
@@ -83,12 +83,10 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 | [123456789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 2. If a cell contains a digit, remove that digit from the list of the possible digits from all its neighboring cells. Neighboring cells are the other cells in the given cell's row, column and sub-grid. For example, the grid after removing the fixed value `4` of the row-2-column-1 cell from its neighboring cells:
 
-<small>
-``` {.plain .low-line-height .overflow}
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [123 56789] [123 56789] [123 56789] | [123456789] [123456789] [123456789] | [123456789] 1           [123456789] |
 | 4           [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] | [123 56789] [123 56789] [123 56789] |
@@ -103,11 +101,10 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 | [123 56789] [123456789] [123456789] | 8           [123456789] 6           | [123456789] [123456789] [123456789] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 3. Repeat the previous step for all the cells that are have been solved (or _fixed_), either pre-filled or filled in the previous iteration of the solution. For example, the grid after removing all fixed values from all non-fixed cells:
-<small>
-``` {.plain .low-line-height .overflow}
+
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 678 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  678 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
@@ -122,11 +119,10 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23   7  ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 4. Continue till the grid _settles_, that is, there are no more changes in the possibilities of any cells. For example, the settled grid for the current iteration:
-<small>
-``` {.plain .low-line-height .overflow}
+
+``` {.small .plain .low-line-height .overflow}
 +-------------------------------------+-------------------------------------+-------------------------------------+
 | [    56789] [  3  6789] [  3 567 9] | [ 23 567 9] [ 234 6 8 ] [ 2345 789] | [    56789] 1           [ 23456 89] |
 | 4           [1 3  6789] [  3 567 9] | [ 23 567 9] [123  6 8 ] [123 5 789] | [    56789] [ 23 56789] [ 23 56 89] |
@@ -141,7 +137,6 @@ Each cell in the grid is member of one row, one column and one sub-grid (called 
 | [12    7 9] [1  4  7 9] [ 2 4  7 9] | 8           [ 23      ] 6           | [1   5 7 9] [  345 7 9] [1 345   9] |
 +-------------------------------------+-------------------------------------+-------------------------------------+
 ```
-</small>
 
 5. Once the grid settles, choose one of the non-fixed cells following some strategy. Select one of the digits from all the possibilities of the cell, and fix (assume) the cell to have that digit. Go back to step 1 and repeat.
 6. The elimination of possibilities may result in inconsistencies. For example, you may end up with a cell with no possibilities. In such a case, discard that branch of solution, and backtrack to last point where you fixed a cell. Choose a different possibility to fix and repeat.
@@ -184,8 +179,7 @@ readGrid s
 
 `readGrid` return a `Just grid` if the input is correct, else it returns a `Nothing`. It parses a `.` to a `Possible` cell with all digits as possibilities, and a digit char to a `Fixed` cell with that digit. Let's try it out in the _REPL_:
 
-<small>
-```haskell
+``` {.small .haskell}
 *Main> Just grid = readGrid ".......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> mapM_ print grid
 [Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Fixed 1,Possible [1,2,3,4,5,6,7,8,9]]
@@ -198,7 +192,6 @@ readGrid s
 [Possible [1,2,3,4,5,6,7,8,9],Fixed 5,Possible [1,2,3,4,5,6,7,8,9],Fixed 1,Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9]]
 [Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Fixed 8,Possible [1,2,3,4,5,6,7,8,9],Fixed 6,Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9],Possible [1,2,3,4,5,6,7,8,9]]
 ```
-</small>
 
 The output is a bit unreadable but correct. We can write a few functions to clean it up:
 
@@ -234,8 +227,8 @@ Back to the _REPL_ again:
 . 5 . 1 . . . . .
 . . . 8 . 6 . . .
 ```
-<small>
-```haskell
+
+``` {.small .haskell}
 *Main> putStrLn $ showGridWithPossibilities grid
 [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] 1           [123456789]
 4           [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] [123456789]
@@ -247,7 +240,6 @@ Back to the _REPL_ again:
 [123456789] 5           [123456789] 1           [123456789] [123456789] [123456789] [123456789] [123456789]
 [123456789] [123456789] [123456789] 8           [123456789] 6           [123456789] [123456789] [123456789]
 ```
-</small>
 
 The output is more readable now. We see that, at the start, all the non-filled cells have all the digits as possible values. We'll use these functions for debugging as we go forward. We can now start solving the puzzle.
 
@@ -279,15 +271,13 @@ We use the [`traverse`] function for pruning the cells so that a `Nothing` resul
 
 Let's take it for a spin in the _REPL_:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> putStr $ showGridWithPossibilities $ [head grid] -- first row of the grid
 6           [123456789] [123456789] [123456789] [123456789] [123456789] [123456789] 1           [123456789]
 *Main> putStr $ showGridWithPossibilities [fromJust $ pruneCells $ head grid] -- same row after pruning
 6           [ 2345 789] [ 2345 789] [ 2345 789] [ 2345 789] [ 2345 789] [ 2345 789] 1           [ 2345 789]
 ```
-</small>
 
 It works! `6` and `1` are removed from the possibilities of the other cells. Now we are ready for ...
 
@@ -295,8 +285,7 @@ It works! `6` and `1` are removed from the possibilities of the other cells. Now
 
 Pruning a grid requires us to prune each row, each column and each sub-grid. Let's try to solve it in the _REPL_ first:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = traverse pruneCells grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -310,7 +299,6 @@ Pruning a grid requires us to prune each row, each column and each sub-grid. Let
 [ 234 6789] 5           [ 234 6789] 1           [ 234 6789] [ 234 6789] [ 234 6789] [ 234 6789] [ 234 6789]
 [12345 7 9] [12345 7 9] [12345 7 9] 8           [12345 7 9] 6           [12345 7 9] [12345 7 9] [12345 7 9]
 ```
-</small>
 
 By `traverse`-ing the grid with `pruneCells`, we are able to prune each row, one-by-one. Since pruning a row doesn't affect another row, we don't have to pass the resulting rows between each pruning step. That is to say, `traverse` is enough for us, we don't need [`foldl`] here.
 
@@ -342,8 +330,7 @@ How do we do the same thing for columns now? Since our representation for the gr
 
 Pruning columns is easy now:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = fmap Data.List.transpose . traverse pruneCells . Data.List.transpose $ grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -357,7 +344,6 @@ Pruning columns is easy now:
 [12  5 789] 5           [ 234567 9] 1           [1234 678 ] [12345 789] [1   56789] [ 23456789] [123456 89]
 [12  5 789] [1 34 6789] [ 234567 9] 8           [1234 678 ] 6           [1   56789] [ 23456789] [123456 89]
 ```
-</small>
 
 First, we `transpose` the grid to convert the columns into rows. Then, we prune the rows by `traverse`-ing `pruneCells` over them. And finally, we turn the rows back into columns by `transpose`-ing the grid back again. The last `transpose` needs to be [`fmap`]-ped because `traverse pruneCells` returns a `Maybe`.
 
@@ -424,8 +410,7 @@ You can go over the code and the output and make yourself sure that it works. Al
 
 Nice! Now writing the sub-grid pruning function is easy:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = fmap subGridsToRows . traverse pruneCells . subGridsToRows $ grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -439,7 +424,6 @@ Nice! Now writing the sub-grid pruning function is easy:
 [12 4 6789] 5           [12 4 6789] 1           [ 23 5 7 9] [ 23 5 7 9] [1 3456789] [1 3456789] [1 3456789]
 [12 4 6789] [12 4 6789] [12 4 6789] 8           [ 23 5 7 9] 6           [1 3456789] [1 3456789] [1 3456789]
 ```
-</small>
 
 It works well. Now we can string together these three steps to prune the entire grid. We also have to make sure that result of pruning each step is fed into the next step. This is so that the fixed cells created into one step cause more pruning in the further steps. We use monadic bind ([`>>=`][9]) for that. Here's the final code:
 
@@ -452,8 +436,7 @@ pruneGrid' grid =
 ```
 
 And the test:
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid' grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -487,7 +470,6 @@ And the test:
 . 5 . 1 . . . . .
 . . . 8 . 6 . . .
 ```
-</small>
 
 We can clearly see the massive pruning of possibilities all around the grid. We also see a `7` pop up in the row-7-column-5 cell. This means that we can prune the grid further, until it settles. If you are familiar with Haskell, you may recognize this as trying to find a [fixed point][5] for the `pruneGrid'` function, except in a monadic context. It is simple to implement:
 
@@ -500,8 +482,7 @@ pruneGrid = fixM pruneGrid'
 
 The crux of this code is the `fixM` function. It takes a monadic function `f` and an initial value, and recursively calls itself till the return value settles. Let's do another round in the _REPL_:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -515,7 +496,6 @@ The crux of this code is the `fixM` function. It takes a monadic function `f` an
 [ 2    789] 5           [ 2 4 67 9] 1           [ 23      ] [ 23     9] [     6789] [  34 6789] [  34 6 89]
 [12    7 9] [1  4  7 9] [ 2 4  7 9] 8           [ 23      ] 6           [1   5 7 9] [  345 7 9] [1 345   9]
 ```
-</small>
 
 We see that `7` in the row-7-column-5 cell is eliminated from all its neighboring cells. We can't prune the grid anymore. Now it is time to make the choice.
 
@@ -563,8 +543,7 @@ b. the cell has more than two possible values, resulting in one fixed and one no
 
 Then all we are left with is replacing the non-fixed cell with its fixed and fixed/non-fixed choices, which we do with some math and some list traversal. A quick check on the _REPL_:
 
-<small>
-``` {.haskell .overflow}
+``` {.small .haskell .overflow}
 *Main> Just grid = readGrid "6......1.4.........2...........5.4.7..8...3....1.9....3..4..2...5.1........8.6..."
 *Main> Just grid' = pruneGrid grid
 *Main> putStr $ showGridWithPossibilities grid'
@@ -601,7 +580,6 @@ Then all we are left with is replacing the non-fixed cell with its fixed and fix
 [ 2    789] 5           [ 2 4 67 9] 1           [ 23      ] [ 23     9] [     6789] [  34 6789] [  34 6 89]
 [12    7 9] [1  4  7 9] [ 2 4  7 9] 8           [ 23      ] 6           [1   5 7 9] [  345 7 9] [1 345   9]
 ```
-</small>
 
 ## Solving the Puzzle
 
