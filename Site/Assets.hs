@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Site.Assets where
 
+import Control.Monad (forM_)
 import qualified Data.ByteString.Lazy.Char8 as C
 import Hakyll
 import Hakyll.Web.Sass
@@ -10,9 +11,15 @@ import Text.Jasmine
 assets :: Rules ()
 assets = do
   -- static files
-  match (fromList ["CNAME", "robots.txt", "staticman.yml", "README.md"]) $ do
-    route   idRoute
-    compile copyFileCompiler
+  forM_ [ "CNAME"
+        , "robots.txt"
+        , "staticman.yml"
+        , "README.md"
+        , "images/**"
+        , "files/**"
+        , "fonts/**"
+        , "js/*.min.js"
+        ] $ flip match $ route idRoute >> compile copyFileCompiler
 
   -- 404
   match "404.html" $ do
@@ -21,30 +28,10 @@ assets = do
       >>= applyAsTemplate siteContext
       >>= loadAndApplyTemplate "templates/default.html" siteContext
 
-  -- images
-  match "images/**" $ do
-    route   idRoute
-    compile copyFileCompiler
-
-  -- files
-  match "files/**" $ do
-    route   idRoute
-    compile copyFileCompiler
-
-  -- fonts
-  match "fonts/**" $ do
-    route   idRoute
-    compile copyFileCompiler
-
   -- js
   match ("js/*.js" .&&. complement "js/*.min.js") $ do
    route   idRoute
    compile compressJsCompiler
-
-  -- .min.js
-  match "js/*.min.js" $ do
-    route   idRoute
-    compile copyFileCompiler
 
   -- css files
   match "css/*.css" $ do
