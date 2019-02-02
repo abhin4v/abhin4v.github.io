@@ -73,10 +73,7 @@ itemToBook RSSItem {..} =
        , bookShelf         = getBookShelf
        }
   where
-    bookURL = let isbn = getBookProp "isbn"
-      in if null isbn
-         then "https://www.goodreads.com/book/show/" <> getBookProp "book_id"
-         else "https://www.amazon.com/gp/product/" <> isbn <> "/?tag=abhinavsarkar-20"
+    bookURL = "https://www.goodreads.com/book/show/" <> getBookProp "book_id"
 
     getBookProp :: T.Text -> String
     getBookProp prop =
