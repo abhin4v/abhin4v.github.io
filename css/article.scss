@@ -102,6 +102,9 @@ article.post {
         blockquote {
             margin: auto;
         }
+	li:target {
+            background-color: #fef9cc;
+        }
     }
     .scrollable-table {
         overflow-x: auto;
@@ -187,6 +190,14 @@ body.article-page {
             margin: auto 1em;
             ul {
                 padding-left: 1em;
+            }
+        }
+	.footnotes {
+            ol {
+	        padding-left: 1em;
+            }
+            ol::before {
+	        margin-left: -1em;
             }
         }
     }
