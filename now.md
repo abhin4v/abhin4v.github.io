@@ -29,7 +29,7 @@ I'm planning to write more programming focussed blog posts. The last post for my
 
 <small>This is a ["now page"] which itemizes the work and other priorities that I'm concentrating on right now.<br>This page was last updated on Dec 8, 2018.</small>
 
-[Flipkart]: https://www.flipkart.com/about-us
+[Flipkart]: https://en.wikipedia.org/wiki/Flipkart
 [Many Ways to Concur]: https://confengine.com/functional-conf-2018/proposal/7749/many-ways-to-concur
 [Functional Conf 2018]: https://functionalconf.com/
 [In/Clojure 2019]: https://inclojure.org/
