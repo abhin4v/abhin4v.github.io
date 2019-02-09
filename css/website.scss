@@ -23,6 +23,9 @@
         section.body {
             a {
                 color: $text-color;
+		&.footnote-ref {
+		    display: none;
+		}
             }
         }
     }
