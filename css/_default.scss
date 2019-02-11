@@ -24,6 +24,8 @@ body {
     max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
+    border-left: 3px solid lighten($border-color, 28%);
+    border-right: 3px solid lighten($border-color, 28%);
     h1, h2, h3, h4, h5, h6 {
       font-family: $header-ff;
       color: darken($text-color, $amount: 10);

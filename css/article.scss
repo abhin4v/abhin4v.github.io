@@ -69,7 +69,7 @@ article.post {
         white-space: pre-wrap;
         word-wrap: break-word;
         background-color: #fafafa;
-        border: solid #f3f3f3;
+        border: solid lighten($border-color, 28%);
         border-width: 2px 0;
         position: relative;
 
