@@ -1,3 +1,9 @@
 Sitemap: https://abhinavsarkar.net/sitemap.xml
 User-agent: *
 Disallow: /drafts/
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: Barkrowler
+Disallow: /
