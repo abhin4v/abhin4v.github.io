@@ -31,7 +31,7 @@ This is my personal website written and edited by me.
 
 All content provided is for informational purposes only. The articles and posts on this website are my own and don’t necessarily represent the positions, strategies, or opinions of my employer or its subsidiaries. I make no representations as to the accuracy or completeness of any information found here or by following any links. I will not be liable for any errors or omissions in this information nor for the availability of this information. I will not be liable for any losses, injuries, or damages from the display or use of this information.
 
-The source of the website can be found on my [github]. The [master] branch contains the static website which is generated from the code and the content in the [source] branch.
+The source of the website can be found on my [github][3]. The [master] branch contains the static website which is generated from the code and the content in the [source] branch.
 
 It uses the [Hakyll] library as the base for static website generation, along with [Staticman] for the static comments support. Website styling is done with [SCSS] and interactivity is added using [JQuery]. The PDF files are generated using headless [Google Chrome] browser with [this tool] running on [node.js].
 
@@ -56,6 +56,7 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Introduction To Concurrency In Haskell]: /talks/intro-to-conc-in-haskell/
 [1]: https://web.archive.org/web/20151024091258/https://jsfoo.in/2015/reactjs-workshop
 [2]: https://web.archive.org/web/20160629192412/https://metarefresh.talkfunnel.com/2015/1326-a-quick-and-hopefully-painless-ride-through-reactj
+[3]: https://github.com/abhin4v/abhin4v.github.io
 
 [email]: mailto:abhinav@abhinavsarkar.net
 [master]: https://github.com/abhin4v/abhin4v.github.io/tree/master
@@ -69,7 +70,6 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Digital Ocean]: https://www.digitalocean.com/
 [Cloudflare]: https://www.cloudflare.com/
 [Drone CI]: https://drone.io/
-[github]: https://github.com/abhin4v/abhin4v.github.io
 [this tool]: https://github.com/Szpadel/chrome-headless-render-pdf
 [Google Chrome]: https://www.google.com/chrome/index.html
 [node.js]: https://nodejs.org/
