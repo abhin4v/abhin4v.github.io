@@ -34,3 +34,7 @@
     border-bottom: 1px solid $border-color;
   }
 }
+
+ul.fancy {
+  @include fancy-ul();
+}

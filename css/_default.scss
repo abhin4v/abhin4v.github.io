@@ -113,8 +113,18 @@ em {
   color: inherit;
 }
 
+@mixin fancy-ul() {
+  padding-left: 1em;
+  li {
+    list-style: none;
+    &:before {
+      content: "▸ ";
+    }
+  }
+}
+
 @media all {
-	.page-break	{
+  .page-break	{
     display: none;
   }
 }
