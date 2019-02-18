@@ -1,4 +1,5 @@
 @import "consts";
+@import "underline";
 
 #comment-container {
   border-top: 1px solid $border-color;
@@ -78,8 +79,13 @@
   padding-top: 0.5em;
   padding-bottom: 0.5em;
 
-  .message p:last-child {
-    margin-bottom: 0;
+  .message {
+    a[href] {
+      @include link-underline($background-color, $link-color, $selection-color);
+    }
+    p:last-child {
+      margin-bottom: 0;
+    }
   }
   .avatar {
     width: 3.25em;
