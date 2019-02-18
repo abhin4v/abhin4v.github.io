@@ -106,6 +106,9 @@ article.post {
 	li:target {
             background-color: #fef9cc;
         }
+	a.footnote-back {
+            background-image: none !important;
+        }
     }
     .scrollable-table {
         overflow-x: auto;

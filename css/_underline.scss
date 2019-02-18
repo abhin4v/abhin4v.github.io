@@ -18,6 +18,10 @@
   background-size: 1px 1px;
   background-repeat: repeat-x;
   background-position: 0% 85%;
+
+  @media screen and(max-width: 640px) {
+    background-position: 0% 95%;
+  }
 }
 
 @mixin text-selection($selection) {
