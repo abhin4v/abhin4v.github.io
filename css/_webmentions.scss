@@ -2,15 +2,9 @@
 
 #mentions-container {
   ul {
-    padding-left: 1em;
+    @include fancy-ul();
 
     li.mention {
-      list-style: none;
-
-      &:before {
-        content: "> ";
-      }
-
       .date {
         font-size: smaller;
         margin-left: 0.5em;

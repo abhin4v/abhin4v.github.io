@@ -114,11 +114,15 @@ em {
 }
 
 @mixin fancy-ul() {
-  padding-left: 1em;
+  padding-left: 2em;
+  text-indent: -1em;
+  margin-left: 0;
   li {
     list-style: none;
     &:before {
-      content: "▸ ";
+      content: "▸";
+      display: inline-block;
+      margin-left: 1em;
     }
   }
 }

@@ -144,6 +144,9 @@ article.post {
 	        }
             }
         }
+        ul {
+          @include fancy-ul();
+        }
         a[href] {
            @include link-underline($background-color, $link-color, $selection-color);
         }
@@ -202,7 +205,7 @@ body.article-page {
         blockquote {
             margin: auto 1em;
             ul {
-                padding-left: 1em;
+                padding-left: 1em!important;
             }
         }
 	.footnotes {
