@@ -67,6 +67,7 @@ getActivities feedURL =
     getActivityType activityName
       | "Ride" `isInfixOf` activityName = "ride"
       | "Walk" `isInfixOf` activityName = "walk"
+      | "Swim" `isInfixOf` activityName = "swim"
       | otherwise = "run"
 
     renderDesc :: [(String, String)] -> String
@@ -89,7 +90,10 @@ activities env = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities' <- unsafeCompiler $ getActivities "http://feedmyride.net/activities/3485865"
+        activities' <- fmap removeSwims
+                       . unsafeCompiler
+                       . getActivities
+                       $ "http://feedmyride.net/activities/3485865"
 
         let ctx = listField "activities" activityCtx (mapM makeItem activities') <>
                   constField "title" "Activities" <>
@@ -102,6 +106,8 @@ activities env = do
           >>= relativizeUrls env
           >>= removeIndexHtml
   where
+    removeSwims = filter ((/= "swim") . activityType)
+
     activityField name f = field name (return . f . itemBody)
 
     activityCtx =
