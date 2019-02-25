@@ -1,8 +1,8 @@
-resolver: lts-13.3
+resolver: lts-13.9
 packages:
 - .
 extra-deps:
-  - hakyll-4.12.5.0@sha256:f55a2e99e1c2c780d74222c174bfbe77c90e6453c8ba2465a722ea995b69a4da
+  - hakyll-4.12.5.1@sha256:d1948b265e6628bcb6875571212f9acefe23179c73ca4f87f417b290ff381ca6
   - hakyll-sass-0.2.4@sha256:4d2fbd8b63f5ef15483fc6dda09e10eefd63b4f873ad38dec2a3607eb504a8ba
   - numerals-0.4.1@sha256:f138b4a0efbde3b3c6cbccb788eff683cb8a5d046f449729712fd174c5ee8a78
   - lrucache-1.2.0.1@sha256:18fc3d7052012c7ab3cd395160f34b53c5e1ec5379cc45185baf35b90ffadc2e
