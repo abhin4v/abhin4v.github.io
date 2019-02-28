@@ -42,12 +42,13 @@ import Text.Parsec hiding (Empty)
 A claim is a rectangle with an ID. Let's define a type for it.
 
 ```haskell
-data Claim = Claim { claimID     :: Int
-                   , claimLeft   :: Int
-                   , claimTop    :: Int
-                   , claimWidth  :: Int
-                   , claimHeight :: Int
-                   }
+data Claim = Claim
+           { claimID     :: Int
+           , claimLeft   :: Int
+           , claimTop    :: Int
+           , claimWidth  :: Int
+           , claimHeight :: Int
+           }
 
 instance Eq Claim where
   (==) = (==) `on` claimID
@@ -97,9 +98,10 @@ Nice. Now, we can write the function to parse the whole puzzle input:
 
 ```haskell
 readInput :: String -> [Claim]
-readInput input = case traverse (parse claimParser "") $ lines input of
-  Left e   -> error (show e)
-  Right rs -> rs
+readInput input =
+  case traverse (parse claimParser "") $ lines input of
+    Left e   -> error (show e)
+    Right rs -> rs
 ```
 
 Back to GHCi:
@@ -122,7 +124,8 @@ One simple way to solve this puzzle is to go through each 1x1 cell in the whole 
 
 ```haskell
 sheetSize :: [Claim] -> (Int, Int)
-sheetSize claims = (calcBound claimRight, calcBound claimBottom)
+sheetSize claims =
+  (calcBound claimRight, calcBound claimBottom)
   where
     claimRight  (Claim _ l _ w _) = l + w
     claimBottom (Claim _ _ t _ h) = t + h
@@ -146,7 +149,8 @@ isOverlapCell claims cell =
   (> 1) . length . filter (cellInClaim cell) $ claims
   where
     cellInClaim (x, y) (Claim _ l t w h) =
-      l <= x && (l+w) >= (x+1) && t <= y && (t+h) >= (y+1)
+      l <= x && (l+w) >= (x+1)
+      && t <= y && (t+h) >= (y+1)
 ```
 
 `cellInClaim` function checks if a cell lies within a claim by comparing the cell and claim boundaries. Then, from all the claims we filter the ones which contain the given cell. If there is more than one such claim, the cell is an overlap cell.
@@ -157,8 +161,8 @@ With these functions done, writing the brute-force solver is easy:
 bruteForceOverlapArea :: [Claim] -> Int
 bruteForceOverlapArea claims =
   let (width, height) = sheetSize claims
-      cells           = [(i, j) | i <- [0..width-1], j <- [0..height-1]]
-      overlapArea     = length . filter (isOverlapCell claims) $ cells
+      cells = [(i, j) | i <- [0..width-1], j <- [0..height-1]]
+      overlapArea = length . filter (isOverlapCell claims) $ cells
   in overlapArea
 ```
 
