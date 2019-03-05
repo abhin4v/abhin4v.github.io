@@ -29,6 +29,10 @@ data Activity = Activity { activityName   :: String
                          , activityDesc   :: String
                          } deriving (Show)
 
+runEffortMult, pageScaleMult :: Double
+runEffortMult = 3.0
+pageScaleMult = 0.6
+
 getActivities :: String -> IO [Activity]
 getActivities feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
@@ -54,7 +58,7 @@ getActivities feedURL =
                           . fromJust
                           . lookup "Distance"
                           $ desc
-              activityEffort = (if activityType == "ride" then rawEffort else rawEffort * 4.0) * 0.6
+              activityEffort = (if activityType == "ride" then rawEffort else rawEffort * runEffortMult) * pageScaleMult
           return Activity { activityName   = activityName
                           , activityType   = activityType
                           , activityEffort = activityEffort
