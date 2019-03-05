@@ -31,7 +31,7 @@ data Activity = Activity { activityName   :: String
 
 runEffortMult, pageScaleMult :: Double
 runEffortMult = 3.0
-pageScaleMult = 0.6
+pageScaleMult = 0.8
 
 getActivities :: String -> IO [Activity]
 getActivities feedURL =
