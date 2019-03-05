@@ -172,24 +172,25 @@
 <a class="sourceLine" id="cb1-10" title="10"><span class="kw">import</span> <span class="dt">Data.Ord</span> (comparing)</a>
 <a class="sourceLine" id="cb1-11" title="11"><span class="kw">import</span> <span class="dt">Text.Parsec</span> <span class="kw">hiding</span> (<span class="dt">Empty</span>)</a></code></pre></div>
 <p>A claim is a rectangle with an ID. Let’s define a type for it.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">Claim</span> <span class="ot">=</span> <span class="dt">Claim</span> {<span class="ot"> claimID     ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-2" title="2">                   ,<span class="ot"> claimLeft   ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-3" title="3">                   ,<span class="ot"> claimTop    ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-4" title="4">                   ,<span class="ot"> claimWidth  ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-5" title="5">                   ,<span class="ot"> claimHeight ::</span> <span class="dt">Int</span></a>
-<a class="sourceLine" id="cb2-6" title="6">                   }</a>
-<a class="sourceLine" id="cb2-7" title="7"></a>
-<a class="sourceLine" id="cb2-8" title="8"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-9" title="9">  (<span class="op">==</span>) <span class="ot">=</span> (<span class="op">==</span>) <span class="ot">`on`</span> claimID</a>
-<a class="sourceLine" id="cb2-10" title="10"></a>
-<a class="sourceLine" id="cb2-11" title="11"><span class="kw">instance</span> <span class="dt">Ord</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-12" title="12">  <span class="fu">compare</span> <span class="ot">=</span> <span class="fu">compare</span> <span class="ot">`on`</span> claimID</a>
-<a class="sourceLine" id="cb2-13" title="13"></a>
-<a class="sourceLine" id="cb2-14" title="14"><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
-<a class="sourceLine" id="cb2-15" title="15">  <span class="fu">show</span> (<span class="dt">Claim</span> <span class="fu">id</span> l t w h) <span class="ot">=</span></a>
-<a class="sourceLine" id="cb2-16" title="16">    <span class="st">&quot;&lt;#&quot;</span> <span class="op">++</span> <span class="fu">show</span> <span class="fu">id</span> <span class="op">++</span> <span class="st">&quot; &quot;</span></a>
-<a class="sourceLine" id="cb2-17" title="17">    <span class="op">++</span> <span class="st">&quot;(&quot;</span> <span class="op">++</span> <span class="fu">show</span> l <span class="op">++</span> <span class="st">&quot;,&quot;</span> <span class="op">++</span> <span class="fu">show</span> t <span class="op">++</span> <span class="st">&quot;)-&quot;</span></a>
-<a class="sourceLine" id="cb2-18" title="18">    <span class="op">++</span> <span class="st">&quot;(&quot;</span> <span class="op">++</span> <span class="fu">show</span> (l<span class="op">+</span>w) <span class="op">++</span> <span class="st">&quot;,&quot;</span> <span class="op">++</span> <span class="fu">show</span> (t<span class="op">+</span>h) <span class="op">++</span> <span class="st">&quot;)&gt;&quot;</span></a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">data</span> <span class="dt">Claim</span> <span class="ot">=</span> <span class="dt">Claim</span></a>
+<a class="sourceLine" id="cb2-2" title="2">           {<span class="ot"> claimID     ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-3" title="3">           ,<span class="ot"> claimLeft   ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-4" title="4">           ,<span class="ot"> claimTop    ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-5" title="5">           ,<span class="ot"> claimWidth  ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-6" title="6">           ,<span class="ot"> claimHeight ::</span> <span class="dt">Int</span></a>
+<a class="sourceLine" id="cb2-7" title="7">           }</a>
+<a class="sourceLine" id="cb2-8" title="8"></a>
+<a class="sourceLine" id="cb2-9" title="9"><span class="kw">instance</span> <span class="dt">Eq</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-10" title="10">  (<span class="op">==</span>) <span class="ot">=</span> (<span class="op">==</span>) <span class="ot">`on`</span> claimID</a>
+<a class="sourceLine" id="cb2-11" title="11"></a>
+<a class="sourceLine" id="cb2-12" title="12"><span class="kw">instance</span> <span class="dt">Ord</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-13" title="13">  <span class="fu">compare</span> <span class="ot">=</span> <span class="fu">compare</span> <span class="ot">`on`</span> claimID</a>
+<a class="sourceLine" id="cb2-14" title="14"></a>
+<a class="sourceLine" id="cb2-15" title="15"><span class="kw">instance</span> <span class="dt">Show</span> <span class="dt">Claim</span> <span class="kw">where</span></a>
+<a class="sourceLine" id="cb2-16" title="16">  <span class="fu">show</span> (<span class="dt">Claim</span> <span class="fu">id</span> l t w h) <span class="ot">=</span></a>
+<a class="sourceLine" id="cb2-17" title="17">    <span class="st">&quot;&lt;#&quot;</span> <span class="op">++</span> <span class="fu">show</span> <span class="fu">id</span> <span class="op">++</span> <span class="st">&quot; &quot;</span></a>
+<a class="sourceLine" id="cb2-18" title="18">    <span class="op">++</span> <span class="st">&quot;(&quot;</span> <span class="op">++</span> <span class="fu">show</span> l <span class="op">++</span> <span class="st">&quot;,&quot;</span> <span class="op">++</span> <span class="fu">show</span> t <span class="op">++</span> <span class="st">&quot;)-&quot;</span></a>
+<a class="sourceLine" id="cb2-19" title="19">    <span class="op">++</span> <span class="st">&quot;(&quot;</span> <span class="op">++</span> <span class="fu">show</span> (l<span class="op">+</span>w) <span class="op">++</span> <span class="st">&quot;,&quot;</span> <span class="op">++</span> <span class="fu">show</span> (t<span class="op">+</span>h) <span class="op">++</span> <span class="st">&quot;)&gt;&quot;</span></a></code></pre></div>
 <p>Since each claim is uniquely identified with an ID, we use the ID to equate and order claims. The <code>Show</code> instance of <code>Claim</code> shows the top-left and bottom-right coordinates of a claim along with the ID, as demonstrated by this session in GHCi:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb3-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> claim <span class="ot">=</span> <span class="dt">Claim</span> <span class="dv">1</span> <span class="dv">3</span> <span class="dv">4</span> <span class="dv">12</span> <span class="dv">32</span></a>
 <a class="sourceLine" id="cb3-2" title="2"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">print</span> claim</a>
@@ -211,9 +212,10 @@
 <a class="sourceLine" id="cb5-2" title="2"><span class="dt">Right</span> <span class="op">&lt;#</span><span class="dv">123</span> (<span class="dv">3</span>,<span class="dv">2</span>)<span class="op">-</span>(<span class="dv">8</span>,<span class="dv">6</span>)<span class="op">&gt;</span></a></code></pre></div>
 <p>Nice. Now, we can write the function to parse the whole puzzle input:</p>
 <div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb6-1" title="1"><span class="ot">readInput ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> [<span class="dt">Claim</span>]</a>
-<a class="sourceLine" id="cb6-2" title="2">readInput input <span class="ot">=</span> <span class="kw">case</span> <span class="fu">traverse</span> (parse claimParser <span class="st">&quot;&quot;</span>) <span class="op">$</span> <span class="fu">lines</span> input <span class="kw">of</span></a>
-<a class="sourceLine" id="cb6-3" title="3">  <span class="dt">Left</span> e   <span class="ot">-&gt;</span> <span class="fu">error</span> (<span class="fu">show</span> e)</a>
-<a class="sourceLine" id="cb6-4" title="4">  <span class="dt">Right</span> rs <span class="ot">-&gt;</span> rs</a></code></pre></div>
+<a class="sourceLine" id="cb6-2" title="2">readInput input <span class="ot">=</span></a>
+<a class="sourceLine" id="cb6-3" title="3">  <span class="kw">case</span> <span class="fu">traverse</span> (parse claimParser <span class="st">&quot;&quot;</span>) <span class="op">$</span> <span class="fu">lines</span> input <span class="kw">of</span></a>
+<a class="sourceLine" id="cb6-4" title="4">    <span class="dt">Left</span> e   <span class="ot">-&gt;</span> <span class="fu">error</span> (<span class="fu">show</span> e)</a>
+<a class="sourceLine" id="cb6-5" title="5">    <span class="dt">Right</span> rs <span class="ot">-&gt;</span> rs</a></code></pre></div>
 <p>Back to GHCi:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb7-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> input <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input&quot;</span></a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> <span class="fu">mapM_</span> <span class="fu">print</span> <span class="op">.</span> <span class="fu">take</span> <span class="dv">5</span> <span class="op">$</span> readInput input</a>
@@ -226,11 +228,12 @@
 <h2 id="brute-force-solution" data-track-content data-content-name="brute-force-solution" data-content-piece="solving-aoc3-with-haskell-interval-trees">Brute-force Solution<a href="#brute-force-solution" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>One simple way to solve this puzzle is to go through each 1x1 cell in the whole sheet and check if more than one claim contains them. This is a brute-force solution with no cleverness, but it will serve as a baseline for the later solutions. For this solution, first we need to find out the size of the sheet by going over all the claims:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb8-1" title="1"><span class="ot">sheetSize ::</span> [<span class="dt">Claim</span>] <span class="ot">-&gt;</span> (<span class="dt">Int</span>, <span class="dt">Int</span>)</a>
-<a class="sourceLine" id="cb8-2" title="2">sheetSize claims <span class="ot">=</span> (calcBound claimRight, calcBound claimBottom)</a>
-<a class="sourceLine" id="cb8-3" title="3">  <span class="kw">where</span></a>
-<a class="sourceLine" id="cb8-4" title="4">    claimRight  (<span class="dt">Claim</span> _ l _ w _) <span class="ot">=</span> l <span class="op">+</span> w</a>
-<a class="sourceLine" id="cb8-5" title="5">    claimBottom (<span class="dt">Claim</span> _ _ t _ h) <span class="ot">=</span> t <span class="op">+</span> h</a>
-<a class="sourceLine" id="cb8-6" title="6">    calcBound f <span class="ot">=</span> f (maximumBy (comparing f) claims)</a></code></pre></div>
+<a class="sourceLine" id="cb8-2" title="2">sheetSize claims <span class="ot">=</span></a>
+<a class="sourceLine" id="cb8-3" title="3">  (calcBound claimRight, calcBound claimBottom)</a>
+<a class="sourceLine" id="cb8-4" title="4">  <span class="kw">where</span></a>
+<a class="sourceLine" id="cb8-5" title="5">    claimRight  (<span class="dt">Claim</span> _ l _ w _) <span class="ot">=</span> l <span class="op">+</span> w</a>
+<a class="sourceLine" id="cb8-6" title="6">    claimBottom (<span class="dt">Claim</span> _ _ t _ h) <span class="ot">=</span> t <span class="op">+</span> h</a>
+<a class="sourceLine" id="cb8-7" title="7">    calcBound f <span class="ot">=</span> f (maximumBy (comparing f) claims)</a></code></pre></div>
 <p>We calculate the width and height of the sheet by finding the claims with furthest right and bottom boundaries. Let’s run this over the input file in GHCi:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb9-1" title="1"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> input <span class="ot">&lt;-</span> <span class="fu">readFile</span> <span class="st">&quot;input&quot;</span></a>
 <a class="sourceLine" id="cb9-2" title="2"><span class="op">*</span><span class="dt">Main</span><span class="op">&gt;</span> claims <span class="ot">=</span> readInput input</a>
@@ -242,14 +245,15 @@
 <a class="sourceLine" id="cb10-3" title="3">  (<span class="op">&gt;</span> <span class="dv">1</span>) <span class="op">.</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">filter</span> (cellInClaim cell) <span class="op">$</span> claims</a>
 <a class="sourceLine" id="cb10-4" title="4">  <span class="kw">where</span></a>
 <a class="sourceLine" id="cb10-5" title="5">    cellInClaim (x, y) (<span class="dt">Claim</span> _ l t w h) <span class="ot">=</span></a>
-<a class="sourceLine" id="cb10-6" title="6">      l <span class="op">&lt;=</span> x <span class="op">&amp;&amp;</span> (l<span class="op">+</span>w) <span class="op">&gt;=</span> (x<span class="op">+</span><span class="dv">1</span>) <span class="op">&amp;&amp;</span> t <span class="op">&lt;=</span> y <span class="op">&amp;&amp;</span> (t<span class="op">+</span>h) <span class="op">&gt;=</span> (y<span class="op">+</span><span class="dv">1</span>)</a></code></pre></div>
+<a class="sourceLine" id="cb10-6" title="6">      l <span class="op">&lt;=</span> x <span class="op">&amp;&amp;</span> (l<span class="op">+</span>w) <span class="op">&gt;=</span> (x<span class="op">+</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb10-7" title="7">      <span class="op">&amp;&amp;</span> t <span class="op">&lt;=</span> y <span class="op">&amp;&amp;</span> (t<span class="op">+</span>h) <span class="op">&gt;=</span> (y<span class="op">+</span><span class="dv">1</span>)</a></code></pre></div>
 <p><code>cellInClaim</code> function checks if a cell lies within a claim by comparing the cell and claim boundaries. Then, from all the claims we filter the ones which contain the given cell. If there is more than one such claim, the cell is an overlap cell.</p>
 <p>With these functions done, writing the brute-force solver is easy:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb11-1" title="1"><span class="ot">bruteForceOverlapArea ::</span> [<span class="dt">Claim</span>] <span class="ot">-&gt;</span> <span class="dt">Int</span></a>
 <a class="sourceLine" id="cb11-2" title="2">bruteForceOverlapArea claims <span class="ot">=</span></a>
 <a class="sourceLine" id="cb11-3" title="3">  <span class="kw">let</span> (width, height) <span class="ot">=</span> sheetSize claims</a>
-<a class="sourceLine" id="cb11-4" title="4">      cells           <span class="ot">=</span> [(i, j) <span class="op">|</span> i <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>width<span class="op">-</span><span class="dv">1</span>], j <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>height<span class="op">-</span><span class="dv">1</span>]]</a>
-<a class="sourceLine" id="cb11-5" title="5">      overlapArea     <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">filter</span> (isOverlapCell claims) <span class="op">$</span> cells</a>
+<a class="sourceLine" id="cb11-4" title="4">      cells <span class="ot">=</span> [(i, j) <span class="op">|</span> i <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>width<span class="op">-</span><span class="dv">1</span>], j <span class="ot">&lt;-</span> [<span class="dv">0</span><span class="op">..</span>height<span class="op">-</span><span class="dv">1</span>]]</a>
+<a class="sourceLine" id="cb11-5" title="5">      overlapArea <span class="ot">=</span> <span class="fu">length</span> <span class="op">.</span> <span class="fu">filter</span> (isOverlapCell claims) <span class="op">$</span> cells</a>
 <a class="sourceLine" id="cb11-6" title="6">  <span class="kw">in</span> overlapArea</a></code></pre></div>
 <p>We go over all cell in the sheet and check if they are overlap cells. The overlap area is simply the count of such cells. Let’s write the main function to finish this up:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><a class="sourceLine" id="cb12-1" title="1"><span class="ot">main ::</span> <span class="dt">IO</span> ()</a>
