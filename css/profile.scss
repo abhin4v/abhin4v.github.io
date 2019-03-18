@@ -1,8 +1,16 @@
 @import "default";
 
-img {
-  max-width: 50rem;
-  width: 90vw;
+a.img-link {
+  img {
+    max-width: 50rem;
+    width: 90vw;
+  }
+  img + span {
+    font-size: medium;
+    text-align: center;
+    display: block;
+    color: lighten($text-color, 20%);
+  }
 }
 
 .fancy-ul ul {

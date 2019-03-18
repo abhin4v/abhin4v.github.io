@@ -6,7 +6,7 @@ page_type: profile
 
 I'm living in Bangalore, India and working at [Flipkart].
 
-![](/photos/images/f75f98d9ca79b0fa89eabe45eb47494d.jpg)
+![Boat on Sand Waves. Taken in Goa, India.](/photos/images/f75f98d9ca79b0fa89eabe45eb47494d.jpg)
 
 ## Reading
 
