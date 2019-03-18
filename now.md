@@ -14,7 +14,7 @@ I'm trying to get back into the habbit of reading technical (and non-technical) 
 
 ## Running
 
-I'm [training] to run a half marathon for past couple of months. I'm yet to reach the 21km mark but I'm participating in few [10km][1] [runs][2] to keep up the tempo.
+I'm [training] to run a half marathon for past couple of months. I'm yet to reach the 21km mark but I'm participating in [few][1] [10km][2] [races][3] to keep up the tempo.
 
 ## Blogging
 
@@ -22,14 +22,16 @@ I'm planning to write more programming focussed blog posts. The last post for my
 
 ## Teaching
 
-I'm planning to teach various topics related to programming at public and non-public (at my workplace) workshops. I still need gather my thoughts around what I want to teach.
+I'm teaching various topics related to programming at [public][cljbridge] and non-public (at my workplace) workshops.
 
-<small>This is a ["now page"] which itemizes the work and other priorities that I'm concentrating on right now.<br>This page was last updated on Feb 11, 2019.</small>
+<small>This is a ["now page"] which itemizes the work and other priorities that I'm concentrating on right now.<br>This page was last updated on Mar 18, 2019.</small>
 
 [Flipkart]: https://en.wikipedia.org/wiki/Flipkart
 [training]: /activities/
 [Fast Sudoku Solver in Haskell]: /posts/fast-sudoku-solver-in-haskell-1/
 ["now page"]: https://nownownow.com/about
+[cljbridge]: https://www.meetup.com/meetup-group-JrOdKOTm/events/258870033
 
-[1]: http://run.bhumi.ngo/bengaluru/
-[2]: http://midnightmarathon.in/
+[1]: https://www.strava.com/activities/1995339863
+[2]: https://www.strava.com/activities/2006891713
+[3]: https://www.strava.com/activities/2170726926
