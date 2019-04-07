@@ -64,7 +64,7 @@ itemToBook :: RSSItem -> Book
 itemToBook RSSItem {..} =
   Book { bookName          = T.unpack $ fromJust rssItemTitle
        , bookURL           = bookURL
-       , bookImageURL      = getBookProp "book_small_image_url"
+       , bookImageURL      = getBookProp "book_medium_image_url"
        , bookAuthor        = getBookProp "author_name"
        , bookRating        = getBookRating
        , bookReadDate      = getReadDate
@@ -133,7 +133,7 @@ readings env = do
               , bookField "url" bookURL
               , bookField "image_url" bookImageURL
               , bookField "author" bookAuthor
-              , bookField "rating" (show . fromJust . bookRating)
+              , bookField "rating" (ratingToStars . fromJust . bookRating)
               , bookHasField "has_rating" bookRating
               , bookField "published" (maybe "" show . bookPublishedYear)
               , bookHasField "has_published" bookPublishedYear
@@ -141,3 +141,5 @@ readings env = do
               , bookHasField "has_read_date" bookReadDate
               , bookField "added_date" (formatTime defaultTimeLocale "%b, %Y" . bookAddedDate)
               ]
+
+    ratingToStars rating = replicate rating '★' ++ replicate (5 - rating) '☆'

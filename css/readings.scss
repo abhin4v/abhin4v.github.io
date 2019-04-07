@@ -7,14 +7,20 @@
     clear: both;;
 
     img {
-      margin-right: 0.3em;
+      margin-right: 20px;
       margin-top: 0.2em;
       border: 1px solid $border-color;
       float: left;
+      width: 100px;
     }
 
-    div {
-      margin-left: 55px;
+    > div {
+      margin-left: 120px;
+    }
+
+    .name {
+      font-size: 1.1em;
+      padding-top: 0.1em;
     }
 
     .read-date, .rating {
@@ -22,7 +28,7 @@
     }
 
     .author {
-      font-variant: small-caps;
+      font-style: italic;
     }
   }
 
