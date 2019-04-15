@@ -2,24 +2,31 @@
 @import "consts";
 
 .books {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  grid-column-gap: 1em;
+
+  @media screen and(max-width: 900px) {
+    display: block;
+  }
+
   .book {
     padding-top: 1em;
     clear: both;;
 
     img {
-      margin-right: 20px;
+      margin-right: 10px;
       margin-top: 0.2em;
       border: 1px solid $border-color;
       float: left;
-      width: 100px;
+      width: 80px;
     }
 
     > div {
-      margin-left: 120px;
+      margin-left: 90px;
     }
 
     .name {
-      font-size: 1.1em;
       padding-top: 0.1em;
     }
 
@@ -31,14 +38,13 @@
       font-style: italic;
     }
   }
-
-  hr {
-    padding-top: 1.5em;
-    width: 50%;
-    clear: both;
-    background-color: transparent;
-    border-bottom: 1px solid $border-color;
-  }
+}
+hr {
+  padding-top: 1.5em;
+  width: 50%;
+  clear: both;
+  background-color: transparent;
+  border-bottom: 1px solid $border-color;
 }
 
 ul.fancy {

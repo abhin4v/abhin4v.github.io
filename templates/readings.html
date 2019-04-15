@@ -5,20 +5,21 @@
 	<li><a href="#hold">On Hold</a></li>
 	<li><a href="#to-read">To Read</a></li>
 </ul>
-<section class="books">
-  <h2 id="current">Currently Reading</h2>
-  $for(books_reading)$
-  <section class="book reading">
-    $partial("templates/book.html")$
-  </section>
-  $endfor$
-  <hr />
-</section>
 
-<section class="books">
-  <h2 id="read">Read</h2>
+<h2 id="current">Currently Reading</h2>
+<div class="books">
+  $for(books_reading)$
+  <div class="book reading">
+    $partial("templates/book.html")$
+  </div>
+  $endfor$
+</div>
+<hr />
+
+<h2 id="read">Read</h2>
+<div class="books">
   $for(books_read)$
-  <section class="book read">
+  <div class="book read">
     $partial("templates/book.html")$
     <div class="read-date">
       $if(has_read_date)$
@@ -28,27 +29,27 @@
       $endif$
     </div>
     $if(has_rating)$<div class="rating">$rating$</div>$endif$
-  </section>
+  </div>
   $endfor$
-  <hr />
-</section>
+</div>
+<hr />
 
-<section class="books">
-  <h2 id="hold">On Hold</h2>
+<h2 id="hold">On Hold</h2>
+<div class="books">
   $for(books_on_hold)$
-  <section class="book to-read">
+  <div class="book to-read">
     $partial("templates/book.html")$
-  </section>
+  </div>
   $endfor$
-  <hr />
-</section>
+</div>
+<hr />
 
-<section class="books">
-  <h2 id="to-read">To Read</h2>
+<h2 id="to-read">To Read</h2>
+<div class="books">
   $for(books_to_read)$
-  <section class="book to-read">
+  <div class="book to-read">
     $partial("templates/book.html")$
-  </section>
+  </div>
   $endfor$
-  <hr style="visibility: hidden; clear: both;" />
-</section>
+</div>
+<hr style="visibility: hidden; clear: both;" />
