@@ -244,13 +244,11 @@ body.article-page {
             border: none!important;
             page-break-inside: avoid;
         }
-        small {
+        pre.small {
             font-size: 0.76em;
-            pre {
-                white-space: pre-wrap;
-                code {
-                    overflow-x: hidden;
-                }
+            white-space: pre-wrap;
+            code {
+                overflow-x: hidden;
             }
         }
         .source {
