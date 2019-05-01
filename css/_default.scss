@@ -24,8 +24,6 @@ body {
     max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
-    border-left: 3px solid lighten($border-color, 28%);
-    border-right: 3px solid lighten($border-color, 28%);
     h1, h2, h3, h4, h5, h6 {
       font-family: $header-ff;
       color: darken($text-color, $amount: 10);
@@ -120,7 +118,7 @@ em {
   li {
     list-style: none;
     &:before {
-      content: "▸";
+      content: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2212%22%20viewBox%3D%220%200%2010%2012%22%3E%3Cpath%20d%3D%22M0%200v10l5-5-5-5z%22%20transform%3D%22translate(2)%22%20%2F%3E%3C%2Fsvg%3E");
       display: inline-block;
       margin-left: 1em;
     }

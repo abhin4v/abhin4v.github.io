@@ -1,6 +1,11 @@
 @import "default";
 @import "consts";
 
+body > main {
+  border-left: 3px solid lighten($border-color, 28%);
+  border-right: 3px solid lighten($border-color, 28%);
+}
+
 .books {
   display: grid;
   grid-template-columns: 50% 50%;
