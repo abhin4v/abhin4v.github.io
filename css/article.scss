@@ -128,6 +128,9 @@ article.post {
     font-size: 0.8em;
   }
   section.body {
+    h2 {
+      margin-top: 2em;
+    }
     h2, h3 {
       a {
         &.ref-link {
