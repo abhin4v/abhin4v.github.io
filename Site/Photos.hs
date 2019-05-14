@@ -1,5 +1,5 @@
 {-# LANGUAGE RecordWildCards, OverloadedStrings, TupleSections #-}
-module Site.Photos (photos) where
+module Site.Photos (photos, createThumbnails, photoFields) where
 
 import Control.Monad (forM_)
 import Control.Monad.IO.Class (liftIO)
@@ -104,8 +104,8 @@ createPhotoThumbnails thumbsDir photoPath = do
 
 photos :: String -> Rules ()
 photos env = do
-  scssDependencies <- makePatternDependency "photos/images/*.jpg"
-  rulesExtraDependencies [scssDependencies] $
+  imageDependencies <- makePatternDependency "photos/images/*.jpg"
+  rulesExtraDependencies [imageDependencies] $
     create ["photos.html"] $ do
       route indexHTMLRoute
       compile $ do
@@ -122,14 +122,17 @@ photos env = do
           >>= loadAndApplyTemplate "templates/default.html" ctx
           >>= relativizeUrls env
           >>= removeIndexHtml
+
+photoFields :: Context [String]
+photoFields =
+  mconcat [ photoField "hash" (takeBaseName . (!! 0))
+          , photoField "orig" (!! 0)
+          , photoField "small" (!! 1)
+          , photoField "medium" (!! 2)
+          , photoField "large" (!! 3)
+          , photoField "xlarge" (!! 4)
+          , photoField "padding" (show . calcPadding)
+          ]
   where
     photoField name f = field name (return . f . itemBody)
-    photoFields =
-        mconcat [ photoField "orig" (!! 0)
-                , photoField "small" (!! 1)
-                , photoField "medium" (!! 2)
-                , photoField "large" (!! 3)
-                , photoField "xlarge" (!! 4)
-                , photoField "padding" (show . calcPadding)
-                ]
     calcPadding ~(_:p:_) = let (w,h) = thumbDims p in w / h * 100

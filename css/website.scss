@@ -2,6 +2,7 @@
 @import "consts";
 @import "posts";
 @import "subscription";
+@import "photos";
 
 #home-posts {
     hr {
@@ -35,6 +36,12 @@
 }
 
 .website-page {
+  section.photos {
+    padding-bottom: 1rem;
+    a:active {
+      text-decoration: none;
+    }
+  }
   footer {
     border-top: none;
   }

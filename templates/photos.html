@@ -51,7 +51,20 @@
     return jQuery(reImgs);
   }
 
-  function setupFeatherlight() {
+  function navigateToPhotoHash(photos) {
+    var hash = window.location.hash;
+    if (hash !== "") {
+      hash = hash.substring(1);
+      photos.each(function() {
+        if (this.href.indexOf(hash) != -1) {
+          window.history.replaceState({}, "", window.location.pathname);
+          jQuery(this).click();
+        }
+      });
+    }
+  }
+
+  function setupPhotoGallery() {
     if (typeof jQuery !== 'undefined' && typeof loadStyleSheet !== 'undefined') {
       loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.css");
       loadStyleSheet("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.css");
@@ -59,21 +72,24 @@
       jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.min.js", function() {
         jQuery.getScript("https://cdnjs.cloudflare.com/ajax/libs/jquery-touch-events/2.0.0/jquery.mobile-events.min.js", function() {
           jQuery.getScript("https://cdn.jsdelivr.net/npm/featherlight@1.7.13/release/featherlight.gallery.min.js", function() {
-            getPhotos().featherlightGallery({
+            var photos = getPhotos();
+            photos.featherlightGallery({
               previousIcon: '«',
               nextIcon: '»',
               galleryFadeIn: 300,
               openSpeed: 300,
               loading: 'Loading ...'
             });
+
+            navigateToPhotoHash(photos);
           });
         });
       });
     } else {
-      window.setTimeout(setupFeatherlight, 500);
+      window.setTimeout(setupPhotoGallery, 500);
     }
   }
 
-  setupFeatherlight();
+  setupPhotoGallery();
 }());
 </script>

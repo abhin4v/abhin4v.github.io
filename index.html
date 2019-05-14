@@ -68,6 +68,32 @@ $endfor$
 </div>
 <p>Visit the <a href="/archive/">archive</a> for $more_posts$.</p>
 
+<hr>
+<h1 id="recent-photos">Random Photos</h1>
+
+<section class="photos">
+  <table>
+    <tr>
+    $for(photoCols)$
+    <td class="photocol">
+      $for(photos)$
+      <a href="/photos/#$hash$" class="img-link">
+        <div class="ratio-box" style="padding-bottom: $padding$%">
+          <picture class="photo">
+            <source srcset="/$xlarge$" media="(min-width: 1680px)">
+            <source srcset="/$large$" media="(min-width: 960px)">
+            <source srcset="/$medium$" media="(min-width: 640px)">
+            <img src="/$small$" alt="">
+          </picture>
+        </div>
+      </a>
+      $endfor$
+    </td>
+    $endfor$
+    </tr>
+  </table>
+</section>
+
 <div class="subscription-msg">
     <h3>Like the posts? Subscribe below to get future posts by email.</h3>
   $partial("templates/subscription.html")$
