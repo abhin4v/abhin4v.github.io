@@ -49,12 +49,14 @@ body {
     max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
-    padding: 0 1em;
-    text-align: right;
+    padding: 0 1rem;
     border-top: 1px solid $border-color;
     margin-top: 10px;
-    font-size: 0.8em;
-    clear: both;
+    #copy {
+      text-align: right;
+      font-size: 0.8em;
+      clear: both;
+    }
   }
 }
 h1, h2, h3, h4, h5, h6 {

@@ -1,14 +1,9 @@
 @import "consts";
 
-nav#topnav {
-  border-bottom: 1px solid $border-color;
+nav {
+  font-family: $header-ff;
   padding-bottom: 10px;
   padding-top: 10px;
-  max-width: 50rem;
-  margin-left: auto;
-  margin-right: auto;
-
-  left: 0px;
   background-color: $background-color;
 
   a, a:visited {
@@ -19,6 +14,14 @@ nav#topnav {
       color: $link-color;
     }
   }
+}
+
+nav#topnav {
+  border-bottom: 1px solid $border-color;
+  max-width: 50rem;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0px;
 
   .logo {
     font-weight: bold;
@@ -87,6 +90,10 @@ nav#topnav {
     #menu-toggle:checked ~ a {
       display: block;
     }
+  }
+
+  nav#bottomnav {
+    font-size: 0.9em;
   }
 }
 
