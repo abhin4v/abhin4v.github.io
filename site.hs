@@ -6,6 +6,7 @@ import Hakyll
 import Site.Activities
 import Site.Assets
 import Site.Collections
+import Site.Home
 import Site.Pages
 import Site.Photos
 import Site.Posts
@@ -25,6 +26,7 @@ main = do
     pages env
     posts tags env
     drafts draftTags env
+    home tags env
     collections tags env
     activities env
     readings env

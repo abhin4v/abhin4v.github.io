@@ -32,6 +32,7 @@ executable site
                   , random-shuffle
   other-modules:    Site.Activities
                   , Site.Assets
+                  , Site.Home
                   , Site.Collections
                   , Site.Comments
                   , Site.ERT
