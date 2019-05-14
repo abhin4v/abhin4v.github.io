@@ -137,6 +137,12 @@
     <script>
       document.documentElement.className = document.documentElement.className.replace("no-js","js");
 
+      jQuery("nav .links a").each(function() {
+        if (new URL(this.href).pathname === window.location.pathname) {
+          jQuery(this).css('font-weight', 'bold');
+        }
+      });
+
       function loadStyleSheet(src) {
         if (document.createStyleSheet){
           document.createStyleSheet(src);
