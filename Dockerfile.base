@@ -1,4 +1,4 @@
-FROM haskell:8.6.3
+FROM haskell:8.6.5
 
 WORKDIR /opt/abhinavsarkar.net
 ADD site.cabal stack.yaml ./
