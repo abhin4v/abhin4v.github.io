@@ -7,6 +7,7 @@ import Site.Activities
 import Site.Assets
 import Site.Collections
 import Site.Home
+import Site.Notes
 import Site.Pages
 import Site.Photos
 import Site.Posts
@@ -28,6 +29,7 @@ main = do
     drafts draftTags env
     home tags env
     collections tags env
+    notes env
     activities env
     readings env
     photos env

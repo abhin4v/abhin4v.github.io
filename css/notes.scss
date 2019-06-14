@@ -1,0 +1,13 @@
+@import "default";
+@import "consts";
+
+ul.fancy {
+  @include fancy-ul();
+}
+
+.notes {
+  time {
+    color: lighten($color: $text-color, $amount: 40%);
+    font-size: 0.9em;
+  }
+}

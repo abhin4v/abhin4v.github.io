@@ -32,11 +32,11 @@ executable site
                   , random-shuffle
   other-modules:    Site.Activities
                   , Site.Assets
-                  , Site.Home
                   , Site.Collections
                   , Site.Comments
                   , Site.ERT
-                  , Site.Webmentions
+                  , Site.Home
+                  , Site.Notes
                   , Site.Pages
                   , Site.Pandoc
                   , Site.Photos
@@ -48,5 +48,6 @@ executable site
                   , Site.Talks
                   , Site.TOC
                   , Site.Util
+                  , Site.Webmentions
   ghc-options:      -threaded -Wall -Wno-name-shadowing -Wno-type-defaults
   default-language: Haskell2010
