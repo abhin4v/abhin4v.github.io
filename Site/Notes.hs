@@ -2,7 +2,7 @@
 module Site.Notes where
 
 import Control.Exception (try, SomeException)
-import Control.Monad (forM)
+import Control.Monad (forM, void)
 import Data.List (sortOn)
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, iso8601DateFormat, formatTime)
@@ -47,6 +47,8 @@ notes env = do
                   constField "page_type" "notes" <>
                   siteContext
 
+        void $ saveLatestNotesSnapshot (take 3 notes')
+
         makeItem ""
           >>= loadAndApplyTemplate "templates/notes.html" ctx
           >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -59,3 +61,13 @@ notes env = do
               noteField "name" noteName <>
               noteField "date" (formatTime defaultTimeLocale "%b %e %Y" . noteDate) <>
               noteField "mdate" (formatTime defaultTimeLocale "%F" . noteDate)
+
+    saveLatestNotesSnapshot notes' = do
+      let ctx = listField "notes" noteCtx (mapM makeItem notes') <>
+                constField "title" "Recent Notes" <>
+                siteContext
+      makeItem ""
+        >>= loadAndApplyTemplate "templates/notes.html" ctx
+        >>= relativizeUrls env
+        >>= removeIndexHtml
+        >>= saveSnapshot "latest"

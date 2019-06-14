@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 module Site.Home where
 
 import Hakyll hiding (relativizeUrls)
@@ -8,14 +8,17 @@ import Site.Util
 
 home :: Tags -> String -> Rules ()
 home tags env = do
-  imageDependencies <- makePatternDependency "photos/images/*.jpg"
-  rulesExtraDependencies [imageDependencies] $
+  imagesDep <- makePatternDependency "photos/images/*.jpg"
+  notesDep <- makePatternDependency "notes.html"
+  rulesExtraDependencies [imagesDep, notesDep] $
     match "index.html" $ do
       route idRoute
       compile $ do
         let indexPostCount = 3
         allPosts <- loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
         posts <- take indexPostCount <$> recentFirst allPosts
+        latestNotes :: String <- loadSnapshotBody "notes.html" "latest"
+
         let morePostCount = length allPosts - indexPostCount
             morePostCountW = numToWord morePostCount
             morePosts = morePostCountW <> " more post" <> (if morePostCount == 1 then "" else "s")
@@ -29,6 +32,7 @@ home tags env = do
               constField "title" "Home"                <>
               constField "page_type" "website"         <>
               constField "more_posts" morePosts        <>
+              constField "notes" latestNotes           <>
               listField "photoCols"
                     (listFieldWith "photos" photoFields (mapM makeItem . itemBody))
                     (mapM makeItem thumbCols)          <>

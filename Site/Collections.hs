@@ -54,7 +54,7 @@ collections tags env = do
         posts <- groupPostsByYear =<< recentFirst =<< loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
         let archiveCtx = listField "posts" defaultContext (return posts) <>
                          tagCloudField "taglist" 100 200 (sortTagsBy caseInsensitiveTags tags) <>
-                         constField "title" "Archive" <>
+                         constField "title" "Post Archive" <>
                          constField "page_type" "archive" <>
                          siteContext
 
