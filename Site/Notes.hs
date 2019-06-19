@@ -33,6 +33,9 @@ getNotes sitemapURL =
           return $ Note name link date
       _ -> error "Impossible"
 
+indexNotesCount :: Int
+indexNotesCount = 5
+
 notes :: String -> Rules ()
 notes env = do
   anyDependency <- makePatternDependency "**"
@@ -47,7 +50,7 @@ notes env = do
                   constField "page_type" "notes" <>
                   siteContext
 
-        void $ saveLatestNotesSnapshot (take 3 notes')
+        void $ saveLatestNotesSnapshot (take indexNotesCount notes')
 
         makeItem ""
           >>= loadAndApplyTemplate "templates/notes.html" ctx
