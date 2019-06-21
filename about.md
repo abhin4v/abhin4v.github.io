@@ -39,6 +39,8 @@ It uses the [Hakyll] library as the base for static website generation, along wi
 
 The website is run using the [hastatic] server for [docker]. It is hosted on [Digital Ocean], behind [Cloudflare] for caching. Builds are done automatically using a self-hosted [Drone CI] instance.
 
+![CI pipeline of abhinavsarkar.net](https://notes.abhinavsarkar.net/files/site-pipeline/site.svg)
+
 ### Sitemap
 
 ::: {.fancy-ul}
