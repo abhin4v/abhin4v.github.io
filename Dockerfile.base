@@ -1,15 +1,16 @@
 FROM haskell:8.6.5
 
 WORKDIR /opt/abhinavsarkar.net
-ADD site.cabal stack.yaml ./
-ADD Site ./Site
+COPY site.cabal stack.yaml ./
+COPY Site ./Site
 
-RUN apt-get update && apt-get upgrade -y \
-    && apt-get install -y curl \
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl=7.52\* \
     && curl -sL https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
     && echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | tee /etc/apt/sources.list.d/google-chrome.list \
     && curl -sL https://deb.nodesource.com/setup_10.x | bash - \
-    && apt-get -yq --no-install-suggests --no-install-recommends --force-yes install google-chrome-stable nodejs jq libgd-dev \
+    && apt-get -yq --no-install-suggests --no-install-recommends --force-yes install google-chrome-stable=75\* nodejs=10.16\* jq=1.5\* libgd-dev=2.2\* \
     && rm -rf /var/lib/apt/lists/* \
     && npm init -y > /dev/null \
     && npm install --save chrome-headless-render-pdf@1.7.2 \
