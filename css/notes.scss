@@ -7,7 +7,10 @@ ul.fancy {
 
 .notes {
   time {
+    display: inline-block;
     color: lighten($color: $text-color, $amount: 40%);
     font-size: 0.9em;
+    min-width: 4.5em;
+    margin-left: 1em;
   }
 }
