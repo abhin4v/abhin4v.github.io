@@ -100,7 +100,9 @@ createPhotoThumbnails thumbsDir photoPath = do
     e -> liftIO $ putStrLn $ "Error: " ++ show e
   where
     sizes = map (\s -> (T.Size s s, Nothing)) thumbSizes
-    config = def { T.thumbnailSizes = sizes , T.reencodeOriginal = T.Never }
+    config = def { T.thumbnailSizes = sizes
+                 , T.reencodeOriginal = T.Never
+                 , T.maxFileSize = 10 * 1024 * 1024 }
 
 photos :: String -> Rules ()
 photos env = do
