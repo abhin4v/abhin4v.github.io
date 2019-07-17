@@ -53,7 +53,8 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
             constField "post_ert" ert <>
             constField "comment_count" commentCount <>
             listField "comments" siteContext (return comments) <>
-            boolField "comments_enabled" (const commentsEnabled)
+            boolField "comments_enabled" (const commentsEnabled) <>
+            boolField "live_reload" (const $ env == "DEV")
 
   let ctxWithMentions = case mentions of
         Nothing -> ctx
