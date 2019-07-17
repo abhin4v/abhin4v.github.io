@@ -11,11 +11,11 @@
         <meta name="twitter:card" content="summary">
         
         <meta name="twitter:creator" content="@abhin4v">
-        <meta name="twitter:title" content="Continuation Defunctionalization: Deriving Binary Tree Iterators">
+        <meta name="twitter:title" content="Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically">
 
         <meta property="og:url" content="https://abhinavsarkar.net/drafts/continuation-defunctionalization/">
         <meta property="og:type" content="article">
-        <meta property="og:title" content="Continuation Defunctionalization: Deriving Binary Tree Iterators">
+        <meta property="og:title" content="Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically">
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
@@ -32,7 +32,7 @@
         <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
         <meta name="HandheldFriendly" content="True">
 
-        <title>Continuation Defunctionalization: Deriving Binary Tree Iterators | abhinavsarkar.net</title>
+        <title>Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically | abhinavsarkar.net</title>
 
         <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
         <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
@@ -114,7 +114,7 @@
         <main role="main">
             <article itemscope itemtype="http://schema.org/Article" class="post">
     <header>
-        <h1 itemprop="name" id="#top">Continuation Defunctionalization: Deriving Binary Tree Iterators</h1>
+        <h1 itemprop="name" id="#top">Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically</h1>
     </header>
 
     <ul class="headers">
@@ -128,7 +128,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
         </svg>
-        A six minute read
+        A seven minute read
       </li>
       
       <li class="header post-download">
@@ -150,11 +150,11 @@
     </ul>
 
     <section itemprop="articleBody" class="body">
-        <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? And is there a way to derive these iterators mechanically from the simple traversal code? Let’s find out.</p>
+        <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? And is there a way to derive these iterators mechanically from the simple traversal functions? Let’s find out.</p>
 <!-- more -->
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#tree-traversals-and-iterations">Tree Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-solution">Recursive Solution</a></li></ol></nav>
-<h2 id="tree-traversals-and-iterations" data-track-content data-content-name="tree-traversals-and-iterations" data-content-piece="continuation-defunctionalization">Tree Traversals and Iterations<a href="#tree-traversals-and-iterations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>This is an example binary tree:</p>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li></ol></nav>
+<h2 id="traversals-and-iterations" data-track-content data-content-name="traversals-and-iterations" data-content-piece="continuation-defunctionalization">Traversals and Iterations<a href="#traversals-and-iterations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>This is a sample binary tree:</p>
 <pre class="plain"><code>          D
         /   \
        C      F
@@ -185,7 +185,7 @@
 </tbody>
 </table>
 </div>
-<p>The code for the recursive in-order traversal is very simple. Assuming a binary tree is represented with a <code>Tree</code> class like:</p>
+<p>The code for the recursive in-order traversal (traverse left child, then self, then right child) is very simple. Assuming a binary tree is represented with a <code>Tree</code> class like:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> Tree&lt;T&gt; {</a>
 <a class="sourceLine" id="cb2-2" title="2">  Tree&lt;T&gt; left;</a>
 <a class="sourceLine" id="cb2-3" title="3">  T content;</a>
@@ -239,8 +239,7 @@
 <a class="sourceLine" id="cb4-37" title="37">    }</a>
 <a class="sourceLine" id="cb4-38" title="38">  }</a>
 <a class="sourceLine" id="cb4-39" title="39">}</a></code></pre></div>
-<p>The iterator code uses a <code>Stack</code> to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and program flow to write this code and it is easy to get it wrong<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
-<p><a href="https://www.geeksforgeeks.org/iterative-preorder-traversal/" target="_blank" rel="noopener">Pre-order</a> and <a href="https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/" target="_blank" rel="noopener">Post-order</a> iterators are even more complicated. Is there a way to write the iterators starting from the recursive traversals by mechanically following some rules? There is indeed! Keep reading for details.</p>
+<p>The iterator code uses a <code>Stack</code> to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. <a href="https://www.geeksforgeeks.org/iterative-preorder-traversal/" target="_blank" rel="noopener">Pre-order</a> and <a href="https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/" target="_blank" rel="noopener">Post-order</a> iterators are even more complicated. Is there a way to write the iterators starting from the recursive traversals mechanically by following some rules? There is indeed! Keep reading for the details.</p>
 <h2 id="binary-tree" data-track-content data-content-name="binary-tree" data-content-piece="continuation-defunctionalization">Binary Tree<a href="#binary-tree" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s start with some setup code:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">import</span><span class="im"> java.util.Iterator;</span></a>
@@ -334,10 +333,10 @@
 <a class="sourceLine" id="cb6-58" title="58">  }</a>
 <a class="sourceLine" id="cb6-59" title="59">}</a></code></pre></div>
 <p>Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. <code>generate</code> function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.</p>
-<p>We also implement the <code>toString</code> method for the tree to create a string representation of the tree to help us in debugging.</p>
+<p>We also implement the <code>toString</code> method for the tree to create a string representation of the tree to help us in debugging. A sample run:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb7-1" title="1">Tree&lt;<span class="bu">String</span>&gt; tree = Tree.<span class="fu">generate</span>(<span class="dv">4</span>, () -&gt; Utils.<span class="fu">generateRandomAlphaString</span>(<span class="dv">2</span>), <span class="fl">0.</span><span class="dv">1</span>);</a>
 <a class="sourceLine" id="cb7-2" title="2"><span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(tree);</a></code></pre></div>
-<p>Sample output:</p>
+<p>Output:</p>
 <pre class="plain"><code>├ ji
 │├ r
 ││├ r
@@ -353,9 +352,9 @@
 ││├ si
 │││├ bt
 │││├ ee</code></pre>
-<h2 id="recursive-solution" data-track-content data-content-name="recursive-solution" data-content-piece="continuation-defunctionalization">Recursive Solution<a href="#recursive-solution" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>Credits first: this blog post and the code in it was inspired by <a href="http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
-<p>Let’s start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order. That means each node’s content is printed before its children’s.</p>
+<h2 id="recursive-traversal" data-track-content data-content-name="recursive-traversal" data-content-piece="continuation-defunctionalization">Recursive Traversal<a href="#recursive-traversal" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Credits first: this blog post and the code in it is inspired by <a href="http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
+<p>Let’s start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order — each node’s content is printed before its children’s.</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb9-1" title="1"><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</a>
 <a class="sourceLine" id="cb9-2" title="2">  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</a>
 <a class="sourceLine" id="cb9-3" title="3">    Utils.<span class="fu">printContent</span>(tree.<span class="fu">content</span>);</a>
@@ -363,8 +362,8 @@
 <a class="sourceLine" id="cb9-5" title="5">    <span class="fu">printRecursive</span>(tree.<span class="fu">right</span>);</a>
 <a class="sourceLine" id="cb9-6" title="6">  }</a>
 <a class="sourceLine" id="cb9-7" title="7">}</a></code></pre></div>
-<p>Short and sweet, simple and easy to understand. If the tree is not null, we print its content and then we recursively print the left and right child trees.</p>
-<p>First thing to do is to extract out the print action into a function parameter so that we can do different kinds of actions on the nodes:</p>
+<p>Short and sweet, simple and easy to understand. If the tree is not null, we print its content, then we recursively print the left and right child trees.</p>
+<p>First thing to do is to extract out the print action into a function argument so that we can do different kinds of actions on the nodes instead of just printing them:</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb10-1" title="1"><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateRecursive</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action) {</a>
 <a class="sourceLine" id="cb10-2" title="2">  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</a>
 <a class="sourceLine" id="cb10-3" title="3">    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</a>
@@ -372,9 +371,9 @@
 <a class="sourceLine" id="cb10-5" title="5">    <span class="fu">iterateRecursive</span>(tree.<span class="fu">right</span>, action);</a>
 <a class="sourceLine" id="cb10-6" title="6">  }</a>
 <a class="sourceLine" id="cb10-7" title="7">}</a></code></pre></div>
-<p>We use a <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/function/Consumer.html" target="_blank" rel="noopener"><code>Consumer</code></a> for the type of the actions. Since <code>Consumer</code> is a functional interface, we can pass lambdas in its place. We can call it like this:</p>
+<p>We use a <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/function/Consumer.html" target="_blank" rel="noopener"><code>Consumer</code></a> for the type of the action. Since <code>Consumer</code> is a functional interface, we can pass lambdas in its place. We can call it like this:</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb11-1" title="1"><span class="fu">iterateRecursive</span>(tree, Utils::printContent);</a></code></pre></div>
-<p>This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a <em>Continuation-passing style</em> recursion:</p>
+<p>This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a <em>Continuation-passing style</em> (CPS) recursion:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb12-1" title="1"><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateCPS</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, <span class="bu">Runnable</span> cont) {</a>
 <a class="sourceLine" id="cb12-2" title="2">  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</a>
 <a class="sourceLine" id="cb12-3" title="3">    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</a>
@@ -383,7 +382,32 @@
 <a class="sourceLine" id="cb12-6" title="6">    cont.<span class="fu">run</span>();</a>
 <a class="sourceLine" id="cb12-7" title="7">  }</a>
 <a class="sourceLine" id="cb12-8" title="8">}</a></code></pre></div>
-<p>So what is a <em>Continuation</em>?</p>
+<p>So what is <em>Continuation-passing style</em>?</p>
+<h2 id="continuations" data-track-content data-content-name="continuations" data-content-piece="continuation-defunctionalization">Continuations<a href="#continuations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>In the usual direct <a href="https://en.wikipedia.org/wiki/imperative_programming" target="_blank" rel="noopener">imperative programming</a> style, we write one statement after another, as a sequence of steps to execute. There is another way of thinking about it: after returning from executing one statement, the rest of the program — which can be thought of as a big statement itself — is run. In <em>Continuation-passing style</em>, this way is made explicit: each statement takes the rest of the program which comes after it as an argument, which it invokes explicitly. For example, if you have a program written in direct style like this:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb13-1" title="1"><span class="dt">static</span> <span class="dt">int</span> <span class="fu">start</span>(<span class="bu">String</span> s) {</a>
+<a class="sourceLine" id="cb13-2" title="2">  <span class="dt">int</span> a = <span class="fu">getSomething</span>(s);</a>
+<a class="sourceLine" id="cb13-3" title="3">  <span class="fu">doAnotherThing</span>(a);</a>
+<a class="sourceLine" id="cb13-4" title="4">  <span class="kw">return</span> a;</a>
+<a class="sourceLine" id="cb13-5" title="5">}</a></code></pre></div>
+<p>It can be converted into an equivalent CPS style program like this:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode java"><code class="sourceCode java"><a class="sourceLine" id="cb14-1" title="1"><span class="dt">static</span> <span class="dt">void</span> <span class="fu">startCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</a>
+<a class="sourceLine" id="cb14-2" title="2">  <span class="fu">getSomethingCPS</span>(s, (a) -&gt; {</a>
+<a class="sourceLine" id="cb14-3" title="3">    <span class="fu">doAnotherThingCPS</span>(a, () -&gt; {</a>
+<a class="sourceLine" id="cb14-4" title="4">      cont.<span class="fu">call</span>(a);</a>
+<a class="sourceLine" id="cb14-5" title="5">    });</a>
+<a class="sourceLine" id="cb14-6" title="6">  });</a>
+<a class="sourceLine" id="cb14-7" title="7">}</a>
+<a class="sourceLine" id="cb14-8" title="8"></a>
+<a class="sourceLine" id="cb14-9" title="9"><span class="dt">static</span> <span class="dt">void</span> <span class="fu">getSomethingCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</a>
+<a class="sourceLine" id="cb14-10" title="10">  cont.<span class="fu">call</span>(<span class="fu">getSomething</span>(s));</a>
+<a class="sourceLine" id="cb14-11" title="11">}</a>
+<a class="sourceLine" id="cb14-12" title="12"></a>
+<a class="sourceLine" id="cb14-13" title="13"><span class="dt">static</span> <span class="dt">void</span> <span class="fu">doAnotherThingCPS</span>(<span class="dt">int</span> a, <span class="bu">Runnable</span> cont) {</a>
+<a class="sourceLine" id="cb14-14" title="14">  <span class="fu">doAnotherThing</span>(a);</a>
+<a class="sourceLine" id="cb14-15" title="15">  cont.<span class="fu">run</span>();</a>
+<a class="sourceLine" id="cb14-16" title="16">}</a></code></pre></div>
+<p>We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an <code>int</code> value, the <code>startCPS</code> function now takes a lambda as an additional argument which it calls with the <code>int</code> value at the end of all the processing. These lambdas are known as <em>Continuations</em> because they <strong>continue</strong> the flow of the programs, and hence this style of writing programs is called the <em><a href="https://en.wikipedia.org/wiki/Continuation-passing_style" target="_blank" rel="noopener">Continuation-passing style</a></em>.</p>
 <section class="footnotes">
 <hr />
 <ol>
