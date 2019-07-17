@@ -1,5 +1,5 @@
 ---
-title: "Continuation Defunctionalization: Deriving Binary Tree Iterators"
+title: "Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically"
 date: 2019-08-17
 description: Deriving tree iterators from tree traversals using Continuation Defunctionalization.
 tags: java, programming, algorithm
@@ -7,15 +7,15 @@ author: Abhinav Sarkar
 toc: right
 ---
 
-Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? And is there a way to derive these iterators mechanically from the simple traversal code? Let's find out.
+Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? And is there a way to derive these iterators mechanically from the simple traversal functions? Let's find out.
 
 <!-- more -->
 
 * toc
 
-## Tree Traversals and Iterations
+## Traversals and Iterations
 
-This is an example binary tree:
+This is a sample binary tree:
 
 ```plain
           D
@@ -33,7 +33,7 @@ in-order    ACBDEFG
 pre-order   DCABFEG
 post-order  ABCEGFD
 
-The code for the recursive in-order traversal is very simple. Assuming a binary tree is represented with a `Tree` class like:
+The code for the recursive in-order traversal (traverse left child, then self, then right child) is very simple. Assuming a binary tree is represented with a `Tree` class like:
 
 ```java
 class Tree<T> {
@@ -99,9 +99,7 @@ class Main {
 }
 ```
 
-The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and program flow to write this code and it is easy to get it wrong[^int-ext-iterators].
-
-[Pre-order] and [Post-order] iterators are even more complicated. Is there a way to write the iterators starting from the recursive traversals by mechanically following some rules? There is indeed! Keep reading for details.
+The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to write the iterators starting from the recursive traversals mechanically by following some rules? There is indeed! Keep reading for the details.
 
 ## Binary Tree
 
@@ -206,14 +204,14 @@ class Tree<T> {
 
 Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. `generate` function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.
 
-We also implement the `toString` method for the tree to create a string representation of the tree to help us in debugging.
+We also implement the `toString` method for the tree to create a string representation of the tree to help us in debugging. A sample run:
 
 ```java
 Tree<String> tree = Tree.generate(4, () -> Utils.generateRandomAlphaString(2), 0.1);
 System.out.println(tree);
 ```
 
-Sample output:
+Output:
 
 ```plain
 ├ ji
@@ -233,11 +231,11 @@ Sample output:
 │││├ ee
 ```
 
-## Recursive Solution
+## Recursive Traversal
 
-Credits first: this blog post and the code in it was inspired by [The Best Refactoring You've Never Heard Of][2] article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I've chosen to implement pre-order and post-order iterators.
+Credits first: this blog post and the code in it is inspired by [The Best Refactoring You've Never Heard Of][2] article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I've chosen to implement pre-order and post-order iterators.
 
-Let's start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order. That means each node's content is printed before its children's.
+Let's start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order — each node's content is printed before its children's.
 
 ```java
 static <T> void printRecursive(Tree<T> tree) {
@@ -249,9 +247,9 @@ static <T> void printRecursive(Tree<T> tree) {
 }
 ```
 
-Short and sweet, simple and easy to understand. If the tree is not null, we print its content and then we recursively print the left and right child trees.
+Short and sweet, simple and easy to understand. If the tree is not null, we print its content, then we recursively print the left and right child trees.
 
-First thing to do is to extract out the print action into a function parameter so that we can do different kinds of actions on the nodes:
+First thing to do is to extract out the print action into a function argument so that we can do different kinds of actions on the nodes instead of just printing them:
 
 ```java
 static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
@@ -263,13 +261,13 @@ static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
 }
 ```
 
-We use a [`Consumer`] for the type of the actions. Since `Consumer` is a functional interface, we can pass lambdas in its place. We can call it like this:
+We use a [`Consumer`] for the type of the action. Since `Consumer` is a functional interface, we can pass lambdas in its place. We can call it like this:
 
 ```java
 iterateRecursive(tree, Utils::printContent);
 ```
 
-This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a _Continuation-passing style_ recursion:
+This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a _Continuation-passing style_ (CPS) recursion:
 
 ```java
 static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
@@ -282,7 +280,44 @@ static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
 }
 ```
 
-So what is a _Continuation_?
+So what is _Continuation-passing style_?
+
+## Continuations
+
+In the usual direct [imperative programming]{.w} style, we write one statement after another, as a sequence of steps to execute. There is another way of thinking about it: after returning from executing one statement, the rest of the program — which can be thought of as a big statement itself — is run. In _Continuation-passing style_, this way is made explicit: each statement takes the rest of the program which comes after it as an argument, which it invokes explicitly. For example, if you have a program written in direct style like this:
+
+```java
+static int start(String s) {
+  int a = getSomething(s);
+  doAnotherThing(a);
+  return a;
+}
+```
+
+It can be converted into an equivalent CPS style program like this:
+
+```java
+static void startCPS(String s, Callable<Integer> cont) {
+  getSomethingCPS(s, (a) -> {
+    doAnotherThingCPS(a, () -> {
+      cont.call(a);
+    });
+  });
+}
+
+static void getSomethingCPS(String s, Callable<Integer> cont) {
+  cont.call(getSomething(s));
+}
+
+static void doAnotherThingCPS(int a, Runnable cont) {
+  doAnotherThing(a);
+  cont.run();
+}
+```
+
+We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an `int` value, the `startCPS` function now takes a lambda as an additional argument which it calls with the `int` value at the end of all the processing. These lambdas are known as _Continuations_ because they **continue** the flow of the programs, and hence this style of writing programs is called the _[Continuation-passing style]{.w}_.
+
+
 
 [^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
 
