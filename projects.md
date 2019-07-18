@@ -5,25 +5,25 @@ page_type: projects
 # Projects
 
 [abhin4v.github.io]
-: Source for this website [abhinavsarkar.net] _haskell_
+: The source for this website [abhinavsarkar.net] _haskell_
 
 [precis]
 : A minimal note taking app build over Github Pages _bash_
 
 [hastatic]
-: hastatic is a tiny static content web server for Docker _haskell_ _docker_
+: A tiny static content web server for Docker _haskell_ _docker_
 
 [ringo]
-: Tool to transform OLTP database schemas to OLAP database schemas automatically _haskell_
+: A tool to transform OLTP database schemas to OLAP database schemas _haskell_
 
 [purescript-amqp]
-: AMQP client _purescript_
+: An AMQP client _purescript_
 
 [purescript-metrics]
 : A metrics library _purescript_
 
 [hircarra]
-: Easy to use and extensible library to write IRC bots _haskell_
+: An easy to use and extensible library to write IRC bots _haskell_
 
 [hasdoku]
 : A fast sudoku solver _haskell_
@@ -32,10 +32,10 @@ page_type: projects
 : A simple multi-threaded chat server _haskell_
 
 [space]
-: Setup files for my VPS _docker_
+: The setup files for my VPS _docker_
 
 [frpong]
-: Gravity Pong: A Pong game _clojurescript_
+: Gravity Pong: A Pong game in browser with a twist _clojurescript_
 
 [hs-json-parser]
 : A simple JSON parser written from scratch _haskell_
@@ -86,8 +86,8 @@ page_type: projects
 [irc-search-bot]: https://github.com/abhin4v/irc-search-bot
 [marvin]: https://github.com/abhin4v/marvin
 [clj_twitter_feelings]: https://github.com/abhin4v/clj_twitter_feelings
-[rubyquiz.com]: rubyquiz.com
-[adventofcode.com/2018]: adventofcode.com/2018
+[rubyquiz.com]: http://rubyquiz.com
+[adventofcode.com/2018]: https://adventofcode.com/2018/about
 [algorist]: https://code.abhinavsarkar.net/abhin4v/algorist
 [hasdoku]: https://code.abhinavsarkar.net/abhin4v/hasdoku
 [abhinavsarkar.net]: https://abhinavsarkar.net
