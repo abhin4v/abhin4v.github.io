@@ -52,8 +52,11 @@ page_type: projects
 [russell-norvig-ai-problems]
 : Solutions of problems from the "AI - A modern approach" book _haskell_
 
+[digg-sidebar]
+: A Firefox extension to shows the Digg stories in real time in sidebar _firefox_
+
 [clj_twitter_feelings]
-: Shows how people on twitter are feeling, in real-time. _clojure_
+: Shows how people on twitter are feeling, in real-time _clojure_
 
 [irc-search-bot]
 : An IRC search bot _clojure_
@@ -91,3 +94,4 @@ page_type: projects
 [algorist]: https://code.abhinavsarkar.net/abhin4v/algorist
 [hasdoku]: https://code.abhinavsarkar.net/abhin4v/hasdoku
 [abhinavsarkar.net]: https://abhinavsarkar.net
+[digg-sidebar]: https://code.abhinavsarkar.net/abhin4v/digg-sidebar
