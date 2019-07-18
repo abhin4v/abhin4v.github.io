@@ -4,71 +4,73 @@ page_type: projects
 ---
 # Projects
 
-[abhin4v.github.io]
-: The source for this website [abhinavsarkar.net] _haskell_
+[abhin4v.github.io] _haskell_
+: The source for this website [abhinavsarkar.net]
 
-[precis]
-: A minimal note taking app build over Github Pages _bash_
+[precis] _bash_
+: A minimal note taking app build over Github Pages
 
-[hastatic]
-: A tiny static content web server for Docker _haskell_ _docker_
+[hastatic] _haskell_ _docker_
+: A tiny static content web server for Docker
 
-[ringo]
-: A tool to transform OLTP database schemas to OLAP database schemas _haskell_
+[ringo]  _haskell_
+: A tool to transform OLTP database schemas to OLAP database schemas
 
-[purescript-amqp]
-: An AMQP client _purescript_
+[purescript-amqp]  _purescript_
+: An AMQP client
 
-[purescript-metrics]
-: A metrics library _purescript_
+[purescript-metrics]  _purescript_
+: A metrics library
 
-[hircarra]
-: An easy to use and extensible library to write IRC bots _haskell_
+[hircarra]  _haskell_
+: An easy to use and extensible library to write IRC bots
 
-[hasdoku]
-: A fast sudoku solver _haskell_
+[hasdoku]  _haskell_
+: A fast sudoku solver
 
-[link]
-: A simple multi-threaded chat server _haskell_
+[link]  _haskell_
+: A simple multi-threaded chat server
 
-[space]
-: The setup files for my VPS _docker_
+[space]  _docker_
+: The setup files for my VPS
 
-[frpong]
-: Gravity Pong: A Pong game in browser with a twist _clojurescript_
+[frpong]  _clojurescript_
+: Gravity Pong: A Pong game in browser with a twist
 
-[hs-json-parser]
-: A simple JSON parser written from scratch _haskell_
+[hs-json-parser]  _haskell_
+: A simple JSON parser written from scratch
 
-[rubyquiz]
-: Programming problems from [rubyquiz.com] _haskell_
+[rubyquiz]  _haskell_
+: Programming problems from [rubyquiz.com]
 
-[aoc18]
-: Solutions for [adventofcode.com/2018] _haskell_
+[aoc18]  _haskell_
+: Solutions for [adventofcode.com/2018]
 
-[algorist]
-: Solutions for the exercises in the book "The Algorithm Design Manual" _java_
+[algorist]  _java_
+: Solutions for the exercises in the book "The Algorithm Design Manual"
 
-[russell-norvig-ai-problems]
-: Solutions of problems from the "AI - A modern approach" book _haskell_
+[russell-norvig-ai-problems]  _haskell_
+: Solutions of problems from the "AI - A modern approach" book
 
-[digg-sidebar]
-: A Firefox extension to shows the Digg stories in real time in sidebar _firefox_
+[digg-sidebar]  _firefox_
+: A Firefox extension to shows the Digg stories in real time in sidebar
 
-[clj_twitter_feelings]
-: Shows how people on twitter are feeling, in real-time _clojure_
+[clj_twitter_feelings] _clojure_
+: Shows how people on twitter are feeling, in real-time
 
-[irc-search-bot]
-: An IRC search bot _clojure_
+[irc-search-bot] _clojure_
+: An IRC search bot
 
-[irc-search]
-: A search engine for IRC logs based on Lucene _scala_
+[irc-search] _scala_
+: A search engine for IRC logs based on Lucene
 
-[marvin]
-: An IRC Zeitgeist bot in _clojure_
+[marvin] _clojure_
+: An IRC Zeitgeist bot
 
-[python-lastfm]
-: An interface to the last.fm web services API _python_
+[python-lastfm] _python_
+: An interface to the last.fm web services API
+
+<script src="/js/projects.js"></script>
 
 [abhin4v.github.io]: https://github.com/abhin4v/abhin4v.github.io
 [hastatic]: https://github.com/abhin4v/hastatic
