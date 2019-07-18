@@ -16,6 +16,9 @@ pages env = do
   -- now page
   page "now" "now.md" env
 
+  -- projects page
+  page "projects" "projects.md" env
+
 page :: String -> Identifier -> String -> Rules ()
 page pageName pageFile env =
   match (fromList [pageFile]) $ do

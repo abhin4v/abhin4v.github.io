@@ -4,7 +4,7 @@ page_type: profile
 ---
 # About Me
 
-I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, India. I work at [Flipkart] as Principal Engineer. I've previously worked at [nilenso], [Capillary Technologies] and [FICO]. When not making software, I read books, play drums, listen to music and ride my bike.
+I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, India. I currently work at [Flipkart]. I've previously worked at [nilenso], [Capillary Technologies] and [FICO]. When not making software, I read books, play drums, listen to music and ride my bike.
 
 Here are some talks and workshops I have presented in various conferences:
 
@@ -16,6 +16,8 @@ Here are some talks and workshops I have presented in various conferences:
 - [A Slow (and Hopefully Heedful) Ride Through ReactJS and Flux][1] - JSFoo 2015, Bangalore
 - [A Quick (and Hopefully Painless) Ride Through ReactJS][2] - Meta Refresh 2015, Bangalore
 :::
+
+You can see some projects I've done [here](/projects/).
 
 You can find more about me on the internet:
 
@@ -52,6 +54,7 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
   - [Posts](/archive/)
   - [Notes](/notes/)
 - Other
+  - [Projects](/projects/)
   - [Activities](/activities/)
   - [Photos](/photos/)
   - [Readings](/readings/)
