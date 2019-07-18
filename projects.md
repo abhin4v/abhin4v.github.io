@@ -46,7 +46,7 @@ page_type: projects
 [aoc18]
 : Solutions for [adventofcode.com/2018] _haskell_
 
-[algorist]:
+[algorist]
 : Solutions for the exercises in the book "The Algorithm Design Manual" _java_
 
 [russell-norvig-ai-problems]
