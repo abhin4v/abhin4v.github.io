@@ -1,11 +1,20 @@
 @import "default";
 
-dt em {
-  font-style: normal;
-  background: #e6e6fa;
-  padding: 0.1em 0.3em;
-  border-radius: 0.3em;
-  font-size: 0.75em;
-  font-family: "Noto Serif",georgia,serif;
-  cursor: pointer;
+.projects-page main {
+  dt {
+    em {
+      font-style: normal;
+      background: #e6e6fa;
+      padding: 0.1em 0.3em;
+      border-radius: 0.3em;
+      font-size: 0.75em;
+      font-family: "Noto Serif", georgia, serif;
+      cursor: pointer;
+    }
+
+    a {
+      font-family: Lato, sans-serif;
+      font-weight: bold;
+    }
+  }
 }
