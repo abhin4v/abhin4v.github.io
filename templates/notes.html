@@ -2,6 +2,10 @@
 
 <ul class="fancy notes">
   $for(notes)$
-  <li><time datetime="$mdate$">$date$</time> <a href="$link$">$name$</a></li>
+  <li>
+    <time datetime="$mdate$">$date$</time>
+    <a href="$link$">$name$</a>
+    $for(tags)$<em><a href="//notes.abhinavsarkar.net/tags/$tag$">$tag$</a></em>$endfor$
+  </li>
   $endfor$
 </ul>

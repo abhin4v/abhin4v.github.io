@@ -16,6 +16,7 @@ import qualified Text.Atom.Feed as Atom
 data Note = Note { noteName :: String
                  , noteLink :: String
                  , noteDate :: LocalTime
+                 , noteTags :: [String]
                  }
 
 getNotes :: String -> IO [Note]
@@ -30,7 +31,8 @@ getNotes sitemapURL =
           date <- parseTimeM True defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%S+00:00")) $ T.unpack $ Atom.entryUpdated e
           let name = Atom.txtToString $ Atom.entryTitle e
               link = T.unpack $ Atom.linkHref $ head $ Atom.entryLinks e
-          return $ Note name link date
+              tags = map (T.unpack . Atom.catTerm) $ Atom.entryCategories e
+          return $ Note name link date tags
       _ -> error "Impossible"
 
 indexNotesCount :: Int
@@ -63,7 +65,10 @@ notes env = do
     noteCtx = noteField "link" noteLink <>
               noteField "name" noteName <>
               noteField "date" (formatTime defaultTimeLocale "%b %e %Y" . noteDate) <>
-              noteField "mdate" (formatTime defaultTimeLocale "%F" . noteDate)
+              noteField "mdate" (formatTime defaultTimeLocale "%F" . noteDate) <>
+              listFieldWith "tags" tagCtx (mapM makeItem . noteTags . itemBody)
+
+    tagCtx = field "tag" (return . itemBody)
 
     saveLatestNotesSnapshot notes' = do
       let ctx = listField "notes" noteCtx (mapM makeItem notes') <>

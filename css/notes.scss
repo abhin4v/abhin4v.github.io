@@ -10,7 +10,26 @@ ul.fancy {
     display: inline-block;
     color: lighten($color: $text-color, $amount: 40%);
     font-size: 0.9em;
-    min-width: 4.5em;
-    margin-left: 1em;
+    min-width: 4em;
+    margin-left: 0.5em;
+  }
+  li {
+    line-height: 1.6em;
+    em {
+      font-style: normal;
+      background: #e6e6fa;
+      padding: 0.1em 0.3em;
+      border-radius: 0.3em;
+      font-size: 0.75em;
+      font-family: "Noto Serif", georgia, serif;
+      margin: 0 0.2em;
+      white-space: nowrap;
+      a {
+        color: $text-color;
+        &:hover {
+          color: inherit;
+        }
+      }
+    }
   }
 }
