@@ -2,181 +2,181 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://abhinavsarkar.net/about/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/activities/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/archive/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/notes/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/now/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/photos/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-1/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-2/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-3/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/ps-simple-rest-service-2/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/posts/ps-simple-rest-service/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/projects/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/readings/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/slides/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/slides/clojure-concurrency-you/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/REST/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/haskell/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/nilenso/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/programming/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/purescript/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/puzzle/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/tags/sudoku/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/talks/</loc>
-    <lastmod>2019-07-24T06:50:50Z</lastmod>
+    <lastmod>2019-07-29T05:58:25Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/talks/clojure-concurrency-you/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/talks/intro-to-conc-in-haskell/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/talks/many-ways-to-concur/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://abhinavsarkar.net/talks/moving-people-with-clojure/</loc>
-    <lastmod>2019-07-24T06:49:21Z</lastmod>
+    <lastmod>2019-07-29T05:56:48Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
