@@ -1,5 +1,5 @@
 ---
-title: "Continuation Defunctionalization: Deriving Binary Tree Iterators Mechanically"
+title: "Mechanically Deriving Binary Tree Iterators with Continuation Defunctionalization"
 date: 2019-08-17
 description: Deriving tree iterators from tree traversals using Continuation Defunctionalization.
 tags: java, programming, algorithm
@@ -7,7 +7,7 @@ author: Abhinav Sarkar
 toc: right
 ---
 
-Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? And is there a way to derive these iterators mechanically from the simple traversal functions? Let's find out.
+Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? And is there a way to mechanically derive these iterators from the simple traversal functions? Let's find out.
 
 <!-- more -->
 
@@ -25,7 +25,7 @@ This is a sample binary tree:
      A   B  E   G
 ```
 
-Different traversals will yield different sequences of this tree:
+Different traversals of this tree will yield different sequences of elements:
 
 Traversal   Output
 ----------  -------
@@ -55,7 +55,7 @@ static <T> void printRecursive(Tree<T> tree) {
 }
 ```
 
-But the code for an iterator which iterates a tree in in-order is much more complicated:
+But the code for an iterator which iterates over a tree in in-order is much more complicated:
 
 ```java
 class InOrderIterator<T> implements Iterator<T> {
@@ -99,7 +99,7 @@ class Main {
 }
 ```
 
-The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to write the iterators starting from the recursive traversals mechanically by following some rules? There is indeed! Keep reading for the details.
+The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading for details.
 
 ## Binary Tree
 
@@ -202,7 +202,7 @@ class Tree<T> {
 }
 ```
 
-Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. `generate` function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.
+Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. The `generate` function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.
 
 We also implement the `toString` method for the tree to create a string representation of the tree to help us in debugging. A sample run:
 
@@ -213,22 +213,22 @@ System.out.println(tree);
 
 Output:
 
-```plain
-├ ji
-│├ r
-││├ r
-│││├ c
-│││├ ki
-││├ vf
-│││├ ti
+```{.plain .low-line-height}
+├ r
+│├ j
+││├ x
+│││├ e
+│││├ m
+││├ vz
+│││├ g
 ││├ <NULL>
-│├ d
-││├ dg
-│││├ eo
-│││├ x
-││├ si
-│││├ bt
-│││├ ee
+│├ l
+││├ b
+│││├ qc
+│││├ g
+││├ rp
+│││├ d
+│││├ o
 ```
 
 ## Recursive Traversal
@@ -245,6 +245,9 @@ static <T> void printRecursive(Tree<T> tree) {
     printRecursive(tree.right);
   }
 }
+
+printRecursive(tree);
+// r j x e m vz g l b qc g rp d o
 ```
 
 Short and sweet, simple and easy to understand. If the tree is not null, we print its content, then we recursively print the left and right child trees.
@@ -261,10 +264,11 @@ static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
 }
 ```
 
-We use a [`Consumer`] for the type of the action. Since `Consumer` is a functional interface, we can pass lambdas in its place. We can call it like this:
+We use [`Consumer`] for the type of the action. Since `Consumer` is a functional interface, we can pass lambdas in its place. We can call it like this:
 
 ```java
 iterateRecursive(tree, Utils::printContent);
+// r j x e m vz g l b qc g rp d o
 ```
 
 This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a _Continuation-passing style_ (CPS) recursion:
@@ -321,11 +325,11 @@ We see how each function call takes the rest of the program after it as a lambda
 
 [^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
 
-[1]: https://en.wikipedia.org/wiki/Tree_traversal
+[1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
 [Java-style iterators]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html
-[Pre-order]: https://www.geeksforgeeks.org/iterative-preorder-traversal/
-[Post-order]: https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/
+[Pre-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/
+[Post-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/
 [Internal Iterators]: https://en.wikipedia.org/wiki/Iterator#Internal_Iterators
 [External Iterators]: https://en.wikipedia.org/wiki/Iterator#External_iterators_and_the_iterator_pattern
 [`Consumer`]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/function/Consumer.html
