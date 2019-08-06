@@ -30,6 +30,7 @@ executable site
                   , data-default
                   , resourcet
                   , random-shuffle
+                  , pandoc-emphasize-code
   other-modules:    Site.Activities
                   , Site.Assets
                   , Site.Collections

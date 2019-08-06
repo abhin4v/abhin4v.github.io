@@ -33,6 +33,13 @@ packages:
   original:
     hackage: lrucache-1.2.0.1@sha256:18fc3d7052012c7ab3cd395160f34b53c5e1ec5379cc45185baf35b90ffadc2e
 - completed:
+    hackage: pandoc-emphasize-code-0.2.4@sha256:1d5fda15f841b701aefab9504eaa39dd64995d66f65ef806c5e432f758380018,2941
+    pantry-tree:
+      size: 1507
+      sha256: c4a151c17e8ffbfe4c76ac7b84ad8789bd990d7e67efd9d8ce748ab0d05b66b9
+  original:
+    hackage: pandoc-emphasize-code-0.2.4@sha256:1d5fda15f841b701aefab9504eaa39dd64995d66f65ef806c5e432f758380018,2941
+- completed:
     size: 485797
     url: https://github.com/abhin4v/thumbnail-plus/archive/fc10600d3af19ccce7c69416e2ec33143faa4d37.zip
     cabal-file:

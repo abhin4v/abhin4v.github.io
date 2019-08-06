@@ -191,3 +191,4 @@ postContentTransforms postSlug alignment =
   . tableOfContents alignment
   . walk blankTargetLinks
   . walk expandWikiLinks
+  . walk emphasizeCode

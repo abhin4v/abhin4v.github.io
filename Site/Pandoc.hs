@@ -3,6 +3,12 @@ module Site.Pandoc where
 import Data.Char (isSpace)
 import Data.List ((\\))
 import Text.Pandoc.Definition
+import qualified Data.Text as Text
+import qualified Text.Pandoc.Filter.EmphasizeCode.Parser as EC
+import qualified Text.Pandoc.Filter.EmphasizeCode.Chunking as EC
+import qualified Text.Pandoc.Filter.EmphasizeCode.Range as EC
+import qualified Text.Pandoc.Filter.EmphasizeCode.Renderable as EC
+import qualified Text.Pandoc.Filter.EmphasizeCode.Html as EC
 
 blankTargetLinks :: Inline -> Inline
 blankTargetLinks (Link (ident, classes, props) children (url, title)) =
@@ -77,3 +83,16 @@ expandWikiLinks el = case el of
     inlineToString SoftBreak = " "
     inlineToString LineBreak = " "
     inlineToString _ = ""
+
+-- | A Pandoc filter that emphasizes code blocks.
+emphasizeCode :: Block -> Block
+emphasizeCode cb@(CodeBlock (id', classes, attrs) contents) =
+  case lookupRanges attrs >>= (EC.runParser . EC.parseRanges) of
+    Just (Right ranges) ->
+      EC.renderEmphasized (EC.Html EC.Mark)
+        (id', classes, filter (\(k, _) -> k /= "emphasize") attrs)
+        $ EC.emphasizeRanges (EC.splitRanges ranges) (Text.pack contents)
+    _ -> cb
+  where
+    lookupRanges attrs = Text.pack <$> lookup "emphasize" attrs
+emphasizeCode x = x

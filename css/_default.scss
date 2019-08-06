@@ -80,6 +80,11 @@ code {
 pre {
   code {
     display: block;
+    mark {
+      background-color: lighten($color: $link-color, $amount: 33%);
+      color: inherit;
+      padding: 0.3em 0;
+    }
   }
 }
 menu {
