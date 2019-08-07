@@ -97,6 +97,9 @@ nav#topnav {
     a {
       padding: 0 0.1em;
     }
+    @media print {
+      display: none!important;
+    }
   }
 }
 

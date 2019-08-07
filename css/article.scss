@@ -109,6 +109,7 @@ article.post {
     a.footnote-back {
       background-image: none !important;
     }
+    page-break-before: always;
   }
   .scrollable-table {
     overflow-x: auto;
