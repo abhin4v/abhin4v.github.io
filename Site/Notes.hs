@@ -4,6 +4,7 @@ module Site.Notes where
 import Control.Exception (try, SomeException)
 import Control.Monad (forM, void)
 import Data.List (sortOn)
+import qualified Data.Ord as Ord
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, iso8601DateFormat, formatTime)
 import Hakyll hiding (relativizeUrls)
@@ -26,7 +27,7 @@ getNotes sitemapURL =
     Right resp -> case parseFeedSource $ getResponseBody resp of
       Nothing -> return []
       Just (AtomFeed Atom.Feed {..}) -> do
-        let entries = reverse $ sortOn Atom.entryUpdated $ feedEntries
+        let entries = sortOn (Ord.Down . Atom.entryUpdated) feedEntries
         forM entries $ \e -> do
           date <- parseTimeM True defaultTimeLocale (iso8601DateFormat (Just "%H:%M:%S+00:00")) $ T.unpack $ Atom.entryUpdated e
           let name = Atom.txtToString $ Atom.entryTitle e

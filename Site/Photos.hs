@@ -1,4 +1,4 @@
-{-# LANGUAGE RecordWildCards, OverloadedStrings, TupleSections #-}
+{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
 module Site.Photos (photos, createThumbnails, photoFields) where
 
 import Control.Monad (forM_)

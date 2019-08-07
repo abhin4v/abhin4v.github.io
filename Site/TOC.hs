@@ -36,9 +36,7 @@ removeTOCMarker x = x
 
 collectHeaders :: Block -> [Block]
 collectHeaders header@(Header _ (_, classes, _) _) =
-  if "notoc" `elem` classes
-    then []
-    else [header]
+  [header | "notoc" `notElem` classes]
 collectHeaders _ = []
 
 groupByHierarchy :: [Block] -> Forest Block

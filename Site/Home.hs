@@ -24,8 +24,8 @@ home tags env = do
             morePosts = morePostCountW <> " more post" <> (if morePostCount == 1 then "" else "s")
 
         thumbCols <- unsafeCompiler
-                     $ fmap (map (take 3))
-                     $ createThumbnails "photos/images" "photos/thumbs"
+                     $ map (take 3)
+                     <$> createThumbnails "photos/images" "photos/thumbs"
 
         let indexCtx =
               listField "posts" postCtx (return posts) <>
