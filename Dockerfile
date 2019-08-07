@@ -11,7 +11,7 @@ ENV ENV=CI
 ADD . .
 RUN set -xe \
     && echo "127.0.0.1	abhinavsarkar.net" >> /etc/hosts \
-    && stack --no-terminal build --fast -j2 \
+    && stack --no-terminal build --flag hakyll:-previewServer --flag hakyll:-watchServer --flag hakyll:-checkExternal --fast -j2 \
     && cd _site \
     && git checkout master \
     && git pull origin master \
