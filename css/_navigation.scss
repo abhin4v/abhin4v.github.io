@@ -97,9 +97,6 @@ nav#topnav {
     a {
       padding: 0 0.1em;
     }
-    @media print {
-      display: none!important;
-    }
   }
 }
 
@@ -111,5 +108,8 @@ nav#topnav {
     .links {
       display: none;
     }
+  }
+  nav#bottomnav {
+    display: none!important;
   }
 }
