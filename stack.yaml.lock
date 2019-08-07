@@ -55,7 +55,7 @@ packages:
     url: https://github.com/abhin4v/thumbnail-plus/archive/fc10600d3af19ccce7c69416e2ec33143faa4d37.zip
 snapshots:
 - completed:
-    size: 498186
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/13/22.yaml
-    sha256: d4f07dc3d5658260c2fe34266ad7618f6c84d34decf559c9c786ac1cfccf4e7b
-  original: lts-13.22
+    size: 523443
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/0.yaml
+    sha256: 283773e7120f5446d961eab35ea95c9af9c24187cc178537bd29273200a05171
+  original: lts-14.0
