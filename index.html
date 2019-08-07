@@ -303,7 +303,7 @@
     <section class="body">
       
         <p><a href="https://en.wikipedia.org/wiki/Sudoku" target="_blank" rel="noopener">Sudoku</a> is a number placement puzzle. It consists of a 9x9 grid which is to be filled with digits from 1 to 9. Some of the cells of the grid come pre-filled and the player has to fill the rest.</p>
-<p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language. It is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell. We’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>.</p>
+<p><a href="https://www.haskell.org/" target="_blank" rel="noopener">Haskell</a> is a purely functional programming language. It is a good choice to solve Sudoku given the problem’s <a href="https://en.wikipedia.org/wiki/Combinatorics" target="_blank" rel="noopener">combinatorial</a> nature. The aim of this series of posts is to write a <strong>fast</strong> Sudoku solver in Haskell. We’ll focus on both implementing the solution and making it efficient, step-by-step, starting with a slow but simple solution in this post<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
 
       
     </section>
@@ -325,6 +325,40 @@
     
     <td class="photocol">
       
+      <a href="//abhinavsarkar.net/photos/#fba88b926bab55be2a8cd6a3e30219bb" class="img-link">
+        <div class="ratio-box" style="padding-bottom: 74.5%">
+          <picture class="photo">
+            <source srcset="/photos/thumbs/fba88b926bab55be2a8cd6a3e30219bb-500x374.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/fba88b926bab55be2a8cd6a3e30219bb-300x224.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/fba88b926bab55be2a8cd6a3e30219bb-200x149.jpg" alt>
+          </picture>
+        </div>
+      </a>
+      
+      <a href="//abhinavsarkar.net/photos/#3a79894b614721feb0cd5422dc220fd5" class="img-link">
+        <div class="ratio-box" style="padding-bottom: 100.0%">
+          <picture class="photo">
+            <source srcset="/photos/thumbs/3a79894b614721feb0cd5422dc220fd5-500x500.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/3a79894b614721feb0cd5422dc220fd5-300x300.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/3a79894b614721feb0cd5422dc220fd5-200x200.jpg" alt>
+          </picture>
+        </div>
+      </a>
+      
+      <a href="//abhinavsarkar.net/photos/#22be16909d2fac70792e4b939d1ec766" class="img-link">
+        <div class="ratio-box" style="padding-bottom: 100.0%">
+          <picture class="photo">
+            <source srcset="/photos/thumbs/22be16909d2fac70792e4b939d1ec766-500x500.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/22be16909d2fac70792e4b939d1ec766-300x300.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/22be16909d2fac70792e4b939d1ec766-200x200.jpg" alt>
+          </picture>
+        </div>
+      </a>
+      
+    </td>
+    
+    <td class="photocol">
+      
       <a href="//abhinavsarkar.net/photos/#16c0597dd7d24cf64ee915df4f8bcc8d" class="img-link">
         <div class="ratio-box" style="padding-bottom: 125.0%">
           <picture class="photo">
@@ -335,22 +369,22 @@
         </div>
       </a>
       
-      <a href="//abhinavsarkar.net/photos/#4b4fbdf2e45690fa8a0e8656ba421840" class="img-link">
+      <a href="//abhinavsarkar.net/photos/#66e119cd5cf4223a936e74fdf35307ec" class="img-link">
         <div class="ratio-box" style="padding-bottom: 75.0%">
           <picture class="photo">
-            <source srcset="/photos/thumbs/4b4fbdf2e45690fa8a0e8656ba421840-500x375.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/4b4fbdf2e45690fa8a0e8656ba421840-300x225.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/4b4fbdf2e45690fa8a0e8656ba421840-200x150.jpg" alt>
+            <source srcset="/photos/thumbs/66e119cd5cf4223a936e74fdf35307ec-500x375.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/66e119cd5cf4223a936e74fdf35307ec-300x225.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/66e119cd5cf4223a936e74fdf35307ec-200x150.jpg" alt>
           </picture>
         </div>
       </a>
       
-      <a href="//abhinavsarkar.net/photos/#a8acbf0cb5df02aaf269227c1df1c3df" class="img-link">
-        <div class="ratio-box" style="padding-bottom: 100.0%">
+      <a href="//abhinavsarkar.net/photos/#652adbafc8f2a837de175aa7dee42acc" class="img-link">
+        <div class="ratio-box" style="padding-bottom: 75.0%">
           <picture class="photo">
-            <source srcset="/photos/thumbs/a8acbf0cb5df02aaf269227c1df1c3df-500x500.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/a8acbf0cb5df02aaf269227c1df1c3df-300x300.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/a8acbf0cb5df02aaf269227c1df1c3df-200x200.jpg" alt>
+            <source srcset="/photos/thumbs/652adbafc8f2a837de175aa7dee42acc-500x375.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/652adbafc8f2a837de175aa7dee42acc-300x225.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/652adbafc8f2a837de175aa7dee42acc-200x150.jpg" alt>
           </picture>
         </div>
       </a>
@@ -359,66 +393,32 @@
     
     <td class="photocol">
       
-      <a href="//abhinavsarkar.net/photos/#0eb1cfc1b510a5becebb2e82028cef6f" class="img-link">
-        <div class="ratio-box" style="padding-bottom: 67.0%">
-          <picture class="photo">
-            <source srcset="/photos/thumbs/0eb1cfc1b510a5becebb2e82028cef6f-500x336.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/0eb1cfc1b510a5becebb2e82028cef6f-300x201.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/0eb1cfc1b510a5becebb2e82028cef6f-200x134.jpg" alt>
-          </picture>
-        </div>
-      </a>
-      
-      <a href="//abhinavsarkar.net/photos/#035e482c408cfe6af4771efbda535c00" class="img-link">
+      <a href="//abhinavsarkar.net/photos/#af2de3e3425ea6002e41072602084cfd" class="img-link">
         <div class="ratio-box" style="padding-bottom: 100.0%">
           <picture class="photo">
-            <source srcset="/photos/thumbs/035e482c408cfe6af4771efbda535c00-500x500.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/035e482c408cfe6af4771efbda535c00-300x300.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/035e482c408cfe6af4771efbda535c00-200x200.jpg" alt>
+            <source srcset="/photos/thumbs/af2de3e3425ea6002e41072602084cfd-500x500.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/af2de3e3425ea6002e41072602084cfd-300x300.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/af2de3e3425ea6002e41072602084cfd-200x200.jpg" alt>
           </picture>
         </div>
       </a>
       
-      <a href="//abhinavsarkar.net/photos/#91a00968fecc1e2b2bfd893f2c319760" class="img-link">
-        <div class="ratio-box" style="padding-bottom: 100.0%">
-          <picture class="photo">
-            <source srcset="/photos/thumbs/91a00968fecc1e2b2bfd893f2c319760-500x500.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/91a00968fecc1e2b2bfd893f2c319760-300x300.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/91a00968fecc1e2b2bfd893f2c319760-200x200.jpg" alt>
-          </picture>
-        </div>
-      </a>
-      
-    </td>
-    
-    <td class="photocol">
-      
-      <a href="//abhinavsarkar.net/photos/#3d7c65ac336245dff7d2e3d29172561f" class="img-link">
-        <div class="ratio-box" style="padding-bottom: 100.0%">
-          <picture class="photo">
-            <source srcset="/photos/thumbs/3d7c65ac336245dff7d2e3d29172561f-500x500.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/3d7c65ac336245dff7d2e3d29172561f-300x300.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/3d7c65ac336245dff7d2e3d29172561f-200x200.jpg" alt>
-          </picture>
-        </div>
-      </a>
-      
-      <a href="//abhinavsarkar.net/photos/#bcd787c278d6b0343e76d2a4307a2b97" class="img-link">
-        <div class="ratio-box" style="padding-bottom: 100.0%">
-          <picture class="photo">
-            <source srcset="/photos/thumbs/bcd787c278d6b0343e76d2a4307a2b97-500x500.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/bcd787c278d6b0343e76d2a4307a2b97-300x300.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/bcd787c278d6b0343e76d2a4307a2b97-200x200.jpg" alt>
-          </picture>
-        </div>
-      </a>
-      
-      <a href="//abhinavsarkar.net/photos/#723a9b0f9f21572ebadeb468a22d8c42" class="img-link">
+      <a href="//abhinavsarkar.net/photos/#21a001b1dd0bcb8bb680dbe417214574" class="img-link">
         <div class="ratio-box" style="padding-bottom: 75.0%">
           <picture class="photo">
-            <source srcset="/photos/thumbs/723a9b0f9f21572ebadeb468a22d8c42-500x375.jpg" media="(min-width: 960px)">
-            <source srcset="/photos/thumbs/723a9b0f9f21572ebadeb468a22d8c42-300x225.jpg" media="(min-width: 640px)">
-            <img src="//abhinavsarkar.net/photos/thumbs/723a9b0f9f21572ebadeb468a22d8c42-200x150.jpg" alt>
+            <source srcset="/photos/thumbs/21a001b1dd0bcb8bb680dbe417214574-500x375.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/21a001b1dd0bcb8bb680dbe417214574-300x225.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/21a001b1dd0bcb8bb680dbe417214574-200x150.jpg" alt>
+          </picture>
+        </div>
+      </a>
+      
+      <a href="//abhinavsarkar.net/photos/#a34863efd746ba9a8059491222d28ab6" class="img-link">
+        <div class="ratio-box" style="padding-bottom: 85.5%">
+          <picture class="photo">
+            <source srcset="/photos/thumbs/a34863efd746ba9a8059491222d28ab6-500x428.jpg" media="(min-width: 960px)">
+            <source srcset="/photos/thumbs/a34863efd746ba9a8059491222d28ab6-300x256.jpg" media="(min-width: 640px)">
+            <img src="//abhinavsarkar.net/photos/thumbs/a34863efd746ba9a8059491222d28ab6-200x171.jpg" alt>
           </picture>
         </div>
       </a>

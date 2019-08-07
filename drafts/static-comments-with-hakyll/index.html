@@ -150,20 +150,20 @@
     </ul>
 
     <section itemprop="articleBody" class="body">
-        <p>Recently, I set up this blog<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> to run on <a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener">Hakyll</a> which is a static site generator library written in <a href="http://haskell.org/" target="_blank" rel="noopener">Haskell</a>. It is very configurable and uses a DSL<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> to write the site configuration.</p>
+        <p>Recently, I set up this blog<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> to run on <a href="https://jaspervdj.be/hakyll/" target="_blank" rel="noopener">Hakyll</a> which is a static site generator library written in <a href="http://haskell.org/" target="_blank" rel="noopener">Haskell</a>. It is very configurable and uses a DSL<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> to write the site configuration.</p>
 <p>Even though the blog is generated statically with Hakyll, if you want the users to comment on your posts, you generally need to integrate a third-party commenting system like <a href="https://disqus.com/" target="_blank" rel="noopener">Disqus</a> or <a href="https://developers.facebook.com/docs/plugins/comments" target="_blank" rel="noopener">Facebook</a>. With these third-party system, you don’t have the comment data in your control anymore. There are some open source alternatives to them, most notably <a href="https://posativ.org/isso/" target="_blank" rel="noopener">Isso</a>, which you have to host on a server on your own. But even then, the comments are not actually “static”; they live in a database on your hosted server.</p>
 <p>Fortunately, there is a solution which does exactly what we want: <a href="https://staticman.net/" target="_blank" rel="noopener">Staticman</a>. In this post I’ll go over how to integrate a Hakyll blog hosted on <a href="https://pages.github.com/" target="_blank" rel="noopener">Github pages</a> with Staticman to get truly static commenting.</p>
 <!--more-->
 <nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#my-hakyll-blog">My Hakyll Blog</a></li><li><a href="#github-pages-setup">Github Pages Setup</a></li><li><a href="#continuous-commenting">Continuous Commenting</a></li></ol></nav>
 <h2 id="my-hakyll-blog" data-track-content data-content-name="my-hakyll-blog" data-content-piece="static-comments-with-hakyll">My Hakyll Blog<a href="#my-hakyll-blog" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>We start with creating a simple blog. First make sure that you have Hakyll and <a href="http://www.haskellstack.org/" target="_blank" rel="noopener"><em>stack</em></a> installed. Then run this command on the command-line to create a new blog:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1">$ <span class="ex">hakyll-init</span> hakyll-staticman</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1"></a>$ <span class="ex">hakyll-init</span> hakyll-staticman</span></code></pre></div>
 <p>You now have a shiny new Hakyll powered blog. Go ahead and try it out:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" title="1">$ <span class="bu">cd</span> hakyll-staticman</a>
-<a class="sourceLine" id="cb2-2" title="2">$ <span class="ex">stack</span> init</a>
-<a class="sourceLine" id="cb2-3" title="3">$ <span class="ex">stack</span> build</a>
-<a class="sourceLine" id="cb2-4" title="4">$ <span class="ex">stack</span> exec site build</a>
-<a class="sourceLine" id="cb2-5" title="5">$ <span class="ex">stack</span> exec site server</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a>$ <span class="bu">cd</span> hakyll-staticman</span>
+<span id="cb2-2"><a href="#cb2-2"></a>$ <span class="ex">stack</span> init</span>
+<span id="cb2-3"><a href="#cb2-3"></a>$ <span class="ex">stack</span> build</span>
+<span id="cb2-4"><a href="#cb2-4"></a>$ <span class="ex">stack</span> exec site build</span>
+<span id="cb2-5"><a href="#cb2-5"></a>$ <span class="ex">stack</span> exec site server</span></code></pre></div>
 <p>You should be able to see the blog at <a href="http://127.0.0.1:8000" class="uri" target="_blank" rel="noopener">http://127.0.0.1:8000</a>. This is a sample blog which comes bundled with Hakyll but it will suffice for our demonstration purpose.</p>
 <p><a href="//abhinavsarkar.net/images/static-comments-with-hakyll/simple-blog.png" class="img-link"><img src="//abhinavsarkar.net/images/static-comments-with-hakyll/simple-blog.png" /><span>My Hakyll Blog</span></a></p>
 <h2 id="github-pages-setup" data-track-content data-content-name="github-pages-setup" data-content-piece="static-comments-with-hakyll">Github Pages Setup<a href="#github-pages-setup" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
@@ -172,54 +172,54 @@
 <p>Next, go to your blog’s Github repo and click the “Settings” tab. Scroll down to the “Github Pages” section, select “master branch” from the “Source” dropdown and click on the “Save” button.</p>
 <p><a href="//abhinavsarkar.net/images/static-comments-with-hakyll/enable-github-pages.png" class="img-link"><img src="//abhinavsarkar.net/images/static-comments-with-hakyll/enable-github-pages.png" /><span>Enabling Github Pages</span></a></p>
 <p>Next, git initialize your blog and create a new orphan branch called <em>source</em>. This branch will have the source for the blog, the post and the comments, while the <em>master</em> branch will have the generated site.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb3-1" title="1">$ <span class="fu">rm</span> -rf _site</a>
-<a class="sourceLine" id="cb3-2" title="2">$ <span class="fu">git</span> init</a>
-<a class="sourceLine" id="cb3-3" title="3">$ <span class="fu">git</span> remote add origin git@github.com:abhin4v/hakyll-staticman.git</a>
-<a class="sourceLine" id="cb3-4" title="4">$ <span class="fu">git</span> checkout --orphan source</a>
-<a class="sourceLine" id="cb3-5" title="5">$ <span class="fu">git</span> submodule add --force https://github.com/abhin4v/hakyll-staticman.git _site</a>
-<a class="sourceLine" id="cb3-6" title="6">$ <span class="bu">echo</span> <span class="st">&quot;_site&quot;</span> <span class="op">&gt;&gt;</span> .git/info/exclude</a>
-<a class="sourceLine" id="cb3-7" title="7">$ <span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;</span> <span class="ex">.gitignore</span></a>
-<a class="sourceLine" id="cb3-8" title="8">_cache</a>
-<a class="sourceLine" id="cb3-9" title="9">.stack-work</a>
-<a class="sourceLine" id="cb3-10" title="10">EOF</a>
-<a class="sourceLine" id="cb3-11" title="11">$ git add .</a>
-<a class="sourceLine" id="cb3-12" title="12">$ git commit -m &quot;Setup blog&quot;</a>
-<a class="sourceLine" id="cb3-13" title="13">$ git push -u origin source</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1"></a>$ <span class="fu">rm</span> -rf _site</span>
+<span id="cb3-2"><a href="#cb3-2"></a>$ <span class="fu">git</span> init</span>
+<span id="cb3-3"><a href="#cb3-3"></a>$ <span class="fu">git</span> remote add origin git@github.com:abhin4v/hakyll-staticman.git</span>
+<span id="cb3-4"><a href="#cb3-4"></a>$ <span class="fu">git</span> checkout --orphan source</span>
+<span id="cb3-5"><a href="#cb3-5"></a>$ <span class="fu">git</span> submodule add --force https://github.com/abhin4v/hakyll-staticman.git _site</span>
+<span id="cb3-6"><a href="#cb3-6"></a>$ <span class="bu">echo</span> <span class="st">&quot;_site&quot;</span> <span class="op">&gt;&gt;</span> .git/info/exclude</span>
+<span id="cb3-7"><a href="#cb3-7"></a>$ <span class="fu">cat</span> <span class="op">&lt;&lt; EOF</span> <span class="op">&gt;</span> <span class="ex">.gitignore</span></span>
+<span id="cb3-8"><a href="#cb3-8"></a>_cache</span>
+<span id="cb3-9"><a href="#cb3-9"></a>.stack-work</span>
+<span id="cb3-10"><a href="#cb3-10"></a>EOF</span>
+<span id="cb3-11"><a href="#cb3-11"></a>$ git add .</span>
+<span id="cb3-12"><a href="#cb3-12"></a>$ git commit -m &quot;Setup blog&quot;</span>
+<span id="cb3-13"><a href="#cb3-13"></a>$ git push -u origin source</span></code></pre></div>
 <p>We make <code>_site</code> directory (where Hakyll puts the generated site) a git submodule pointing to the same repo’s <em>master</em> branch. After adding a <code>.gitignore</code> file, we commit all the files and push it to the <em>source</em> branch of the repo. We also add <code>_site</code> to the <code>.git/info/exclude</code> file to locally ignore the changes to it.</p>
 <h2 id="continuous-commenting" data-track-content data-content-name="continuous-commenting" data-content-piece="static-comments-with-hakyll">Continuous Commenting<a href="#continuous-commenting" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>The plan is to use a CI/CD<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> tool to automatically build the website on push to the <em>source</em> branch and deploy it to the <em>master</em> branch. This is so that you don’t have to deploy the site manually when comments are added. I use <a href="http://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> for my blog so I’m going to show you how to configure the same. If you wish to use a different tool, please consult its documentation for the equivalent configuration.</p>
+<p>The plan is to use a CI/CD<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> tool to automatically build the website on push to the <em>source</em> branch and deploy it to the <em>master</em> branch. This is so that you don’t have to deploy the site manually when comments are added. I use <a href="http://travis-ci.org/" target="_blank" rel="noopener">Travis CI</a> for my blog so I’m going to show you how to configure the same. If you wish to use a different tool, please consult its documentation for the equivalent configuration.</p>
 <p>Add the following to the <code>.travis.yml</code> file in the root directory of your blog:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><a class="sourceLine" id="cb4-1" title="1"><span class="fu">sudo:</span><span class="at"> </span><span class="ch">false</span></a>
-<a class="sourceLine" id="cb4-2" title="2"><span class="fu">language:</span><span class="at"> c</span></a>
-<a class="sourceLine" id="cb4-3" title="3"><span class="fu">branches:</span></a>
-<a class="sourceLine" id="cb4-4" title="4">  <span class="fu">only:</span></a>
-<a class="sourceLine" id="cb4-5" title="5">  <span class="kw">-</span> source</a>
-<a class="sourceLine" id="cb4-6" title="6"><span class="fu">install:</span></a>
-<a class="sourceLine" id="cb4-7" title="7"><span class="kw">-</span> mkdir -p ~/.local/bin</a>
-<a class="sourceLine" id="cb4-8" title="8"><span class="kw">-</span> export PATH=$HOME/.local/bin:$PATH</a>
-<a class="sourceLine" id="cb4-9" title="9"><span class="kw">-</span> travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin <span class="st">'*/stack'</span></a>
-<a class="sourceLine" id="cb4-10" title="10"><span class="kw">-</span> stack --resolver lts --no-terminal --install-ghc install cabal-install happy alex</a>
-<a class="sourceLine" id="cb4-11" title="11"><span class="kw">-</span> stack --resolver lts --no-terminal install --fast</a>
-<a class="sourceLine" id="cb4-12" title="12"><span class="fu">before_script:</span></a>
-<a class="sourceLine" id="cb4-13" title="13"><span class="kw">-</span> cd _site</a>
-<a class="sourceLine" id="cb4-14" title="14"><span class="kw">-</span> git checkout master</a>
-<a class="sourceLine" id="cb4-15" title="15"><span class="kw">-</span> git pull origin master</a>
-<a class="sourceLine" id="cb4-16" title="16"><span class="kw">-</span> git ls-files | xargs -r git rm</a>
-<a class="sourceLine" id="cb4-17" title="17"><span class="kw">-</span> cd ..</a>
-<a class="sourceLine" id="cb4-18" title="18"><span class="fu">script:</span></a>
-<a class="sourceLine" id="cb4-19" title="19"><span class="kw">-</span> $HOME/.local/bin/site build</a>
-<a class="sourceLine" id="cb4-20" title="20"><span class="kw">-</span> cd _site</a>
-<a class="sourceLine" id="cb4-21" title="21"><span class="kw">-</span> git status</a>
-<a class="sourceLine" id="cb4-22" title="22"><span class="kw">-</span> git add --all</a>
-<a class="sourceLine" id="cb4-23" title="23"><span class="kw">-</span> git config --global user.email <span class="st">&quot;abhinav@abhinavsarkar.net&quot;</span></a>
-<a class="sourceLine" id="cb4-24" title="24"><span class="kw">-</span> git config --global user.name <span class="st">&quot;Travis&quot;</span></a>
-<a class="sourceLine" id="cb4-25" title="25"><span class="kw">-</span> git commit -m <span class="st">&quot;$TRAVIS_COMMIT_MESSAGE&quot;</span></a>
-<a class="sourceLine" id="cb4-26" title="26"><span class="kw">-</span> git push <span class="st">&quot;$REPO_URL&quot;</span> master</a>
-<a class="sourceLine" id="cb4-27" title="27"><span class="kw">-</span> cd ..</a>
-<a class="sourceLine" id="cb4-28" title="28"><span class="fu">cache:</span></a>
-<a class="sourceLine" id="cb4-29" title="29">  <span class="fu">directories:</span></a>
-<a class="sourceLine" id="cb4-30" title="30">  <span class="kw">-</span> $HOME/.stack</a>
-<a class="sourceLine" id="cb4-31" title="31">  <span class="kw">-</span> $HOME/build/abhin4v/hakyll-staticman/.stack-work</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode yaml"><code class="sourceCode yaml"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">sudo</span><span class="kw">:</span><span class="at"> </span><span class="ch">false</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">language</span><span class="kw">:</span><span class="at"> c</span></span>
+<span id="cb4-3"><a href="#cb4-3"></a><span class="fu">branches</span><span class="kw">:</span></span>
+<span id="cb4-4"><a href="#cb4-4"></a><span class="at">  </span><span class="fu">only</span><span class="kw">:</span></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="at">  </span><span class="kw">-</span><span class="at"> source</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a><span class="fu">install</span><span class="kw">:</span></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="kw">-</span><span class="at"> mkdir -p ~/.local/bin</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a><span class="kw">-</span><span class="at"> export PATH=$HOME/.local/bin:$PATH</span></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="kw">-</span><span class="at"> travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="kw">-</span><span class="at"> stack --resolver lts --no-terminal --install-ghc install cabal-install happy alex</span></span>
+<span id="cb4-11"><a href="#cb4-11"></a><span class="kw">-</span><span class="at"> stack --resolver lts --no-terminal install --fast</span></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="fu">before_script</span><span class="kw">:</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a><span class="kw">-</span><span class="at"> cd _site</span></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="kw">-</span><span class="at"> git checkout master</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a><span class="kw">-</span><span class="at"> git pull origin master</span></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="kw">-</span><span class="at"> git ls-files | xargs -r git rm</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a><span class="kw">-</span><span class="at"> cd ..</span></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="fu">script</span><span class="kw">:</span></span>
+<span id="cb4-19"><a href="#cb4-19"></a><span class="kw">-</span><span class="at"> $HOME/.local/bin/site build</span></span>
+<span id="cb4-20"><a href="#cb4-20"></a><span class="kw">-</span><span class="at"> cd _site</span></span>
+<span id="cb4-21"><a href="#cb4-21"></a><span class="kw">-</span><span class="at"> git status</span></span>
+<span id="cb4-22"><a href="#cb4-22"></a><span class="kw">-</span><span class="at"> git add --all</span></span>
+<span id="cb4-23"><a href="#cb4-23"></a><span class="kw">-</span><span class="at"> git config --global user.email &quot;abhinav@abhinavsarkar.net&quot;</span></span>
+<span id="cb4-24"><a href="#cb4-24"></a><span class="kw">-</span><span class="at"> git config --global user.name &quot;Travis&quot;</span></span>
+<span id="cb4-25"><a href="#cb4-25"></a><span class="kw">-</span><span class="at"> git commit -m &quot;$TRAVIS_COMMIT_MESSAGE&quot;</span></span>
+<span id="cb4-26"><a href="#cb4-26"></a><span class="kw">-</span><span class="at"> git push &quot;$REPO_URL&quot; master</span></span>
+<span id="cb4-27"><a href="#cb4-27"></a><span class="kw">-</span><span class="at"> cd ..</span></span>
+<span id="cb4-28"><a href="#cb4-28"></a><span class="fu">cache</span><span class="kw">:</span></span>
+<span id="cb4-29"><a href="#cb4-29"></a><span class="at">  </span><span class="fu">directories</span><span class="kw">:</span></span>
+<span id="cb4-30"><a href="#cb4-30"></a><span class="at">  </span><span class="kw">-</span><span class="at"> $HOME/.stack</span></span>
+<span id="cb4-31"><a href="#cb4-31"></a><span class="at">  </span><span class="kw">-</span><span class="at"> $HOME/build/abhin4v/hakyll-staticman/.stack-work</span></span></code></pre></div>
 <p>Make sure to change the git <code>user.email</code> config to your email and <code>abhin4v/hakyll-staticman</code> in the cache section to your Github username and the blog’s repo.</p>
 <p>This file configures Travis CI to:</p>
 <ol type="1">
@@ -240,14 +240,14 @@
 <p>Now, go to the “Environment Variables” section and add an new variable called <code>REPO_URL</code>. The value of this variable should be the full URL to your blog’s Github repo with your username and password. For my example blog, it looks like <code>https://abhin4v:&lt;PASSWORD&gt;@github.com/abhin4v/hakyll-staticman</code>. Replace <code>&lt;PASSWORD&gt;</code> with your Github password, making sure to escape any special characters for bash. Make sure that the “Display value in build log” button is set to <strong>off</strong> so that your Github password is not exposed in the build logs.</p>
 <p><a href="//abhinavsarkar.net/images/static-comments-with-hakyll/travis-env-variables.png" class="img-link"><img src="//abhinavsarkar.net/images/static-comments-with-hakyll/travis-env-variables.png" /><span>Adding the Repo URL Env Variable</span></a></p>
 <p>Now go back and commit the <code>.travis.yml</code> file and push it to the repo. This should start a build in Travis CI which you should see in the “current” tab. Since this is the first build, it will take some time to download and build all the dependencies. Go ahead and grab a coffee (or your other favorite beverage).</p>
-<p>Once your build is complete in Travis CI, you should be able to access your blog at <code>http://&lt;GITHUB_USERNAME&gt;.github.io/&lt;REPO_NAME&gt;</code>. In my case, this is <a href="http://abhin4v.github.io/hakyll-staticman" class="uri" target="_blank" rel="noopener">http://abhin4v.github.io/hakyll-staticman</a><a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
-<section class="footnotes">
+<p>Once your build is complete in Travis CI, you should be able to access your blog at <code>http://&lt;GITHUB_USERNAME&gt;.github.io/&lt;REPO_NAME&gt;</code>. In my case, this is <a href="http://abhin4v.github.io/hakyll-staticman" class="uri" target="_blank" rel="noopener">http://abhin4v.github.io/hakyll-staticman</a><a href="#fn4" class="footnote-ref" id="fnref4" role="doc-noteref"><sup>4</sup></a>.</p>
+<section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
-<li id="fn1"><p><a href="https://github.com/abhin4v/abhin4v.github.io/tree/source" target="_blank" rel="noopener">Source of this blog</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p><a href="https://en.wikipedia.org/wiki/Domain-specific_language" target="_blank" rel="noopener">Domain specific language</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p><a href="https://en.wikipedia.org/wiki/Continuous_integration" target="_blank" rel="noopener">Continuous Integration</a>/<a href="https://en.wikipedia.org/wiki/Continuous_delivery" target="_blank" rel="noopener">Continuous Delivery</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
-<li id="fn4"><p>Don’t be alarmed if you are redirected to <a href="https://abhinavsarkar.net/hakyll-staticman/" class="uri" target="_blank" rel="noopener">https://abhinavsarkar.net/hakyll-staticman/</a>. This is because I have a custom domain set for my blog hosted on Github.<a href="#fnref4" class="footnote-back">↩</a></p></li>
+<li id="fn1" role="doc-endnote"><p><a href="https://github.com/abhin4v/abhin4v.github.io/tree/source" target="_blank" rel="noopener">Source of this blog</a><a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p><a href="https://en.wikipedia.org/wiki/Domain-specific_language" target="_blank" rel="noopener">Domain specific language</a><a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3" role="doc-endnote"><p><a href="https://en.wikipedia.org/wiki/Continuous_integration" target="_blank" rel="noopener">Continuous Integration</a>/<a href="https://en.wikipedia.org/wiki/Continuous_delivery" target="_blank" rel="noopener">Continuous Delivery</a><a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn4" role="doc-endnote"><p>Don’t be alarmed if you are redirected to <a href="https://abhinavsarkar.net/hakyll-staticman/" class="uri" target="_blank" rel="noopener">https://abhinavsarkar.net/hakyll-staticman/</a>. This is because I have a custom domain set for my blog hosted on Github.<a href="#fnref4" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
