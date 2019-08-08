@@ -128,7 +128,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
         </svg>
-        A seven minute read
+        A nine minute read
       </li>
       
       <li class="header post-download">
@@ -267,7 +267,7 @@
 <span id="cb5-23"><a href="#cb5-23"></a>  <span class="dt">static</span> <span class="bu">StringBuilder</span> <span class="fu">makeGuidelines</span>(<span class="dt">int</span> times) {</span>
 <span id="cb5-24"><a href="#cb5-24"></a>    <span class="bu">StringBuilder</span> sb = <span class="kw">new</span> <span class="bu">StringBuilder</span>();</span>
 <span id="cb5-25"><a href="#cb5-25"></a>    <span class="kw">for</span> (<span class="dt">int</span> i = <span class="dv">0</span>; i &lt; times; i++) {</span>
-<span id="cb5-26"><a href="#cb5-26"></a>      sb.<span class="fu">append</span>('│');</span>
+<span id="cb5-26"><a href="#cb5-26"></a>      sb.<span class="fu">append</span>(<span class="st">&quot;│ &quot;</span>);</span>
 <span id="cb5-27"><a href="#cb5-27"></a>    }</span>
 <span id="cb5-28"><a href="#cb5-28"></a>    <span class="kw">return</span> sb.<span class="fu">append</span>(<span class="st">&quot;├ &quot;</span>);</span>
 <span id="cb5-29"><a href="#cb5-29"></a>  }</span>
@@ -310,108 +310,133 @@
 <span id="cb6-35"><a href="#cb6-35"></a>  }</span>
 <span id="cb6-36"><a href="#cb6-36"></a></span>
 <span id="cb6-37"><a href="#cb6-37"></a>  <span class="kw">private</span> <span class="bu">StringBuilder</span> <span class="fu">toStringLayout</span>(<span class="dt">int</span> level) {</span>
-<span id="cb6-38"><a href="#cb6-38"></a>    <span class="bu">StringBuilder</span> guidelines = Utils.<span class="fu">makeGuidelines</span>(level);</span>
-<span id="cb6-39"><a href="#cb6-39"></a>    <span class="bu">StringBuilder</span> sb = </span>
-<span id="cb6-40"><a href="#cb6-40"></a>      <span class="kw">new</span> <span class="bu">StringBuilder</span>().<span class="fu">append</span>(guidelines).<span class="fu">append</span>(content).<span class="fu">append</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
-<span id="cb6-41"><a href="#cb6-41"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">left</span> == <span class="kw">null</span> &amp;&amp; <span class="kw">this</span>.<span class="fu">right</span> == <span class="kw">null</span>) {</span>
-<span id="cb6-42"><a href="#cb6-42"></a>      <span class="kw">return</span> sb;</span>
-<span id="cb6-43"><a href="#cb6-43"></a>    }</span>
-<span id="cb6-44"><a href="#cb6-44"></a></span>
-<span id="cb6-45"><a href="#cb6-45"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">left</span> != <span class="kw">null</span>) {</span>
-<span id="cb6-46"><a href="#cb6-46"></a>      sb.<span class="fu">append</span>(<span class="kw">this</span>.<span class="fu">left</span>.<span class="fu">toStringLayout</span>(level + <span class="dv">1</span>));</span>
-<span id="cb6-47"><a href="#cb6-47"></a>    } <span class="kw">else</span> {</span>
-<span id="cb6-48"><a href="#cb6-48"></a>      sb.<span class="fu">append</span>(guidelines).<span class="fu">append</span>(<span class="st">&quot;&lt;NULL&gt;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
-<span id="cb6-49"><a href="#cb6-49"></a>    }</span>
-<span id="cb6-50"><a href="#cb6-50"></a></span>
-<span id="cb6-51"><a href="#cb6-51"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">right</span> != <span class="kw">null</span>) {</span>
-<span id="cb6-52"><a href="#cb6-52"></a>      sb.<span class="fu">append</span>(<span class="kw">this</span>.<span class="fu">right</span>.<span class="fu">toStringLayout</span>(level + <span class="dv">1</span>));</span>
-<span id="cb6-53"><a href="#cb6-53"></a>    } <span class="kw">else</span> {</span>
-<span id="cb6-54"><a href="#cb6-54"></a>      sb.<span class="fu">append</span>(guidelines).<span class="fu">append</span>(<span class="st">&quot;&lt;NULL&gt;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
-<span id="cb6-55"><a href="#cb6-55"></a>    }</span>
-<span id="cb6-56"><a href="#cb6-56"></a></span>
-<span id="cb6-57"><a href="#cb6-57"></a>    <span class="kw">return</span> sb;</span>
-<span id="cb6-58"><a href="#cb6-58"></a>  }</span>
-<span id="cb6-59"><a href="#cb6-59"></a>}</span></code></pre></div>
+<span id="cb6-38"><a href="#cb6-38"></a>    <span class="bu">StringBuilder</span> sb = <span class="kw">new</span> <span class="bu">StringBuilder</span>()</span>
+<span id="cb6-39"><a href="#cb6-39"></a>      .<span class="fu">append</span>(Utils.<span class="fu">makeGuidelines</span>(level))</span>
+<span id="cb6-40"><a href="#cb6-40"></a>      .<span class="fu">append</span>(content)</span>
+<span id="cb6-41"><a href="#cb6-41"></a>      .<span class="fu">append</span>(<span class="st">&quot;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb6-42"><a href="#cb6-42"></a></span>
+<span id="cb6-43"><a href="#cb6-43"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">left</span> == <span class="kw">null</span> &amp;&amp; <span class="kw">this</span>.<span class="fu">right</span> == <span class="kw">null</span>) {</span>
+<span id="cb6-44"><a href="#cb6-44"></a>      <span class="kw">return</span> sb;</span>
+<span id="cb6-45"><a href="#cb6-45"></a>    }</span>
+<span id="cb6-46"><a href="#cb6-46"></a></span>
+<span id="cb6-47"><a href="#cb6-47"></a>    <span class="bu">StringBuilder</span> nullChildGuidelines = Utils.<span class="fu">makeGuidelines</span>(level + <span class="dv">1</span>);</span>
+<span id="cb6-48"><a href="#cb6-48"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">left</span> != <span class="kw">null</span>) {</span>
+<span id="cb6-49"><a href="#cb6-49"></a>      sb.<span class="fu">append</span>(<span class="kw">this</span>.<span class="fu">left</span>.<span class="fu">toStringLayout</span>(level + <span class="dv">1</span>));</span>
+<span id="cb6-50"><a href="#cb6-50"></a>    } <span class="kw">else</span> {</span>
+<span id="cb6-51"><a href="#cb6-51"></a>      sb.<span class="fu">append</span>(nullChildGuidelines).<span class="fu">append</span>(<span class="st">&quot;&lt;NULL&gt;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb6-52"><a href="#cb6-52"></a>    }</span>
+<span id="cb6-53"><a href="#cb6-53"></a></span>
+<span id="cb6-54"><a href="#cb6-54"></a>    <span class="kw">if</span> (<span class="kw">this</span>.<span class="fu">right</span> != <span class="kw">null</span>) {</span>
+<span id="cb6-55"><a href="#cb6-55"></a>      sb.<span class="fu">append</span>(<span class="kw">this</span>.<span class="fu">right</span>.<span class="fu">toStringLayout</span>(level + <span class="dv">1</span>));</span>
+<span id="cb6-56"><a href="#cb6-56"></a>    } <span class="kw">else</span> {</span>
+<span id="cb6-57"><a href="#cb6-57"></a>      sb.<span class="fu">append</span>(nullChildGuidelines).<span class="fu">append</span>(<span class="st">&quot;&lt;NULL&gt;</span><span class="sc">\n</span><span class="st">&quot;</span>);</span>
+<span id="cb6-58"><a href="#cb6-58"></a>    }</span>
+<span id="cb6-59"><a href="#cb6-59"></a></span>
+<span id="cb6-60"><a href="#cb6-60"></a>    <span class="kw">return</span> sb;</span>
+<span id="cb6-61"><a href="#cb6-61"></a>  }</span>
+<span id="cb6-62"><a href="#cb6-62"></a>}</span></code></pre></div>
 <p>Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. The <code>generate</code> function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.</p>
 <p>We also implement the <code>toString</code> method for the tree to create a string representation of the tree to help us in debugging. A sample run:</p>
 <div class="sourceCode" id="cb7"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb7-1"><a href="#cb7-1"></a>Tree&lt;<span class="bu">String</span>&gt; tree = Tree.<span class="fu">generate</span>(<span class="dv">4</span>, () -&gt; Utils.<span class="fu">generateRandomAlphaString</span>(<span class="dv">2</span>), <span class="fl">0.</span><span class="dv">1</span>);</span>
 <span id="cb7-2"><a href="#cb7-2"></a><span class="bu">System</span>.<span class="fu">out</span>.<span class="fu">println</span>(tree);</span></code></pre></div>
 <p>Output:</p>
-<pre class="plain low-line-height"><code>├ r
-│├ j
-││├ x
-│││├ e
-│││├ m
-││├ vz
-│││├ g
-││├ &lt;NULL&gt;
-│├ l
-││├ b
-│││├ qc
-│││├ g
-││├ rp
-│││├ d
-│││├ o</code></pre>
+<pre id="sample-tree" class="plain low-line-height"><code>├ r
+│ ├ j
+│ │ ├ x
+│ │ │ ├ e
+│ │ │ ├ m
+│ │ ├ vz
+│ │ │ ├ g
+│ │ │ ├ &lt;NULL&gt;
+│ ├ l
+│ │ ├ b
+│ │ │ ├ qc
+│ │ │ ├ g
+│ │ ├ rp
+│ │ │ ├ d
+│ │ │ ├ o</code></pre>
 <h2 id="recursive-traversal" data-track-content data-content-name="recursive-traversal" data-content-piece="continuation-defunctionalization">Recursive Traversal<a href="#recursive-traversal" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Credits first: this blog post and the code in it is inspired by <a href="http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
 <p>Let’s start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order — each node’s content is printed before its children’s.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</span>
-<span id="cb9-2"><a href="#cb9-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
-<span id="cb9-3"><a href="#cb9-3"></a>    Utils.<span class="fu">printContent</span>(tree.<span class="fu">content</span>);</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    <span class="fu">printRecursive</span>(tree.<span class="fu">left</span>);</span>
-<span id="cb9-5"><a href="#cb9-5"></a>    <span class="fu">printRecursive</span>(tree.<span class="fu">right</span>);</span>
-<span id="cb9-6"><a href="#cb9-6"></a>  }</span>
-<span id="cb9-7"><a href="#cb9-7"></a>}</span>
-<span id="cb9-8"><a href="#cb9-8"></a></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="fu">printRecursive</span>(tree);</span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb8-3"><a href="#cb8-3"></a>    Utils.<span class="fu">printContent</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="fu">printRecursive</span>(tree.<span class="fu">left</span>);</span>
+<span id="cb8-5"><a href="#cb8-5"></a>    <span class="fu">printRecursive</span>(tree.<span class="fu">right</span>);</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  }</span>
+<span id="cb8-7"><a href="#cb8-7"></a>}</span>
+<span id="cb8-8"><a href="#cb8-8"></a></span>
+<span id="cb8-9"><a href="#cb8-9"></a><span class="fu">printRecursive</span>(tree);</span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>Short and sweet, simple and easy to understand. If the tree is not null, we print its content, then we recursively print the left and right child trees.</p>
 <p>First thing to do is to extract out the print action into a function argument so that we can do different kinds of actions on the nodes instead of just printing them:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateRecursive</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action) {</span>
-<span id="cb10-2"><a href="#cb10-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
-<span id="cb10-3"><a href="#cb10-3"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
-<span id="cb10-4"><a href="#cb10-4"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">left</span>, action);</span>
-<span id="cb10-5"><a href="#cb10-5"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">right</span>, action);</span>
-<span id="cb10-6"><a href="#cb10-6"></a>  }</span>
-<span id="cb10-7"><a href="#cb10-7"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateRecursive</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action) {</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb9-3"><a href="#cb9-3"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">left</span>, action);</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">right</span>, action);</span>
+<span id="cb9-6"><a href="#cb9-6"></a>  }</span>
+<span id="cb9-7"><a href="#cb9-7"></a>}</span></code></pre></div>
 <p>We use <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/function/Consumer.html" target="_blank" rel="noopener"><code>Consumer</code></a> for the type of the action. Since <code>Consumer</code> is a functional interface, we can pass lambdas in its place. We can call it like this:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb11-1"><a href="#cb11-1"></a><span class="fu">iterateRecursive</span>(tree, Utils::printContent);</span>
-<span id="cb11-2"><a href="#cb11-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb10-1"><a href="#cb10-1"></a><span class="fu">iterateRecursive</span>(tree, Utils::printContent);</span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a <em>Continuation-passing style</em> (CPS) recursion:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateCPS</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, <span class="bu">Runnable</span> cont) {</span>
-<span id="cb12-2"><a href="#cb12-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
-<span id="cb12-3"><a href="#cb12-3"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
-<span id="cb12-4"><a href="#cb12-4"></a>    <span class="fu">iterateCPS</span>(tree.<span class="fu">left</span>, action, () -&gt; <span class="fu">iterateCPS</span>(tree.<span class="fu">right</span>, action, cont));</span>
-<span id="cb12-5"><a href="#cb12-5"></a>  } <span class="kw">else</span> {</span>
-<span id="cb12-6"><a href="#cb12-6"></a>    cont.<span class="fu">run</span>();</span>
-<span id="cb12-7"><a href="#cb12-7"></a>  }</span>
-<span id="cb12-8"><a href="#cb12-8"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateCPS</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, <span class="bu">Runnable</span> cont) {</span>
+<span id="cb11-2"><a href="#cb11-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb11-3"><a href="#cb11-3"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb11-4"><a href="#cb11-4"></a>    <span class="fu">iterateCPS</span>(tree.<span class="fu">left</span>, action, () -&gt; <span class="fu">iterateCPS</span>(tree.<span class="fu">right</span>, action, cont));</span>
+<span id="cb11-5"><a href="#cb11-5"></a>  } <span class="kw">else</span> {</span>
+<span id="cb11-6"><a href="#cb11-6"></a>    cont.<span class="fu">run</span>();</span>
+<span id="cb11-7"><a href="#cb11-7"></a>  }</span>
+<span id="cb11-8"><a href="#cb11-8"></a>}</span></code></pre></div>
 <p>So what is <em>Continuation-passing style</em>?</p>
 <h2 id="continuations" data-track-content data-content-name="continuations" data-content-piece="continuation-defunctionalization">Continuations<a href="#continuations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>In the usual direct <a href="https://en.wikipedia.org/wiki/imperative_programming" target="_blank" rel="noopener">imperative programming</a> style, we write one statement after another, as a sequence of steps to execute. There is another way of thinking about it: after returning from executing one statement, the rest of the program — which can be thought of as a big statement itself — is run. In <em>Continuation-passing style</em>, this way is made explicit: each statement takes the rest of the program which comes after it as an argument, which it invokes explicitly. For example, if you have a program written in direct style like this:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">int</span> <span class="fu">start</span>(<span class="bu">String</span> s) {</span>
-<span id="cb13-2"><a href="#cb13-2"></a>  <span class="dt">int</span> a = <span class="fu">getSomething</span>(s);</span>
-<span id="cb13-3"><a href="#cb13-3"></a>  <span class="fu">doAnotherThing</span>(a);</span>
-<span id="cb13-4"><a href="#cb13-4"></a>  <span class="kw">return</span> a;</span>
-<span id="cb13-5"><a href="#cb13-5"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">int</span> <span class="fu">start</span>(<span class="bu">String</span> s) {</span>
+<span id="cb12-2"><a href="#cb12-2"></a>  <span class="dt">int</span> a = <span class="fu">getSomething</span>(s);</span>
+<span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">doAnotherThing</span>(a);</span>
+<span id="cb12-4"><a href="#cb12-4"></a>  <span class="kw">return</span> a;</span>
+<span id="cb12-5"><a href="#cb12-5"></a>}</span></code></pre></div>
 <p>It can be converted into an equivalent CPS style program like this:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">startCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</span>
-<span id="cb14-2"><a href="#cb14-2"></a>  <span class="fu">getSomethingCPS</span>(s, (a) -&gt; {</span>
-<span id="cb14-3"><a href="#cb14-3"></a>    <span class="fu">doAnotherThingCPS</span>(a, () -&gt; {</span>
-<span id="cb14-4"><a href="#cb14-4"></a>      cont.<span class="fu">call</span>(a);</span>
-<span id="cb14-5"><a href="#cb14-5"></a>    });</span>
-<span id="cb14-6"><a href="#cb14-6"></a>  });</span>
+<div class="sourceCode" id="cb13"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">startCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</span>
+<span id="cb13-2"><a href="#cb13-2"></a>  <span class="fu">getSomethingCPS</span>(s, (a) -&gt; {</span>
+<span id="cb13-3"><a href="#cb13-3"></a>    <span class="fu">doAnotherThingCPS</span>(a, () -&gt; {</span>
+<span id="cb13-4"><a href="#cb13-4"></a>      cont.<span class="fu">call</span>(a);</span>
+<span id="cb13-5"><a href="#cb13-5"></a>    });</span>
+<span id="cb13-6"><a href="#cb13-6"></a>  });</span>
+<span id="cb13-7"><a href="#cb13-7"></a>}</span>
+<span id="cb13-8"><a href="#cb13-8"></a></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">getSomethingCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</span>
+<span id="cb13-10"><a href="#cb13-10"></a>  cont.<span class="fu">call</span>(<span class="fu">getSomething</span>(s));</span>
+<span id="cb13-11"><a href="#cb13-11"></a>}</span>
+<span id="cb13-12"><a href="#cb13-12"></a></span>
+<span id="cb13-13"><a href="#cb13-13"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">doAnotherThingCPS</span>(<span class="dt">int</span> a, <span class="bu">Runnable</span> cont) {</span>
+<span id="cb13-14"><a href="#cb13-14"></a>  <span class="fu">doAnotherThing</span>(a);</span>
+<span id="cb13-15"><a href="#cb13-15"></a>  cont.<span class="fu">run</span>();</span>
+<span id="cb13-16"><a href="#cb13-16"></a>}</span></code></pre></div>
+<p>We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an <code>int</code> value, the <code>startCPS</code> function now takes a lambda as an additional <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/Callable.html" target="_blank" rel="noopener"><code>Callable</code></a> argument which it calls with the <code>int</code> value at the end of all the processing. These lambdas are known as <em>Continuations</em> because they <strong>continue</strong> the flow of the programs, and hence this style of writing programs is called the <em><a href="https://en.wikipedia.org/wiki/Continuation-passing_style" target="_blank" rel="noopener">Continuation-passing style</a></em>.</p>
+<p>Comparing the direct and CPS recursive functions, we can now understand the transformation:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateRecursive</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action) {</span>
+<span id="cb14-2"><a href="#cb14-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb14-3"><a href="#cb14-3"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb14-4"><a href="#cb14-4"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">left</span>, action);</span>
+<span id="cb14-5"><a href="#cb14-5"></a>    <span class="fu">iterateRecursive</span>(tree.<span class="fu">right</span>, action);</span>
+<span id="cb14-6"><a href="#cb14-6"></a>  }</span>
 <span id="cb14-7"><a href="#cb14-7"></a>}</span>
 <span id="cb14-8"><a href="#cb14-8"></a></span>
-<span id="cb14-9"><a href="#cb14-9"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">getSomethingCPS</span>(<span class="bu">String</span> s, <span class="bu">Callable</span>&lt;<span class="bu">Integer</span>&gt; cont) {</span>
-<span id="cb14-10"><a href="#cb14-10"></a>  cont.<span class="fu">call</span>(<span class="fu">getSomething</span>(s));</span>
-<span id="cb14-11"><a href="#cb14-11"></a>}</span>
-<span id="cb14-12"><a href="#cb14-12"></a></span>
-<span id="cb14-13"><a href="#cb14-13"></a><span class="dt">static</span> <span class="dt">void</span> <span class="fu">doAnotherThingCPS</span>(<span class="dt">int</span> a, <span class="bu">Runnable</span> cont) {</span>
-<span id="cb14-14"><a href="#cb14-14"></a>  <span class="fu">doAnotherThing</span>(a);</span>
-<span id="cb14-15"><a href="#cb14-15"></a>  cont.<span class="fu">run</span>();</span>
+<span id="cb14-9"><a href="#cb14-9"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterateCPS</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, <span class="bu">Runnable</span> cont) {</span>
+<span id="cb14-10"><a href="#cb14-10"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb14-11"><a href="#cb14-11"></a>    action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb14-12"><a href="#cb14-12"></a>    <span class="fu">iterateCPS</span>(tree.<span class="fu">left</span>, action, () -&gt; <span class="fu">iterateCPS</span>(tree.<span class="fu">right</span>, action, cont));</span>
+<span id="cb14-13"><a href="#cb14-13"></a>  } <span class="kw">else</span> {</span>
+<span id="cb14-14"><a href="#cb14-14"></a>    cont.<span class="fu">run</span>();</span>
+<span id="cb14-15"><a href="#cb14-15"></a>  }</span>
 <span id="cb14-16"><a href="#cb14-16"></a>}</span></code></pre></div>
-<p>We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an <code>int</code> value, the <code>startCPS</code> function now takes a lambda as an additional argument which it calls with the <code>int</code> value at the end of all the processing. These lambdas are known as <em>Continuations</em> because they <strong>continue</strong> the flow of the programs, and hence this style of writing programs is called the <em><a href="https://en.wikipedia.org/wiki/Continuation-passing_style" target="_blank" rel="noopener">Continuation-passing style</a></em>.</p>
+<p>We print the tree’s content as the first thing like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter which when called calls the <code>iterateCPS</code> function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 14. Let’s run it:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">iterateCPS</span>(tree, Utils::printContent, () -&gt; {});</span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<p>We pass an empty lambda to start with which will be the last continuation to be called.</p>
+<p>Take a while to grok this transformation because this is a crucial step. Try to imagine the program stack of the code when it runs on the <a href="#sample-tree">sample tree</a> and see how continuations are layered over continuations.</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
