@@ -101,6 +101,8 @@ class Main {
 
 The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading for details.
 
+[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
+
 ## Binary Tree
 
 Let's start with some setup code:
@@ -131,7 +133,7 @@ class Utils {
   static StringBuilder makeGuidelines(int times) {
     StringBuilder sb = new StringBuilder();
     for (int i = 0; i < times; i++) {
-      sb.append('│');
+      sb.append("│ ");
     }
     return sb.append("├ ");
   }
@@ -178,23 +180,26 @@ class Tree<T> {
   }
 
   private StringBuilder toStringLayout(int level) {
-    StringBuilder guidelines = Utils.makeGuidelines(level);
-    StringBuilder sb = 
-      new StringBuilder().append(guidelines).append(content).append("\n");
+    StringBuilder sb = new StringBuilder()
+      .append(Utils.makeGuidelines(level))
+      .append(content)
+      .append("\n");
+
     if (this.left == null && this.right == null) {
       return sb;
     }
 
+    StringBuilder nullChildGuidelines = Utils.makeGuidelines(level + 1);
     if (this.left != null) {
       sb.append(this.left.toStringLayout(level + 1));
     } else {
-      sb.append(guidelines).append("<NULL>\n");
+      sb.append(nullChildGuidelines).append("<NULL>\n");
     }
 
     if (this.right != null) {
       sb.append(this.right.toStringLayout(level + 1));
     } else {
-      sb.append(guidelines).append("<NULL>\n");
+      sb.append(nullChildGuidelines).append("<NULL>\n");
     }
 
     return sb;
@@ -213,22 +218,22 @@ System.out.println(tree);
 
 Output:
 
-```{.plain .low-line-height}
+```{.plain .low-line-height #sample-tree}
 ├ r
-│├ j
-││├ x
-│││├ e
-│││├ m
-││├ vz
-│││├ g
-││├ <NULL>
-│├ l
-││├ b
-│││├ qc
-│││├ g
-││├ rp
-│││├ d
-│││├ o
+│ ├ j
+│ │ ├ x
+│ │ │ ├ e
+│ │ │ ├ m
+│ │ ├ vz
+│ │ │ ├ g
+│ │ │ ├ <NULL>
+│ ├ l
+│ │ ├ b
+│ │ │ ├ qc
+│ │ │ ├ g
+│ │ ├ rp
+│ │ │ ├ d
+│ │ │ ├ o
 ```
 
 ## Recursive Traversal
@@ -319,11 +324,40 @@ static void doAnotherThingCPS(int a, Runnable cont) {
 }
 ```
 
-We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an `int` value, the `startCPS` function now takes a lambda as an additional argument which it calls with the `int` value at the end of all the processing. These lambdas are known as _Continuations_ because they **continue** the flow of the programs, and hence this style of writing programs is called the _[Continuation-passing style]{.w}_.
+We see how each function call takes the rest of the program after it as a lambda and calls it explicitly to further the flow of the program. Instead of returning an `int` value, the `startCPS` function now takes a lambda as an additional [`Callable`] argument which it calls with the `int` value at the end of all the processing. These lambdas are known as _Continuations_ because they **continue** the flow of the programs, and hence this style of writing programs is called the _[Continuation-passing style]{.w}_.
 
+Comparing the direct and CPS recursive functions, we can now understand the transformation:
 
+```java
+static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
+  if (tree != null) {
+    action.accept(tree.content);
+    iterateRecursive(tree.left, action);
+    iterateRecursive(tree.right, action);
+  }
+}
 
-[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
+static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+  if (tree != null) {
+    action.accept(tree.content);
+    iterateCPS(tree.left, action, () -> iterateCPS(tree.right, action, cont));
+  } else {
+    cont.run();
+  }
+}
+```
+
+We print the tree's content as the first thing like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter which when called calls the `iterateCPS` function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 14. Let's run it:
+
+```java
+iterateCPS(tree, Utils::printContent, () -> {});
+// r j x e m vz g l b qc g rp d o
+```
+
+We pass an empty lambda to start with which will be the last continuation to be called.
+
+Take a while to grok this transformation because this is a crucial step. Try to imagine the program stack of the code when it runs on the [sample tree] and see how continuations are layered over continuations.
+
 
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
@@ -333,3 +367,5 @@ We see how each function call takes the rest of the program after it as a lambda
 [Internal Iterators]: https://en.wikipedia.org/wiki/Iterator#Internal_Iterators
 [External Iterators]: https://en.wikipedia.org/wiki/Iterator#External_iterators_and_the_iterator_pattern
 [`Consumer`]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/function/Consumer.html
+[`Callable`]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/Callable.html
+[sample tree]: #sample-tree
