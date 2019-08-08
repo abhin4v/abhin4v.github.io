@@ -128,7 +128,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
         </svg>
-        A nine minute read
+        A fourteen minute read
       </li>
       
       <li class="header post-download">
@@ -150,16 +150,16 @@
     </ul>
 
     <section itemprop="articleBody" class="body">
-        <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals can be defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? And is there a way to mechanically derive these iterators from the simple traversal functions? Let’s find out.</p>
+        <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? And is there a way to mechanically derive these iterators from the traversal functions? Let’s find out.</p>
 <!-- more -->
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#defunctionalization">Defunctionalization</a></li><li><a href="#iteration">Iteration</a></li><li><a href="#pre-order-iterator">Pre-order Iterator</a></li></ol></nav>
 <h2 id="traversals-and-iterations" data-track-content data-content-name="traversals-and-iterations" data-content-piece="continuation-defunctionalization">Traversals and Iterations<a href="#traversals-and-iterations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>This is a sample binary tree:</p>
-<pre class="plain"><code>          D
-        /   \
-       C      F
-      / \    / \
-     A   B  E   G</code></pre>
+<pre class="plain"><code>         D
+       /   \
+      C      F
+     / \    / \
+    A   B  E   G</code></pre>
 <p>Different traversals of this tree will yield different sequences of elements:</p>
 <div class="scrollable-table">
 <table>
@@ -391,7 +391,7 @@
 <span id="cb11-8"><a href="#cb11-8"></a>}</span></code></pre></div>
 <p>So what is <em>Continuation-passing style</em>?</p>
 <h2 id="continuations" data-track-content data-content-name="continuations" data-content-piece="continuation-defunctionalization">Continuations<a href="#continuations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>In the usual direct <a href="https://en.wikipedia.org/wiki/imperative_programming" target="_blank" rel="noopener">imperative programming</a> style, we write one statement after another, as a sequence of steps to execute. There is another way of thinking about it: after returning from executing one statement, the rest of the program — which can be thought of as a big statement itself — is run. In <em>Continuation-passing style</em>, this way is made explicit: each statement takes the rest of the program which comes after it as an argument, which it invokes explicitly. For example, if you have a program written in direct style like this:</p>
+<p>In the usual direct <a href="https://en.wikipedia.org/wiki/imperative_programming" target="_blank" rel="noopener">imperative programming</a> style, we write one statement after another, as a sequence of steps to execute. There is another way of thinking about it: after returning from executing one statement, the rest of the program — which can be thought of as a big statement itself — is run. In <em>Continuation-passing style</em>, this way is made explicit: each statement takes the rest of the program which comes after it as an argument, which it invokes explicitly. For example, if we have a program written in direct style like this:</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">static</span> <span class="dt">int</span> <span class="fu">start</span>(<span class="bu">String</span> s) {</span>
 <span id="cb12-2"><a href="#cb12-2"></a>  <span class="dt">int</span> a = <span class="fu">getSomething</span>(s);</span>
 <span id="cb12-3"><a href="#cb12-3"></a>  <span class="fu">doAnotherThing</span>(a);</span>
@@ -432,11 +432,141 @@
 <span id="cb14-14"><a href="#cb14-14"></a>    cont.<span class="fu">run</span>();</span>
 <span id="cb14-15"><a href="#cb14-15"></a>  }</span>
 <span id="cb14-16"><a href="#cb14-16"></a>}</span></code></pre></div>
-<p>We print the tree’s content as the first thing like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter which when called calls the <code>iterateCPS</code> function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 14. Let’s run it:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">iterateCPS</span>(tree, Utils::printContent, () -&gt; {});</span>
+<p>We print the tree’s content the first thing like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter, which when called, calls the <code>iterateCPS</code> function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 14. Let’s run it:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb15-1"><a href="#cb15-1"></a><span class="fu">iterateCPS</span>(tree, Utils::printContent, () -&gt; { <span class="kw">return</span>; });</span>
 <span id="cb15-2"><a href="#cb15-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>We pass an empty lambda to start with which will be the last continuation to be called.</p>
-<p>Take a while to grok this transformation because this is a crucial step. Try to imagine the program stack of the code when it runs on the <a href="#sample-tree">sample tree</a> and see how continuations are layered over continuations.</p>
+<p>Readers are suggested to take a while to grok this transformation because this is a crucial step. Here’s how the program call stack looks like for this simple tree:</p>
+<pre class="plain"><code>       B
+     /   \
+    A     C</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">return</span>) <span class="co">// prints &quot;B&quot;</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;A&quot;</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">return</span>)) <span class="co">// prints &quot;A&quot;</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">return</span>)))</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">return</span>))</span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">return</span>) <span class="co">// prints &quot;C&quot;</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, <span class="kw">return</span>))</span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="fu">iterateCPS</span>(<span class="kw">null</span>, ac, <span class="kw">return</span>)</span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="kw">return</span></span></code></pre></div>
+<p>Readers should try to imagine the program call stack of the code when it runs on the <a href="#sample-tree">sample tree</a> and see how continuations are layered over continuations.</p>
+<h2 id="defunctionalization" data-track-content data-content-name="defunctionalization" data-content-piece="continuation-defunctionalization">Defunctionalization<a href="#defunctionalization" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Defunctionalization is replacing functions with data. In this context, it mean replacing the continuation lambdas with objects. The reason for doing Defunctionalization will become clear as we proceed.</p>
+<p>For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:</p>
+<pre class="java"><code>static &lt;T&gt; void iterateCPS(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, Runnable cont) {
+  if (tree != null) {
+    action.accept(tree.content);
+    iterateCPS(tree.left, action, <mark class="inline">() -&gt; iterateCPS(tree.right, action, cont)</mark>);
+  } else {
+    cont.run();
+  }
+}
+
+iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }</mark>);</code></pre>
+<p>We have two cases of continuations which are highlighted above: first which recursively calls <code>iterateCPS</code> and second which is an empty lambda which terminates the recursion. To capture these two cases with an object, we use this class:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">class</span> Cont&lt;T&gt; {</span>
+<span id="cb18-2"><a href="#cb18-2"></a>  <span class="dt">final</span> Tree&lt;T&gt; tree;</span>
+<span id="cb18-3"><a href="#cb18-3"></a>  <span class="dt">final</span> Cont&lt;T&gt; next;</span>
+<span id="cb18-4"><a href="#cb18-4"></a></span>
+<span id="cb18-5"><a href="#cb18-5"></a>  <span class="fu">Cont</span>(Tree&lt;T&gt; tree, Cont&lt;T&gt; next) {</span>
+<span id="cb18-6"><a href="#cb18-6"></a>    <span class="kw">this</span>.<span class="fu">tree</span> = tree;</span>
+<span id="cb18-7"><a href="#cb18-7"></a>    <span class="kw">this</span>.<span class="fu">next</span> = next;</span>
+<span id="cb18-8"><a href="#cb18-8"></a>  }</span>
+<span id="cb18-9"><a href="#cb18-9"></a>}</span></code></pre></div>
+<p>If the <code>tree</code> field is set, it’s the first case, otherwise it’s the second case. We also need the <code>cont</code> field to capture the current continuation which the first lambda captures in its third call argument. Now we replace all the lambdas with <code>Cont</code> objects and the lambda invocation with the two case of continuations:</p>
+<pre class="java"><code>static &lt;T&gt; void iterateDefCPS(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, Cont&lt;T&gt; cont) {
+  if (tree != null) {
+    action.accept(tree.content);
+    iterateDefCPS(tree.left, action, new Cont&lt;&gt;(tree.right, cont));
+  } else {
+    if (cont != null) {
+      <mark class="inline">iterateDefCPS(cont.tree, action, cont.next)</mark>;
+    } else {
+      <mark class="inline">return;</mark>
+    }
+  }
+}</code></pre>
+<p>Corresponding parts of the code have been highlighted to clearly see the transformation. We can run it and see if it works:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">iterateDefCPS</span>(tree, Utils::printContent, <span class="kw">null</span>)</span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<p>It works! To visualize it better, let’s look at the program call stack again for the simple tree:</p>
+<pre class="plain"><code>       B
+     /   \
+    A     C</code></pre>
+<div class="sourceCode" id="cb21"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">null</span>) <span class="co">// prints &quot;B&quot;</span></span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;A&quot;</span>, ac, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">null</span>)) <span class="co">// prints &quot;A&quot;</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac, <span class="fu">Cont</span>(<span class="kw">null</span>, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">null</span>))</span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">null</span>))</span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">null</span>) <span class="co">// prints &quot;C&quot;</span></span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac, <span class="fu">Cont</span>(<span class="kw">null</span>, <span class="kw">null</span>))</span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac, <span class="kw">null</span>)</span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">return</span></span></code></pre></div>
+<p>Again, readers are encouraged to spend some time thinking about and playing with this function to convince themselves that it works.</p>
+<p>Path forward is pretty easy now.</p>
+<h2 id="iteration" data-track-content data-content-name="iteration" data-content-piece="continuation-defunctionalization">Iteration<a href="#iteration" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>Notice how in the <code>iterateDefCPS</code> function, all the recursive calls are at <a href="https://en.wikipedia.org/wiki/tail_call" target="_blank" rel="noopener">tail call</a> positions. That is, the last thing done in the <code>iterateDefCPS</code> function is to invoke itself recursively. Now we do tail call optimization and replace the recursive calls with iteration:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb22-1"><a href="#cb22-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">iterate</span>(Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, Cont&lt;T&gt; cont) {</span>
+<span id="cb22-2"><a href="#cb22-2"></a>  <span class="kw">while</span> (<span class="kw">true</span>) {</span>
+<span id="cb22-3"><a href="#cb22-3"></a>    <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb22-4"><a href="#cb22-4"></a>      action.<span class="fu">accept</span>(tree.<span class="fu">content</span>);</span>
+<span id="cb22-5"><a href="#cb22-5"></a>      cont = <span class="kw">new</span> Cont&lt;&gt;(tree.<span class="fu">right</span>, cont);</span>
+<span id="cb22-6"><a href="#cb22-6"></a>      tree = tree.<span class="fu">left</span>;</span>
+<span id="cb22-7"><a href="#cb22-7"></a>    } <span class="kw">else</span> {</span>
+<span id="cb22-8"><a href="#cb22-8"></a>      <span class="kw">if</span> (cont != <span class="kw">null</span>) {</span>
+<span id="cb22-9"><a href="#cb22-9"></a>        tree = cont.<span class="fu">tree</span>;</span>
+<span id="cb22-10"><a href="#cb22-10"></a>        cont = cont.<span class="fu">next</span>;</span>
+<span id="cb22-11"><a href="#cb22-11"></a>      } <span class="kw">else</span> {</span>
+<span id="cb22-12"><a href="#cb22-12"></a>        <span class="kw">return</span>;</span>
+<span id="cb22-13"><a href="#cb22-13"></a>      }</span>
+<span id="cb22-14"><a href="#cb22-14"></a>    }</span>
+<span id="cb22-15"><a href="#cb22-15"></a>  }</span>
+<span id="cb22-16"><a href="#cb22-16"></a>}</span></code></pre></div>
+<p>We just wrap the whole function body in a infinite <code>while</code> loop and instead of calling the function recursively, at the tail call points, we replace the function parameter variables with their new values. Rest of the code remains unchanged.</p>
+<p>Upon running, it returns correct result:</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb23-1"><a href="#cb23-1"></a><span class="fu">iterate</span>(tree, Utils::printContent, <span class="kw">null</span>);</span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<p>On to the final step, writing the <em>Iterator</em>.</p>
+<h2 id="pre-order-iterator" data-track-content data-content-name="pre-order-iterator" data-content-piece="continuation-defunctionalization">Pre-order Iterator<a href="#pre-order-iterator" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>To write the iterator, we need to realize that the <code>Cont</code> class is nothing but a <a href="https://en.wikipedia.org/wiki/Stack_(abstract_data_type)" target="_blank" rel="noopener">Stack</a>. Creating a new <code>Cont</code> object by passing it the current one is like pushing onto a stack. Similarly, writing <code>cont = cont.next</code> is like popping from a stack.</p>
+<p>With this realization, we simply hoist the parameters of the <code>iterateDefCPS</code> function into instance fields and transform it to an Iterator:</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb24-1"><a href="#cb24-1"></a><span class="kw">class</span> PreOrderIterator&lt;T&gt; <span class="kw">implements</span> <span class="bu">Iterator</span>&lt;T&gt; {</span>
+<span id="cb24-2"><a href="#cb24-2"></a>  <span class="kw">private</span> Tree&lt;T&gt; tree;</span>
+<span id="cb24-3"><a href="#cb24-3"></a>  <span class="kw">private</span> <span class="bu">Stack</span>&lt;Tree&lt;T&gt;&gt; stack = <span class="kw">new</span> <span class="bu">Stack</span>&lt;&gt;();</span>
+<span id="cb24-4"><a href="#cb24-4"></a></span>
+<span id="cb24-5"><a href="#cb24-5"></a>  <span class="fu">PreOrderIterator</span>(Tree&lt;T&gt; tree) {</span>
+<span id="cb24-6"><a href="#cb24-6"></a>    <span class="kw">this</span>.<span class="fu">tree</span> = tree;</span>
+<span id="cb24-7"><a href="#cb24-7"></a>  }</span>
+<span id="cb24-8"><a href="#cb24-8"></a></span>
+<span id="cb24-9"><a href="#cb24-9"></a>  <span class="at">@Override</span></span>
+<span id="cb24-10"><a href="#cb24-10"></a>  <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">hasNext</span>() {</span>
+<span id="cb24-11"><a href="#cb24-11"></a>    <span class="kw">return</span> tree != <span class="kw">null</span> || !stack.<span class="fu">isEmpty</span>();</span>
+<span id="cb24-12"><a href="#cb24-12"></a>  }</span>
+<span id="cb24-13"><a href="#cb24-13"></a></span>
+<span id="cb24-14"><a href="#cb24-14"></a>  <span class="at">@Override</span></span>
+<span id="cb24-15"><a href="#cb24-15"></a>  <span class="kw">public</span> T <span class="fu">next</span>() {</span>
+<span id="cb24-16"><a href="#cb24-16"></a>    <span class="kw">while</span> (<span class="fu">hasNext</span>()) {</span>
+<span id="cb24-17"><a href="#cb24-17"></a>      <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb24-18"><a href="#cb24-18"></a>        T content = tree.<span class="fu">content</span>;</span>
+<span id="cb24-19"><a href="#cb24-19"></a>        <span class="kw">if</span> (tree.<span class="fu">right</span> != <span class="kw">null</span>) {</span>
+<span id="cb24-20"><a href="#cb24-20"></a>          stack.<span class="fu">push</span>(tree.<span class="fu">right</span>);</span>
+<span id="cb24-21"><a href="#cb24-21"></a>        }</span>
+<span id="cb24-22"><a href="#cb24-22"></a>        tree = tree.<span class="fu">left</span>;</span>
+<span id="cb24-23"><a href="#cb24-23"></a>        <span class="kw">return</span> content;</span>
+<span id="cb24-24"><a href="#cb24-24"></a>      } <span class="kw">else</span> {</span>
+<span id="cb24-25"><a href="#cb24-25"></a>        <span class="kw">if</span> (!stack.<span class="fu">isEmpty</span>()) {</span>
+<span id="cb24-26"><a href="#cb24-26"></a>          tree = stack.<span class="fu">pop</span>();</span>
+<span id="cb24-27"><a href="#cb24-27"></a>        }</span>
+<span id="cb24-28"><a href="#cb24-28"></a>      }</span>
+<span id="cb24-29"><a href="#cb24-29"></a>    }</span>
+<span id="cb24-30"><a href="#cb24-30"></a>    <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">NoSuchElementException</span>();</span>
+<span id="cb24-31"><a href="#cb24-31"></a>  }</span>
+<span id="cb24-32"><a href="#cb24-32"></a>}</span></code></pre></div>
+<p><code>iterateDefCPS</code> returns when both <code>tree</code> and <code>cont</code> are <code>null</code>. So that is our iteration condition and it captured as such in the <code>hasNext</code> method of the iterator. <code>next</code> method is pretty much a copy of the <code>iterateDefCPS</code> function with <code>Cont</code> usage replaced by a <code>Stack</code> and an additional check to make sure to not push null elements onto the stack. We exercise the iterator like this:</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb25-1"><a href="#cb25-1"></a>PreOrderIterator&lt;<span class="bu">String</span>&gt; preOrderIterator = <span class="kw">new</span> PreOrderIterator&lt;&gt;(tree);</span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">while</span> (preOrderIterator.<span class="fu">hasNext</span>()) {</span>
+<span id="cb25-3"><a href="#cb25-3"></a>  Utils.<span class="fu">printContent</span>(preOrderIterator.<span class="fu">next</span>());</span>
+<span id="cb25-4"><a href="#cb25-4"></a>}</span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
+<p>It prints the elements in correct order. This completes our mechanical derivation of the pre-order iterator from recursive traversal code.</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
