@@ -29,10 +29,10 @@
       jq("#comment-redirect").remove();
       jq("#comment-form").on("submit", function(event) {
         event.preventDefault();
-        if (grecaptcha.getResponse() === "") {
-          showNotif("Please tick the reCAPTCHA");
-          return false;
-        }
+        // if (grecaptcha.getResponse() === "") {
+        //   showNotif("Please tick the reCAPTCHA");
+        //   return false;
+        // }
         var form = jq(this);
         var fieldSet = jq("#comment-form fieldset");
         var reqBody = form.serialize();
@@ -56,7 +56,7 @@
             showNotif("Sorry, there was an error in posting the comment. Please try again.");
           } else {
             form.trigger("reset");
-            grecaptcha.reset();
+            // grecaptcha.reset();
             jq("#comment-parent").attr("value", "");
             jq("#cancel-reply").hide();
             showNotif("Thanks for your comment. It will show on the site once it has been approved.");
@@ -65,7 +65,7 @@
         .catch(function(error) {
           formSubmit.val(origVal);
           fieldSet.removeAttr("disabled");
-          grecaptcha.reset();
+          // grecaptcha.reset();
           showNotif("Sorry, there was an error in posting the comment. Please try again.");
         });
         return false;
