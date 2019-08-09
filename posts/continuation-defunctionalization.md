@@ -91,9 +91,11 @@ class Main {
 }
 ```
 
-The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading.
+The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading.
 <!--
 [^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators]. -->
+
+<div class="page-break"></div>
 
 ## Binary Tree
 
@@ -550,6 +552,8 @@ while (preOrderIterator.hasNext()) {
 
 It prints the elements in correct order. This completes our mechanical derivation of the pre-order iterator from recursive traversal code.
 
+<div class="page-break"></div>
+
 ## Post-order Iterator
 
 Post-order iterator derivation turns out to be a bit more complicated that the pre-order one. Nevertheless, let's get started.
@@ -843,7 +847,7 @@ while (postOrderIterator.hasNext()) {
 
 ## Conclusion
 
-We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see [here][3]. Discuss this post in the [comments] below.
+We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see [here][3]. Discuss this post on [lobsters], [r/programming] or in the [comments] below.
 
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
@@ -857,4 +861,6 @@ We have learned how to mechanically write pre-order and post-order iterators for
 [`Callable`]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/Callable.html
 [sample tree]: #sample-tree
 [Stack]: https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
+[lobsters]: https://lobste.rs/s/wz699y/mechanically_deriving_binary_tree
+[r/programming]: https://www.reddit.com/r/programming/comments/co23yu/mechanically_deriving_binary_tree_iterators_with/
 [comments]: #comment-container

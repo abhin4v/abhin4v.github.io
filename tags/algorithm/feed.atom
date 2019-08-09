@@ -122,8 +122,11 @@
 <span id="cb4-38"><a href="#cb4-38"></a>    }</span>
 <span id="cb4-39"><a href="#cb4-39"></a>  }</span>
 <span id="cb4-40"><a href="#cb4-40"></a>}</span></code></pre></div>
-<p>The iterator code uses a <code>Stack</code> to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. <a href="https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/" target="_blank" rel="noopener">Pre-order</a> and <a href="https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/" target="_blank" rel="noopener">Post-order</a> iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading. <!--
+<p>The iterator code uses a <code>Stack</code> to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong. <a href="https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/" target="_blank" rel="noopener">Pre-order</a> and <a href="https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/" target="_blank" rel="noopener">Post-order</a> iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading. <!--
 [^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators]. --></p>
+<div class="page-break">
+
+</div>
 <h2 id="binary-tree" data-track-content data-content-name="binary-tree" data-content-piece="continuation-defunctionalization">Binary Tree<a href="#binary-tree" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Let’s start with some setup code:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">import</span><span class="im"> java.util.Iterator;</span></span>
@@ -465,6 +468,9 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <span id="cb25-5"><a href="#cb25-5"></a>}</span>
 <span id="cb25-6"><a href="#cb25-6"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>It prints the elements in correct order. This completes our mechanical derivation of the pre-order iterator from recursive traversal code.</p>
+<div class="page-break">
+
+</div>
 <h2 id="post-order-iterator" data-track-content data-content-name="post-order-iterator" data-content-piece="continuation-defunctionalization">Post-order Iterator<a href="#post-order-iterator" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Post-order iterator derivation turns out to be a bit more complicated that the pre-order one. Nevertheless, let’s get started.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb26-1"><a href="#cb26-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</span>
@@ -695,7 +701,7 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <span id="cb37-5"><a href="#cb37-5"></a>}</span>
 <span id="cb37-6"><a href="#cb37-6"></a><span class="co">// e m x g vz j qc g b d o rp l r</span></span></code></pre></div>
 <h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="continuation-defunctionalization">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. <em>Continuation Defunctionalization</em> can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see <a href="https://code.abhinavsarkar.net/abhin4v/algorist/src/branch/master/src/main/java/net/abhinavsarkar/algorist/TreeIterators.java" target="_blank" rel="noopener">here</a>. Discuss this post in the <a href="#comment-container">comments</a> below.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/continuation-defunctionalization/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
+<p>We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. <em>Continuation Defunctionalization</em> can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see <a href="https://code.abhinavsarkar.net/abhin4v/algorist/src/branch/master/src/main/java/net/abhinavsarkar/algorist/TreeIterators.java" target="_blank" rel="noopener">here</a>. Discuss this post on <a href="https://lobste.rs/s/wz699y/mechanically_deriving_binary_tree" target="_blank" rel="noopener">lobsters</a>, <a href="https://www.reddit.com/r/programming/comments/co23yu/mechanically_deriving_binary_tree_iterators_with/" target="_blank" rel="noopener">r/programming</a> or in the <a href="#comment-container">comments</a> below.</p><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/continuation-defunctionalization/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
 </entry>
 
 </feed>
