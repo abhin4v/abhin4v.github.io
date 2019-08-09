@@ -128,7 +128,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
         </svg>
-        A nineteen minute read
+        A twenty-one minute read
       </li>
       
       <li class="header post-download">
@@ -152,7 +152,7 @@
     <section itemprop="articleBody" class="body">
         <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? And is there a way to mechanically derive these iterators from the traversal functions? Let’s find out.</p>
 <!-- more -->
-<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#defunctionalization">Defunctionalization</a></li><li><a href="#iteration">Iteration</a></li><li><a href="#pre-order-iterator">Pre-order Iterator</a></li><li><a href="#post-order-iterator">Post-order Iterator</a></li></ol></nav>
+<nav id="toc" class="right-toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#defunctionalization">Defunctionalization</a></li><li><a href="#iteration">Iteration</a></li><li><a href="#pre-order-iterator">Pre-order Iterator</a></li><li><a href="#post-order-iterator">Post-order Iterator</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="traversals-and-iterations" data-track-content data-content-name="traversals-and-iterations" data-content-piece="continuation-defunctionalization">Traversals and Iterations<a href="#traversals-and-iterations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>This is a sample binary tree:</p>
 <pre class="plain"><code>         D
@@ -731,6 +731,62 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <p>This works too:</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb35-1"><a href="#cb35-1"></a><span class="fu">iterate</span>(tree, Utils::printContent, <span class="kw">null</span>);</span>
 <span id="cb35-2"><a href="#cb35-2"></a><span class="co">// e m x g vz j qc g b d o rp l r</span></span></code></pre></div>
+<p>Writing the post-order iterator is a bit trickier than the pre-order case. Since the <code>Cont</code> class now has a third field, we can’t transform it directly into a <code>Stack</code> of <code>Tree</code>. We need to create another class – called <code>TreeTup</code> here – to capture the tree and the <code>isLeft</code> field value. Then we can create a stack of <code>TreeTup</code>. Rest of the transformation is pretty mechanical:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb36-1"><a href="#cb36-1"></a><span class="kw">class</span> PostOrderIterator&lt;T&gt; <span class="kw">implements</span> <span class="bu">Iterator</span>&lt;T&gt; {</span>
+<span id="cb36-2"><a href="#cb36-2"></a>  <span class="kw">private</span> <span class="dt">static</span> <span class="kw">class</span> TreeTup&lt;T&gt; {</span>
+<span id="cb36-3"><a href="#cb36-3"></a>    <span class="dt">final</span> Tree&lt;T&gt; tree;</span>
+<span id="cb36-4"><a href="#cb36-4"></a>    <span class="dt">final</span> <span class="dt">boolean</span> isLeft;</span>
+<span id="cb36-5"><a href="#cb36-5"></a></span>
+<span id="cb36-6"><a href="#cb36-6"></a>    <span class="kw">public</span> <span class="fu">TreeTup</span>(Tree&lt;T&gt; tree, <span class="dt">boolean</span> isLeft) {</span>
+<span id="cb36-7"><a href="#cb36-7"></a>      <span class="kw">this</span>.<span class="fu">tree</span> = tree;</span>
+<span id="cb36-8"><a href="#cb36-8"></a>      <span class="kw">this</span>.<span class="fu">isLeft</span> = isLeft;</span>
+<span id="cb36-9"><a href="#cb36-9"></a>    }</span>
+<span id="cb36-10"><a href="#cb36-10"></a>  }</span>
+<span id="cb36-11"><a href="#cb36-11"></a></span>
+<span id="cb36-12"><a href="#cb36-12"></a>  <span class="kw">private</span> Tree&lt;T&gt; tree;</span>
+<span id="cb36-13"><a href="#cb36-13"></a>  <span class="kw">private</span> <span class="bu">Stack</span>&lt;TreeTup&lt;T&gt;&gt; stack = <span class="kw">new</span> <span class="bu">Stack</span>&lt;&gt;();</span>
+<span id="cb36-14"><a href="#cb36-14"></a></span>
+<span id="cb36-15"><a href="#cb36-15"></a>  <span class="fu">PostOrderIterator</span>(Tree&lt;T&gt; tree) { <span class="kw">this</span>.<span class="fu">tree</span> = tree; }</span>
+<span id="cb36-16"><a href="#cb36-16"></a></span>
+<span id="cb36-17"><a href="#cb36-17"></a>  <span class="at">@Override</span></span>
+<span id="cb36-18"><a href="#cb36-18"></a>  <span class="kw">public</span> <span class="dt">boolean</span> <span class="fu">hasNext</span>() {</span>
+<span id="cb36-19"><a href="#cb36-19"></a>    <span class="kw">return</span> tree != <span class="kw">null</span> || !stack.<span class="fu">isEmpty</span>();</span>
+<span id="cb36-20"><a href="#cb36-20"></a>  }</span>
+<span id="cb36-21"><a href="#cb36-21"></a></span>
+<span id="cb36-22"><a href="#cb36-22"></a>  <span class="at">@Override</span></span>
+<span id="cb36-23"><a href="#cb36-23"></a>  <span class="kw">public</span> T <span class="fu">next</span>() {</span>
+<span id="cb36-24"><a href="#cb36-24"></a>    <span class="kw">while</span> (<span class="fu">hasNext</span>()) {</span>
+<span id="cb36-25"><a href="#cb36-25"></a>      <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
+<span id="cb36-26"><a href="#cb36-26"></a>        stack.<span class="fu">push</span>(<span class="kw">new</span> TreeTup&lt;&gt;(tree, <span class="kw">false</span>));</span>
+<span id="cb36-27"><a href="#cb36-27"></a>        <span class="kw">if</span> (tree.<span class="fu">right</span> != <span class="kw">null</span>) {</span>
+<span id="cb36-28"><a href="#cb36-28"></a>          stack.<span class="fu">push</span>(<span class="kw">new</span> TreeTup&lt;&gt;(tree.<span class="fu">right</span>, <span class="kw">true</span>));</span>
+<span id="cb36-29"><a href="#cb36-29"></a>        }</span>
+<span id="cb36-30"><a href="#cb36-30"></a>        tree = tree.<span class="fu">left</span>;</span>
+<span id="cb36-31"><a href="#cb36-31"></a>      } <span class="kw">else</span> {</span>
+<span id="cb36-32"><a href="#cb36-32"></a>        <span class="kw">if</span> (!stack.<span class="fu">isEmpty</span>()) {</span>
+<span id="cb36-33"><a href="#cb36-33"></a>          TreeTup&lt;T&gt; tup = stack.<span class="fu">pop</span>();</span>
+<span id="cb36-34"><a href="#cb36-34"></a>          <span class="kw">if</span> (tup.<span class="fu">isLeft</span>) {</span>
+<span id="cb36-35"><a href="#cb36-35"></a>            tree = tup.<span class="fu">tree</span>;</span>
+<span id="cb36-36"><a href="#cb36-36"></a>          } <span class="kw">else</span> {</span>
+<span id="cb36-37"><a href="#cb36-37"></a>            T content = tup.<span class="fu">tree</span>.<span class="fu">content</span>;</span>
+<span id="cb36-38"><a href="#cb36-38"></a>            tree = <span class="kw">null</span>;</span>
+<span id="cb36-39"><a href="#cb36-39"></a>            <span class="kw">return</span> content;</span>
+<span id="cb36-40"><a href="#cb36-40"></a>          }</span>
+<span id="cb36-41"><a href="#cb36-41"></a>        }</span>
+<span id="cb36-42"><a href="#cb36-42"></a>      }</span>
+<span id="cb36-43"><a href="#cb36-43"></a>    }</span>
+<span id="cb36-44"><a href="#cb36-44"></a>    <span class="kw">throw</span> <span class="kw">new</span> <span class="bu">NoSuchElementException</span>();</span>
+<span id="cb36-45"><a href="#cb36-45"></a>  }</span>
+<span id="cb36-46"><a href="#cb36-46"></a>}</span></code></pre></div>
+<p>We can compare the <code>iterate</code> function with the <code>next</code> method above and we see that it’s pretty much the same code except for an additional check to not push null values onto the stack.</p>
+<p>Now for the final run:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb37-1"><a href="#cb37-1"></a>PostOrderIterator&lt;<span class="bu">String</span>&gt; postOrderIterator = <span class="kw">new</span> PostOrderIterator&lt;&gt;(tree);</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="kw">while</span> (postOrderIterator.<span class="fu">hasNext</span>()) {</span>
+<span id="cb37-3"><a href="#cb37-3"></a>  Utils.<span class="fu">printContent</span>(postOrderIterator.<span class="fu">next</span>());</span>
+<span id="cb37-4"><a href="#cb37-4"></a>}</span>
+<span id="cb37-5"><a href="#cb37-5"></a><span class="co">// e m x g vz j qc g b d o rp l r</span></span></code></pre></div>
+<h2 id="conclusion" data-track-content data-content-name="conclusion" data-content-piece="continuation-defunctionalization">Conclusion<a href="#conclusion" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<p>We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. However, <em>Continuation Defunctionalization</em> can be used to transform any recursion into an iteration. I hope it will come handy for you some day. Discuss this post in the <a href="#comment-container">comments</a> below.</p>
 <section class="footnotes" role="doc-endnotes">
 <hr />
 <ol>
