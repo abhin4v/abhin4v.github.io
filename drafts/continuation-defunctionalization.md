@@ -1,13 +1,13 @@
 ---
 title: "Mechanically Deriving Binary Tree Iterators with Continuation Defunctionalization"
-date: 2019-08-17
+date: 2019-08-09
 description: Deriving tree iterators from tree traversals using Continuation Defunctionalization.
 tags: java, programming, algorithm
 author: Abhinav Sarkar
-toc: right
+toc: left
 ---
 
-Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? And is there a way to mechanically derive these iterators from the traversal functions? Let's find out.
+Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? Is there a way to mechanically derive these iterators from the traversal functions? Let's find out.
 
 <!-- more -->
 
@@ -91,7 +91,8 @@ class InOrderIterator<T> implements Iterator<T> {
 class Main {
   public static void main(String[] args) {
     Tree<String> tree = new Tree<>(...);
-    InOrderIterator<String> inOrderIterator = new InOrderIterator<>(tree);
+    InOrderIterator<String> inOrderIterator =
+      new InOrderIterator<>(tree);
     while (inOrderIterator.hasNext()) {
       System.out.print(inOrderIterator.next());
     }
@@ -99,9 +100,9 @@ class Main {
 }
 ```
 
-The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading for details.
-
-[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
+The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong[^int-ext-iterators]. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading.
+<!--
+[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators]. -->
 
 ## Binary Tree
 
@@ -157,7 +158,8 @@ class Tree<T> {
   public static <T> Tree<T> generate(
       int maxDepth, Supplier<T> gen, double nullProbability) {
     if (nullProbability < 0 || nullProbability > 1) {
-      throw new IllegalArgumentException("nullProbability must be between 0 and 1");
+      throw new IllegalArgumentException(
+        "nullProbability must be between 0 and 1");
     }
 
     if (maxDepth == 0) {
@@ -189,7 +191,8 @@ class Tree<T> {
       return sb;
     }
 
-    StringBuilder nullChildGuidelines = Utils.makeGuidelines(level + 1);
+    StringBuilder nullChildGuidelines =
+      Utils.makeGuidelines(level + 1);
     if (this.left != null) {
       sb.append(this.left.toStringLayout(level + 1));
     } else {
@@ -207,12 +210,13 @@ class Tree<T> {
 }
 ```
 
-Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. The `generate` function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We will used this function to generate trees to test our traversals and iterators.
+Each node in a binary tree has some content and two nullable child nodes. We have a constructor to create the tree. The `generate` function generates an arbitrary binary tree of a given maximum depth by using a random content generator. We use this function to generate trees to test our traversals and iterators.
 
 We also implement the `toString` method for the tree to create a string representation of the tree to help us in debugging. A sample run:
 
 ```java
-Tree<String> tree = Tree.generate(4, () -> Utils.generateRandomAlphaString(2), 0.1);
+Tree<String> tree = Tree.generate(4, () ->
+  Utils.generateRandomAlphaString(2), 0.1);
 System.out.println(tree);
 ```
 
@@ -240,7 +244,7 @@ Output:
 
 Credits first: this blog post and the code in it is inspired by [The Best Refactoring You've Never Heard Of][2] article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I've chosen to implement pre-order and post-order iterators.
 
-Let's start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order — each node's content is printed before its children's.
+Let's start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order: each node's content is printed before its children's.
 
 ```java
 static <T> void printRecursive(Tree<T> tree) {
@@ -260,7 +264,8 @@ Short and sweet, simple and easy to understand. If the tree is not null, we prin
 First thing to do is to extract out the print action into a function argument so that we can do different kinds of actions on the nodes instead of just printing them:
 
 ```java
-static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
+static <T> void iterateRecursive(
+    Tree<T> tree, Consumer<T> action) {
   if (tree != null) {
     action.accept(tree.content);
     iterateRecursive(tree.left, action);
@@ -279,17 +284,19 @@ iterateRecursive(tree, Utils::printContent);
 This transformation was easy to grok. The next one requires a little head-tilting. We convert the simple recursion into a _Continuation-passing style_ (CPS) recursion:
 
 ```java
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     action.accept(tree.content);
-    iterateCPS(tree.left, action, () -> iterateCPS(tree.right, action, cont));
+    iterateCPS(tree.left, action, () ->
+      iterateCPS(tree.right, action, cont));
   } else {
     cont.run();
   }
 }
 ```
 
-So what is _Continuation-passing style_?
+So what are _Continuations_?
 
 ## Continuations
 
@@ -329,7 +336,8 @@ We see how each function call takes the rest of the program after it as a lambda
 Comparing the direct and CPS recursive functions, we can now understand the transformation:
 
 ```java
-static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
+static <T> void iterateRecursive(
+    Tree<T> tree, Consumer<T> action) {
   if (tree != null) {
     action.accept(tree.content);
     iterateRecursive(tree.left, action);
@@ -337,17 +345,19 @@ static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
   }
 }
 
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     action.accept(tree.content);
-    iterateCPS(tree.left, action, () -> iterateCPS(tree.right, action, cont));
+    iterateCPS(tree.left, action, () ->
+      iterateCPS(tree.right, action, cont));
   } else {
     cont.run();
   }
 }
 ```
 
-We print the tree's content the first thing like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter, which when called, calls the `iterateCPS` function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 14. Let's run it:
+We first print the tree's content just like before. But instead of calling the function itself recursively twice for each child node, we call it only once for the left child node and pass a continuation lambda as the last parameter, which when called, calls the `iterateCPS` function for the right child node with the current continuation. This chain of continuations is called when the recursion bottoms out at the leftmost leaf node in line 17. Let's run it:
 
 ```java
 iterateCPS(tree, Utils::printContent, () -> { return; });
@@ -365,14 +375,16 @@ Readers are suggested to take a while to grok this transformation because this i
 ```
 
 ```java
-iterateCPS("B", ac, return) // prints "B"
-iterateCPS("A", ac, () -> iterateCPS("C", ac, return)) // prints "A"
-iterateCPS(null, ac, () -> iterateCPS(null, ac, () -> iterateCPS("C", ac, return)))
-iterateCPS(null, ac, () -> iterateCPS("C", ac, return))
-iterateCPS("C", ac, return) // prints "C"
-iterateCPS(null, ac, () -> iterateCPS(null, ac, return))
-iterateCPS(null, ac, return)
-return
+iterateCPS("B", ac, return); // prints "B"
+iterateCPS("A", ac, () ->
+  iterateCPS("C", ac, return)); // prints "A"
+iterateCPS(null, ac, () ->
+  iterateCPS(null, ac, () -> iterateCPS("C", ac, return)));
+iterateCPS(null, ac, () -> iterateCPS("C", ac, return));
+iterateCPS("C", ac, return); // prints "C"
+iterateCPS(null, ac, () -> iterateCPS(null, ac, return));
+iterateCPS(null, ac, return);
+return;
 ```
 
 Readers should try to imagine (or work out) the program call stack when it runs on the [sample tree] and see how continuations are layered over continuations.
@@ -383,11 +395,13 @@ _Defunctionalization_ is replacing functions with data. In this context, it mean
 
 For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:
 
-```{.java emphasize=4:35-4:76,10:39-10:55}
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+```{.java emphasize=5:35-6:42,12:39-12:55}
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     action.accept(tree.content);
-    iterateCPS(tree.left, action, () -> iterateCPS(tree.right, action, cont));
+    iterateCPS(tree.left, action, () ->
+      iterateCPS(tree.right, action, cont));
   } else {
     cont.run();
   }
@@ -412,8 +426,9 @@ class Cont<T> {
 
 If the `tree` field is set, it's the first case, otherwise it's the second case. We also need the `cont` field to capture the current continuation which the first lambda captures in its third call argument. Now we replace all the lambdas with `Cont` objects and the lambda invocation with the two case of continuations:
 
-```{.java emphasize=7:7-7:49,9:7-9:13}
-static <T> void iterateDefCPS(Tree<T> tree, Consumer<T> action, Cont<T> cont) {
+```{.java emphasize=8:7-8:49,10:7-10:13}
+static <T> void iterateDefCPS(
+    Tree<T> tree, Consumer<T> action, Cont<T> cont) {
   if (tree != null) {
     action.accept(tree.content);
     iterateDefCPS(tree.left, action, new Cont<>(tree.right, cont));
@@ -443,13 +458,13 @@ It works! To visualize it better, let's look at the program call stack again for
 ```
 
 ```java
-iterateDefCPS("B", ac, null) // prints "B"
-iterateDefCPS("A", ac, Cont("C", null)) // prints "A"
-iterateDefCPS(null, ac, Cont(null, Cont("C", null))
-iterateDefCPS(null, ac, Cont("C", null))
-iterateDefCPS("C", ac, null) // prints "C"
-iterateDefCPS(null, ac, Cont(null, null))
-iterateDefCPS(null, ac, null)
+iterateDefCPS("B", ac, null); // prints "B"
+iterateDefCPS("A", ac, Cont("C", null)); // prints "A"
+iterateDefCPS(null, ac, Cont(null, Cont("C", null));
+iterateDefCPS(null, ac, Cont("C", null));
+iterateDefCPS("C", ac, null) // prints "C";
+iterateDefCPS(null, ac, Cont(null, null));
+iterateDefCPS(null, ac, null);
 return
 ```
 
@@ -459,10 +474,11 @@ Path forward is pretty easy now.
 
 ## Iteration
 
-Notice how in the `iterateDefCPS` function, all the recursive calls are at [tail call]{.w} positions. That is, the last thing done in the `iterateDefCPS` function is to invoke itself recursively. Now we can do tail call optimization and replace the recursive calls with iteration:
+Notice how in the `iterateDefCPS` function, all the recursive calls are at [tail call]{.w} positions. That is, the last thing done in the `iterateDefCPS` function is to invoke itself recursively. That's what we achieved with Defunctionalization. Now we can do tail call optimization and replace the recursive calls with iteration:
 
 ```java
-static <T> void iterate(Tree<T> tree, Consumer<T> action, Cont<T> cont) {
+static <T> void iterate(
+    Tree<T> tree, Consumer<T> action, Cont<T> cont) {
   while (true) {
     if (tree != null) {
       action.accept(tree.content);
@@ -493,7 +509,7 @@ On to the final step, writing the _Iterator_.
 
 ## Pre-order Iterator
 
-To write the iterator, we need to realize that the `Cont` class is nothing but a [Stack]. Creating a new `Cont` object by passing it the current one is like pushing onto a stack. Similarly, writing `cont = cont.next` is like popping from a stack.
+To write the iterator, we need to realize that the `Cont` class is nothing but a [Stack]. Creating a new `Cont` object by passing it the current one is like pushing onto a stack. Similarly, writing `cont = cont.next` is like popping a stack.
 
 With this realization, we simply hoist the parameters of the `iterateDefCPS` function into instance fields and replace `Cont` with a stack to transform it to an Iterator:
 
@@ -533,7 +549,8 @@ class PreOrderIterator<T> implements Iterator<T> {
 `iterateDefCPS` returns when both `tree` and `cont` are `null`. So that is our iteration termination condition and it captured as such in the `hasNext` method of the iterator. `next` method is pretty much a copy of the `iterateDefCPS` function with `Cont` replaced by a `Stack` and an additional check to make sure to not push null elements onto the stack. We exercise the iterator like this:
 
 ```java
-PreOrderIterator<String> preOrderIterator = new PreOrderIterator<>(tree);
+PreOrderIterator<String> preOrderIterator =
+  new PreOrderIterator<>(tree);
 while (preOrderIterator.hasNext()) {
   Utils.printContent(preOrderIterator.next());
 }
@@ -555,7 +572,8 @@ static <T> void printRecursive(Tree<T> tree) {
   }
 }
 
-static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
+static <T> void iterateRecursive(
+    Tree<T> tree, Consumer<T> action) {
   if (tree != null) {
     iterateRecursive(tree.left, action);
     iterateRecursive(tree.right, action);
@@ -563,7 +581,8 @@ static <T> void iterateRecursive(Tree<T> tree, Consumer<T> action) {
   }
 }
 
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     iterateCPS(tree.left, action, () -> {
       iterateCPS(tree.right, action, () -> {
@@ -598,30 +617,32 @@ It works as expected but let's walk through the program call stack for our simpl
 ```
 
 ```java
-iterateCPS("B", ac, return)
-iterateCPS("A", ac, () -> iterateCPS("C", ac, () -> { ac("B"); return }))
-
+iterateCPS("B", ac, return);
+iterateCPS("A", ac, () -> iterateCPS("C", ac, () -> {
+  ac("B"); return
+}));
 iterateCPS(null, ac, () -> iterateCPS(null, ac, () -> {
   ac("A"); iterateCPS("C", ac, () -> { ac("B"); return })
-}))
-
+}));
 iterateCPS(null, ac, () -> {
   ac("A"); iterateCPS("C", ac, () -> {ac("B"); return })
-})
-
-ac("A") // prints "A"
-iterateCPS("C", ac, () -> { ac("B"); return })
-iterateCPS(null, ac, () -> iterateCPS(null, ac, () -> { ac("C"); ac("B"); return }))
-iterateCPS(null, ac, () -> { ac("C"); ac("B"); return })
-ac("C") // prints "C"
-ac("B") // print "B"
-return
+});
+ac("A"); // prints "A"
+iterateCPS("C", ac, () -> { ac("B"); return });
+iterateCPS(null, ac, () -> iterateCPS(null, ac, () -> {
+  ac("C"); ac("B"); return
+}));
+iterateCPS(null, ac, () -> { ac("C"); ac("B"); return });
+ac("C"); // prints "C"
+ac("B"); // print "B"
+return;
 ```
 
 I hope the call stack makes it clear how `iterateCPS` works. Now we have to defunctionalize the continuations.
 
-```{.java emphasize=3:35-7:8}
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+```{.java emphasize=4:35-8:8}
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     iterateCPS(tree.left, action, () -> {
       iterateCPS(tree.right, action, () -> {
@@ -634,8 +655,9 @@ static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
 }
 ```
 
-```{.java emphasize=4:38-7:7,13:39-13:55}
-static <T> void iterateCPS(Tree<T> tree, Consumer<T> action, Runnable cont) {
+```{.java emphasize=5:38-8:7,14:39-14:55}
+static <T> void iterateCPS(
+    Tree<T> tree, Consumer<T> action, Runnable cont) {
   if (tree != null) {
     iterateCPS(tree.left, action, () -> {
       iterateCPS(tree.right, action, () -> {
@@ -670,8 +692,9 @@ class Cont<T> {
 
 We have added a new boolean field `isLeft` to differentiate between the first and second cases. Now we replace the lambdas with `Cont` objects:
 
-```{.java emphasize=9-9,11-12,15-15}
-static <T> void iterateDefCPS(Tree<T> tree, Consumer<T> action, Cont<T> cont) {
+```{.java emphasize=10-10,12-13,16-16}
+static <T> void iterateDefCPS(
+    Tree<T> tree, Consumer<T> action, Cont<T> cont) {
   if (tree != null) {
     Cont<T> rCont = new Cont<>(tree, false, cont);
     Cont<T> lCont = new Cont<>(tree.right, true, rCont);
@@ -691,7 +714,7 @@ static <T> void iterateDefCPS(Tree<T> tree, Consumer<T> action, Cont<T> cont) {
 }
 ```
 
-We create a right continuation object and then a left continuation object with the left one wrapped inside it. This represents the nested lambdas of the CPS form. In the invocation section, we can see the corresponding highlighted sections in the same order as before. Readers are suggested to mull over this transformation to convince themselves that it's correct. Let's run it now:
+We create a right continuation object and then a left continuation object with the right one wrapped inside it. This nesting corresponds to the nested lambdas of the CPS form. In the invocation section, we can see the corresponding highlighted sections in the same order as before. Readers are suggested to mull over this transformation to convince themselves that it's correct. Let's run it now:
 
 ```java
 iterateDefCPS(tree, Utils::printContent, null);
@@ -707,29 +730,31 @@ Let's walk through the call stack of `iterateDefCPS` for the simple tree:
 ```
 
 ```java
-iterateDefCPS("B", ac, null)
-iterateDefCPS("A", ac, Cont("C", true, Cont("B", false, null)))
-
+iterateDefCPS("B", ac, null);
+iterateDefCPS("A", ac, Cont("C", true, Cont("B", false, null)));
 iterateDefCPS(null, ac,
-  Cont(null, true, Cont("A", false, Cont("C", true, Cont("B", false, null)))))
-
-iterateDefCPS(null, ac, Cont("A", false, Cont("C", true, Cont("B", false, null))))
-ac("A") // prints "A"
-iterateDefCPS(null, ac, Cont("C", true, Cont("B", false, null)))
-iterateDefCPS("C", ac, Cont("B", false, null))
-iterateDefCPS(null, ac, Cont(null, true, Cont("C", false, Cont("B", false, null))))
-iterateDefCPS(null, ac, Cont("C", false, Cont("B", false, null)))
-ac("C") // prints "C"
-iterateDefCPS(null, ac, Cont("B", false, null))
-ac("B") // prints "B"
-iterateDefCPS(null, ac, null)
-return
+  Cont(null, true,
+    Cont("A", false, Cont("C", true, Cont("B", false, null)))));
+iterateDefCPS(null, ac,
+  Cont("A", false, Cont("C", true, Cont("B", false, null))));
+ac("A"); // prints "A"
+iterateDefCPS(null, ac, Cont("C", true, Cont("B", false, null)));
+iterateDefCPS("C", ac, Cont("B", false, null));
+iterateDefCPS(null, ac,
+  Cont(null, true, Cont("C", false, Cont("B", false, null))));
+iterateDefCPS(null, ac, Cont("C", false, Cont("B", false, null)));
+ac("C"); // prints "C"
+iterateDefCPS(null, ac, Cont("B", false, null));
+ac("B"); // prints "B"
+iterateDefCPS(null, ac, null);
+return;
 ```
 
 Turning `iterateDefCPS` into an iteration is straightforward now:
 
 ```java
-static <T> void iterate(Tree<T> tree, Consumer<T> action, Cont<T> cont) {
+static <T> void iterate(
+    Tree<T> tree, Consumer<T> action, Cont<T> cont) {
   while (true) {
     if (tree != null) {
       cont = new Cont<>(tree, false, cont);
@@ -761,7 +786,7 @@ iterate(tree, Utils::printContent, null);
 // e m x g vz j qc g b d o rp l r
 ```
 
-Writing the post-order iterator is a bit trickier than the pre-order case. Since the `Cont` class now has a third field, we can't transform it directly into a `Stack` of `Tree`. We need to create another class – called `TreeTup` here – to capture the tree and the `isLeft` field value. Then we can create a stack of `TreeTup`. Rest of the transformation is pretty mechanical:
+Writing the post-order iterator is a bit trickier than the pre-order case. Since the `Cont` class now has a third field, we can't transform it directly into a `Stack` of `Tree`s. We need to create another class – called `TreeTup` here – to capture the tree and the `isLeft` field value. Then we can create a stack of `TreeTup`s. Rest of the transformation is pretty mechanical:
 
 ```java
 class PostOrderIterator<T> implements Iterator<T> {
@@ -817,7 +842,8 @@ We can compare the `iterate` function with the `next` method above and we see th
 Now for the final run:
 
 ```java
-PostOrderIterator<String> postOrderIterator = new PostOrderIterator<>(tree);
+PostOrderIterator<String> postOrderIterator =
+  new PostOrderIterator<>(tree);
 while (postOrderIterator.hasNext()) {
   Utils.printContent(postOrderIterator.next());
 }
@@ -826,10 +852,11 @@ while (postOrderIterator.hasNext()) {
 
 ## Conclusion
 
-We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. However, _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. Discuss this post in the [comments] below.
+We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see [here][3]. Discuss this post in the [comments] below.
 
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
+[3]: https://code.abhinavsarkar.net/abhin4v/algorist/src/branch/master/src/main/java/net/abhinavsarkar/algorist/TreeIterators.java
 [Java-style iterators]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html
 [Pre-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/
 [Post-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/
