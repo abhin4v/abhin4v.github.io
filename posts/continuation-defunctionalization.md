@@ -100,9 +100,9 @@ class Main {
 }
 ```
 
-The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong. [Pre-order] and [Post-order] iterators are even more complicated. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading.
-<!--
-[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators]. -->
+The iterator code uses a `Stack` to simulate the program stack of the recursive traversal. It takes some thinking about the tree structure and the program flow to write this code and it is easy to get it wrong. [Pre-order] and [Post-order] iterators are even more complicated[^int-ext-iterators]. Is there a way to mechanically derive the iterators starting from the recursive traversals by following some rules? Indeed there is! Keep reading.
+
+[^int-ext-iterators]: These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of [Internal Iterators]. [Java-style iterators] on the other hand are examples of [External Iterators].
 
 <div class="page-break"></div>
 
@@ -393,7 +393,9 @@ Readers should try to imagine (or work out) the program call stack when it runs 
 
 ## Defunctionalization
 
-_Defunctionalization_ is replacing functions with data. In this context, it means replacing the continuation lambdas with objects. The reason for doing Defunctionalization will become clear as we proceed.
+_Defunctionalization_ is replacing functions with data. In this context, it means replacing the continuation lambdas with objects. The reason for doing Defunctionalization will become clear as we proceed.[^defunc]
+
+[^defunc]: Learn more about _Defunctionalization_ in the [Defunctionalization at Work][4] paper by Olivier Danvy and Lasse R. Nielsen.
 
 For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:
 
@@ -861,6 +863,7 @@ We have learned how to mechanically write pre-order and post-order iterators for
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
 [3]: https://code.abhinavsarkar.net/abhin4v/algorist/src/branch/master/src/main/java/net/abhinavsarkar/algorist/TreeIterators.java
+[4]: https://www.brics.dk/RS/01/23/BRICS-RS-01-23.pdf
 [Java-style iterators]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html
 [Pre-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/
 [Post-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/
