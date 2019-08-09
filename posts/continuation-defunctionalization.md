@@ -9,7 +9,7 @@ toc: left
 
 Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are [multiple ways of traversing][1] a [binary tree]{.w} in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write [Java-style iterators] for them? Is there a way to mechanically derive these iterators from the traversal functions? Let's find out.
 
-<!-- more -->
+<!--more-->
 
 * toc
 
