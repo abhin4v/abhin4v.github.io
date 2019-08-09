@@ -761,6 +761,73 @@ iterate(tree, Utils::printContent, null);
 // e m x g vz j qc g b d o rp l r
 ```
 
+Writing the post-order iterator is a bit trickier than the pre-order case. Since the `Cont` class now has a third field, we can't transform it directly into a `Stack` of `Tree`. We need to create another class – called `TreeTup` here – to capture the tree and the `isLeft` field value. Then we can create a stack of `TreeTup`. Rest of the transformation is pretty mechanical:
+
+```java
+class PostOrderIterator<T> implements Iterator<T> {
+  private static class TreeTup<T> {
+    final Tree<T> tree;
+    final boolean isLeft;
+
+    public TreeTup(Tree<T> tree, boolean isLeft) {
+      this.tree = tree;
+      this.isLeft = isLeft;
+    }
+  }
+
+  private Tree<T> tree;
+  private Stack<TreeTup<T>> stack = new Stack<>();
+
+  PostOrderIterator(Tree<T> tree) { this.tree = tree; }
+
+  @Override
+  public boolean hasNext() {
+    return tree != null || !stack.isEmpty();
+  }
+
+  @Override
+  public T next() {
+    while (hasNext()) {
+      if (tree != null) {
+        stack.push(new TreeTup<>(tree, false));
+        if (tree.right != null) {
+          stack.push(new TreeTup<>(tree.right, true));
+        }
+        tree = tree.left;
+      } else {
+        if (!stack.isEmpty()) {
+          TreeTup<T> tup = stack.pop();
+          if (tup.isLeft) {
+            tree = tup.tree;
+          } else {
+            T content = tup.tree.content;
+            tree = null;
+            return content;
+          }
+        }
+      }
+    }
+    throw new NoSuchElementException();
+  }
+}
+```
+
+We can compare the `iterate` function with the `next` method above and we see that it's pretty much the same code except for an additional check to not push null values onto the stack.
+
+Now for the final run:
+
+```java
+PostOrderIterator<String> postOrderIterator = new PostOrderIterator<>(tree);
+while (postOrderIterator.hasNext()) {
+  Utils.printContent(postOrderIterator.next());
+}
+// e m x g vz j qc g b d o rp l r
+```
+
+## Conclusion
+
+We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. However, _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. Discuss this post in the [comments] below.
+
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
 [2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
 [Java-style iterators]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html
@@ -772,3 +839,4 @@ iterate(tree, Utils::printContent, null);
 [`Callable`]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/concurrent/Callable.html
 [sample tree]: #sample-tree
 [Stack]: https://en.wikipedia.org/wiki/Stack_(abstract_data_type)
+[comments]: #comment-container
