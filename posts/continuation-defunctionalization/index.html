@@ -858,8 +858,10 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
     <fieldset>
       <input name="options[slug]" type="hidden" value="continuation-defunctionalization">
       <input id="comment-redirect" name="options[redirect]" type="hidden" value="https://abhinavsarkar.net/posts/continuation-defunctionalization/">
+      <!--
       <input type="hidden" name="options[reCaptcha][siteKey]" value="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV">
       <input type="hidden" name="options[reCaptcha][secret]" value="xE425Zd96uokSf/t1saMqEvj17HfjYJ4+/gv6B4uqA+PxiCjwSb8BUYeWrIBRKrz+YRLCkC53qSa9HYfBNWohuI1+9SBpw5XJ9WJkilJ/DaSjWP9FsKQM9OLdMDgGo8fUQ3hlfs4svgBzItjOitabrjvYI4u0k4RTsq5ccYISeo=">
+       -->
       <input type="hidden" id="comment-parent" name="fields[reply_to]" value>
       <textarea id="comment-text" name="fields[message]" required placeholder="Comment"></textarea>
       <span style="font-size: smaller">
@@ -870,9 +872,9 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
       <div style="font-size: smaller; margin-bottom: 1em;">
           Email is used just to show an avatar image and is not displayed or stored
       </div>
-      <div class="g-recaptcha" data-sitekey="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV"></div>
-      <div style="font-size: smaller;">Comments are moderated. They will appear below after they are approved.</div>
+      <!-- <div class="g-recaptcha" data-sitekey="6LfX6DMUAAAAAK_kbS1LfKKy4bNJbsUmyZFADnfV"></div> -->
       <input id="comment-form-submit" type="submit" value="Post Comment">
+      <div style="font-size: smaller;">Comments are moderated. They will appear below after they are approved.</div>
       <span id="comment-form-message"></span>
     </fieldset>
   </form>
@@ -884,7 +886,7 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
   </div>
 </div>
 <script src="//abhinavsarkar.net/js/comment-form.js" defer async></script>
-<script src="https://www.google.com/recaptcha/api.js" defer async></script>
+<!-- <script src="https://www.google.com/recaptcha/api.js" defer async></script> -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js" defer async></script>
 <script src="https://cdn.jsdelivr.net/npm/promise-polyfill@6.1.0/promise.min.js" defer async></script>
 
