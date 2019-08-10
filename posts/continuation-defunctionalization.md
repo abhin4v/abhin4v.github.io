@@ -395,7 +395,7 @@ Readers should try to imagine (or work out) the program call stack when it runs 
 
 _Defunctionalization_ is replacing functions with data. In this context, it means replacing the continuation lambdas with objects. The reason for doing Defunctionalization will become clear as we proceed.[^defunc]
 
-[^defunc]: Learn more about _Defunctionalization_ in the [Defunctionalization at Work][4] paper by Olivier Danvy and Lasse R. Nielsen.
+[^defunc]: Learn more about _Defunctionalization_ in the [Defunctionalization at Work][4] paper by Olivier Danvy and Lasse R. Nielsen.
 
 For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:
 
