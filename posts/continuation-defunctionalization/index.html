@@ -370,7 +370,7 @@
 │ │ │ ├ d
 │ │ │ ├ o</code></pre>
 <h2 id="recursive-traversal" data-track-content data-content-name="recursive-traversal" data-content-piece="continuation-defunctionalization">Recursive Traversal<a href="#recursive-traversal" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
-<p>Credits first: this blog post and the code in it is inspired by <a href="http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
+<p>Credits first: this blog post and the code in it is inspired by <a href="https://web.archive.org/web/20190719160744/http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
 <p>Let’s start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order: each node’s content is printed before its children’s.</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb8-1"><a href="#cb8-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</span>
 <span id="cb8-2"><a href="#cb8-2"></a>  <span class="kw">if</span> (tree != <span class="kw">null</span>) {</span>
@@ -830,7 +830,7 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <hr />
 <ol>
 <li id="fn1" role="doc-endnote"><p>These traversals can be generalized to take a function which they call with the content of each node. Such traversals are examples of <a href="https://en.wikipedia.org/wiki/Iterator#Internal_Iterators" target="_blank" rel="noopener">Internal Iterators</a>. <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> on the other hand are examples of <a href="https://en.wikipedia.org/wiki/Iterator#External_iterators_and_the_iterator_pattern" target="_blank" rel="noopener">External Iterators</a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2" role="doc-endnote"><p>Learn more about <em>Defunctionalization</em> in the <a href="https://www.brics.dk/RS/01/23/BRICS-RS-01-23.pdf" target="_blank" rel="noopener">Defunctionalization at Work</a> paper by Olivier Danvy and Lasse R. Nielsen.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2" role="doc-endnote"><p>Learn more about <em>Defunctionalization</em> in the <a href="https://web.archive.org/web/20170810092103/http://www.brics.dk/RS/01/23/BRICS-RS-01-23.pdf" target="_blank" rel="noopener">Defunctionalization at Work</a> paper by Olivier Danvy and Lasse R. Nielsen.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
     </section>
@@ -899,13 +899,18 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 
 
 <div id="mentions-container">
-  <h3>1 mentions
+  <h3>2 mentions
     <a href="#top" class="top-link" title="Back to top"></a>
   </h3>
   <ul>
   
     <li class="mention" id="#mention-664159">
       <a href="https://lobste.rs/s/wz699y" target="_blank" rel="noopener">lobste.rs</a>
+      <span class="date">Aug  9, 2019</span>
+    </li>
+  
+    <li class="mention" id="#mention-664506">
+      <a href="https://www.reddit.com/r/programming/comments/co23yu/mechanically_deriving_binary_tree_iterators_with/" target="_blank" rel="noopener">reddit/r/programming</a>
       <span class="date">Aug  9, 2019</span>
     </li>
   

@@ -852,9 +852,9 @@ while (postOrderIterator.hasNext()) {
 We have learned how to mechanically write pre-order and post-order iterators for binary trees. We started with simple recursive traversals and through a series of steps, we transformed them into Java-style iterators. _Continuation Defunctionalization_ can be used to transform any recursion into an iteration. I hope it will come handy for you some day. The complete code with including the in-order iterator can be see [here][3]. Discuss this post on [lobsters], [r/programming] or in the [comments] below.
 
 [1]: https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search
-[2]: http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
+[2]: https://web.archive.org/web/20190719160744/http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html
 [3]: https://code.abhinavsarkar.net/abhin4v/algorist/src/branch/master/src/main/java/net/abhinavsarkar/algorist/TreeIterators.java
-[4]: https://www.brics.dk/RS/01/23/BRICS-RS-01-23.pdf
+[4]: https://web.archive.org/web/20170810092103/http://www.brics.dk/RS/01/23/BRICS-RS-01-23.pdf
 [Java-style iterators]: https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html
 [Pre-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-preorder-traversal/
 [Post-order]: https://web.archive.org/web/20181208215122/https://www.geeksforgeeks.org/iterative-postorder-traversal-using-stack/
