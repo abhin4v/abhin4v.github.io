@@ -42,9 +42,11 @@ linkHeaders (Header level attr@(ident, _, _) content) =
 linkHeaders x = x
 
 linkImages :: Inline -> Inline
-linkImages (Image (_, _, _) elems (url, _)) =
-  Link ("", ["img-link"], []) [Image ("",[],[]) [] (url, ""), Span nullAttr elems] (url, "")
-linkImages x = x
+linkImages img@(Image attrs@(_, cls, _) elems (url, title)) =
+  if "nolink" `elem` cls
+  then img
+  else Link ("", ["img-link"], []) [Image attrs [] (url, title), Span nullAttr elems] (url, title)
+linkImages i = i
 
 mkScrollableTables :: Block -> Block
 mkScrollableTables table@Table{} = Div ("", ["scrollable-table"], []) [table]

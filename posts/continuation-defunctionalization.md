@@ -249,23 +249,8 @@ Output:
 ```
 
 Pictorially:
-```{.plain .low-line-height}
-                                 ┌───┐
-                                 │ r │
-                                 └─┬─┘
-                ┌──────────────────┴──────────────────┐
-              ┌─┴─┐                                 ┌─┴─┐
-              │ j │                                 │ l │
-              └─┬─┘                                 └─┬─┘
-       ┌────────┴────────┐                   ┌────────┴────────┐
-     ┌─┴─┐            ┌──┴─┐               ┌─┴─┐            ┌──┴─┐
-     │ x │            │ vz │               │ b │            │ rp │
-     └─┬─┘            └──┬─┘               └─┬─┘            └──┬─┘
-  ┌────┴────┐       ┌────┘              ┌────┴────┐       ┌────┴────┐
-┌─┴─┐     ┌─┴─┐   ┌─┴─┐              ┌──┴─┐     ┌─┴─┐   ┌─┴─┐     ┌─┴─┐
-│ e │     │ m │   │ g │              │ qc │     │ g │   │ d │     │ o │
-└───┘     └───┘   └───┘              └────┘     └───┘   └───┘     └───┘
-```
+
+![](/images/continuation-defunctionalization/sample-tree.svg){.full-width .nolink}
 
 We'll use this sample tree to test our code so refer back to this tree to check the correctness of the code.
 

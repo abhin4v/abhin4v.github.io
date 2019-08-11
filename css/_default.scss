@@ -118,6 +118,9 @@ em {
 .sourceCode a {
   color: inherit;
 }
+img.full-width {
+  width: 100%;
+}
 
 @mixin fancy-ul() {
   padding-left: 2em;
