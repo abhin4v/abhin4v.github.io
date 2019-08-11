@@ -17,12 +17,18 @@ Binary tree is the simplest of tree data structures. It is a tree in which each 
 
 This is a sample binary tree:
 
-```plain
-         D
-       /   \
-      C      F
-     / \    / \
-    A   B  E   G
+```{.plain .low-line-height}
+           ┌───┐
+           │ D │
+           └─┬─┘
+      ┌──────┴───────┐
+    ┌─┴─┐          ┌─┴─┐
+    │ C │          │ F │
+    └─┬─┘          └─┬─┘
+  ┌───┴───┐      ┌───┴───┐
+┌─┴─┐   ┌─┴─┐  ┌─┴─┐   ┌─┴─┐
+│ A │   │ B │  │ E │   │ G │
+└───┘   └───┘  └───┘   └───┘
 ```
 
 Different traversals of this tree will yield different sequences of elements:
@@ -242,6 +248,27 @@ Output:
 │ │ │ ├ o
 ```
 
+Pictorially:
+```{.plain .low-line-height}
+                                 ┌───┐
+                                 │ r │
+                                 └─┬─┘
+                ┌──────────────────┴──────────────────┐
+              ┌─┴─┐                                 ┌─┴─┐
+              │ j │                                 │ l │
+              └─┬─┘                                 └─┬─┘
+       ┌────────┴────────┐                   ┌────────┴────────┐
+     ┌─┴─┐            ┌──┴─┐               ┌─┴─┐            ┌──┴─┐
+     │ x │            │ vz │               │ b │            │ rp │
+     └─┬─┘            └──┬─┘               └─┬─┘            └──┬─┘
+  ┌────┴────┐       ┌────┘              ┌────┴────┐       ┌────┴────┐
+┌─┴─┐     ┌─┴─┐   ┌─┴─┐              ┌──┴─┐     ┌─┴─┐   ┌─┴─┐     ┌─┴─┐
+│ e │     │ m │   │ g │              │ qc │     │ g │   │ d │     │ o │
+└───┘     └───┘   └───┘              └────┘     └───┘   └───┘     └───┘
+```
+
+We'll use this sample tree to test our code so refer back to this tree to check the correctness of the code.
+
 ## Recursive Traversal
 
 Credits first: this blog post and the code in it is inspired by [The Best Refactoring You've Never Heard Of][2] article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I've chosen to implement pre-order and post-order iterators.
@@ -370,10 +397,14 @@ We pass an empty lambda to start with which will be the last continuation to be 
 
 Readers are suggested to take a while to grok this transformation because this is a crucial step. Here's how the program call stack looks like for this simple tree:
 
-```plain
-       B
-     /   \
-    A     C
+```{.plain .low-line-height}
+    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘
 ```
 
 ```java
@@ -455,10 +486,14 @@ iterateDefCPS(tree, Utils::printContent, null)
 
 It works! To visualize it better, let's look at the program call stack again for the simple tree:
 
-```plain
-       B
-     /   \
-    A     C
+```{.plain .low-line-height}
+    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘
 ```
 
 ```java
@@ -616,10 +651,14 @@ iterateCPS(tree, Utils::printContent, () -> { return; });
 
 It works as expected but let's walk through the program call stack for our simple tree for `iterateCPS` to understand it better:
 
-```plain
-       B
-     /   \
-    A     C
+```{.plain .low-line-height}
+    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘
 ```
 
 ```java
@@ -729,10 +768,14 @@ iterateDefCPS(tree, Utils::printContent, null);
 
 Let's walk through the call stack of `iterateDefCPS` for the simple tree:
 
-```plain
-       B
-     /   \
-    A     C
+```{.plain .low-line-height}
+    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘
 ```
 
 ```java
