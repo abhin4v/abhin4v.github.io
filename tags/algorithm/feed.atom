@@ -37,11 +37,17 @@
 <nav id="toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#defunctionalization">Defunctionalization</a></li><li><a href="#iteration">Iteration</a></li><li><a href="#pre-order-iterator">Pre-order Iterator</a></li><li><a href="#post-order-iterator">Post-order Iterator</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
 <h2 id="traversals-and-iterations" data-track-content data-content-name="traversals-and-iterations" data-content-piece="continuation-defunctionalization">Traversals and Iterations<a href="#traversals-and-iterations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>This is a sample binary tree:</p>
-<pre class="plain"><code>         D
-       /   \
-      C      F
-     / \    / \
-    A   B  E   G</code></pre>
+<pre class="plain low-line-height"><code>           ┌───┐
+           │ D │
+           └─┬─┘
+      ┌──────┴───────┐
+    ┌─┴─┐          ┌─┴─┐
+    │ C │          │ F │
+    └─┬─┘          └─┬─┘
+  ┌───┴───┐      ┌───┴───┐
+┌─┴─┐   ┌─┴─┐  ┌─┴─┐   ┌─┴─┐
+│ A │   │ B │  │ E │   │ G │
+└───┘   └───┘  └───┘   └───┘</code></pre>
 <p>Different traversals of this tree will yield different sequences of elements:</p>
 <div class="scrollable-table">
 <table>
@@ -244,6 +250,9 @@
 │ │ ├ rp
 │ │ │ ├ d
 │ │ │ ├ o</code></pre>
+<p>Pictorially:</p>
+<p><img src="https://abhinavsarkar.net/images/continuation-defunctionalization/sample-tree.svg" class="full-width nolink" /></p>
+<p>We’ll use this sample tree to test our code so refer back to this tree to check the correctness of the code.</p>
 <h2 id="recursive-traversal" data-track-content data-content-name="recursive-traversal" data-content-piece="continuation-defunctionalization">Recursive Traversal<a href="#recursive-traversal" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Credits first: this blog post and the code in it is inspired by <a href="https://web.archive.org/web/20190719160744/http://www.pathsensitive.com/2019/07/the-best-refactoring-youve-never-heard.html" target="_blank" rel="noopener">The Best Refactoring You’ve Never Heard Of</a> article (and talk) by James Koppel. In the talk, James shows how to transform a recursive in-order traversal into an iterative one. For this post, I’ve chosen to implement pre-order and post-order iterators.</p>
 <p>Let’s start with the recursive pre-order traversal which prints the content of every node in the tree in pre-order: each node’s content is printed before its children’s.</p>
@@ -332,9 +341,13 @@
 <span id="cb15-2"><a href="#cb15-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>We pass an empty lambda to start with which will be the last continuation to be called.</p>
 <p>Readers are suggested to take a while to grok this transformation because this is a crucial step. Here’s how the program call stack looks like for this simple tree:</p>
-<pre class="plain"><code>       B
-     /   \
-    A     C</code></pre>
+<pre class="plain low-line-height"><code>    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘</code></pre>
 <div class="sourceCode" id="cb17"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb17-1"><a href="#cb17-1"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">return</span>); <span class="co">// prints &quot;B&quot;</span></span>
 <span id="cb17-2"><a href="#cb17-2"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;A&quot;</span>, ac, () -&gt;</span>
 <span id="cb17-3"><a href="#cb17-3"></a>  <span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, <span class="kw">return</span>)); <span class="co">// prints &quot;A&quot;</span></span>
@@ -389,9 +402,13 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <div class="sourceCode" id="cb19"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb19-1"><a href="#cb19-1"></a><span class="fu">iterateDefCPS</span>(tree, Utils::printContent, <span class="kw">null</span>)</span>
 <span id="cb19-2"><a href="#cb19-2"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>It works! To visualize it better, let’s look at the program call stack again for the simple tree:</p>
-<pre class="plain"><code>       B
-     /   \
-    A     C</code></pre>
+<pre class="plain low-line-height"><code>    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘</code></pre>
 <div class="sourceCode" id="cb21"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb21-1"><a href="#cb21-1"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">null</span>); <span class="co">// prints &quot;B&quot;</span></span>
 <span id="cb21-2"><a href="#cb21-2"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;A&quot;</span>, ac, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">null</span>)); <span class="co">// prints &quot;A&quot;</span></span>
 <span id="cb21-3"><a href="#cb21-3"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac, <span class="fu">Cont</span>(<span class="kw">null</span>, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">null</span>));</span>
@@ -510,9 +527,13 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <span id="cb27-5"><a href="#cb27-5"></a><span class="fu">iterateCPS</span>(tree, Utils::printContent, () -&gt; { <span class="kw">return</span>; });</span>
 <span id="cb27-6"><a href="#cb27-6"></a><span class="co">// e m x g vz j qc g b d o rp l r</span></span></code></pre></div>
 <p>It works as expected but let’s walk through the program call stack for our simple tree for <code>iterateCPS</code> to understand it better:</p>
-<pre class="plain"><code>       B
-     /   \
-    A     C</code></pre>
+<pre class="plain low-line-height"><code>    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">return</span>);</span>
 <span id="cb29-2"><a href="#cb29-2"></a><span class="fu">iterateCPS</span>(<span class="st">&quot;A&quot;</span>, ac, () -&gt; <span class="fu">iterateCPS</span>(<span class="st">&quot;C&quot;</span>, ac, () -&gt; {</span>
 <span id="cb29-3"><a href="#cb29-3"></a>  <span class="fu">ac</span>(<span class="st">&quot;B&quot;</span>); <span class="kw">return</span></span>
@@ -596,9 +617,13 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <div class="sourceCode" id="cb31"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb31-1"><a href="#cb31-1"></a><span class="fu">iterateDefCPS</span>(tree, Utils::printContent, <span class="kw">null</span>);</span>
 <span id="cb31-2"><a href="#cb31-2"></a><span class="co">// e m x g vz j qc g b d o rp l r</span></span></code></pre></div>
 <p>Let’s walk through the call stack of <code>iterateDefCPS</code> for the simple tree:</p>
-<pre class="plain"><code>       B
-     /   \
-    A     C</code></pre>
+<pre class="plain low-line-height"><code>    ┌───┐
+    │ B │
+    └─┬─┘
+  ┌───┴───┐
+┌─┴─┐   ┌─┴─┐
+│ A │   │ C │
+└───┘   └───┘</code></pre>
 <div class="sourceCode" id="cb33"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb33-1"><a href="#cb33-1"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;B&quot;</span>, ac, <span class="kw">null</span>);</span>
 <span id="cb33-2"><a href="#cb33-2"></a><span class="fu">iterateDefCPS</span>(<span class="st">&quot;A&quot;</span>, ac, <span class="fu">Cont</span>(<span class="st">&quot;C&quot;</span>, <span class="kw">true</span>, <span class="fu">Cont</span>(<span class="st">&quot;B&quot;</span>, <span class="kw">false</span>, <span class="kw">null</span>)));</span>
 <span id="cb33-3"><a href="#cb33-3"></a><span class="fu">iterateDefCPS</span>(<span class="kw">null</span>, ac,</span>
