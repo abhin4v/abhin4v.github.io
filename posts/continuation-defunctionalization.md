@@ -23,11 +23,11 @@ This is a sample binary tree:
            └─┬─┘
       ┌──────┴───────┐
     ┌─┴─┐          ┌─┴─┐
-    │ C │          │ F │
+    │ B │          │ F │
     └─┬─┘          └─┬─┘
   ┌───┴───┐      ┌───┴───┐
 ┌─┴─┐   ┌─┴─┐  ┌─┴─┐   ┌─┴─┐
-│ A │   │ B │  │ E │   │ G │
+│ A │   │ C │  │ E │   │ G │
 └───┘   └───┘  └───┘   └───┘
 ```
 
@@ -35,9 +35,9 @@ Different traversals of this tree will yield different sequences of elements:
 
 Traversal   Output
 ----------  -------
-in-order    ACBDEFG
-pre-order   DCABFEG
-post-order  ABCEGFD
+in-order    ABCDEFG
+pre-order   DBACFEG
+post-order  ACBEGFD
 
 The code for the recursive in-order traversal (traverse left child, then self, then right child) is very simple. Assuming a binary tree is represented with a `Tree` class like:
 
