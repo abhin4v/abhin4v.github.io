@@ -42,11 +42,11 @@
            └─┬─┘
       ┌──────┴───────┐
     ┌─┴─┐          ┌─┴─┐
-    │ C │          │ F │
+    │ B │          │ F │
     └─┬─┘          └─┬─┘
   ┌───┴───┐      ┌───┴───┐
 ┌─┴─┐   ┌─┴─┐  ┌─┴─┐   ┌─┴─┐
-│ A │   │ B │  │ E │   │ G │
+│ A │   │ C │  │ E │   │ G │
 └───┘   └───┘  └───┘   └───┘</code></pre>
 <p>Different traversals of this tree will yield different sequences of elements:</p>
 <div class="scrollable-table">
@@ -60,15 +60,15 @@
 <tbody>
 <tr class="odd">
 <td style="text-align: left;">in-order</td>
-<td style="text-align: left;">ACBDEFG</td>
+<td style="text-align: left;">ABCDEFG</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;">pre-order</td>
-<td style="text-align: left;">DCABFEG</td>
+<td style="text-align: left;">DBACFEG</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">post-order</td>
-<td style="text-align: left;">ABCEGFD</td>
+<td style="text-align: left;">ACBEGFD</td>
 </tr>
 </tbody>
 </table>
