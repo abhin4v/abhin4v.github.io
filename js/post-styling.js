@@ -89,6 +89,9 @@
     styleFootnotes();
     styleCode();
     styleFootnotes();
+    jQuery("article.post section.body p:contains('emboldened')").each(function() {
+      jQuery(this).html(jQuery(this).html().replace('emboldened', 'highlighted'));
+    });
   }
 
   function style() {
@@ -110,6 +113,9 @@
   function unstyle() {
     unstyleCode();
     unstyleFootnotes();
+    jQuery("article.post section.body p:contains('highlighted')").each(function() {
+      jQuery(this).html(jQuery(this).html().replace('highlighted', 'emboldened'));
+    });
   }
 
   window.onbeforeprint = unstyle;
