@@ -574,8 +574,6 @@ while (preOrderIterator.hasNext()) {
 
 It prints the elements in correct order. This completes our mechanical derivation of the pre-order iterator from recursive traversal code.
 
-<div class="page-break"></div>
-
 ## Post-order Iterator
 
 Post-order iterator derivation turns out to be a bit more complicated that the pre-order one. Nevertheless, let's get started.

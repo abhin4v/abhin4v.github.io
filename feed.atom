@@ -484,9 +484,6 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
 <span id="cb25-5"><a href="#cb25-5"></a>}</span>
 <span id="cb25-6"><a href="#cb25-6"></a><span class="co">// r j x e m vz g l b qc g rp d o</span></span></code></pre></div>
 <p>It prints the elements in correct order. This completes our mechanical derivation of the pre-order iterator from recursive traversal code.</p>
-<div class="page-break">
-
-</div>
 <h2 id="post-order-iterator" data-track-content data-content-name="post-order-iterator" data-content-piece="continuation-defunctionalization">Post-order Iterator<a href="#post-order-iterator" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p>Post-order iterator derivation turns out to be a bit more complicated that the pre-order one. Nevertheless, let’s get started.</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode java"><code class="sourceCode java"><span id="cb26-1"><a href="#cb26-1"></a><span class="dt">static</span> &lt;T&gt; <span class="dt">void</span> <span class="fu">printRecursive</span>(Tree&lt;T&gt; tree) {</span>
