@@ -361,7 +361,7 @@
 <p>Readers should try to imagine (or work out) the program call stack when it runs on the <a href="#sample-tree">sample tree</a> and see how continuations are layered over continuations.</p>
 <h2 id="defunctionalization" data-track-content data-content-name="defunctionalization" data-content-piece="continuation-defunctionalization">Defunctionalization<a href="#defunctionalization" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <p><em>Defunctionalization</em> is replacing functions with data. In this context, it means replacing the continuation lambdas with objects. The reason for doing Defunctionalization will become clear as we proceed.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-<p>For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:</p>
+<p>For defunctionalizing the continuations, we need to find out all possible cases of continuations we have:</p>
 <pre class="java"><code>static &lt;T&gt; void iterateCPS(
     Tree&lt;T&gt; tree, Consumer&lt;T&gt; action, Runnable cont) {
   if (tree != null) {

@@ -404,7 +404,7 @@ _Defunctionalization_ is replacing functions with data. In this context, it mean
 
 [^defunc]: Learn more about _Defunctionalization_ in the [Defunctionalization at Work][4] paper by Olivier Danvy and Lasse R. Nielsen.
 
-For Defunctionalizing the continuations, we need to find out all possible cases of continuations we have:
+For defunctionalizing the continuations, we need to find out all possible cases of continuations we have:
 
 ```{.java emphasize=5:35-6:42,12:39-12:55}
 static <T> void iterateCPS(
