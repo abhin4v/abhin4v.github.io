@@ -11,7 +11,7 @@ import Data.Monoid ((<>))
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
 import Hakyll hiding (relativizeUrls)
-import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody)
+import Network.HTTP.Simple (httpLBS, parseRequest, getResponseBody, getResponseStatusCode)
 import Site.Util
 import Text.Blaze.Html ((!), toValue)
 import Text.Blaze.Html.Renderer.String (renderHtml)
@@ -37,36 +37,38 @@ getActivities :: String -> IO [Activity]
 getActivities feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
     Left (_ :: SomeException) -> return []
-    Right resp -> case parseFeedSource $ getResponseBody resp of
-      Nothing -> return []
-      Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
-        forM rssItems $ \RSSItem {..} -> do
-          t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
-          let activityName = T.unpack $ fromJust rssItemTitle
-              activityType = getActivityType activityName
-              desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
-                     . splitOn ", "
-                     . head
-                     . endBy " (no power meter)"
-                     . drop 2
-                     . dropWhile (/= ':')
-                     . T.unpack
-                     . fromJust
-                     $ rssItemDescription
-              rawEffort = read
-                          . dropWhileEnd isAlpha
-                          . fromJust
-                          . lookup "Distance"
-                          $ desc
-              activityEffort = (if activityType == "ride" then rawEffort else rawEffort * runEffortMult) * pageScaleMult
-          return Activity { activityName   = activityName
-                          , activityType   = activityType
-                          , activityEffort = activityEffort
-                          , activityURL    = T.unpack $ fromJust rssItemLink
-                          , activityTime   = t
-                          , activityDesc   = renderDesc desc
-                          }
-      _ -> error "Impossible"
+    Right resp | getResponseStatusCode resp == 200 ->
+      case parseFeedSource $ getResponseBody resp of
+        Nothing -> return []
+        Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
+          forM rssItems $ \RSSItem {..} -> do
+            t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
+            let activityName = T.unpack $ fromJust rssItemTitle
+                activityType = getActivityType activityName
+                desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
+                      . splitOn ", "
+                      . head
+                      . endBy " (no power meter)"
+                      . drop 2
+                      . dropWhile (/= ':')
+                      . T.unpack
+                      . fromJust
+                      $ rssItemDescription
+                rawEffort = read
+                            . dropWhileEnd isAlpha
+                            . fromJust
+                            . lookup "Distance"
+                            $ desc
+                activityEffort = (if activityType == "ride" then rawEffort else rawEffort * runEffortMult) * pageScaleMult
+            return Activity { activityName   = activityName
+                            , activityType   = activityType
+                            , activityEffort = activityEffort
+                            , activityURL    = T.unpack $ fromJust rssItemLink
+                            , activityTime   = t
+                            , activityDesc   = renderDesc desc
+                            }
+        _ -> error "Impossible"
+    Right resp -> return []
   where
     getActivityType activityName
       | "Ride" `isInfixOf` activityName = "ride"
