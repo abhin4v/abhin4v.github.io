@@ -16,3 +16,7 @@ a.img-link {
 .fancy-ul ul {
   @include fancy-ul();
 }
+
+ul.fancy {
+  @include fancy-ul();
+}
