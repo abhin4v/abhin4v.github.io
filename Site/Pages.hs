@@ -1,9 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 module Site.Pages where
 
 import Data.List (sortOn)
 import Data.Maybe (catMaybes)
 import qualified Data.Ord
+import Data.Time.Clock (UTCTime)
+import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeOrError)
 import Hakyll hiding (relativizeUrls)
 import Site.Pandoc
 import Site.PostCompiler
@@ -41,7 +43,9 @@ nowPages env = do
     nowCtx = field "path" (return . itemBody) <>
              field "date" (return . getDate . itemBody)
 
-    getDate = take 10 . drop 4
+    getDate s = let
+        date :: UTCTime = parseTimeOrError True defaultTimeLocale "%Y-%m-%d" . take 10 . drop 4 $ s
+      in formatTime defaultTimeLocale "%B %e, %Y" date
 
 page :: String -> Pattern -> String -> Rules ()
 page pageName pat env =
