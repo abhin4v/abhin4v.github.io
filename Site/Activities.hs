@@ -68,7 +68,7 @@ getActivities feedURL =
                             , activityDesc   = renderDesc desc
                             }
         _ -> error "Impossible"
-    Right resp -> return []
+    Right _ -> return []
   where
     getActivityType activityName
       | "Ride" `isInfixOf` activityName = "ride"
