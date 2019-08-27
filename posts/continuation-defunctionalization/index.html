@@ -112,9 +112,9 @@
         </header>
 
         <main role="main">
-            <article itemscope itemtype="http://schema.org/Article" class="post">
+            <article itemscope itemtype="http://schema.org/Article" class="post h-entry">
     <header>
-        <h1 itemprop="name" id="#top">Mechanically Deriving Binary Tree Iterators with Continuation Defunctionalization</h1>
+        <h1 itemprop="name" id="#top" class="p-name">Mechanically Deriving Binary Tree Iterators with Continuation Defunctionalization</h1>
     </header>
 
     <ul class="headers">
@@ -122,7 +122,7 @@
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M6 0l-1 1 2 2 1-1-2-2zm-2 2l-4 4v2h2l4-4-2-2z"></path>
         </svg>
-        <span itemprop="datePublished" content="2019-08-09">August  9, 2019</span>
+        <span itemprop="datePublished" content="2019-08-09"><time class="dt-published" datetime="2019-08-09">August  9, 2019</time></span>
       </li>
       <li class="header post-ert">
         <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
@@ -148,7 +148,7 @@
         
         <svg class="assist-icon tags" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
           <path d="M0 0v2l3 3 1.5-1.5.5-.5-2-2-1-1h-2zm3.41 0l3 3-1.19 1.22.78.78 2-2-3-3h-1.59zm-1.91 1c.28 0 .5.22.5.5s-.22.5-.5.5-.5-.22-.5-.5.22-.5.5-.5z" transform="translate(0 1)"></path>
-        </svg> Tags: <a href="//abhinavsarkar.net/tags/java/">java</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/algorithm/">algorithm</a>
+        </svg> Tags: <span class="p-category"><a href="//abhinavsarkar.net/tags/java/">java</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a>, <a href="//abhinavsarkar.net/tags/algorithm/">algorithm</a></span>
         
       </li>
       <li class="header twitter-button">
@@ -156,7 +156,7 @@
       </li>
     </ul>
 
-    <section itemprop="articleBody" class="body">
+    <section itemprop="articleBody" class="body e-content">
         <p>Binary tree is the simplest of tree data structures. It is a tree in which each node has at most two children. A tree traversal is a process of visiting each node in the tree, exactly once. There are <a href="https://en.wikipedia.org/wiki/Tree_traversal#Depth-first_search" target="_blank" rel="noopener">multiple ways of traversing</a> a <a href="https://en.wikipedia.org/wiki/binary_tree" target="_blank" rel="noopener">binary tree</a> in depth-first fashion with each traversal resulting in a different enumeration of the tree elements. These tree traversals are defined as simple recursive functions. But what if we want to write <a href="https://docs.oracle.com/en/java/javase/12/docs/api/java.base/java/util/Iterator.html" target="_blank" rel="noopener">Java-style iterators</a> for them? Is there a way to mechanically derive these iterators from the traversal functions? Let’s find out.</p>
 <!--more-->
 <nav id="toc"><h3>Contents</h3><ol><li><a href="#traversals-and-iterations">Traversals and Iterations</a></li><li><a href="#binary-tree">Binary Tree</a></li><li><a href="#recursive-traversal">Recursive Traversal</a></li><li><a href="#continuations">Continuations</a></li><li><a href="#defunctionalization">Defunctionalization</a></li><li><a href="#iteration">Iteration</a></li><li><a href="#pre-order-iterator">Pre-order Iterator</a></li><li><a href="#post-order-iterator">Post-order Iterator</a></li><li><a href="#conclusion">Conclusion</a></li></ol></nav>
@@ -858,14 +858,16 @@ iterateCPS(tree, Utils::printContent, <mark class="inline">() -&gt; { return; }<
     </section>
     <section class="source">
         
-          Posted by <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">Abhinav Sarkar</span></span>
+          Posted by <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span itemprop="name" class="p-author">Abhinav Sarkar</span>
+          </span>
         
       <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/continuation-defunctionalization.md" target="_blank" rel="noopener" style="float: right;">
         Post history
       </a>
     </section>
 </article>
-<meta itemprop="url" content="https://abhinavsarkar.net/posts/continuation-defunctionalization/">
+<span itemprop="url" content="https://abhinavsarkar.net/posts/continuation-defunctionalization/" style="display: none" class="u-url u-uid">https://abhinavsarkar.net/posts/continuation-defunctionalization/</span>
 
 <div class="subscription-msg">
   <h3>Like this post? Subscribe below to get future posts by email.</h3>
