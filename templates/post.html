@@ -70,19 +70,7 @@ $partial("templates/comment-list.html")$
 $endif$
 
 $if(mentions_enabled)$
-<div id="mentions-container">
-  <h3>$mention_count$ mentions
-    <a href="#top" class="top-link" title="Back to top"></a>
-  </h3>
-  <ul>
-  $for(mention_links)$
-    <li class="mention" id="#mention-$link_id$">
-      <a href="$link_source$" target="_blank" rel="noopener">$link_source_name$</a>
-      <span class="date">$link_date$</span>
-    </li>
-  $endfor$
-  </ul>
-</div>
+$partial("templates/mentions.html")$
 $endif$
 
 <ul class="pager">

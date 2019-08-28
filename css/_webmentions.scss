@@ -12,6 +12,18 @@
       }
     }
   }
+  .likes, .reposts {
+    margin-top: 0.5em;
+    a {
+      margin-right: 0.3em;
+      &::after {
+        content: ',';
+      }
+      &:last-child::after{
+        content: '',
+      }
+    }
+  }
 }
 
 @media print {

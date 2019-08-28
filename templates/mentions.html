@@ -1,0 +1,28 @@
+<div id="mentions-container">
+  <h3>$mention_count$ mentions
+    <a href="#top" class="top-link" title="Back to top"></a>
+  </h3>
+  <ul>
+  $for(mentions)$
+    <li class="mention" id="#mention-$mention_id$">
+      <a href="$mention_source$" target="_blank" rel="noopener">$mention_source_name$</a>
+      <span class="date">$mention_date$</span>
+    </li>
+  $endfor$
+
+  $if(likes_enabled)$
+  <div class="likes">
+    $likes_count$ $likes_label$:
+    $for(likes)$<a href="$url$" target="_blank" rel="noopener">$name$</a>$endfor$
+  </div>
+  $endif$
+
+  $if(reposts_enabled)$
+  <div class="reposts">
+    $reposts_count$ $reposts_label$:
+    $for(reposts)$<a href="$url$" target="_blank" rel="noopener">$name$</a>$endfor$
+  </div>
+  $endif$
+  </ul>
+</div>
+  

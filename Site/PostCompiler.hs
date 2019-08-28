@@ -58,12 +58,7 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
 
   let ctxWithMentions = case mentions of
         Nothing -> ctx
-        Just WM.Webmentions{..} ->
-          let mentionCount = length wmLinks
-          in ctx <>
-            boolField "mentions_enabled" (const $ mentionCount /= 0) <>
-            constField "mention_count" (show mentionCount) <>
-            listField "mention_links" WM.mentionLinkCtx (mapM makeItem wmLinks)
+        Just wm -> ctx <> WM.webmentionsCtx wm
 
   pandocContentCompiler (postContentTransforms postSlug alignment) content
     >>= saveSnapshot "content"
