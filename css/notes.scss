@@ -15,6 +15,9 @@ ul.fancy {
   }
   li {
     line-height: 1.6em;
+    .likes, .reposts {
+      font-size: 0.75em;
+    }
     em {
       font-style: normal;
       background: #e6e6fa;

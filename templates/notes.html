@@ -6,6 +6,8 @@
     <time datetime="$mdate$">$date$</time>
     <a href="$link$">$name$</a>
     $for(tags)$<em><a href="//notes.abhinavsarkar.net/tags/$tag$">$tag$</a></em>$endfor$
+    $if(likes_enabled)$<span class="likes">$likes_count$❤️</span>$endif$
+    $if(reposts_enabled)$<span class="reposts">$reposts_count$🔁</span>$endif$
   </li>
   $endfor$
 </ul>

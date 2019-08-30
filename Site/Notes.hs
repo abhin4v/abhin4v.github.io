@@ -10,14 +10,16 @@ import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, iso8601DateFormat, f
 import Hakyll hiding (relativizeUrls)
 import Network.HTTP.Simple (httpLBS, getResponseBody, parseRequest)
 import Site.Util
+import Site.Webmentions
 import Text.Feed.Import (parseFeedSource)
 import Text.Feed.Types (Feed(..))
 import qualified Text.Atom.Feed as Atom
 
-data Note = Note { noteName :: String
-                 , noteLink :: String
-                 , noteDate :: LocalTime
-                 , noteTags :: [String]
+data Note = Note { noteName        :: String
+                 , noteLink        :: String
+                 , noteDate        :: LocalTime
+                 , noteTags        :: [String]
+                 , noteWebmentions :: Webmentions
                  }
 
 getNotes :: String -> IO [Note]
@@ -33,7 +35,8 @@ getNotes sitemapURL =
           let name = Atom.txtToString $ Atom.entryTitle e
               link = T.unpack $ Atom.linkHref $ head $ Atom.entryLinks e
               tags = map (T.unpack . Atom.catTerm) $ Atom.entryCategories e
-          return $ Note name link date tags
+          wms <- getWebmentions link
+          return $ Note name link date tags wms
       _ -> error "Impossible"
 
 indexNotesCount :: Int
@@ -67,7 +70,15 @@ notes env = do
               noteField "name" noteName <>
               noteField "date" (formatTime defaultTimeLocale "%b %e %Y" . noteDate) <>
               noteField "mdate" (formatTime defaultTimeLocale "%F" . noteDate) <>
-              listFieldWith "tags" tagCtx (mapM makeItem . noteTags . itemBody)
+              listFieldWith "tags" tagCtx (mapM makeItem . noteTags . itemBody) <>
+              boolField "likes_enabled" (not . null . filterLinks Like . itemBody) <>
+              noteField "likes_count" (show . length . filterLinks Like) <>
+              boolField "reposts_enabled" (not . null . filterLinks Repost . itemBody) <>
+              noteField "reposts_count" (show . length . filterLinks Repost)
+
+    filterLinks typ = filter (\Mention{..} -> activityType mentionActivity == typ)
+                      . wmLinks
+                      . noteWebmentions
 
     tagCtx = field "tag" (return . itemBody)
 

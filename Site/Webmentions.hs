@@ -39,7 +39,7 @@ data Mention = Mention { mentionId           :: Integer
                        } deriving (Show, Generic)
 
 newtype Webmentions = Webmentions {wmLinks :: [Mention]}
-                      deriving (Show, Generic, Semigroup)
+                      deriving (Show, Generic, Semigroup, Monoid)
 
 instance FromJSON ActivityType where
   parseJSON = genericParseJSON $ defaultOptions { constructorTagModifier = map toLower }
@@ -59,24 +59,30 @@ instance FromJSON Mention where
 instance FromJSON Webmentions where
   parseJSON = genericParseJSON $ aesonDrop 2 snakeCase
 
-getWebmentions :: String -> IO (Maybe Webmentions)
-getWebmentions postSlug =
-  fmap (dedupMentions . transform)
-    <$> mconcat [go scheme prefix suffix | scheme <- ["https", "http"]
-                                         , prefix <- ["posts", "drafts"]
-                                         , suffix <- ["", "/"]]
+getPostWebmentions :: String -> IO Webmentions
+getPostWebmentions postSlug = dedupMentions <$>
+  mconcat [ getWebmentions (pageURL scheme prefix suffix)
+          | scheme <- ["https", "http"]
+          , prefix <- ["posts", "drafts"]
+          , suffix <- ["", "/"]
+          ]
   where
-    go scheme prefix suffix =
-      parseRequest (mentionsURL scheme prefix suffix) >>= try . httpLBS >>= \case
-        Left (e :: SomeException) ->
-          trace ("Unable to fetch mentions: " ++ show e) $ return Nothing
-        Right resp -> return $ case eitherDecode' . getResponseBody $ resp of
-          Left err -> trace ("Unable to decode: " ++ err) Nothing
-          Right wm -> Just wm
-
-    mentionsURL scheme prefix suffix =
-      "https://webmention.io/api/mentions?perPage=100&target=" <>
+    pageURL scheme prefix suffix =
       scheme <> "://abhinavsarkar.net" <> "/" <> prefix <> "/" <> postSlug <> suffix
+
+    dedupMentions wm@Webmentions{..} = wm {wmLinks = nubBy ((==) `on` mentionSource) wmLinks}
+
+getWebmentions :: String -> IO Webmentions
+getWebmentions url = maybe (Webmentions []) transform <$> go url
+  where
+    go url = parseRequest (mentionsURL url) >>= try . httpLBS >>= \case
+      Left (e :: SomeException) ->
+        trace ("Unable to fetch mentions for " ++ url ++ " :" ++ show e) $ return Nothing
+      Right resp -> return $ case eitherDecode' . getResponseBody $ resp of
+        Left err -> trace ("Unable to decode mentions for " ++ url ++ " :" ++ err) Nothing
+        Right wm -> Just wm
+
+    mentionsURL url = "https://webmention.io/api/mentions?perPage=100&target=" <> url
 
     transform Webmentions{..} =
       Webmentions
@@ -86,8 +92,6 @@ getWebmentions postSlug =
 
     cleanupMention mention@Mention{..} =
       mention { mentionTarget = T.replace "/drafts/" "/posts/" mentionTarget }
-
-    dedupMentions wm@Webmentions{..} = wm {wmLinks = nubBy ((==) `on` mentionSource) wmLinks}
 
 sourceName :: T.Text -> T.Text
 sourceName source

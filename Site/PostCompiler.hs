@@ -35,7 +35,9 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
   comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   let commentCount = show $ length comments
 
-  mentions <- if commentsEnabled then unsafeCompiler $ WM.getWebmentions postSlug else return Nothing
+  mentions <- if commentsEnabled
+              then unsafeCompiler $ WM.getPostWebmentions postSlug
+              else return mempty
 
   sortedPosts <- sortChronological posts
   nextPostCtx <- navLinkCtx "next_post" $ sortedPosts `itemAfter` post
@@ -54,16 +56,13 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
             constField "comment_count" commentCount <>
             listField "comments" siteContext (return comments) <>
             boolField "comments_enabled" (const commentsEnabled) <>
-            boolField "live_reload" (const $ env == "DEV")
-
-  let ctxWithMentions = case mentions of
-        Nothing -> ctx
-        Just wm -> ctx <> WM.webmentionsCtx wm
+            boolField "live_reload" (const $ env == "DEV") <>
+            WM.webmentionsCtx mentions
 
   pandocContentCompiler (postContentTransforms postSlug alignment) content
     >>= saveSnapshot "content"
-    >>= loadAndApplyTemplate "templates/post.html" ctxWithMentions
-    >>= loadAndApplyTemplate "templates/default.html" ctxWithMentions
+    >>= loadAndApplyTemplate "templates/post.html" ctx
+    >>= loadAndApplyTemplate "templates/default.html" ctx
     >>= relativizeUrls env
     >>= removeIndexHtml
 
