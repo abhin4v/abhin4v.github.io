@@ -49,10 +49,6 @@ data Activity = Activity { activityName   :: String
                          , activityDesc   :: String
                          } deriving (Show)
 
-runEffortMult, pageScaleMult :: Double
-runEffortMult = 3.0
-pageScaleMult = 0.8
-
 getActivities :: String -> IO [Activity]
 getActivities feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
@@ -83,7 +79,7 @@ parseRSSItems rssItems = fmap catMaybes . forM rssItems $ \RSSItem {..} -> do
                   . fromJust
                   . lookup "Distance"
                   $ desc
-      activityEffort = (if activityType == Ride then rawEffort else rawEffort * runEffortMult) * pageScaleMult
+      activityEffort = if activityType == Ride then rawEffort else rawEffort * runEffortMult
   return $ if activityType `elem` allowedActivityTypes
     then Just $ Activity { activityName   = activityName
                          , activityType   = activityType
@@ -94,6 +90,8 @@ parseRSSItems rssItems = fmap catMaybes . forM rssItems $ \RSSItem {..} -> do
                          }
     else Nothing
   where
+    runEffortMult = 3.0
+
     renderDesc :: [(String, String)] -> String
     renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) ->
       H.li ! A.title (toValue k) $ H.toHtml $ cleanVal k v
@@ -134,8 +132,12 @@ activities env = do
     activityCtx =
       mconcat [ activityField "name" activityName
               , activityField "type" $ show . activityType
-              , activityField "eff" $ show . activityEffort
+              , activityField "width" $ show . (* widthMult) . activityEffort
+              , activityField "max_width" $ show . (* maxWidthMult) . activityEffort
               , activityField "url" activityURL
               , activityField "desc" activityDesc
               , activityField "date" (formatTime defaultTimeLocale "%b %e" . activityTime)
               ]
+
+    widthMult = 0.75
+    maxWidthMult = 0.6
