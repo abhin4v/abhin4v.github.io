@@ -6,7 +6,7 @@ import Control.Monad (forM, forM_)
 import Data.Char (isAlpha)
 import Data.List (isInfixOf, dropWhileEnd)
 import Data.List.Split (endBy, splitOn)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, catMaybes)
 import Data.Monoid ((<>))
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
@@ -21,8 +21,28 @@ import Text.Feed.Import (parseFeedSource)
 import Text.Feed.Types (Feed(..))
 import Text.RSS.Syntax (RSS(..), RSSChannel(..), RSSItem(..))
 
+data ActivityType = Ride | Run | Walk | Swim | Unknown deriving (Eq)
+
+instance Show ActivityType where
+  show Ride    = "ride"
+  show Run     = "run"
+  show Walk    = "walk"
+  show Swim    = "swim"
+  show Unknown = "unknown"
+
+getActivityType :: String -> ActivityType
+getActivityType activityName
+  | "Ride" `isInfixOf` activityName = Ride
+  | "Run" `isInfixOf` activityName  = Run
+  | "Walk" `isInfixOf` activityName = Walk
+  | "Swim" `isInfixOf` activityName = Swim
+  | otherwise = Unknown
+
+allowedActivityTypes :: [ActivityType]
+allowedActivityTypes = [Ride, Run, Walk]
+
 data Activity = Activity { activityName   :: String
-                         , activityType   :: String
+                         , activityType   :: ActivityType
                          , activityEffort :: Double
                          , activityURL    :: String
                          , activityTime   :: LocalTime
@@ -40,42 +60,40 @@ getActivities feedURL =
     Right resp | getResponseStatusCode resp == 200 ->
       case parseFeedSource $ getResponseBody resp of
         Nothing -> return []
-        Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
-          forM rssItems $ \RSSItem {..} -> do
-            t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
-            let activityName = T.unpack $ fromJust rssItemTitle
-                activityType = getActivityType activityName
-                desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
-                      . splitOn ", "
-                      . head
-                      . endBy " (no power meter)"
-                      . drop 2
-                      . dropWhile (/= ':')
-                      . T.unpack
-                      . fromJust
-                      $ rssItemDescription
-                rawEffort = read
-                            . dropWhileEnd isAlpha
-                            . fromJust
-                            . lookup "Distance"
-                            $ desc
-                activityEffort = (if activityType == "ride" then rawEffort else rawEffort * runEffortMult) * pageScaleMult
-            return Activity { activityName   = activityName
-                            , activityType   = activityType
-                            , activityEffort = activityEffort
-                            , activityURL    = T.unpack $ fromJust rssItemLink
-                            , activityTime   = t
-                            , activityDesc   = renderDesc desc
-                            }
+        Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) -> parseRSSItems rssItems
         _ -> error "Impossible"
     Right _ -> return []
-  where
-    getActivityType activityName
-      | "Ride" `isInfixOf` activityName = "ride"
-      | "Walk" `isInfixOf` activityName = "walk"
-      | "Swim" `isInfixOf` activityName = "swim"
-      | otherwise = "run"
 
+parseRSSItems :: [RSSItem] -> IO [Activity]
+parseRSSItems rssItems = fmap catMaybes . forM rssItems $ \RSSItem {..} -> do
+  t <- parseTimeM True defaultTimeLocale rfc822DateFormat (T.unpack $ fromJust rssItemPubDate)
+  let activityName = T.unpack $ fromJust rssItemTitle
+      activityType = getActivityType activityName
+      desc = map (\x -> let [k, v] = splitOn ": " x in (k, v))
+            . splitOn ", "
+            . head
+            . endBy " (no power meter)"
+            . drop 2
+            . dropWhile (/= ':')
+            . T.unpack
+            . fromJust
+            $ rssItemDescription
+      rawEffort = read
+                  . dropWhileEnd isAlpha
+                  . fromJust
+                  . lookup "Distance"
+                  $ desc
+      activityEffort = (if activityType == Ride then rawEffort else rawEffort * runEffortMult) * pageScaleMult
+  return $ if activityType `elem` allowedActivityTypes
+    then Just $ Activity { activityName   = activityName
+                         , activityType   = activityType
+                         , activityEffort = activityEffort
+                         , activityURL    = T.unpack $ fromJust rssItemLink
+                         , activityTime   = t
+                         , activityDesc   = renderDesc desc
+                         }
+    else Nothing
+  where
     renderDesc :: [(String, String)] -> String
     renderDesc kvs = renderHtml $ forM_ kvs $ \(k, v) ->
       H.li ! A.title (toValue k) $ H.toHtml $ cleanVal k v
@@ -96,8 +114,7 @@ activities env = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities' <- fmap removeSwims
-                       . unsafeCompiler
+        activities' <- unsafeCompiler
                        . getActivities
                        $ "http://feedmyride.net/activities/3485865"
 
@@ -112,13 +129,11 @@ activities env = do
           >>= relativizeUrls env
           >>= removeIndexHtml
   where
-    removeSwims = filter ((/= "swim") . activityType)
-
     activityField name f = field name (return . f . itemBody)
 
     activityCtx =
       mconcat [ activityField "name" activityName
-              , activityField "type" activityType
+              , activityField "type" $ show . activityType
               , activityField "eff" $ show . activityEffort
               , activityField "url" activityURL
               , activityField "desc" activityDesc
