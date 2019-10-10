@@ -6,8 +6,8 @@ import Site.Photos (createThumbnails, photoFields)
 import Site.PostCompiler
 import Site.Util
 
-home :: Tags -> String -> Rules ()
-home tags env = do
+home :: Tags -> String -> Bool -> Rules ()
+home tags env offline = do
   imagesDep <- makePatternDependency "photos/images/*.jpg"
   notesDep <- makePatternDependency "notes.html"
   rulesExtraDependencies [imagesDep, notesDep] $
@@ -17,7 +17,7 @@ home tags env = do
         let indexPostCount = 3
         allPosts <- loadAllSnapshots ("posts/*" .&&. hasNoVersion) "content"
         posts <- take indexPostCount <$> recentFirst allPosts
-        latestNotes :: String <- loadSnapshotBody "notes.html" "latest"
+        latestNotes <- if offline then return "" else loadSnapshotBody "notes.html" "latest"
 
         let morePostCount = length allPosts - indexPostCount
             morePostCountW = numToWord morePostCount

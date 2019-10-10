@@ -19,9 +19,6 @@ import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
 import Text.Pandoc.Walk (walk)
 
-compilePosts :: Tags -> String -> [Identifier] -> Rules ()
-compilePosts = doCompilePosts True
-
 compileDrafts :: Tags -> String -> [Identifier] -> Rules ()
 compileDrafts = doCompilePosts False
 

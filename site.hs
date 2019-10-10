@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
+import Control.Monad (unless)
 import Data.Maybe (fromMaybe)
 import Hakyll
 import Site.Activities
@@ -19,22 +20,24 @@ import System.Environment (lookupEnv)
 main :: IO ()
 main = do
   env <- fromMaybe "DEV" <$> lookupEnv "ENV"
+  offline <- (== Just "1") <$> lookupEnv "OFFLINE"
   hakyll $ do
     tags <- buildTags "posts/*" (fromCapture "tags/*.html")
     draftTags <- buildTags "drafts/*" (fromCapture "tags/*.html")
 
     assets
     pages env
-    posts tags env
+    posts tags env offline
     drafts draftTags env
-    home tags env
+    home tags env offline
     collections tags env
-    notes env
-    activities env
-    readings env
     photos env
     talks env
     shortURLs
+    unless offline $ do
+      notes env
+      activities env
+      readings env
 
     -- templates
     match "templates/*" $ compile templateBodyCompiler

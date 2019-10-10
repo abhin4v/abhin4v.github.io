@@ -7,15 +7,15 @@ import Site.PostCompiler
 import Site.Util
 import System.FilePath.Posix (splitExtension)
 
-posts :: Tags -> String -> Rules ()
-posts tags env = do
+posts :: Tags -> String -> Bool -> Rules ()
+posts tags env offline = do
   -- post comments
   comments
 
   -- posts
   match "posts/*.md" $ do
     route indexHTMLRoute
-    compilePosts tags env =<< getMatches "posts/*.md"
+    doCompilePosts (not offline) tags env =<< getMatches "posts/*.md"
 
   -- raw posts
   match "posts/*.md" $ version "raw" $ do
