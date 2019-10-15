@@ -3,7 +3,8 @@ title: "Functional Programming Patterns"
 aspect_ratio: '4:3'
 ---
 
-class: roomy big-h1 no-footer
+class: roomy big-h1 no-footer bgs-contain
+background-image: url(/slides/fp-patterns/lambda.svg)
 
 .ff-fancy[
 # Functional Programming Patterns]
@@ -24,9 +25,14 @@ class: center pt-6
 # FICO
 
 ---
-class: title
+class: title fogscreen
+background-image: url(/slides/fp-patterns/complex.jpg)
 
 # Complexity
+
+.footer[
+  - Credit: [flic.kr/p/d2xjKN](https://flic.kr/p/d2xjKN)
+]
 
 ???
 
@@ -90,9 +96,14 @@ Rube Goldberg Machine
 - i claim that functional programming helps in reducing accidental complexity as compared to OOP
 
 ---
-class: title
+class: title fogscreen
+background-image: url(/slides/fp-patterns/circuit.jpg)
 
 # Functional Programming
+
+.footer[
+  - Credit: [flic.kr/p/5V7C8S](https://flic.kr/p/5V7C8S)
+]
 
 ---
 
@@ -196,6 +207,16 @@ class: title fogscreen
 ```
 
 ---
+class: title fogscreen
+background-image: url(/slides/fp-patterns/pattern.jpg)
+
+# Functional Programming Patterns
+
+.footer[
+  - Credit: [flic.kr/p/3erjC9](https://flic.kr/p/3erjC9)
+]
+
+---
 
 # Functional Programming Patterns
 
@@ -224,7 +245,7 @@ class: title
 
 ---
 class: title
-# Data-oriented Programming
+# Data-oriented <br> Programming
 
 ---
 class: title
@@ -232,6 +253,22 @@ class: title
 
 ---
 
+class: title fogscreen
+background-image: url(/slides/fp-patterns/simple.jpg)
+
+![](/slides/fp-patterns/rich.jpeg# absolute r-2 t-30pct w-30pct)
+
+---
+
+# References
+
+- [No Silver Bullet —Essence and Accident in Software Engineering](http://worrydream.com/refs/Brooks-NoSilverBullet.pdf)
+- [Why Functional Programming Matters](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
+- [Translating an Enterprise Spring Webapp to Clojure](https://blog.jakubholy.net/translating-enterprise-spring-app-to-clojure/)
+- [Functional Core; Imperative Shell](https://gist.github.com/kbilsted/abdc017858cad68c3e7926b03646554e)
+- [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
+
+---
 class: big-h1 no-footer center mr-5 thank-you ph-1
 
 .ff-fancy[
