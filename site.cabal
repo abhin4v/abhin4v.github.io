@@ -11,7 +11,6 @@ executable site
                   , pandoc
                   , pandoc-types
                   , containers
-                  , mtl
                   , blaze-html
                   , filepath
                   , time

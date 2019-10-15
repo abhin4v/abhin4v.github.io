@@ -42,12 +42,12 @@
   }
   ul {
     list-style: none;
-  }
-  li::before {
-    content: "» ";
-    display: inline-block;
-    width: 1em;
-    margin-left: -1em;
+    li::before {
+      content: "» ";
+      display: inline-block;
+      width: 1em;
+      margin-left: -1em;
+    }
   }
   .footer {
     li::before {
@@ -59,6 +59,8 @@
   }
   em {
     border-bottom: 2px solid #333;
+    margin-right: 0.1em;
+    margin-left: -0.1em;
   }
   &.thank-you {
     padding-top: 10rem;
