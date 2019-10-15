@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en" prefix="og: http://ogp.me/ns#">
+  <head>
+    <meta charset="utf-8">
+    <meta name="copyright" content="Abhinav Sarkar">
+    <meta name="robots" content="index,follow">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <meta property="og:title" content="Functional Programming Patterns">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:site_name" content="abhinavsarkar.net">
+    <meta name="language" content="EN">
+    <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
+    <meta name="HandheldFriendly" content="True">
+
+    <title>Functional Programming Patterns | abhinavsarkar.net</title>
+    <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
+    <link rel="stylesheet" type="text/css" href="//abhinavsarkar.net/css/remark.css" />
+
+    <!-- Matomo -->
+    <script type="text/javascript">
+      var _paq = _paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      _paq.push(['trackVisibleContentImpressions']);
+      (function() {
+        var u="//anna.abhinavsarkar.net/";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '1']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();
+    </script>
+    <!-- End Matomo Code -->
+  </head>
+  <body>
+    <noscript>
+      <p>Javascript is required to view this slideshow.</p>
+    </noscript>
+    <textarea id="source">
+class: roomy big-h1 no-footer
+
+# Functional Programming Patterns
+.right[## Abhinav Sarkar
+  ## Oct 2019
+]
+
+???
+
+- ask about java and functional programming experience
+
+---
+class: center pt-6
+
+# Flipkart
+# nilenso
+# Capillary
+# FICO
+
+---
+class: title
+
+# Complexity
+
+???
+
+- what is the biggest challenge for programmers these days?
+- it's complexity
+- thanks for Moore's law and improvements in compilers and runtimes, we don't need to care about nitty-gritties of performance of most of the programs we write anymore
+- and thanks to the same, the computers are running the world now.
+- which has lead to more and more complex things being implemented in software.
+
+---
+
+# Complexity
+
+- Complexity is the degree of entanglement in software.
+- Complex programs are hard to understand and hence hard to change.
+
+???
+
+- I bet you have seen complex codebases
+- These are generally codebases which no one wants to touch
+- Development of these projects get slower and slower and finally you do a massive rewrite hoping that it'll make working on these projects fast again
+- Fred Brooks discussed complexity in great details in his 1986 paper titled "No Silver Bullet – Essence and Accident in Software Engineering".
+- In the paper, Fred classifies complexity in two categories: Essential and Accidental.
+
+---
+
+# Essential Complexity
+
+- Required for solving the problem at hand.
+  - Like implementing Breadth-first search algorithm for finding the shortest path.
+  - It is unavoidable regardless of which tools and frameworks you use.
+
+---
+
+# Accidental Complexity
+
+- Not inherent to the problem; brought while writing the program.
+--
+
+  - Choose to use _C_? Now you have to manage memory too.
+--
+
+  - Choose to use _Java_? Now you have to model everything as objects.
+--
+
+  - Choose to use _node_? Now you have to deal with 3 million dependencies.
+
+---
+background-image: url(/slides/fp-patterns/rube-goldberg-machine-cartoon-598.jpg)
+
+???
+
+- rude goldberd machine
+  - fragile and opaque
+  - things break easily and mysteriously when trying to make changes
+- good programmers seek to reduce accidental complexity as much as possible
+
+---
+class: title
+
+# Functional Programming
+
+???
+
+- define FP
+- outline important tenets of FP
+- give a simple and familiar example
+- introduce Clojure
+- give a simple clojure example
+
+---
+
+# Functional Programming Patterns
+
+1. Immutable Data; Explicit State
+1. Dataflow Programming
+1. Explicit over Implicit
+1. Common Data Structures over Custom Objects
+1. Data-oriented Programming
+1. Functional Core; Imperative Shell
+
+---
+class: title
+# Immutable Data; <br> Explicit State
+
+---
+class: title
+# Dataflow Programming
+
+---
+class: title
+# Explicit over Implicit
+
+---
+class: title
+# Common Data Structures <br> over <br> Custom Objects
+
+---
+class: title
+# Data-oriented Programming
+
+---
+class: title
+# Functional Core; <br> Imperative Shell
+
+
+    </textarea>
+    <script src="//abhinavsarkar.net/js/remark.min.js" type="text/javascript">
+    </script>
+    <script type="text/javascript">
+      var slideshow = remark.create({
+        highlightStyle: 'atom-one-light',
+        highlightLines: true,
+        countIncrementalSlides: false,
+        slideNumberFormat: '%current%',
+        ratio: '4:3',
+        navigation: {
+          scroll: false,
+          click: true
+        }
+      });
+      document.querySelectorAll("a[href^='http']").forEach(function(a) {
+        a.target = "_blank";
+      });
+    </script>
+    
+  </body>
+</html>
