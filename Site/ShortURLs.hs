@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Site.ShortURLs where
 
 import Control.Monad (forM_)
@@ -11,8 +12,12 @@ urlMappings = [
   ]
 
 shortURLs :: Rules ()
-shortURLs =
+shortURLs = do
   forM_ urlMappings $ \(su, lu) ->
     create [fromFilePath $ "s/" ++ su ++ ".html"] $ do
       route indexHTMLRoute
       compile $ makeItem $ Redirect lu
+
+  create ["s.html"] $ do
+    route indexHTMLRoute
+    compile $ makeItem $ Redirect "/"
