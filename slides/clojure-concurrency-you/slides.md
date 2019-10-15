@@ -954,3 +954,4 @@ class: big-h1 no-footer center mr-5 thank-you ph-1
 # Thanks
 ## [@abhin4v](https://twitter.com/abhin4v)
 abnv.me/ccy
+![QR code](https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http://abnv.me/ccy&choe=UTF-8# center)
