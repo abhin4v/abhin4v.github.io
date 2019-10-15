@@ -7,6 +7,7 @@ import Site.Util
 urlMappings :: [(String, String)]
 urlMappings = [
     ("ccy", "/talks/clojure-concurrency-you/")
+  , ("fpp", "/talks/fp-patterns/")
   ]
 
 shortURLs :: Rules ()
