@@ -111,7 +111,11 @@ class: title
   - Choose to use _node_? Now you have to deal with 3 million dependencies.
 
 ---
-background-image: url(/slides/fp-patterns/rube-goldberg-machine-cartoon-598.jpg)
+class: img-caption
+
+![](/slides/fp-patterns/rube-goldberg-machine-cartoon-598.jpg)
+
+Rube Goldberg Machine
 
 ???
 
@@ -119,19 +123,113 @@ background-image: url(/slides/fp-patterns/rube-goldberg-machine-cartoon-598.jpg)
   - fragile and opaque
   - things break easily and mysteriously when trying to make changes
 - good programmers seek to reduce accidental complexity as much as possible
+- i claim that functional programming helps in reducing accidental complexity as compared to OOP
 
 ---
 class: title
 
 # Functional Programming
 
-???
+---
 
-- define FP
-- outline important tenets of FP
-- give a simple and familiar example
-- introduce Clojure
-- give a simple clojure example
+# Functional Programming
+
+> Functional programming is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing-state and mutable data.
+
+---
+
+# FP: Salient Aspects
+
+- pure functions
+???
+- a function is pure if it's output depends only on it's input and nothing else
+- easier to reason about and debug because they don't depend on mutable state
+- easier to test because there are no dependencies
+- §
+--
+
+- first-class and higher-order functions
+???
+- first-class functions can be passed to and returned from functions
+- functions which take or return functions are called higher-order functions
+- §
+--
+
+- no/constrained mutable state
+???
+- mutable state leads to coupling between components
+- mutable state requires synchronization when working with multiple threads
+- FP eschews mutable state
+- FP languages are immutable by default and mutability is opt-in by using specific constructs
+- §
+--
+
+- no/constrained side-effects
+???
+- side effects are any changes in state that do not depend on the function inputs
+- IO is side effect too
+- code with side effects is harder to reason about
+- FP languages provide specific constructs to constrain side effects
+- §
+--
+
+- optionally, lazy evaluation and static type system
+???
+- some FP languages come with lazy evaluation and/or static type systems
+
+---
+```javascript
+
+let meetups =
+  [{name: 'JS', isActive: true, members: 700},
+   {name: 'Clojure', isActive: true, members: 900},
+   {name: 'Java', isActive: false, members: 600},
+   {name: 'Go', isActive: true, members: 500}];
+
+let totalMembers = meetups
+  .filter(m => m.isActive)
+  .map(m => m.members)
+  .reduce((acc, m) => acc + m, 0);
+```
+
+---
+class: title fogscreen
+![](/slides/clojure-concurrency-you/Clojure.png# absolute t-0 center w-75pct)
+
+# Clojure
+---
+
+# Clojure
+--
+
+- dynamically typed
+--
+
+- functional programming language
+--
+
+- from the Lisp family
+--
+
+- runs on JVM
+
+---
+
+# Clojure
+
+```clojure
+(def meetups
+  [{:name "JS" :is-active true :members 700}
+   {:name "Clojure" :is-active true :members 900}
+   {:name "Java" :is-active false :members 600}
+   {:name "Go" :is-active true :members 500}])
+
+(def total-members
+  (->> meetups
+    (filter :is-active)
+    (map :members)
+    (reduce (fn [acc m] (+ acc m)) 0)))
+```
 
 ---
 
