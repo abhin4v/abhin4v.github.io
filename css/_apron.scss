@@ -3,6 +3,7 @@
   box-sizing: border-box;
   margin: 0px;
   padding: 0px;
+  background-color: #fdfdfd;
 }
 
 @page {
@@ -142,6 +143,7 @@
       margin: 0;
       padding: 1em 0;
       font-weight: normal;
+      font-family: Quicksand, -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
     }
     h1 {
       top: calc(50% - 2.5em);

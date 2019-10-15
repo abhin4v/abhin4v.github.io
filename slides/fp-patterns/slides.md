@@ -5,7 +5,8 @@ aspect_ratio: '4:3'
 
 class: roomy big-h1 no-footer
 
-# Functional Programming Patterns
+.ff-fancy[
+# Functional Programming Patterns]
 .right[## Abhinav Sarkar
   ## Oct 2019
 ]
@@ -233,7 +234,8 @@ class: title
 
 class: big-h1 no-footer center mr-5 thank-you ph-1
 
-# Thanks
+.ff-fancy[
+# Thanks]
 ## [@abhin4v](https://twitter.com/abhin4v)
 abnv.me/fpp
 ![QR code](https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http://abnv.me/fpp&choe=UTF-8# center)

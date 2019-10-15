@@ -1,10 +1,11 @@
 .remark-slide-content {
-  font-family: 'Noto Serif', 'Quattrocento Sans', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
+  color: #333;
   pre, code, kbd, tt, samp {
     font-family: 'Fira Mono', Monaco, "Lucida Sans Typewriter", "Lucida Console", "Andale Mono", "Consolas", monospace;
   }
   h1, h2, h3 {
-    font-family: Cardo, Quattrocento, "Goudy Old Style", "Big Caslon", Palatino, serif;
+    font-family: Cardo, "Goudy Old Style", "Big Caslon", Palatino, serif;
     font-weight: bold;
   }
   table {
@@ -73,6 +74,9 @@
   &.fit-h1 h1 {
     height: 1.25em;
     overflow: hidden;
+  }
+  .ff-fancy * {
+    font-family: Quicksand, -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
   }
 }
 
