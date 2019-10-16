@@ -269,6 +269,161 @@ class: title
 # Immutable Data; <br> Explicit State
 
 ---
+
+# Immutable Data
+
+### What?
+- Objects which once created cannot be changed.
+- All domain objects should be immutable:
+  - User, Account, Transaction, Event etc.
+
+---
+
+# Immutable Data
+
+### Why?
+- No sneaky action-at-distance.
+- Thread safety.
+- Easier to reason about.
+- GC is quite fast now. Creating objects is cheap.
+
+---
+
+# Immutable Data
+
+### How?
+- In Clojure, just use built-in data structures like vector and map.
+- In Java, use Google `@AutoValue` or Lombok `@Value` annotations.
+- Clojure data structures share memory so they are more memory efficient.
+
+---
+class: compact
+
+# Immutable Data: Java
+
+```java
+import lombok.Value;
+import lombok.With;
+
+@Value
+public class Person {
+  private String name;
+  @With private int age;
+  private double score;
+}
+
+Person abhinav = new Person("abhinav", 30, 100.0);
+String name = abhinav.getName();
+Person olderAbhinav = abhinav.withAge(31);
+```
+
+---
+class: compact
+
+# Immutable Data: Clojure
+
+```clojure
+=> (def abhinav {:name "Abhinav" :age 30 :score 100.0})
+{:name "Abhinav", :age 30, :score 100.0}
+
+=> (def name (:name abhinav))
+"Abhinav"
+
+=> (def older-abhinav (assoc abhinav :age 31))
+{:name "Abhinav", :age 31, :score 100.0}
+```
+
+---
+
+# Explicit State
+
+### What?
+- Everything is immutable by default.
+- Mutable state is marked explicitly so.
+- Examples are thread pools, connection pools, dynamic configs, caches etc.
+
+---
+
+# Explicit State
+
+### Why?
+- Mutability is constrained. You know the possible sources of sneaky action-at-distance.
+- Proper thread safety implemented for these specific mutability constructs.
+- Easier to reason about.
+
+---
+
+# Explicit State
+
+### How?
+  - In Clojure, use [`atom`](https://clojure.org/reference/atoms), [`agent`](https://clojure.org/reference/agents) or [`ref`](https://clojure.org/reference/refs).
+  - In Java, use [`AtomicReference`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicReference.html) with immutable value, [`Quasar`](http://www.paralleluniverse.co/quasar/) or [`Akka`](https://doc.akka.io/docs/akka/current/index-actors.html) actors with inaccessible mutable state.
+  - [VAVR library](https://www.vavr.io/) provides persistent DS like Clojure for Java.
+
+---
+class: compact
+
+# Explicit State: Clojure
+
+```clojure
+=> (def abhinav (atom {:hair-color :black :age 33}))
+#'user/abhinav
+=> (swap! abhinav pass-time)
+{:hair-color :gray, :age 34}
+=> (reset! abhinav {:hair-color :none :age 33})
+{:hair-color :none, :age 33}
+=> @abhinav
+{:hair-color :none, :age 33}
+```
+
+--
+
+```clojure
+(defn pass-time [person]
+   (-> person
+      (assoc :hair-color :gray)
+      (update :age inc)))
+```
+
+---
+class: compact
+
+# Explicit State: Java
+
+```java
+class Person {
+  private String hairColor;
+  private int age;
+  public Person(String hairColor, int age) {
+    this.hairColor = hairColor;
+    this.age = age;
+  }
+  public Person withAge(int age) {
+    return new Person(this.hairColor, age);
+  }
+  public Person withHairColor(String hairColor) {
+    return new Person(hairColor, this.age);
+  }
+  public Person passTime() {
+    return this.withHairColor("Gray").withAge(this.age + 1);
+  }
+}
+```
+
+---
+class: compact
+
+# Explicit State: Java
+
+```java
+AtomicReference<Person> abhinav =
+      new AtomicReference(new Person("Black", 33));
+abhinav.updateAndGet(Person::passTime);
+abhinav.set(new Person(null, 33));
+abhinav.get();
+```
+
+---
 class: title
 # Dataflow Programming
 
@@ -312,7 +467,7 @@ class: big-h1 no-footer center mr-5 thank-you ph-1
 # Thanks]
 ## [@abhin4v](https://twitter.com/abhin4v)
 abnv.me/fpp
-![QR code](https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http://abnv.me/fpp&choe=UTF-8# center)
+![QR code](/slides/fp-patterns/qr.png# center)
     </textarea>
     <script src="//abhinavsarkar.net/js/remark.min.js" type="text/javascript">
     </script>
