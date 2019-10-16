@@ -275,4 +275,4 @@ class: big-h1 no-footer center mr-5 thank-you ph-1
 # Thanks]
 ## [@abhin4v](https://twitter.com/abhin4v)
 abnv.me/fpp
-![QR code](https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http://abnv.me/fpp&choe=UTF-8# center)
+![QR code](/slides/fp-patterns/qr.png# center)
