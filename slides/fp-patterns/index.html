@@ -190,6 +190,8 @@ background-image: url(/slides/fp-patterns/circuit.jpg)
 - some FP languages come with lazy evaluation and/or static type systems
 
 ---
+class: no-heading
+
 ```javascript
 
 let meetups =
@@ -260,7 +262,6 @@ background-image: url(/slides/fp-patterns/pattern.jpg)
 1. Immutable Data; Explicit State
 1. Dataflow Programming
 1. Explicit over Implicit
-1. Common Data Structures over Custom Objects
 1. Data-oriented Programming
 1. Functional Core; Imperative Shell
 
@@ -272,7 +273,7 @@ class: title
 
 # Immutable Data
 
-### What?
+.bg-caption[What?]
 - Objects which once created cannot be changed.
 - All domain objects should be immutable:
   - User, Account, Transaction, Event etc.
@@ -281,7 +282,7 @@ class: title
 
 # Immutable Data
 
-### Why?
+.bg-caption[Why?]
 - No sneaky action-at-distance.
 - Thread safety.
 - Easier to reason about.
@@ -291,7 +292,7 @@ class: title
 
 # Immutable Data
 
-### How?
+.bg-caption[How?]
 - In Clojure, just use built-in data structures like vector and map.
 - In Java, use Google `@AutoValue` or Lombok `@Value` annotations.
 - Clojure data structures share memory so they are more memory efficient.
@@ -337,7 +338,7 @@ class: compact
 
 # Explicit State
 
-### What?
+.bg-caption[What?]
 - Everything is immutable by default.
 - Mutable state is marked explicitly so.
 - Examples are thread pools, connection pools, dynamic configs, caches etc.
@@ -346,7 +347,7 @@ class: compact
 
 # Explicit State
 
-### Why?
+.bg-caption[Why?]
 - Mutability is constrained. You know the possible sources of sneaky action-at-distance.
 - Proper thread safety implemented for these specific mutability constructs.
 - Easier to reason about.
@@ -355,7 +356,8 @@ class: compact
 
 # Explicit State
 
-### How?
+.bg-caption[How?]
+
   - In Clojure, use [`atom`](https://clojure.org/reference/atoms), [`agent`](https://clojure.org/reference/agents) or [`ref`](https://clojure.org/reference/refs).
   - In Java, use [`AtomicReference`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicReference.html) with immutable value, [`Quasar`](http://www.paralleluniverse.co/quasar/) or [`Akka`](https://doc.akka.io/docs/akka/current/index-actors.html) actors with inaccessible mutable state.
   - [VAVR library](https://www.vavr.io/) provides persistent DS like Clojure for Java.
@@ -428,12 +430,88 @@ class: title
 # Dataflow Programming
 
 ---
-class: title
-# Explicit over Implicit
+class: compact
+
+# Dataflow Programming
+
+- A programming paradigm that models a program as a directed graph of the data flowing between operations.
+
+--
+
+```java
+public class Compiler {
+  public void compile() {
+    List<File> files = findSourceFiles();
+    List<Token> tokens = tokenizeSourceFiles(files);
+    AST ast = generateAbstractSyntaxTree(tokens);
+    IR ir = generateIntermediateRepresentation(ast);
+    ASM asm = generateAssemblyInstructions(ir);
+    writeAssemblyOutputFiles(asm);
+  }
+}
+```
 
 ---
+class: no-heading
+```clojure
+(defn compile! []
+  (-> (find-source-files!)
+      (tokenize-source-files!)
+      (generate-abstract-syntax-tree)
+      (generate-intermediate-representation)
+      (generate-assembly-instructions)
+      (write-assembly-output-files!)))
+```
+
+---
+class: center
+
+![](dp1.svg)
+
+???
+
+- modelling programs as flow of immutable data
+- each operation does a single thing
+- operations are composed together for full functionality
+- each to extend by inserting operations between
+- each to test each operation in isolation
+
+---
+class: center
+
+![](dp2.svg)
+
+---
+class: center no-heading
+
+.footer[
+  - Source: [frpong](https://github.com/abhin4v/frpong)
+]
+
+![](dp3.svg)
+
+---
+class: center
+
+![](dp4.svg)
+
+???
+
+- fine-grained control of resource allocation
+- easy to monitor each component separately
+
+---
+
+# Dataflow Programming
+
+- In Java, use an Actor framework like [Akka](http://akka.io).
+- Or roll your own using [`ArrayBlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ArrayBlockingQueue.html) and [`ExecutorService`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html).
+- In Clojure, use [core.async](https://www.braveclojure.com/core-async/).
+
+---
+
 class: title
-# Common Data Structures <br> over <br> Custom Objects
+# Explicit over Implicit
 
 ---
 class: title
