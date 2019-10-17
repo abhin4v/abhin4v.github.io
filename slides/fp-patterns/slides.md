@@ -223,7 +223,6 @@ background-image: url(/slides/fp-patterns/pattern.jpg)
 1. Immutable Data; Explicit State
 1. Dataflow Programming
 1. Explicit over Implicit
-1. Common Data Structures over Custom Objects
 1. Data-oriented Programming
 1. Functional Core; Imperative Shell
 
@@ -235,7 +234,7 @@ class: title
 
 # Immutable Data
 
-### What?
+.bg-caption[What?]
 - Objects which once created cannot be changed.
 - All domain objects should be immutable:
   - User, Account, Transaction, Event etc.
@@ -244,7 +243,7 @@ class: title
 
 # Immutable Data
 
-### Why?
+.bg-caption[Why?]
 - No sneaky action-at-distance.
 - Thread safety.
 - Easier to reason about.
@@ -254,7 +253,7 @@ class: title
 
 # Immutable Data
 
-### How?
+.bg-caption[How?]
 - In Clojure, just use built-in data structures like vector and map.
 - In Java, use Google `@AutoValue` or Lombok `@Value` annotations.
 - Clojure data structures share memory so they are more memory efficient.
@@ -300,7 +299,7 @@ class: compact
 
 # Explicit State
 
-### What?
+.bg-caption[What?]
 - Everything is immutable by default.
 - Mutable state is marked explicitly so.
 - Examples are thread pools, connection pools, dynamic configs, caches etc.
@@ -309,7 +308,7 @@ class: compact
 
 # Explicit State
 
-### Why?
+.bg-caption[Why?]
 - Mutability is constrained. You know the possible sources of sneaky action-at-distance.
 - Proper thread safety implemented for these specific mutability constructs.
 - Easier to reason about.
@@ -318,7 +317,8 @@ class: compact
 
 # Explicit State
 
-### How?
+.bg-caption[How?]
+
   - In Clojure, use [`atom`](https://clojure.org/reference/atoms), [`agent`](https://clojure.org/reference/agents) or [`ref`](https://clojure.org/reference/refs).
   - In Java, use [`AtomicReference`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/AtomicReference.html) with immutable value, [`Quasar`](http://www.paralleluniverse.co/quasar/) or [`Akka`](https://doc.akka.io/docs/akka/current/index-actors.html) actors with inaccessible mutable state.
   - [VAVR library](https://www.vavr.io/) provides persistent DS like Clojure for Java.
@@ -393,10 +393,6 @@ class: title
 ---
 class: title
 # Explicit over Implicit
-
----
-class: title
-# Common Data Structures <br> over <br> Custom Objects
 
 ---
 class: title

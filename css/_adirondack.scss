@@ -76,8 +76,11 @@
     height: 1.25em;
     overflow: hidden;
   }
-  .ff-fancy * {
-    font-family: Quicksand, -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
+  .ff-fancy, .ff-fancy * {
+    @extend %ff-fancy;
+  }
+  .fs-xlarge, .fs-xlarge * {
+    @extend %fs-xlarge
   }
 }
 

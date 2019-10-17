@@ -67,3 +67,11 @@
     padding-bottom: 10rem;
   }
 }
+.bg-caption {
+  @extend %absolute;
+  @extend %r-3;
+  @extend %b-3;
+  @extend %ff-fancy;
+  @extend %fs-xlarge;
+  @extend %color-gray-60pct;
+}
