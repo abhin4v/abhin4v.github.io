@@ -153,6 +153,8 @@ background-image: url(/slides/fp-patterns/circuit.jpg)
 - some FP languages come with lazy evaluation and/or static type systems
 
 ---
+class: no-heading
+
 ```javascript
 
 let meetups =
@@ -391,6 +393,86 @@ class: title
 # Dataflow Programming
 
 ---
+class: compact
+
+# Dataflow Programming
+
+- A programming paradigm that models a program as a directed graph of the data flowing between operations.
+
+--
+
+```java
+public class Compiler {
+  public void compile() {
+    List<File> files = findSourceFiles();
+    List<Token> tokens = tokenizeSourceFiles(files);
+    AST ast = generateAbstractSyntaxTree(tokens);
+    IR ir = generateIntermediateRepresentation(ast);
+    ASM asm = generateAssemblyInstructions(ir);
+    writeAssemblyOutputFiles(asm);
+  }
+}
+```
+
+---
+class: no-heading
+```clojure
+(defn compile! []
+  (-> (find-source-files!)
+      (tokenize-source-files!)
+      (generate-abstract-syntax-tree)
+      (generate-intermediate-representation)
+      (generate-assembly-instructions)
+      (write-assembly-output-files!)))
+```
+
+---
+class: center
+
+![](dp1.svg)
+
+???
+
+- modelling programs as flow of immutable data
+- each operation does a single thing
+- operations are composed together for full functionality
+- each to extend by inserting operations between
+- each to test each operation in isolation
+
+---
+class: center
+
+![](dp2.svg)
+
+---
+class: center no-heading
+
+.footer[
+  - Source: [frpong](https://github.com/abhin4v/frpong)
+]
+
+![](dp3.svg)
+
+---
+class: center
+
+![](dp4.svg)
+
+???
+
+- fine-grained control of resource allocation
+- easy to monitor each component separately
+
+---
+
+# Dataflow Programming
+
+- In Java, use an Actor framework like [Akka](http://akka.io).
+- Or roll your own using [`ArrayBlockingQueue`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ArrayBlockingQueue.html) and [`ExecutorService`](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html).
+- In Clojure, use [core.async](https://www.braveclojure.com/core-async/).
+
+---
+
 class: title
 # Explicit over Implicit
 
