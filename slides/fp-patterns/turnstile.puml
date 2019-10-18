@@ -1,0 +1,24 @@
+@startuml
+skinparam Shadowing false
+skinparam BackgroundColor transparent
+skinparam handwritten true
+skinparam Default {
+  FontColor Black
+  FontSize  18
+  FontStyle plain
+  FontName monospace
+}
+
+skinparam component {
+  BackgroundColor PapayaWhip
+  BorderColor Gray
+  ArrowThickness 2
+  ArrowColor Gray
+}
+
+[*] -d-> Locked
+Locked -d-> Unlocked : Coin/<i>Unlock</i>
+Unlocked -u-> Locked : Push/<i>Lock</i>
+Unlocked -r-> Unlocked : Coin
+Locked -l-> Locked : Push
+@enduml
