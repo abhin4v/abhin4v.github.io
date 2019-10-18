@@ -2,6 +2,7 @@
 title: Functional Programming Patterns
 description: "In this talk we will learn some common patterns of building applications in a FP language and contrast them with an OOP language."
 tags_str: clojure, java, functional programming, talk
+page_image: "https://abhinavsarkar.net/slides/fp-patterns/page.png"
 slides_path: fp-patterns
 slides_ratio: 1.33333333333333
 ---
