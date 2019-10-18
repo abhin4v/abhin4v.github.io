@@ -798,7 +798,7 @@ class: title
   - state
   - IO
 - as few conditionals or decisions as possible
-- harder to less
+- harder to test
 - make as thin as possible
 
 ---
