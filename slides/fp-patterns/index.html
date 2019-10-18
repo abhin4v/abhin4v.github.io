@@ -61,6 +61,13 @@ class: center pt-6
 # Capillary
 # FICO
 
+???
+- Alonzo Church - Lambda calculus
+- John McCarthy - LISP
+- Dan Friedman - Scheme
+- Guy Steele - Common Lisp
+- Rich Hickey - Clojure
+
 ---
 class: title fogscreen
 background-image: url(/slides/fp-patterns/complex.jpg)
@@ -783,7 +790,7 @@ class: compact
 # Data as Finite State Machine
 
 .center[
-![](/slides/fp-patterns/turnstile.svg# center)
+![](/slides/fp-patterns/turnstile.svg)
 
 A turnstile's state-machine
 ]
@@ -805,6 +812,59 @@ class: title
 
 ---
 
+# Functional Core; Imperative Shell
+
+.center[![](/slides/fp-patterns/functional-core.jpg# w-60pct)]
+
+---
+
+# Functional Core
+
+- only pure functions
+- no side-effects
+- as many decisions as possible
+- easier to test and to change
+- make as big as possible
+
+---
+
+# Imperative Shell
+
+- only side effects
+  - error handling
+  - state
+  - IO
+- as few conditionals or decisions as possible
+- harder to less
+- make as thin as possible
+
+---
+class: no-heading center
+
+.center[
+![](/slides/fp-patterns/mobius.png# w-60pct)
+
+Mobius Architecture
+]
+
+.footer[
+  - Source: [Mobius Wiki](https://github.com/spotify/mobius/wiki/Concepts)
+]
+---
+class: no-heading center
+
+.center[
+![](/slides/fp-patterns/react-redux.png# w-75pct)
+
+Redux Architecture
+]
+
+.footer[
+  - Source: [Building modern web apps](https://www.esri.com/arcgis-blog/products/js-api-arcgis/3d-gis/react-redux-building-modern-web-apps-with-the-arcgis-js-api)
+]
+
+---
+
 class: title fogscreen
 background-image: url(/slides/fp-patterns/simple.jpg)
 
@@ -817,6 +877,7 @@ background-image: url(/slides/fp-patterns/simple.jpg)
 - [No Silver Bullet —Essence and Accident in Software Engineering](http://worrydream.com/refs/Brooks-NoSilverBullet.pdf)
 - [Why Functional Programming Matters](https://www.cs.kent.ac.uk/people/staff/dat/miranda/whyfp90.pdf)
 - [Translating an Enterprise Spring Webapp to Clojure](https://blog.jakubholy.net/translating-enterprise-spring-app-to-clojure/)
+- [Java with a Clojure Mindset](https://danlebrero.com/2019/03/06/java-with-a-clojure-mindset/)
 - [Functional Core; Imperative Shell](https://gist.github.com/kbilsted/abdc017858cad68c3e7926b03646554e)
 - [Simple Made Easy](https://www.infoq.com/presentations/Simple-Made-Easy/)
 
