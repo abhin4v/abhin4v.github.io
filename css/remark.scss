@@ -66,6 +66,22 @@
     padding-top: 10rem;
     padding-bottom: 10rem;
   }
+  .no-list ul, .yes-list ul {
+    margin-top: 0;
+    li {
+      margin-bottom: 0.5em;
+      text-indent: -0.2em;
+      &::before {
+        width: 1.2em;
+      }
+    }
+  }
+  .no-list ul li::before {
+    content: "❌";
+  }
+  .yes-list ul li::before {
+    content: "✔️";
+  }
 }
 .bg-caption {
   @extend %absolute;
