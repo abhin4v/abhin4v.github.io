@@ -475,6 +475,7 @@ class: center
 - operations are composed together for full functionality
 - each to extend by inserting operations between
 - each to test each operation in isolation
+- state, if any, is either hidden in the operations or outside the system
 
 ---
 class: center
@@ -514,6 +515,151 @@ class: title
 # Explicit over Implicit
 
 ---
+class: col-2 compact
+
+# Explicit over Implicit
+
+.no-list[
+- Dependency Injection
+- Aspect Oriented Programming
+- Hidden Code Generation
+- Threadlocals
+- Hidden Middlewares
+]
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+---
+class: col-2 compact
+
+# Explicit over Implicit
+
+.no-list[
+- Dependency Injection
+- Aspect Oriented Programming
+- Hidden Code Generation
+- Threadlocals
+- Hidden Middlewares
+]
+
+.yes-list[
+- Higher-order functions
+- Macros
+- Explicit stateful components
+- Passing context as function parameter
+]
+
+???
+
+- you may not realize it but these days, Java programs use a lot of implicit "magical" things
+
+---
+class: compact
+
+# Explicit over Implicit
+
+Replace
+
+```java
+@Transactional
+void transferMoney(Account from, Account to, Amount amount) {
+  accountDAO.subtract(from, amount);
+  accountDAO.add(to, amount);
+}
+```
+
+--
+
+with
+
+```clojure
+(defn transfer-money [from to amount]
+  (java.jdbc/with-db-transaction [txn db-conn-pool]
+    (account-dao/subtract txn from amount)
+    (account-dao/add txn to amount)))
+```
+
+---
+class: compact
+
+# Explicit over Implicit
+
+Replace
+
+```java
+@Timed(.. some setting ...)
+void importantBusinessFunction() { .. }
+```
+
+--
+
+with
+
+```clojure
+(defn important-business-function []
+  (timed
+    {:some-settings ...}
+    (do-something-important)))
+```
+
+---
+class: compact fs-75pct
+
+# Explicit over Implicit
+
+Replace
+
+```java
+@RequestMapping(value = "/{org_nr}/devices")
+@Authorization(
+        resource = @TargetResource(
+          type = ORGANIZATION, identifiedBy = "org_nr"),
+        requiresPermission = ANY_ROLE,
+        requiresAuthenticationLevel = TWO_FACTOR
+)
+List<Devices> getDevices(@RequestParam("org_nr") String orgNr) { .. }
+```
+
+--
+
+with
+
+```clojure
+(GET "/:org_nr/devices" [org-nr :as req]
+  (check-auth
+    {:target [:organization org-nr]
+     :role :any
+     :level :two-factor}
+     req
+    #(get-devices org-nr))))
+```
+---
+class: compact
+
+# Explicit over Implicit
+
+```clojure
+(def handler
+  (-> routes
+    (make-handler)
+    (wrap-swagger-ui "/swagger-ui")
+    (wrap-defaults api-defaults)
+    (wrap-json-params)
+    (wrap-json-response)
+    (wrap-monitoring)
+    (wrap-errors)))
+
+(run-jetty handler {:port 3000})
+```
+
+---
+
 class: title
 # Data-oriented <br> Programming
 
