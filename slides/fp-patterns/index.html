@@ -459,6 +459,12 @@ public class Compiler {
 ```
 
 ---
+class: center
+
+![](dp1.svg)
+
+---
+
 class: no-heading
 ```clojure
 (defn compile! []
@@ -469,11 +475,6 @@ class: no-heading
       (generate-assembly-instructions)
       (write-assembly-output-files!)))
 ```
-
----
-class: center
-
-![](dp1.svg)
 
 ???
 
@@ -835,7 +836,7 @@ class: title
   - state
   - IO
 - as few conditionals or decisions as possible
-- harder to less
+- harder to test
 - make as thin as possible
 
 ---
