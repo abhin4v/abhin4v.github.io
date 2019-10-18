@@ -627,6 +627,142 @@ class: title
 # Data-oriented <br> Programming
 
 ---
+
+# Data-oriented Programming
+.bg-caption[Why?]
+
+- Data is easy to manipulate.
+- Data is easy to extend.
+- Data can be interpreted in different ways.
+- Data can be saved into DB/disk or sent over network.
+
+---
+class: compact
+
+# Data as Control Flow
+
+- Dispatch table
+
+```clojure
+(defn routes []
+  ["/" [["api/" [["v1/" {"ping"  ping
+                         "orgs"  {["/" :id] {:get org/get}}
+                         "users" {"/me" {:get   user/me
+                                         :delete user/logout}}}]
+                 [true not-found-handler]]]
+       ["oauth/" {[:subdomain ""]          oauth/launch
+                  [:subdomain "/callback"] oauth/callback}]
+       [true default-site-handler]]])
+```
+
+---
+class: compact
+
+# Data as Control Flow
+
+- Logic Programming
+
+![](/slides/fp-patterns/number-puzzle.svg# center)
+
+---
+class: fs-50pct
+
+```clojure
+(ns logic.core
+  (:refer-clojure :exclude [==])
+  (:require [clojure.core.logic :refer :all])
+  (:require [clojure.core.logic.fd :as fd]))
+
+;; Use run* to retrieve all possible solutions
+(run* [q]
+  ;; Create some new logic vars (lvars) for us to use in our rules
+  (fresh [a0 a1 a2  ;; Top row
+          b0 b1 b2  ;; Middle row
+          c0 c1 c2] ;; Bottom row
+    ;; Unify q with our lvars in the output format we want
+    (== q [[a0 a1 a2]
+           [b0 b1 b2]
+           [c0 c1 c2]])
+    ;; State that every one of our lvars should be in the range 1-9
+    (fd/in a0 a1 a2 b0 b1 b2 c0 c1 c2 (fd/interval 1 9))
+    ;; State that each of our lvars should be unique
+    (fd/distinct [a0 a1 a2 b0 b1 b2 c0 c1 c2])
+    ;; fd/eq is just a helper to allow us to use standard Clojure
+    ;; operators like + instead of fd/+
+    (fd/eq
+      ;; Horizontal conditions for the puzzle
+      (= (- (* a0 a1) a2) 22)
+      (= (- (* b0 b1) b2) -1)
+      (= (+ (* c0 c1) c2) 72)
+      ;; Vertical conditions for the puzzle
+      (= (* (+ a0 b0) c0) 25)
+      (= (- (- a1 b1) c1) -4)
+      (= (+ (* a2 b2) c2) 25)
+      ;; And finally, in the puzzle we are told that the top left
+      ;; number (a0) is 4.
+      (= a0 4))))
+```
+
+.footer[
+  - Source: [Using Clojure’s core.logic to Solve Simple Number Puzzles](https://mattsenior.com/2014/02/using-clojures-core-logic-to-solve-simple-number-puzzles)
+]
+
+---
+
+# Data as Instructions
+
+- Rule engines
+
+---
+
+# Data as Instructions
+
+- Interpreters
+
+---
+class: title
+background-image: url(/slides/fp-patterns/raga.png)
+
+.footer[
+  - Source: ["Making machines that make music" by Srihari Sriraman](https://www.youtube.com/watch?v=u9CGcusOz60)
+]
+---
+class: compact
+
+# Data as Instructions
+
+- Codegen from data
+
+```clojure
+(def q-sqlmap {:select [:foo/a :foo/b :foo/c]
+               :from   [:foo]
+               :where  [:= :foo/a "baz"]})
+(sql/format q-sqlmap :namespace-as-table? true)
+=> ["SELECT foo.a, foo.b, foo.c FROM foo WHERE foo.a = ?" "baz"]
+```
+
+---
+
+# Data as Finite State Machine
+
+.center[
+![](/slides/fp-patterns/turnstile.svg# center)
+
+A turnstile's state-machine
+]
+
+---
+
+# Data as Finite State Machine
+
+.center[
+![](/slides/fp-patterns/driver-allocation.svg# w-60pct)
+
+Driver allocation state machine
+]
+
+---
+
 class: title
 # Functional Core; <br> Imperative Shell
 

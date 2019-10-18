@@ -1,0 +1,26 @@
+@startuml
+skinparam Shadowing false
+skinparam BackgroundColor transparent
+skinparam handwritten true
+skinparam Default {
+  FontColor Black
+  FontSize  18
+  FontStyle plain
+  FontName monospace
+}
+
+skinparam component {
+  BackgroundColor PapayaWhip
+  BorderColor Gray
+  ArrowThickness 2
+  ArrowColor Gray
+}
+
+[*] --> Initiated
+Initiated --> Processing : <i>allocateDriver</i>
+Processing --> Allocated : Driver.accept/<i>Callbacks.allocated</i>
+Processing --> Failed : Driver.reject/<i>Callbacks.failed</i>
+Processing --> Processing : Driver.timeout
+Allocated --> [*]
+Failed --> [*]
+@enduml

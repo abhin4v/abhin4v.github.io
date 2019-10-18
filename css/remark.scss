@@ -26,6 +26,11 @@
       font-size: 1.5em;
     }
   }
+  &.fs-50pct {
+    code {
+      font-size: 50%;
+    }
+  }
   &.fs-75pct {
     code {
       font-size: 75%;
