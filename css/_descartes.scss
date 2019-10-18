@@ -14176,6 +14176,9 @@ img[src~=shadow-5] {
 %ff-fancy {
   font-family: Quicksand, -apple-system, BlinkMacSystemFont, 'avenir next', avenir, 'helvetica neue', helvetica, arial, sans-serif;
 }
-%fs-xlarge {
+%fs-10rem {
   font-size: 10rem;
+}
+%lh-2em, .lh-2em {
+  line-height: 2em;
 }

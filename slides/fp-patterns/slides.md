@@ -229,11 +229,14 @@ background-image: url(/slides/fp-patterns/pattern.jpg)
 
 # Functional Programming Patterns
 
+.lh-2em[
 1. Immutable Data; Explicit State
 1. Dataflow Programming
 1. Explicit over Implicit
 1. Data-oriented Programming
 1. Functional Core; Imperative Shell
+]
+![](/slides/fp-patterns/pattern-order.svg# absolute t-4 r-4 minw-3)
 
 ---
 class: title
