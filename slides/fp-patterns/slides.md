@@ -422,6 +422,12 @@ public class Compiler {
 ```
 
 ---
+class: center
+
+![](dp1.svg)
+
+---
+
 class: no-heading
 ```clojure
 (defn compile! []
@@ -432,11 +438,6 @@ class: no-heading
       (generate-assembly-instructions)
       (write-assembly-output-files!)))
 ```
-
----
-class: center
-
-![](dp1.svg)
 
 ???
 
