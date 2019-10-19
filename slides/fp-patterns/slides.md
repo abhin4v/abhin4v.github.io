@@ -459,12 +459,13 @@ class: center
 ---
 class: center no-heading
 
+![](frpong.svg)
+
+frpong game dataflow diagram
+
 .footer[
   - Source: [frpong](https://github.com/abhin4v/frpong)
 ]
-
-![](dp3.svg)
-
 ---
 class: center
 
