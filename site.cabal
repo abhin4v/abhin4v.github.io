@@ -33,6 +33,7 @@ executable site
                   , random-shuffle
                   , pandoc-emphasize-code
   other-modules:    Site.Activities
+                  , Site.Activities.Strava
                   , Site.Assets
                   , Site.Collections
                   , Site.Comments

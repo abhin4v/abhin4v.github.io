@@ -1,115 +1,18 @@
-{-# LANGUAGE LambdaCase, ScopedTypeVariables, RecordWildCards, OverloadedStrings, DeriveGeneric #-}
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
 module Site.Activities (Auth, newAuth, activities) where
 
-import Control.Exception (try, SomeException, displayException)
-import Data.Aeson ( FromJSON(..), ToJSON(..)
-                  , genericParseJSON, genericToEncoding, eitherDecode', withText)
-import Data.Aeson.Casing (aesonPrefix, aesonDrop, snakeCase)
-import qualified Data.ByteString.Char8 as C8
 import Data.Char (toLower)
 import qualified Data.List.NonEmpty as NEL
 import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid ((<>))
 import Data.Semigroup (Max(..), sconcat)
-import qualified Data.Text as T
-import Data.Time (UTCTime, defaultTimeLocale, formatTime)
-import Debug.Trace (trace)
-import GHC.Generics
+import Data.Time (defaultTimeLocale, formatTime)
 import Hakyll hiding (relativizeUrls)
-import Network.HTTP.Simple ( httpLBS, parseRequest
-                           , addRequestHeader, setRequestQueryString
-                           , setRequestBodyJSON, setRequestMethod
-                           , getResponseBody, getResponseStatusCode, Request)
-import Network.HTTP.Types.Header (hAuthorization)
 import Site.Util
-import Text.Read (readMaybe)
+import Site.Activities.Strava
 
-data ActivityType = Ride | Run | Walk | Swim | Unknown deriving (Show, Read, Generic, Eq)
-
-instance FromJSON ActivityType where
-  parseJSON = withText "ActivityType" $ pure . fromMaybe Unknown . readMaybe . T.unpack
-
-allowedActivityTypes :: [ActivityType]
-allowedActivityTypes = [Ride, Run, Walk]
-
-data Activity = Activity { activityName               :: String
-                         , activityType               :: ActivityType
-                         , activitySufferScore        :: Double
-                         , activityId                 :: Integer
-                         , activityStartDate          :: UTCTime
-                         , activityDistance           :: Double
-                         , activityAverageSpeed       :: Double
-                         , activityAverageHeartrate   :: Maybe Double
-                         , activityMovingTime         :: Int
-                         , activityTotalElevationGain :: Double
-                         } deriving (Show, Generic)
-
-instance FromJSON Activity where
-  parseJSON = genericParseJSON $ aesonPrefix snakeCase
-
-data Auth = Auth { authGrantType    :: String
-                 , authClientId     :: String
-                 , authClientSecret :: String
-                 , authRefreshToken :: String
-                 } deriving (Generic)
-
-newAuth :: String -> String -> String -> Auth
-newAuth = Auth "refresh_token"
-
-instance ToJSON Auth where
-  toEncoding = genericToEncoding $ aesonPrefix snakeCase
-
-data AccessToken = AccessToken { atAccessToken :: String
-                               , atTokenType   :: String
-                               } deriving (Show, Eq, Generic)
-
-instance FromJSON AccessToken where
-  parseJSON = genericParseJSON $ aesonDrop 2 snakeCase
-
-stravaAuthUrlBase, stravaActivityUrlBase, stravaActivityPageUrlBase :: String
-stravaAuthUrlBase         = "https://www.strava.com/api/v3/oauth/token"
-stravaActivityUrlBase     = "https://www.strava.com/api/v3/athlete/activities"
+stravaActivityPageUrlBase :: String
 stravaActivityPageUrlBase = "https://www.strava.com/activities/"
-
-execJSONReq :: (Show a, FromJSON a) => Request -> IO (Either String a)
-execJSONReq req =
-  try (httpLBS req) >>= \case
-    Left (e :: SomeException) -> return . Left . displayException $ e
-    Right resp | getResponseStatusCode resp == 200 ->
-      return $ case eitherDecode' (getResponseBody resp) of
-        Left err -> Left $ "Unable to decode response: " ++ err
-        Right a -> Right a
-    Right resp ->
-      return $ Left $ "Invalid response code: " ++ show (getResponseStatusCode resp)
-
-getAccessToken :: Auth -> IO (Maybe AccessToken)
-getAccessToken auth =
-  createRequest >>= execJSONReq >>= return . \case
-    Left err -> trace ("Failed to get access token: " ++ err) Nothing
-    Right atr -> Just atr
-  where
-    createRequest = do
-      req <- parseRequest stravaAuthUrlBase
-      return
-        . setRequestMethod "POST"
-        . setRequestBodyJSON auth
-        $ req
-
-getActivities :: Auth -> Int -> IO [Activity]
-getActivities auth page =
-  getAccessToken auth >>= \case
-    Nothing -> return []
-    Just accessToken -> createRequest accessToken >>= execJSONReq >>= return . \case
-      Left err -> trace ("Failed to get activities: " ++ err) []
-      Right activities -> activities
-  where
-    createRequest AccessToken{..} = do
-      req <- parseRequest stravaActivityUrlBase
-      return
-        . setRequestQueryString [ ("per_page", Just "100")
-                                , ("page", Just . C8.pack . show $ page)]
-        . addRequestHeader hAuthorization (C8.pack $ atTokenType ++ " " ++ atAccessToken)
-        $ req
 
 activities :: Auth -> String -> Rules ()
 activities auth env = do
