@@ -3,7 +3,6 @@ module Site.Activities.Strava ( ActivityType(..)
                               , Activity(..)
                               , Auth
                               , newAuth
-                              , allowedActivityTypes
                               , getActivities) where
 
 import Control.Exception (try, SomeException, displayException)
@@ -16,10 +15,10 @@ import qualified Data.Text as T
 import Data.Time (UTCTime)
 import Debug.Trace (trace)
 import GHC.Generics
-import Network.HTTP.Simple ( httpLBS, parseRequest
+import Network.HTTP.Simple ( httpLBS, parseRequest, Request
                            , addRequestHeader, setRequestQueryString
                            , setRequestBodyJSON, setRequestMethod
-                           , getResponseBody, getResponseStatusCode, Request)
+                           , getResponseBody, getResponseStatusCode)
 import Network.HTTP.Types.Header (hAuthorization)
 import Text.Read (readMaybe)
 
@@ -27,9 +26,6 @@ data ActivityType = Ride | Run | Walk | Swim | Unknown deriving (Show, Read, Gen
 
 instance FromJSON ActivityType where
   parseJSON = withText "ActivityType" $ pure . fromMaybe Unknown . readMaybe . T.unpack
-
-allowedActivityTypes :: [ActivityType]
-allowedActivityTypes = [Ride, Run, Walk]
 
 data Activity = Activity { activityName               :: String
                          , activityType               :: ActivityType
@@ -66,19 +62,18 @@ instance FromJSON AccessToken where
   parseJSON = genericParseJSON $ aesonDrop 2 snakeCase
 
 stravaAuthUrlBase, stravaActivityUrlBase :: String
-stravaAuthUrlBase         = "https://www.strava.com/api/v3/oauth/token"
-stravaActivityUrlBase     = "https://www.strava.com/api/v3/athlete/activities"
+stravaAuthUrlBase     = "https://www.strava.com/api/v3/oauth/token"
+stravaActivityUrlBase = "https://www.strava.com/api/v3/athlete/activities"
 
-execJSONReq :: (Show a, FromJSON a) => Request -> IO (Either String a)
-execJSONReq req =
-  try (httpLBS req) >>= \case
-    Left (e :: SomeException) -> return . Left . displayException $ e
-    Right resp | getResponseStatusCode resp == 200 ->
-      return $ case eitherDecode' (getResponseBody resp) of
-        Left err -> Left $ "Unable to decode response: " ++ err
-        Right a -> Right a
-    Right resp ->
-      return $ Left $ "Invalid response code: " ++ show (getResponseStatusCode resp)
+execJSONReq :: FromJSON a => Request -> IO (Either String a)
+execJSONReq req = try (httpLBS req) >>= \case
+  Left (e :: SomeException) -> return . Left . displayException $ e
+  Right resp | getResponseStatusCode resp == 200 ->
+    return $ case eitherDecode' (getResponseBody resp) of
+      Left err -> Left $ "Unable to decode response: " ++ err
+      Right a -> Right a
+  Right resp ->
+    return $ Left $ "Invalid response code: " ++ show (getResponseStatusCode resp)
 
 getAccessToken :: Auth -> IO (Maybe AccessToken)
 getAccessToken auth =
@@ -86,12 +81,8 @@ getAccessToken auth =
     Left err -> trace ("Failed to get access token: " ++ err) Nothing
     Right atr -> Just atr
   where
-    createRequest = do
-      req <- parseRequest stravaAuthUrlBase
-      return
-        . setRequestMethod "POST"
-        . setRequestBodyJSON auth
-        $ req
+    createRequest =
+      setRequestMethod "POST" . setRequestBodyJSON auth <$> parseRequest stravaAuthUrlBase
 
 getActivities :: Auth -> Int -> IO [Activity]
 getActivities auth page =
@@ -101,10 +92,8 @@ getActivities auth page =
       Left err -> trace ("Failed to get activities: " ++ err) []
       Right activities -> activities
   where
-    createRequest AccessToken{..} = do
-      req <- parseRequest stravaActivityUrlBase
-      return
-        . setRequestQueryString [ ("per_page", Just "100")
-                                , ("page", Just . C8.pack . show $ page)]
-        . addRequestHeader hAuthorization (C8.pack $ atTokenType ++ " " ++ atAccessToken)
-        $ req
+    createRequest AccessToken{..} =
+      setRequestQueryString [ ("per_page", Just "100")
+                            , ("page", Just . C8.pack . show $ page)]
+      . addRequestHeader hAuthorization (C8.pack $ atTokenType ++ " " ++ atAccessToken)
+      <$> parseRequest stravaActivityUrlBase

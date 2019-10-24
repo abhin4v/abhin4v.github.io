@@ -14,6 +14,9 @@ import Site.Activities.Strava
 stravaActivityPageUrlBase :: String
 stravaActivityPageUrlBase = "https://www.strava.com/activities/"
 
+allowedActivityTypes :: [ActivityType]
+allowedActivityTypes = [Ride, Run, Walk]
+
 activities :: Auth -> String -> Rules ()
 activities auth env = do
   anyDependency <- makePatternDependency "**"
@@ -23,8 +26,7 @@ activities auth env = do
       compile $ do
         activities' <- unsafeCompiler $ take 25 . filterActivities <$> getActivities auth 1
         let maxSufferScore = calcMaxSufferScore activities'
-
-        let ctx =
+            ctx =
               listField "activities" (activityCtx maxSufferScore) (mapM makeItem activities') <>
               constField "title" "Activities" <>
               constField "page_type" "activities" <>
@@ -48,25 +50,26 @@ activities auth env = do
       . (0:)
       . map activitySufferScore
 
+activityCtx :: Double -> Context Activity
+activityCtx maxSufferScore = mconcat [
+    activityField "name"         $ activityName
+  , activityField "type"         $ map toLower . show . activityType
+  , activityField "width"        $ show . (* widthMult maxSufferScore) . activitySufferScore
+  , activityField "url"          $ (stravaActivityPageUrlBase ++) . show . activityId
+  , activityField "date"         $ formatTime defaultTimeLocale "%b %e" . activityStartDate
+  , activityField "distance"     $ showDist . activityDistance
+  , activityField "speed"        $ showSpeed . mpsToKmph . activityAverageSpeed
+  , activityField "pace"         $ showPace . mpsToMinpKm . activityAverageSpeed
+  , boolField     "show_speed"   $ (== Ride) . activityType . itemBody
+  , boolField     "show_pace"    $ (/= Ride) . activityType . itemBody
+  , activityField "heart_rate"   $ show . round . fromMaybe 0 . activityAverageHeartrate
+  , boolField     "show_hr"      $ isJust . activityAverageHeartrate . itemBody
+  , activityField "moving_time"  $ showSecs . activityMovingTime
+  , activityField "elev_gain"    $ show . activityTotalElevationGain
+  , activityField "suffer_score" $ show . round . activitySufferScore
+  ]
+  where
     activityField name f = field name (return . f . itemBody)
-
-    activityCtx maxSufferScore = mconcat [
-        activityField "name"         $ activityName
-      , activityField "type"         $ map toLower . show . activityType
-      , activityField "width"        $ show . (* widthMult maxSufferScore) . activitySufferScore
-      , activityField "url"          $ (stravaActivityPageUrlBase ++) . show . activityId
-      , activityField "date"         $ formatTime defaultTimeLocale "%b %e" . activityStartDate
-      , activityField "distance"     $ showDist . activityDistance
-      , activityField "speed"        $ showSpeed . mpsToKmph . activityAverageSpeed
-      , activityField "pace"         $ showPace . mpsToMinpKm . activityAverageSpeed
-      , boolField     "show_speed"   $ (== Ride) . activityType . itemBody
-      , boolField     "show_pace"    $ (/= Ride) . activityType . itemBody
-      , activityField "heart_rate"   $ show . round . fromMaybe 0 . activityAverageHeartrate
-      , boolField     "show_hr"      $ isJust . activityAverageHeartrate . itemBody
-      , activityField "moving_time"  $ showSecs . activityMovingTime
-      , activityField "elev_gain"    $ show . activityTotalElevationGain
-      , activityField "suffer_score" $ show . round . activitySufferScore
-      ]
 
     widthMult maxSufferScore = 38 / maxSufferScore
 
