@@ -2,7 +2,7 @@
 module Main where
 
 import Control.Monad (unless)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, fromJust)
 import Hakyll
 import Site.Activities
 import Site.Assets
@@ -21,6 +21,11 @@ main :: IO ()
 main = do
   env <- fromMaybe "DEV" <$> lookupEnv "ENV"
   offline <- (== Just "1") <$> lookupEnv "OFFLINE"
+  stravaClientId <- fromJust <$> lookupEnv "STRAVA_CLIENT_ID"
+  stravaClientSecret <- fromJust <$> lookupEnv "STRAVA_CLIENT_SECRET"
+  stravaRefreshToken <- fromJust <$> lookupEnv "STRAVA_REFRESH_TOKEN"
+  let stravaAuth = newAuth stravaClientId stravaClientSecret stravaRefreshToken
+
   hakyll $ do
     tags <- buildTags "posts/*" (fromCapture "tags/*.html")
     draftTags <- buildTags "drafts/*" (fromCapture "tags/*.html")
@@ -36,7 +41,7 @@ main = do
     shortURLs
     unless offline $ do
       notes env
-      activities env
+      activities stravaAuth env
       readings env
 
     -- templates
