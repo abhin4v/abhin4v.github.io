@@ -13,17 +13,17 @@ $for(activities)$
 <section class="activity $type$">
   <h3 class="link"><a href="$url$" target="_blank" rel="noopener">$type$</a></h3>
   <span class="date">$date$</span>
-  <span class="bar" style="width: $width$vw; max-width: $width$rem;">&nbsp;</span>
-  <ul class="desc">
-    <li title="Distance">$distance$ km</li>
-    $if(show_speed)$<li title="Speed">$speed$ km/h</li>$endif$
-    $if(show_pace)$<li title="Pace">$pace$ min/km</li>$endif$
-    $if(show_hr)$<li title="Avg Heart Rate">$heart_rate$ bpm</li>$endif$
-    <li title="Moving Time">$moving_time$</li>
-    <li title="Elevation Gain">$elev_gain$ m</li>
-  </ul>
+  <span class="bar" style="width: $width$vw; max-width: $width$rem;"
+    title="Distance: $distance$ km
+$if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km$endif$
+$if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$
+Moving Time: $moving_time$
+Elevation Gain: $elev_gain$ m">&nbsp;</span>
+  <span class="desc">$distance$ km</span>
 </section>
 $endfor$
+<br>
+<small>Bars scaled by activity effort. Hover on the bars for activity details.</small>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>

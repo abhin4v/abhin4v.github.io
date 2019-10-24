@@ -32,13 +32,6 @@
     list-style: none;
     padding-left: 0;
     display: inline;
-
-    li {
-      display: none;
-      &[title="Distance"] {
-        display: inline;
-      }
-    }
   }
 }
 .ride {
