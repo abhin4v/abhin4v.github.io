@@ -8,8 +8,26 @@ pipeline:
       - /var/run/docker.sock:/var/run/docker.sock
       - /home/abhinav/space/site-data/photos:/drone/src/code.abhinavsarkar.net/abhin4v/abhin4v.github.io/photos/images
       - space_photothumbs:/drone/src/code.abhinavsarkar.net/abhin4v/abhin4v.github.io/photos/thumbs
-    secrets: [ docker_username, docker_password, repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
-    build_args_from_env: [ repo_url, cf_zone_id, cf_api_key, cf_email, strava_key ]
+    secrets:
+      - docker_username
+      - docker_password
+      - repo_url
+      - cf_zone_id
+      - cf_api_key
+      - cf_email
+      - strava_key
+      - strava_client_id
+      - strava_client_secret
+      - strava_refresh_token
+    build_args_from_env:
+      - repo_url
+      - cf_zone_id
+      - cf_api_key
+      - cf_email
+      - strava_key
+      - strava_client_id
+      - strava_client_secret
+      - strava_refresh_token
     build_args:
       - DRONE_COMMIT_MESSAGE=${DRONE_COMMIT_MESSAGE}
 
