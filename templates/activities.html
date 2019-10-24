@@ -18,12 +18,15 @@ $for(activities)$
 $if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km$endif$
 $if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$
 Moving Time: $moving_time$
-Elevation Gain: $elev_gain$ m">&nbsp;</span>
+Elevation Gain: $elev_gain$ m
+Effort: $suffer_score$">&nbsp;</span>
   <span class="desc">$distance$ km</span>
 </section>
 $endfor$
 <br>
-<small>Bars scaled by activity effort. Hover on the bars for activity details.</small>
+<small>Bars scaled by activity
+  <a href="https://blog.strava.com/relative-effort/" target="_blank" rel="noopener">effort</a>.
+Hover on the bars for activity details.</small>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>

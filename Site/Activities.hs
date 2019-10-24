@@ -147,22 +147,23 @@ activities auth env = do
 
     activityField name f = field name (return . f . itemBody)
 
-    activityCtx maxSufferScore =
-      mconcat [ activityField "name" activityName
-              , activityField "type" $ map toLower . show . activityType
-              , activityField "width" $ show . (* widthMult maxSufferScore) . activitySufferScore
-              , activityField "url" $ (stravaActivityPageUrlBase ++) . show . activityId
-              , activityField "date" (formatTime defaultTimeLocale "%b %e" . activityStartDate)
-              , activityField "distance" $ showDist . activityDistance
-              , activityField "speed" $ showSpeed . mpsToKmph . activityAverageSpeed
-              , activityField "pace" $ showPace . mpsToMinpKm . activityAverageSpeed
-              , boolField "show_speed" $ (== Ride) . activityType . itemBody
-              , boolField "show_pace" $ (/= Ride) . activityType . itemBody
-              , activityField "heart_rate" $ show . round . fromMaybe 0 . activityAverageHeartrate
-              , boolField "show_hr" $ isJust . activityAverageHeartrate . itemBody
-              , activityField "moving_time" $ showSecs . activityMovingTime
-              , activityField "elev_gain" $ show . activityTotalElevationGain
-              ]
+    activityCtx maxSufferScore = mconcat [
+        activityField "name"         $ activityName
+      , activityField "type"         $ map toLower . show . activityType
+      , activityField "width"        $ show . (* widthMult maxSufferScore) . activitySufferScore
+      , activityField "url"          $ (stravaActivityPageUrlBase ++) . show . activityId
+      , activityField "date"         $ formatTime defaultTimeLocale "%b %e" . activityStartDate
+      , activityField "distance"     $ showDist . activityDistance
+      , activityField "speed"        $ showSpeed . mpsToKmph . activityAverageSpeed
+      , activityField "pace"         $ showPace . mpsToMinpKm . activityAverageSpeed
+      , boolField     "show_speed"   $ (== Ride) . activityType . itemBody
+      , boolField     "show_pace"    $ (/= Ride) . activityType . itemBody
+      , activityField "heart_rate"   $ show . round . fromMaybe 0 . activityAverageHeartrate
+      , boolField     "show_hr"      $ isJust . activityAverageHeartrate . itemBody
+      , activityField "moving_time"  $ showSecs . activityMovingTime
+      , activityField "elev_gain"    $ show . activityTotalElevationGain
+      , activityField "suffer_score" $ show . round . activitySufferScore
+      ]
 
     widthMult maxSufferScore = 38 / maxSufferScore
 
