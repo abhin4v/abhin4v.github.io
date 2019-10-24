@@ -15,11 +15,11 @@ $for(activities)$
   <span class="date">$date$</span>
   <span class="bar" style="width: $width$vw; max-width: $width$rem;"
     title="Distance: $distance$ km
-$if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km$endif$
-$if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$
 Moving Time: $moving_time$
 Elevation Gain: $elev_gain$ m
-Effort: $suffer_score$">&nbsp;</span>
+Effort: $suffer_score$
+$if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km$endif$
+$if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$">&nbsp;</span>
   <span class="desc">$distance$ km</span>
 </section>
 $endfor$
