@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, BangPatterns #-}
 module Main where
 
 import Control.Monad (unless)
@@ -19,11 +19,12 @@ import System.Environment (lookupEnv)
 
 main :: IO ()
 main = do
-  env <- fromMaybe "DEV" <$> lookupEnv "ENV"
-  offline <- (== Just "1") <$> lookupEnv "OFFLINE"
-  stravaClientId <- fromJust <$> lookupEnv "STRAVA_CLIENT_ID"
-  stravaClientSecret <- fromJust <$> lookupEnv "STRAVA_CLIENT_SECRET"
-  stravaRefreshToken <- fromJust <$> lookupEnv "STRAVA_REFRESH_TOKEN"
+  env                 <- fromMaybe "DEV" <$> lookupEnv "ENV"
+  offline             <- (== Just "1")   <$> lookupEnv "OFFLINE"
+  !stravaClientId     <- fromJust        <$> lookupEnv "STRAVA_CLIENT_ID"
+  !stravaClientSecret <- fromJust        <$> lookupEnv "STRAVA_CLIENT_SECRET"
+  !stravaRefreshToken <- fromJust        <$> lookupEnv "STRAVA_REFRESH_TOKEN"
+
   let stravaAuth = newAuth stravaClientId stravaClientSecret stravaRefreshToken
 
   hakyll $ do

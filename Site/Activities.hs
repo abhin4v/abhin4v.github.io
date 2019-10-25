@@ -6,7 +6,7 @@ import qualified Data.List.NonEmpty as NEL
 import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid ((<>))
 import Data.Semigroup (Max(..), sconcat)
-import Data.Time (defaultTimeLocale, formatTime)
+import Data.Time (defaultTimeLocale, formatTime, getCurrentTime, addUTCTime, nominalDay)
 import Hakyll hiding (relativizeUrls)
 import Site.Util
 import Site.Activities.Strava
@@ -24,7 +24,10 @@ activities auth env = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities' <- unsafeCompiler $ take 25 . filterActivities <$> getActivities auth 1
+        activities' <- unsafeCompiler $ do
+          cur <- getCurrentTime
+          let since = addUTCTime (-30 * nominalDay) cur
+          filterActivities since <$> getActivities auth 1
         let maxSufferScore = calcMaxSufferScore activities'
             ctx =
               listField "activities" (activityCtx maxSufferScore) (mapM makeItem activities') <>
@@ -38,9 +41,10 @@ activities auth env = do
           >>= relativizeUrls env
           >>= removeIndexHtml
   where
-    filterActivities =
+    filterActivities since =
       filter (not . isNaN . activitySufferScore)
       . filter ((`elem` allowedActivityTypes) . activityType)
+      . filter ((> since) . activityStartDate)
 
     calcMaxSufferScore =
       getMax
