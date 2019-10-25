@@ -27,6 +27,8 @@ data ActivityType = Ride | Run | Walk | Swim | Unknown deriving (Show, Read, Gen
 instance FromJSON ActivityType where
   parseJSON = withText "ActivityType" $ pure . fromMaybe Unknown . readMaybe . T.unpack
 
+instance ToJSON ActivityType
+
 data Activity = Activity { activityName               :: String
                          , activityType               :: ActivityType
                          , activitySufferScore        :: Double
@@ -84,8 +86,8 @@ getAccessToken auth =
     createRequest =
       setRequestMethod "POST" . setRequestBodyJSON auth <$> parseRequest stravaAuthUrlBase
 
-getActivities :: Auth -> Int -> IO [Activity]
-getActivities auth page =
+getActivities :: Auth -> Int -> Int -> IO [Activity]
+getActivities auth pageSize page =
   getAccessToken auth >>= \case
     Nothing -> return []
     Just accessToken -> createRequest accessToken >>= execJSONReq >>= return . \case
@@ -93,7 +95,7 @@ getActivities auth page =
       Right activities -> activities
   where
     createRequest AccessToken{..} =
-      setRequestQueryString [ ("per_page", Just "100")
+      setRequestQueryString [ ("per_page", Just . C8.pack . show $ pageSize)
                             , ("page", Just . C8.pack . show $ page)]
       . addRequestHeader hAuthorization (C8.pack $ atTokenType ++ " " ++ atAccessToken)
       <$> parseRequest stravaActivityUrlBase

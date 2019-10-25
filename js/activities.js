@@ -43,20 +43,14 @@
       jQuery(document).ready(function() {
         loadStyleSheet("/css/calendar-heatmap.css");
 
-        fetch("/files/activities.json")
-        .then(function(response) {
-          return response.json();
-        })
-        .then(function(activities) {
-          renderCalendar(activities, "Ride", ["#FFF7F4", "#FF4B08"], "#ride-calendar");
-          renderCalendar(activities, "Run", ["#F9F5FF", "#6B42C0"], "#run-calendar");
+        renderCalendar(window.stravaActivities, "Ride", ["#FFF7F4", "#FF4B08"], "#ride-calendar");
+        renderCalendar(window.stravaActivities, "Run", ["#F9F5FF", "#6B42C0"], "#run-calendar");
 
-          jQuery("svg.calendar-heatmap")
-          .attr("viewBox", "-15 -15 720 140")
-          .css("padding", "1em 0px")
-          .removeAttr("width")
-          .removeAttr("height");
-        });
+        jQuery("svg.calendar-heatmap")
+        .attr("viewBox", "-15 -15 720 140")
+        .css("padding", "1em 0px")
+        .removeAttr("width")
+        .removeAttr("height");
       });
     } else {
       window.setTimeout(showActivitiesCalendar, 1000);

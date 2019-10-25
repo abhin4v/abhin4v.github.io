@@ -23,7 +23,6 @@ RUN set -xe \
     && cd _site \
     && git add --all \
     && bash ../bin/generate_pdfs.sh \
-    && sh ../bin/gen_activities_json.sh \
     && git status --short \
     && git config --global user.email "abhinav@abhinavsarkar.net" \
     && git config --global user.name "Drone.io" \

@@ -1,15 +1,25 @@
-{-# LANGUAGE ScopedTypeVariables, OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables, OverloadedStrings, DeriveGeneric, RecordWildCards #-}
 module Site.Activities (Auth, newAuth, activities) where
 
+import Data.Aeson (ToJSON(..), genericToEncoding, encode)
+import Data.Aeson.Casing (aesonDrop, snakeCase)
+import qualified Data.ByteString.Lazy.Char8 as C8
 import Data.Char (toLower)
 import qualified Data.List.NonEmpty as NEL
 import Data.Maybe (isJust, fromMaybe)
 import Data.Monoid ((<>))
 import Data.Semigroup (Max(..), sconcat)
-import Data.Time (defaultTimeLocale, formatTime, getCurrentTime, addUTCTime, nominalDay)
+import Data.Time (UTCTime, defaultTimeLocale, formatTime, getCurrentTime, addUTCTime, nominalDay)
+import GHC.Generics
 import Hakyll hiding (relativizeUrls)
 import Site.Util
 import Site.Activities.Strava
+
+data ShortActivity = ShortActivity { saT :: ActivityType, saD :: Double, saS :: UTCTime }
+                     deriving (Generic)
+
+instance ToJSON ShortActivity where
+  toEncoding = genericToEncoding $ aesonDrop 2 snakeCase
 
 stravaActivityPageUrlBase :: String
 stravaActivityPageUrlBase = "https://www.strava.com/activities/"
@@ -24,15 +34,17 @@ activities auth env = do
     create ["activities.html"] $ do
       route indexHTMLRoute
       compile $ do
-        activities' <- unsafeCompiler $ do
-          cur <- getCurrentTime
-          let since = addUTCTime (-30 * nominalDay) cur
-          filterActivities since <$> getActivities auth 1
-        let maxSufferScore = calcMaxSufferScore activities'
+        allActivities <- unsafeCompiler $ getActivities auth 200 1 <> getActivities auth 200 2
+        cur           <- unsafeCompiler getCurrentTime
+        let activitiesCalJSON = mkActivitiesCalJSON allActivities
+            since             = addUTCTime (-30 * nominalDay) cur
+            recentActivities  = filterActivities since allActivities
+            maxSufferScore    = calcMaxSufferScore recentActivities
             ctx =
-              listField "activities" (activityCtx maxSufferScore) (mapM makeItem activities') <>
+              listField "activities" (activityCtx maxSufferScore) (mapM makeItem recentActivities) <>
               constField "title" "Activities" <>
               constField "page_type" "activities" <>
+              constField "cal_json" activitiesCalJSON <>
               siteContext
 
         makeItem ""
@@ -41,6 +53,12 @@ activities auth env = do
           >>= relativizeUrls env
           >>= removeIndexHtml
   where
+    mkActivitiesCalJSON =
+      C8.unpack
+      . encode
+      . map (\Activity{..} -> ShortActivity
+          (if activityType == Walk then Run else activityType) activityDistance activityStartDate)
+
     filterActivities since =
       filter (not . isNaN . activitySufferScore)
       . filter ((`elem` allowedActivityTypes) . activityType)
