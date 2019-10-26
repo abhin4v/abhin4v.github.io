@@ -2,7 +2,7 @@
   function showActivitiesGraphics() {
     if (typeof jQuery !== "undefined") {
       function aggregateActivities(activities, type, period) {
-        var chartData = [];
+        const chartData = [];
         var i = -1;
         var lastDate = null;
         activities.forEach(function(a) {
@@ -10,8 +10,8 @@
             return;
           }
 
-          var date = moment(a.s).startOf(period).toDate();
-          var count = a.d;
+          const date = moment(a.s).startOf(period).toDate();
+          const count = a.d;
 
           if ((lastDate != null) && (lastDate.getTime() === date.getTime())) {
             chartData[i].count += count;
@@ -30,47 +30,47 @@
 
 
       function renderCalendar(activities, type, colorRange, containerId) {
-        var chartData = aggregateActivities(activities, type, "day");
-        var activitiesHeatmap = calendarHeatmap()
-                                .data(chartData)
-                                .selector(containerId)
-                                .colorRange(colorRange)
-                                .tooltipEnabled(true)
-                                .tooltipUnit([
-                                  {min: 0, unit: type.toLowerCase() + "s"},
-                                  {min: 1, max: 1, unit: "km"},
-                                  {min: 2, max: "Infinity", unit: "kms"}
-                                ]);
+        const chartData = aggregateActivities(activities, type, "day");
+        const activitiesHeatmap = calendarHeatmap()
+                                  .data(chartData)
+                                  .selector(containerId)
+                                  .colorRange(colorRange)
+                                  .tooltipEnabled(true)
+                                  .tooltipUnit([
+                                    {min: 0, unit: type.toLowerCase() + "s"},
+                                    {min: 1, max: 1, unit: "km"},
+                                    {min: 2, max: "Infinity", unit: "kms"}
+                                  ]);
         activitiesHeatmap();
         jQuery(containerId).css("display", "block");
       }
 
       function renderBarChart(activities, type, color, containerId) {
-        var chartData = aggregateActivities(activities, type, "week");
+        const chartData = aggregateActivities(activities, type, "week");
         chartData.sort(function(a, b) { return a.date.getTime() - b.date.getTime(); });
 
-        var margin = ({top: 10, right: 20, bottom: 30, left: 20});
-        var width = 500;
-        var height = 100;
-        var barWidth = 8;
+        const margin = ({top: 10, right: 20, bottom: 30, left: 20});
+        const width = 500;
+        const height = 100;
+        const barWidth = 8;
 
-        var y = d3.scaleLinear()
+        const y = d3.scaleLinear()
           .domain([0, d3.max(chartData, function(d) { return d.count; })])
           .nice()
           .range([height - margin.bottom, margin.top]);
 
-        var yAxis = function (g) {
+        const yAxis = function (g) {
           g.attr("transform", "translate(" + margin.left + ",0)")
            .call(d3.axisLeft(y).ticks(5).tickSizeInner(0))
            .call(function(g) { g.select(".domain").remove(); });
         };
 
-        var x = d3.scaleTime()
+        const x = d3.scaleTime()
           .domain([chartData[0].date,
             moment(chartData[chartData.length - 1].date).add(1, 'w').toDate()])
           .range([margin.left, width - margin.right + barWidth]);
 
-        var xAxis = function(g) {
+        const xAxis = function(g) {
           g.attr("transform", "translate(0," + (height - margin.bottom) + ")")
            .call(d3.axisBottom(x)
                    .ticks(d3.timeMonth.every(1))

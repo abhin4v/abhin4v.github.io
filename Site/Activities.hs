@@ -37,10 +37,10 @@ activities auth env = do
         allActivities <- unsafeCompiler $ getActivities auth 200 1 <> getActivities auth 200 2
         cur           <- unsafeCompiler getCurrentTime
         let yearSince         = addUTCTime (-364 * nominalDay) cur
-            yearActicities    = filter ((> yearSince) . activityStartDate) allActivities
+            yearActicities    = filterAllActivities yearSince allActivities
             activitiesCalJSON = mkActivitiesCalJSON yearActicities
             recentSince       = addUTCTime (-30 * nominalDay) cur
-            recentActivities  = filterActivities recentSince allActivities
+            recentActivities  = filterRecentActivities recentSince allActivities
             maxSufferScore    = calcMaxSufferScore recentActivities
             ctx =
               listField "activities" (activityCtx maxSufferScore) (mapM makeItem recentActivities) <>
@@ -61,9 +61,12 @@ activities auth env = do
       . map (\Activity{..} -> ShortActivity
           (if activityType == Walk then Run else activityType) activityDistance activityStartDate)
 
-    filterActivities since =
+    filterRecentActivities since =
       filter (not . isNaN . activitySufferScore)
-      . filter ((`elem` allowedActivityTypes) . activityType)
+      . filterAllActivities since
+
+    filterAllActivities since =
+      filter ((`elem` allowedActivityTypes) . activityType)
       . filter ((> since) . activityStartDate)
 
     calcMaxSufferScore =

@@ -59,8 +59,6 @@
   }
 }
 
-#ride-bar-chart, #run-bar-chart {
-  g.tick text {
-    font-size: 0.45rem;
-  }
+.bar-chart g.tick text {
+  font-size: 0.45rem;
 }
