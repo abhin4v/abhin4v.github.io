@@ -36,9 +36,11 @@ activities auth env = do
       compile $ do
         allActivities <- unsafeCompiler $ getActivities auth 200 1 <> getActivities auth 200 2
         cur           <- unsafeCompiler getCurrentTime
-        let activitiesCalJSON = mkActivitiesCalJSON allActivities
-            since             = addUTCTime (-30 * nominalDay) cur
-            recentActivities  = filterActivities since allActivities
+        let yearSince         = addUTCTime (-364 * nominalDay) cur
+            yearActicities    = filter ((> yearSince) . activityStartDate) allActivities
+            activitiesCalJSON = mkActivitiesCalJSON yearActicities
+            recentSince       = addUTCTime (-30 * nominalDay) cur
+            recentActivities  = filterActivities recentSince allActivities
             maxSufferScore    = calcMaxSufferScore recentActivities
             ctx =
               listField "activities" (activityCtx maxSufferScore) (mapM makeItem recentActivities) <>

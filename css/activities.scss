@@ -58,3 +58,9 @@
     color: #5fc042;
   }
 }
+
+#ride-bar-chart, #run-bar-chart {
+  g.tick text {
+    font-size: 0.45rem;
+  }
+}

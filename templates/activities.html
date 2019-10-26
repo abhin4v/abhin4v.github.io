@@ -3,10 +3,12 @@
 <div id="ride-calendar" style="display: none">
   <h2 style="margin: 0px">Rides</h2>
 </div>
+<svg id="ride-bar-chart"></svg>
 
 <div id="run-calendar" style="display: none">
   <h2 style="margin: 0px">Runs/Walks</h2>
 </div>
+<svg id="run-bar-chart"></svg>
 
 <h2 style="margin-top: 0px;">Recent</h2>
 $for(activities)$
@@ -28,8 +30,8 @@ $endfor$
   <a href="https://blog.strava.com/relative-effort/" target="_blank" rel="noopener">effort</a>.
 Hover on the bars for activity details.</small>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.12.0/d3.min.js" integrity="sha256-+9Mf3cAVmxxudDsr1XwXUeRZFtvdWVYdq5/vcgiYyNU=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" integrity="sha256-4iQZ6BVL4qNKlQ27TExEhBN1HFPvAvAMbFavKKosSWQ=" crossorigin="anonymous"></script>
 <script src="/js/calendar-heatmap.js"></script>
 <script>
   window.stravaActivities = $cal_json$;
