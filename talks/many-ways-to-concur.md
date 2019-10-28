@@ -4,6 +4,7 @@ event: Functional Conf 2018, Bangalore
 description: "In this talk, we explore the concurrency models across three Functional Programming languages: Haskell, Erlang, and Clojure"
 tags_str: clojure, haskell, erlang, concurrency, functional-conf, talk
 page_image: "https://speakerd.s3.amazonaws.com/presentations/526c233305b94e9ea8485e562a7ccfa7/slide_0.jpg?481990"
+download_url: https://speakerd.s3.amazonaws.com/presentations/526c233305b94e9ea8485e562a7ccfa7/presentation.pdf
 youtube_id: MYKEk1rcMSQ
 speakerdeck_id: 526c233305b94e9ea8485e562a7ccfa7
 slides_ratio: 1.33333333333333

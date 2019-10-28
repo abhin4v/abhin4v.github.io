@@ -4,6 +4,7 @@ event: Functional Conf 2015, Bengaluru
 description: "In this talk, we explore the various concurrency models and primitives supported by Haskell including green threads, mutable variables, and STM"
 tags_str: haskell, concurrency, functional-conf, talk
 page_image: "https://speakerd.s3.amazonaws.com/presentations/bcbf9a544894420699a16821e5a59074/slide_0.jpg?311299"
+download_url: https://speakerd.s3.amazonaws.com/presentations/bcbf9a544894420699a16821e5a59074/Introduction_to_Concurrency_in_Haskell.pdf
 youtube_id: uVK3t-5wWew
 speakerdeck_id: bcbf9a544894420699a16821e5a59074
 slides_ratio: 1.37081659973226
