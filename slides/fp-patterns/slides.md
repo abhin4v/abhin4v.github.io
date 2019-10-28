@@ -8,8 +8,10 @@ background-image: url(/slides/fp-patterns/lambda.svg)
 
 .ff-fancy[
 # Functional Programming Patterns]
+
 .right[## Abhinav Sarkar
-  ## Oct 2019
+.fl[Pune 2020]
+![](/slides/fp-patterns/inclojure.png# w-50pct)
 ]
 
 ???
@@ -17,14 +19,26 @@ background-image: url(/slides/fp-patterns/lambda.svg)
 - ask about java and functional programming experience
 
 ---
-class: center pt-6
+class: big-h1 no-footer thank-you center mr-5 ph-1
 
-# Flipkart
-# nilenso
-# Capillary
-# FICO
+## [@abhin4v](https://twitter.com/abhin4v)
+abnv.me/fpp
+![QR code](/slides/fp-patterns/qr.png# center)
+
+---
+
+class: pt-6 pl-6 no-footer
+
+.ff-fancy[
+# Flipkart ![](/slides/clojure-concurrency-you/flipkart_logo.jpg# w-3 mr-4 fr)
+# nilenso ![](/slides/clojure-concurrency-you/nilenso.png# w-3 mr-4 fr)
+# Capillary ![](/slides/fp-patterns/capillary.png# w-3 mr-4 fr)
+# FICO ![](/slides/fp-patterns/FICO.svg# w-4 mr-4 pt-2 fr)
+]
 
 ???
+# Google ![](/slides/fp-patterns/Google.svg# w-3 mr-4 fr)
+
 - Alonzo Church - Lambda calculus
 - John McCarthy - LISP
 - Dan Friedman - Scheme
