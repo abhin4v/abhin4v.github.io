@@ -49,7 +49,7 @@
         const chartData = aggregateActivities(activities, type, "week");
         chartData.sort(function(a, b) { return a.date.getTime() - b.date.getTime(); });
 
-        const margin = ({top: 10, right: 20, bottom: 30, left: 20});
+        const margin = ({top: 10, right: 20, bottom: 30, left: 10});
         const width = 500;
         const height = 100;
         const barWidth = 8;
