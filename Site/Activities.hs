@@ -104,7 +104,7 @@ activityCtx maxSufferScore = mconcat [
     mpsToMinpKm speed = 1 / speed * 50 / 3
     showDist dist = let d = round (dist / 100) in show (d `div` 10) ++ "." ++ show (d `mod` 10)
     showSpeed speed = let s = round (speed * 10) in show (s `div` 10) ++ "." ++ show (s `mod` 10)
-    showPace pace = let sec = round (pace * 60) in show (sec `div` 60) ++ ":" ++ show (sec `mod` 60)
+    showPace pace = let sec = round (pace * 60) in show (sec `div` 60) ++ ":" ++ showPad 2 '0' (sec `mod` 60)
 
     showSecs sec = let
         min = sec `div` 60
@@ -117,3 +117,5 @@ activityCtx maxSufferScore = mconcat [
           show h ++ " hr" ++ recurse (s - h * 3600)
       where
         recurse rem = if rem == 0 then "" else " " ++ showSecs rem
+
+    showPad count char a = let s = show a in replicate (count - length s) char ++ s
