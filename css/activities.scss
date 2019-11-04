@@ -105,6 +105,10 @@
   option {
     font-weight:normal;
   }
+  @media screen and(max-width: 640px) {
+    height: 1.7rem;
+    padding: .2rem 1.4rem .2rem .5rem;
+  }
 }
 
 .no-js {
