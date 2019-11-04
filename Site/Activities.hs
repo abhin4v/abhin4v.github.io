@@ -81,7 +81,7 @@ activityCtx :: Double -> Context Activity
 activityCtx maxSufferScore = mconcat [
     activityField "name"         $ activityName
   , activityField "type"         $ map toLower . show . activityType
-  , activityField "width"        $ show . (* widthMult maxSufferScore) . activitySufferScore
+  , activityField "width"        $ show . (/ maxSufferScore) . activitySufferScore
   , activityField "url"          $ (stravaActivityPageUrlBase ++) . show . activityId
   , activityField "date"         $ formatTime defaultTimeLocale "%b %e" . activityStartDate
   , activityField "distance"     $ showDist . activityDistance
@@ -97,8 +97,6 @@ activityCtx maxSufferScore = mconcat [
   ]
   where
     activityField name f = field name (return . f . itemBody)
-
-    widthMult maxSufferScore = 38 / maxSufferScore
 
     mpsToKmph speed = speed * 18 / 5
     mpsToMinpKm speed = 1 / speed * 50 / 3
