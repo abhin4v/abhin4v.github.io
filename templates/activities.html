@@ -10,7 +10,15 @@
 </div>
 <svg id="run-bar-chart" class="bar-chart"></svg>
 
-<h2 style="margin-top: 0px;">Recent</h2>
+<div style="display: flex; justify-content: space-between;">
+  <h2 style="margin-top: 0px;">Recent</h2>
+  <select id="activity-select" autocomplete="off">
+    <option value="all" selected>All</option>
+    <option value="run">Runs</option>
+    <option value="ride">Rides</option>
+    <option value="walk">Walks</option>
+  </select>
+</div>
 $for(activities)$
 <section class="activity $type$">
   <h3 class="link"><a href="$url$" target="_blank" rel="noopener">$type$</a></h3>
