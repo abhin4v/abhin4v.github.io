@@ -117,22 +117,17 @@
         renderBarChart(window.stravaActivities, "Ride", "#FF8C61", "#ride-bar-chart");
         renderBarChart(window.stravaActivities, "Run", "#9E85D2", "#run-bar-chart");
 
-        var allActivitiesShown = true;
         var activitySelector = jQuery("#activity-select");
         activitySelector.on("change", function(event) {
           switch(event.target.value) {
             case "all":
-              if (!allActivitiesShown) {
-                jQuery(".activity").fadeIn();
-                allActivitiesShown = true;
-                activitySelector.get(0).scrollIntoView();
-              }
+              jQuery(".activity").fadeIn();
+              activitySelector.get(0).scrollIntoView();
               break;
             case "run":
               jQuery.when(jQuery(".activity.ride").fadeOut(),
                           jQuery(".activity.walk").fadeOut()).done(function() {
                 jQuery(".activity.run").fadeIn();
-                allActivitiesShown = false;
                 activitySelector.get(0).scrollIntoView();
               });
               break;
@@ -140,7 +135,6 @@
               jQuery.when(jQuery(".activity.run").fadeOut(),
                           jQuery(".activity.walk").fadeOut()).done(function() {
                 jQuery(".activity.ride").fadeIn();
-                allActivitiesShown = false;
                 activitySelector.get(0).scrollIntoView();
               });
               break;
@@ -148,7 +142,6 @@
               jQuery.when(jQuery(".activity.ride").fadeOut(),
                           jQuery(".activity.run").fadeOut()).done(function() {
                 jQuery(".activity.walk").fadeIn();
-                allActivitiesShown = false;
                 activitySelector.get(0).scrollIntoView();
               });
               break;
