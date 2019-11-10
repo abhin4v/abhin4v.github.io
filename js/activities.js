@@ -23,7 +23,38 @@
     chartData.forEach(function(d) {
       d.count = Math.round(d.count/1000);
     });
+    chartData.sort(function(a, b) { return a.date.getTime() - b.date.getTime(); });
+
+    padEarliest(chartData, period);
+    padLatest(chartData, period);
+
     return chartData;
+  }
+
+  function padEarliest(chartData, period) {
+    const startOfPeriodOneYearAgo = moment().subtract(366, 'days').startOf(period).toDate();
+    while (true) {
+      const first = chartData[0].date;
+      if (first.getTime() > startOfPeriodOneYearAgo.getTime()) {
+        const d = moment(first).subtract(1, period).toDate();
+        chartData.unshift({ date: d, count: 0 });
+      } else {
+        break;
+      }
+    }
+  }
+
+  function padLatest(chartData, period) {
+    const startOfPeriodToday = moment().startOf(period).toDate();
+    while (true) {
+      const last = chartData[chartData.length - 1].date;
+      if (last.getTime() < startOfPeriodToday.getTime()) {
+        const d = moment(last).add(1, period).toDate();
+        chartData.push({ date: d, count: 0 });
+      } else {
+        break;
+      }
+    }
   }
 
   if (typeof jQuery === "undefined") {
@@ -47,9 +78,8 @@
 
     function renderBarChart(activities, type, color, containerId) {
       const chartData = aggregateActivities(activities, type, "week");
-      chartData.sort(function(a, b) { return a.date.getTime() - b.date.getTime(); });
 
-      const margin = ({top: 10, right: 20, bottom: 30, left: 10});
+      const margin = ({top: 10, right: 10, bottom: 30, left: 10});
       const width = 500;
       const height = 100;
       const barWidth = 8;
