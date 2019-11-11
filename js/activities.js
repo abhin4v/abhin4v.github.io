@@ -32,7 +32,7 @@
   }
 
   function padEarliest(chartData, period) {
-    const startOfPeriodOneYearAgo = moment().subtract(366, 'days').startOf(period).toDate();
+    const startOfPeriodOneYearAgo = moment().subtract(365, 'days').startOf(period).toDate();
     while (true) {
       const first = chartData[0].date;
       if (first.getTime() > startOfPeriodOneYearAgo.getTime()) {
@@ -95,10 +95,15 @@
           .call(function(g) { g.select(".domain").remove(); });
       };
 
+      const lastWeek = moment(chartData[chartData.length-1].date).startOf('week');
+      const firstWeek = moment(chartData[0].date).startOf('week');
+      const weeks = moment.duration(lastWeek.diff(firstWeek)).asWeeks();
+      const rightMargin = (weeks == 52 ? 2 : 1) * margin.right;
+
       const x = d3.scaleTime()
         .domain([chartData[0].date,
           moment(chartData[chartData.length - 1].date).add(1, 'w').toDate()])
-        .range([margin.left, width - margin.right + barWidth]);
+        .range([margin.left, width - rightMargin + barWidth]);
 
       const xAxis = function(g) {
         g.attr("transform", "translate(0," + (height - margin.bottom) + ")")
