@@ -155,6 +155,6 @@ addPostLink item = let
 
 renderAtom :: FeedConfiguration -> Context String -> [Item String] -> Compiler (Item String)
 renderAtom config context items = do
-  atomTemplate     <- unsafeCompiler $ readFile "templates/atom.xml"
-  atomItemTemplate <- unsafeCompiler $ readFile "templates/atom-item.xml"
+  atomTemplate     <- loadBody "templates/atom.xml"
+  atomItemTemplate <- loadBody "templates/atom-item.xml"
   renderAtomWithTemplates atomTemplate atomItemTemplate config context items

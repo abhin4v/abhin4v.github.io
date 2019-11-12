@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: hakyll-4.12.5.1@sha256:d1948b265e6628bcb6875571212f9acefe23179c73ca4f87f417b290ff381ca6,8677
+    hackage: hakyll-4.13.0.1@sha256:0f27d74feaedc96648ec5377ecec2b35dd677516c9667d179462a350f2075628,8817
     pantry-tree:
-      size: 7631
-      sha256: ac35d6b2a3b6d87517ff5184430a283c378330ec5da6f7dce26416568bf134ee
+      size: 7841
+      sha256: 4a4409d287ee3daabb0141e3ebd3d2e88ead7382ba5cc582733907b4a938c4a8
   original:
-    hackage: hakyll-4.12.5.1@sha256:d1948b265e6628bcb6875571212f9acefe23179c73ca4f87f417b290ff381ca6
+    hackage: hakyll-4.13.0.1
 - completed:
     hackage: hakyll-sass-0.2.4@sha256:4d2fbd8b63f5ef15483fc6dda09e10eefd63b4f873ad38dec2a3607eb504a8ba,939
     pantry-tree:
@@ -55,7 +55,7 @@ packages:
     url: https://github.com/abhin4v/thumbnail-plus/archive/fc10600d3af19ccce7c69416e2ec33143faa4d37.zip
 snapshots:
 - completed:
-    size: 523443
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/0.yaml
-    sha256: 283773e7120f5446d961eab35ea95c9af9c24187cc178537bd29273200a05171
-  original: lts-14.0
+    size: 525663
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/14.yaml
+    sha256: 6edc48df46eb8bf7b861e98dd30d021a92c2e1820c9bb6528aac5d997b0e14ef
+  original: lts-14.14
