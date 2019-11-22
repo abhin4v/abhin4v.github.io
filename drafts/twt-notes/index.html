@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en" class="no-js" prefix="og: http://ogp.me/ns#">
+    <head>
+        <meta charset="utf-8">
+        <meta name="copyright" content="Abhinav Sarkar">
+        <meta name="robots" content="index,follow">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="jqi6GjA_kvmDkzCQwNJIPilm810Wwt6P0wsDmiSKmqk">
+        
+        <meta name="twitter:card" content="summary">
+        
+        <meta name="twitter:creator" content="@abhin4v">
+        <meta name="twitter:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell'">
+
+        <meta property="og:url" content="https://abhinavsarkar.net/drafts/twt-notes/">
+        <meta property="og:type" content="article">
+        <meta property="og:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell'">
+        <meta property="og:locale" content="en_US">
+        <meta property="og:site_name" content="abhinavsarkar.net">
+        
+        <meta name="keywords" content="haskell, notes, programming">
+        
+        
+        <meta name="description" content="Notes for the book 'Thinking with Types: Type-level Programming in Haskell'">
+        <meta property="og:description" content="Notes for the book 'Thinking with Types: Type-level Programming in Haskell'">
+        <meta name="twitter:description" content="Notes for the book 'Thinking with Types: Type-level Programming in Haskell'">
+        
+        
+
+        <meta name="language" content="EN">
+        <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
+        <meta name="HandheldFriendly" content="True">
+
+        <title>Notes for 'Thinking with Types: Type-level Programming in Haskell' | abhinavsarkar.net</title>
+
+        <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
+        <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
+        <link rel="canonical" href="https://abhinavsarkar.net/drafts/twt-notes/">
+        
+        
+        <link rel="me" href="https://abhinavsarkar.net/about/" type="text/html">
+        <link rel="me" href="https://twitter.com/abhin4v">
+        <link rel="me" href="https://github.com/abhin4v">
+        <link rel="pingback" href="https://webmention.io/abhinavsarkar.net/xmlrpc" />
+        <link rel="webmention" href="https://webmention.io/abhinavsarkar.net/webmention" />
+        <link rel="alternate" type="application/atom+xml" title="abhinavsarkar.net" href="https://abhinavsarkar.net/feed.atom">
+        <link rel="alternate" type="application/atom+xml" title="notes.abhinavsarkar.net" href="https://notes.abhinavsarkar.net/feed.atom">
+
+        <script>
+        (function() {
+          var allowedDomains = ["localhost", "127.0.0.1", "abhinavsarkar.net", "web.archive.org"];
+          if (allowedDomains.indexOf(window.location.hostname) == -1) {
+            if (window.location.protocol == "http:") {
+              location.host = "abhinavsarkar.net:80";
+            } else {
+              location.host = "abhinavsarkar.net:443";
+            }
+          }
+        })();
+        </script>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" media="preload" onload="if (media != 'all') media = 'all';">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/article.css" media="preload" onload="if (media != 'all') media = 'all';">
+        <noscript>
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+          <link rel="stylesheet" href="//abhinavsarkar.net/css/article.css">
+        </noscript>
+
+        <!-- Matomo -->
+        <script type="text/javascript">
+          var _paq = _paq || [];
+          _paq.push(['trackPageView']);
+          _paq.push(['enableLinkTracking']);
+          _paq.push(['trackVisibleContentImpressions']);
+          (function() {
+            var u="//anna.abhinavsarkar.net/";
+            _paq.push(['setTrackerUrl', u+'piwik.php']);
+            _paq.push(['setSiteId', '1']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+          })();
+        </script>
+        <!-- End Matomo Code -->
+    </head>
+    <body class="article-page">
+        <noscript>
+          <img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" alt />
+        </noscript>
+        <header>
+            <nav id="topnav">
+                <span class="logo">
+                  <a href="//abhinavsarkar.net/">abhinavsarkar.net</a>
+                  <label for="menu-toggle" class="label-toggle">
+                    <svg height="1em" version="1.1" viewBox="0 0 25 25" width="1em" xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink">
+                      <g id="hamburger-round">
+                        <path d="M0,4 C0,2.8954305 0.889763236,2 2.00359486,2 L22.9964051,2 C24.10296,2 25,2.88772964 25,4 C25,5.1045695 24.1102368,6 22.9964051,6 L2.00359486,6 C0.897039974,6 0,5.11227036 0,4 L0,4 Z M0,12 C0,10.8954305 0.889763236,10 2.00359486,10 L22.9964051,10 C24.10296,10 25,10.8877296 25,12 C25,13.1045695 24.1102368,14 22.9964051,14 L2.00359486,14 C0.897039974,14 0,13.1122704 0,12 L0,12 Z M0,20 C0,18.8954305 0.889763236,18 2.00359486,18 L22.9964051,18 C24.10296,18 25,18.8877296 25,20 C25,21.1045695 24.1102368,22 22.9964051,22 L2.00359486,22 C0.897039974,22 0,21.1122704 0,20 L0,20 Z" id="hamburger"></path>
+                      </g>
+                    </svg>
+                  </label>
+                </span>
+                <span class="links">
+                  <input type="checkbox" id="menu-toggle">
+                  <a href="//abhinavsarkar.net/about/">About</a>
+<a href="//abhinavsarkar.net/archive/">Posts</a>
+<a href="//abhinavsarkar.net/notes/">Notes</a>
+<a href="//abhinavsarkar.net/photos/">Photos</a>
+<a href="//abhinavsarkar.net/readings/">Readings</a>
+<a href="//abhinavsarkar.net/now/">Now</a>
+                </span>
+            </nav>
+        </header>
+
+        <main role="main">
+            <article itemscope itemtype="http://schema.org/Article" class="post h-entry">
+    <header>
+        <h1 itemprop="name" id="#top" class="p-name">Notes for 'Thinking with Types: Type-level Programming in Haskell'</h1>
+    </header>
+
+    <ul class="headers">
+      <li class="header post-publish-date">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M6 0l-1 1 2 2 1-1-2-2zm-2 2l-4 4v2h2l4-4-2-2z"></path>
+        </svg>
+        <span itemprop="datePublished" content="2019-11-22"><time class="dt-published" datetime="2019-11-22">November 22, 2019</time></span>
+      </li>
+      <li class="header post-ert">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M4 0c-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm0 1c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm-.5 1v2.22l.16.13.5.5.34.38.72-.72-.38-.34-.34-.34v-1.81h-1z"></path>
+        </svg>
+        A five minute read
+      </li>
+      
+      <li class="header post-download">
+        <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M3 0v3h-2l3 3 3-3h-2v-3h-2zm-3 7v1h8v-1h-8z"></path>
+        </svg>
+        <a href="//abhinavsarkar.net/pdfs/posts/twt-notes.pdf" download rel="nofollow">Download</a>
+      </li>
+      <li class="header post-tags">
+        
+        <svg class="assist-icon tags" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+          <path d="M0 0v2l3 3 1.5-1.5.5-.5-2-2-1-1h-2zm3.41 0l3 3-1.19 1.22.78.78 2-2-3-3h-1.59zm-1.91 1c.28 0 .5.22.5.5s-.22.5-.5.5-.5-.22-.5-.5.22-.5.5-.5z" transform="translate(0 1)"></path>
+        </svg> Tags: <span class="p-category"><a href="//abhinavsarkar.net/tags/haskell/">haskell</a>, <a href="//abhinavsarkar.net/tags/programming/">programming</a></span>
+        
+      </li>
+      <li class="header twitter-button">
+        <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button" data-size="large" data-via="abhin4v" data-dnt="true" data-show-count="false">Tweet</a>
+      </li>
+    </ul>
+
+    <section itemprop="articleBody" class="body e-content">
+        <nav id="toc"><h3>Contents</h3><ol><li><a href="#introduction">Introduction</a></li><li><a href="#chapter-1.-the-algebra-behind-types">Chapter 1. The Algebra Behind Types</a><ol><li><a href="#isomorphisms-and-cardinalities">Isomorphisms and Cardinalities</a></li><li><a href="#sum-product-and-exponential-types">Sum, Product and Exponential Types</a></li><li><a href="#the-curry-howard-isomorphism">The Curry-Howard Isomorphism</a></li><li><a href="#canonical-representations">Canonical Representations</a></li></ol></li><li><a href="#chapter-2.-terms-types-and-kinds">Chapter 2. Terms, Types and Kinds</a><ol><li><a href="#the-kind-system">The Kind System</a></li><li><a href="#data-kinds">Data Kinds</a></li><li><a href="#promotion-of-built-in-types">Promotion of Built-In Types</a></li><li><a href="#type-level-functions">Type-level Functions</a></li></ol></li></ol></nav>
+<h2 id="introduction" data-track-content data-content-name="introduction" data-content-piece="twt-notes">Introduction<a href="#introduction" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<ul>
+<li>Type-level Programming (TLP) is writing programs that run at compile-time, unlike term-level programming which is writing programs that run at run-time.</li>
+<li>TLP should be used in moderation.</li>
+<li>TLP should be mostly used
+<ul>
+<li>for programs that are catastrophic to get wrong (finance, healthcare, etc).</li>
+<li>when it simplifies the program API massively.</li>
+<li>when power-to-weight ratio of adding TLP is high.</li>
+</ul></li>
+<li>Types are not a silver bullet for fixing all errors:
+<ul>
+<li>Correct programs can be not well-typed.</li>
+<li>It could be hard to assign type for useful programs. e.g. <code>printf</code> from C.</li>
+</ul></li>
+<li>Types can turn possible runtime errors into compile-time errors.</li>
+</ul>
+<h2 id="chapter-1.-the-algebra-behind-types" data-track-content data-content-name="chapter-1.-the-algebra-behind-types" data-content-piece="twt-notes">Chapter 1. The Algebra Behind Types<a href="#chapter-1.-the-algebra-behind-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h3 id="isomorphisms-and-cardinalities">Isomorphisms and Cardinalities<a href="#isomorphisms-and-cardinalities" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>Cardinality</em> of a type is the number of values it can have ignoring bottoms. The values of a type are also called the <em>inhabitants</em> of the type.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Void</span> <span class="co">-- no possible values. cardinality: 0</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">data</span> <span class="dt">Unit</span> <span class="ot">=</span> <span class="dt">Unit</span> <span class="co">-- only one possible value. cardinality: 1</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">data</span> <span class="dt">Bool</span> <span class="ot">=</span> <span class="dt">True</span> <span class="op">|</span> <span class="dt">False</span> <span class="co">-- only two possible values. cardinality: 2</span></span></code></pre></div>
+<ul>
+<li>Cardinality is written using notation: <code>|Void| = 0</code></li>
+<li>Two types are said to be <em>Isomorphic</em> if they have same cardinality.</li>
+<li>An <em>isomorphism</em> between types <code>a</code> and <code>b</code> is a pair of functions <code>to</code> and <code>from</code> such that:</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">to ::</span> a <span class="ot">-&gt;</span> b</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">from ::</span> b <span class="ot">-&gt;</span> a</span>
+<span id="cb2-3"><a href="#cb2-3"></a>to <span class="op">.</span> from <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>from <span class="op">.</span> to <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
+<h3 id="sum-product-and-exponential-types">Sum, Product and Exponential Types<a href="#sum-product-and-exponential-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><code>Either a b</code> is a <em>Sum</em> type. Its number of inhabitants is sum of the number of inhabitants of type <code>a</code> and <code>b</code> like so: <code>|a|</code> possible values with <code>Left</code> constructor and <code>|b|</code> possible values with the <code>Right</code> constructor. Formally:</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">|</span><span class="dt">Either</span> a b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="op">|</span>b<span class="op">|</span></span></code></pre></div>
+<ul>
+<li><code>(a, b)</code> is a <em>Product</em> type. Its number of inhabitant is the product of the number of inhabitants of types <code>a</code> and <code>b</code>. Formally:</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">|</span>(a, b)<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Some more examples:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">|</span><span class="dt">Maybe</span> a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span><span class="dt">Nothing</span><span class="op">|</span> <span class="op">+</span> <span class="op">|</span><span class="dt">Just</span> a<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">|</span>[a]<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">2</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">3</span> <span class="op">+</span> <span class="op">...</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="op">|</span><span class="dt">Either</span> a <span class="dt">Void</span><span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="dv">0</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="op">|</span><span class="dt">Either</span> <span class="dt">Void</span> a<span class="op">|</span> <span class="ot">=</span> <span class="dv">0</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="op">|</span>(a, <span class="dt">Unit</span>)<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="dv">1</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="op">|</span>(<span class="dt">Unit</span>, a)<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Function types are exponentiation types.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">|</span>a <span class="ot">-&gt;</span> b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>b<span class="op">|^|</span>a<span class="op">|</span></span></code></pre></div>
+<p>For every value in domain <code>a</code> there can be <code>|b|</code> possible values in the range <code>b</code>. And there are <code>|a|</code> possible values in domain <code>a</code>. So:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">|</span>a <span class="ot">-&gt;</span> b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>b<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span> <span class="op">*</span> <span class="op">...</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span> <span class="co">-- (|a| times)</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>         <span class="ot">=</span> <span class="op">|</span>b<span class="op">|^|</span>a<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Data can be represented in many possible isomorphic types. Some of them are more useful than others. Example:</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">data</span> <span class="dt">TicTacToe1</span> a <span class="ot">=</span> <span class="dt">TicTacToe1</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>  {<span class="ot"> topLeft    ::</span> a,<span class="ot"> topCenter    ::</span> a,<span class="ot"> topRight    ::</span> a</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  ,<span class="ot"> middleLeft ::</span> a,<span class="ot"> middleCenter ::</span> a,<span class="ot"> middleRight ::</span> a</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  ,<span class="ot"> bottomLeft ::</span> a,<span class="ot"> bottomCenter ::</span> a,<span class="ot"> bottomRight ::</span> a</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  }</span>
+<span id="cb8-6"><a href="#cb8-6"></a></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="op">|</span><span class="dt">TicTacToe1</span> a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">...</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="co">-- 9 times</span></span>
+<span id="cb8-8"><a href="#cb8-8"></a>               <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">9</span></span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a><span class="ot">emptyBoard1 ::</span> <span class="dt">TicTacToe1</span> (<span class="dt">Maybe</span> <span class="dt">Bool</span>)</span>
+<span id="cb8-11"><a href="#cb8-11"></a>emptyBoard1 <span class="ot">=</span> <span class="dt">TicTacToe1</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-12"><a href="#cb8-12"></a>                          <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-13"><a href="#cb8-13"></a>                          <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a></span>
+<span id="cb8-15"><a href="#cb8-15"></a><span class="kw">data</span> <span class="dt">Three</span> <span class="ot">=</span> <span class="dt">One</span> <span class="op">|</span> <span class="dt">Two</span> <span class="op">|</span> <span class="dt">Three</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="kw">data</span> <span class="dt">TicTacToe2</span> a <span class="ot">=</span> <span class="dt">TicTacToe2</span> (<span class="dt">Three</span> <span class="ot">-&gt;</span> <span class="dt">Three</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb8-17"><a href="#cb8-17"></a></span>
+<span id="cb8-18"><a href="#cb8-18"></a><span class="op">|</span><span class="dt">TicTacToe2</span> a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span>(<span class="op">|</span><span class="dt">Three</span><span class="op">|</span> <span class="op">*</span> <span class="op">|</span><span class="dt">Three</span><span class="op">|</span>)</span>
+<span id="cb8-19"><a href="#cb8-19"></a>               <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span>(<span class="dv">3</span><span class="op">*</span><span class="dv">3</span>)</span>
+<span id="cb8-20"><a href="#cb8-20"></a>               <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">9</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a></span>
+<span id="cb8-22"><a href="#cb8-22"></a><span class="ot">emptyBoard2 ::</span> <span class="dt">TicTacToe2</span> (<span class="dt">Maybe</span> <span class="dt">Bool</span>)</span>
+<span id="cb8-23"><a href="#cb8-23"></a>emptyBoard2 <span class="ot">=</span> <span class="dt">TicTacToe2</span> <span class="op">$</span> <span class="fu">const</span> <span class="op">$</span> <span class="fu">const</span> <span class="dt">Nothing</span></span></code></pre></div>
+<h3 id="the-curry-howard-isomorphism">The Curry-Howard Isomorphism<a href="#the-curry-howard-isomorphism" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>Every logic statement can be expressed as an equivalent computer program.</li>
+<li>Helps us analyze mathematical theorems through programming.</li>
+</ul>
+<h3 id="canonical-representations">Canonical Representations<a href="#canonical-representations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>Since multiple equivalent representations of a type are possible, the representation in form of sum of products is considered the canonical representation of the type. Example:</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">Either</span> a (<span class="dt">Either</span> b (c, d)) <span class="co">-- canonical</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a>(a, <span class="dt">Bool</span>) <span class="co">-- not canonical</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="dt">Either</span> a a <span class="co">-- same cardinality as above but canonical</span></span></code></pre></div>
+<h2 id="chapter-2.-terms-types-and-kinds" data-track-content data-content-name="chapter-2.-terms-types-and-kinds" data-content-piece="twt-notes">Chapter 2. Terms, Types and Kinds<a href="#chapter-2.-terms-types-and-kinds" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h3 id="the-kind-system">The Kind System<a href="#the-kind-system" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>Terms</em> are things manipulated at runtime. <em>Types</em> of terms are used by compiler to prove things about the terms.</li>
+<li>Similarly, <em>Types</em> are things manipulated at compile-time. <em>Kinds</em> of types are used by the compiler to prove things about the types.</li>
+<li>Kinds are “the types of the Types”.</li>
+<li>Kind of things that can exist at runtime (terms) is <code>*</code>. That is, kind of <code>Int</code>, <code>String</code> etc is <code>*</code>.</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">True</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Bool</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<ul>
+<li>There are kinds other than <code>*</code>. For example:</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Show</span> <span class="dt">Int</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">Show</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">Constraint</span></span></code></pre></div>
+<ul>
+<li>Higher-kinded types have <code>(-&gt;)</code> in their kind signature:</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Maybe</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="dt">Maybe</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">  ::</span> m (<span class="dt">Maybe</span> a) <span class="ot">-&gt;</span> <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> m a</span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span><span class="ot"> ::</span> (<span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span>) <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> <span class="dt">IO</span> <span class="dt">Int</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> <span class="dt">IO</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<h3 id="data-kinds">Data Kinds<a href="#data-kinds" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><code>-XDataKinds</code> extension lets us create new kinds.</li>
+<li>It lifts data constructors into type constructors and types into kinds.</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Allow</span> <span class="ot">=</span> <span class="dt">Yes</span> <span class="op">|</span> <span class="dt">No</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">Yes</span> <span class="co">-- Yes is data constructor</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="dt">Yes</span><span class="ot"> ::</span> <span class="dt">Allow</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Allow</span> <span class="co">-- Allow is a type</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="dt">Allow</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">'Yes</span> <span class="co">-- 'Yes is a type too. Its kind is 'Allow.</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="dt">'Yes</span><span class="ot"> ::</span> <span class="dt">Allow</span></span></code></pre></div>
+<ul>
+<li>Lifted constructors and types are written with a preceding <code>'</code>.</li>
+</ul>
+<h3 id="promotion-of-built-in-types">Promotion of Built-In Types<a href="#promotion-of-built-in-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><code>-XDataKinds</code> extension promotes built-in types too.</li>
+<li>Strings are promoted to the kind <code>Symbol</code>.</li>
+<li>Natural numbers are promoted to the kind <code>Nat</code>.</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="st">&quot;hi&quot;</span> <span class="co">-- &quot;hi&quot; is a type-level string</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="st">&quot;hi&quot;</span><span class="ot"> ::</span> <span class="dt">GHC.Types.Symbol</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dv">123</span> <span class="co">-- 123 is a type-level natural number</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="dv">123</span><span class="ot"> ::</span> <span class="dt">GHC.Types.Nat</span></span></code></pre></div>
+<ul>
+<li>We can do type level operations on <code>Symbol</code>s and <code>Nat</code>s.</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">GHC.TypeLits</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">AppendSymbol</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="dt">AppendSymbol</span><span class="ot"> ::</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Symbol</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">AppendSymbol</span> <span class="st">&quot;hello &quot;</span> <span class="st">&quot;there&quot;</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="dt">AppendSymbol</span> <span class="st">&quot;hello &quot;</span> <span class="st">&quot;there&quot;</span><span class="ot"> ::</span> <span class="dt">Symbol</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="ot">=</span> <span class="st">&quot;hello there&quot;</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">^</span> <span class="dv">7</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>(<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">^</span> <span class="dv">7</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="ot">=</span> <span class="dv">2187</span></span></code></pre></div>
+<ul>
+<li><code>-XTypeOperators</code> extension is needed for applying type-level functions with symbolic identifiers.</li>
+<li>There are type-level lists and tuples:</li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[ <span class="dt">'True</span> ]</span>
+<span id="cb16-2"><a href="#cb16-2"></a>'[ <span class="dt">'True</span> ]<span class="ot"> ::</span> [<span class="dt">Bool</span>]</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span>
+<span id="cb16-4"><a href="#cb16-4"></a>'[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> [<span class="dt">Nat</span>]</span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[<span class="st">&quot;abc&quot;</span>]</span>
+<span id="cb16-6"><a href="#cb16-6"></a>'[<span class="st">&quot;abc&quot;</span>]<span class="ot"> ::</span> [<span class="dt">Symbol</span>]</span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="dt">Prelude</span> <span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '(<span class="dv">6</span>, <span class="st">&quot;x&quot;</span>, <span class="dt">'False</span>)</span>
+<span id="cb16-8"><a href="#cb16-8"></a>'(<span class="dv">6</span>, <span class="st">&quot;x&quot;</span>, <span class="dt">'False</span>)<span class="ot"> ::</span> (<span class="dt">Nat</span>, <span class="dt">Symbol</span>, <span class="dt">Bool</span>)</span></code></pre></div>
+<h3 id="type-level-functions">Type-level Functions<a href="#type-level-functions" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>With the <code>-XTypeFamilies</code> extension, it’s possible to write new type-level functions as closed type families:</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeFamilies</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="dt">Prelude</span><span class="op">|</span> <span class="kw">type</span> <span class="kw">family</span> <span class="dt">And</span> (<span class="ot">x ::</span> <span class="dt">Bool</span>) (<span class="ot">y ::</span> <span class="dt">Bool</span>)<span class="ot"> ::</span> <span class="dt">Bool</span> <span class="kw">where</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="dt">Prelude</span><span class="op">|</span>   <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span> <span class="ot">=</span> <span class="dt">'True</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="dt">Prelude</span><span class="op">|</span>   <span class="dt">And</span> _     _     <span class="ot">=</span> <span class="dt">'False</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="dt">Prelude</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">And</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="dt">And</span><span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'False</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a><span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'False</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a><span class="ot">=</span> <span class="dt">'False</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a><span class="ot">=</span> <span class="dt">'True</span></span>
+<span id="cb17-16"><a href="#cb17-16"></a><span class="dt">Prelude</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span></span>
+<span id="cb17-17"><a href="#cb17-17"></a><span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-18"><a href="#cb17-18"></a><span class="ot">=</span> <span class="dt">'False</span></span></code></pre></div>
+    </section>
+    <section class="source">
+        
+          Posted by <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span itemprop="name" class="p-author">Abhinav Sarkar</span>
+          </span>
+        
+      <a href="https://github.com/abhin4v/abhin4v.github.io/commits/source/posts/twt-notes.md" target="_blank" rel="noopener" style="float: right;">
+        Post history
+      </a>
+    </section>
+</article>
+<span itemprop="url" content="https://abhinavsarkar.net/drafts/twt-notes/" style="display: none" class="u-url u-uid">https://abhinavsarkar.net/drafts/twt-notes/</span>
+
+<div class="subscription-msg">
+  <h3>Like this post? Subscribe below to get future posts by email.</h3>
+<form id="subscription" action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open('https://feedburner.google.com/fb/a/mailverify?uri=abhinavsarkarnet', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+  <input type="email" name="email" required placeholder="your.email@example.com" />
+  <input type="hidden" value="abhinavsarkarnet" name="uri" />
+  <input type="hidden" name="loc" value="en_US" />
+  <input type="submit" value="Subscribe" />
+</form>
+
+</div>
+
+
+
+
+
+<ul class="pager">
+  <li class="previous">
+    
+    <a href="//abhinavsarkar.net/drafts/solving-aoc3-with-haskell-interval-trees/" title="Previous">
+      <svg class="assist-icon" xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 8 8">
+        <path d="M4 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z" transform="translate(1)"></path>
+      </svg>
+      <span class="ind">Previous</span> <br>
+      <span class="title">No Matter How You Slice It with Haskell and Interval Trees</span>
+    </a>
+    
+  </li>
+
+  <li class="next">
+    
+  </li>
+</ul>
+
+<script src="//abhinavsarkar.net/js/post-styling.js" defer async></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/haskell.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlightjs-line-numbers.js/2.1.0/highlightjs-line-numbers.min.js"></script>
+<script src="https://platform.twitter.com/widgets.js" charset="utf-8" defer async></script>
+<script>
+  hljs.initHighlightingOnLoad();
+  hljs.initLineNumbersOnLoad({
+    singleLine: true
+  });
+
+  window.setTimeout(function() {
+      if (window.twttr == undefined) {
+        document.getElementsByClassName("twitter-button")[0].setAttribute("style", "display: none");
+      }
+    }, 3000);
+</script>
+
+
+        </main>
+
+        <footer>
+          <nav id="bottomnav">
+            <span class="links">
+                <a href="//abhinavsarkar.net/">Home</a>
+                <a href="//abhinavsarkar.net/about/">About</a>
+<a href="//abhinavsarkar.net/archive/">Posts</a>
+<a href="//abhinavsarkar.net/notes/">Notes</a>
+<a href="//abhinavsarkar.net/photos/">Photos</a>
+<a href="//abhinavsarkar.net/readings/">Readings</a>
+<a href="//abhinavsarkar.net/now/">Now</a>
+            </span>
+          </nav>
+          <div id="copy">
+            <span style="float: left">© 2017-2019, Abhinav Sarkar</span>
+            Generated by <a href="http://jaspervdj.be/hakyll" target="_blank" rel="noopener">Hakyll</a>
+            <span id="gen-time" class="hide-small"></span> |
+            <a href="https://github.com/abhin4v/abhin4v.github.io" target="_blank" rel="noopener">Source</a>
+          </div>
+        </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      document.documentElement.className = document.documentElement.className.replace("no-js","js");
+
+      jQuery("nav .links a").each(function() {
+        if (new URL(this.href).pathname === window.location.pathname) {
+          jQuery(this).css('font-weight', 'bold');
+        }
+      });
+
+      function loadStyleSheet(src) {
+        if (document.createStyleSheet){
+          document.createStyleSheet(src);
+        } else {
+          jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
+        }
+      }
+
+      jQuery(window).ready(function setGenTime() {
+        if (window.performance && window.performance.timing) {
+          var t = window.performance.timing;
+          var elapsed = t.loadEventEnd - t.navigationStart;
+          if (elapsed >= 0) {
+            jQuery("#gen-time").text("| Served in " + elapsed + " ms");
+          } else {
+            window.setTimeout(setGenTime, 1000);
+          }
+        }
+      });
+    </script>
+    <style type="text/css" media="print">
+      @page {
+        size: A4;
+        margin: 12mm 17mm 12mm 17mm;
+      }
+    </style>
+  </body>
+</html>
