@@ -28,9 +28,12 @@ toc: left
 
 - *Cardinality* of a type is the number of values it can have ignoring bottoms. The values of a type are also called the *inhabitants* of the type.
 ```haskell
-data Void -- no possible values. cardinality: 0
-data Unit = Unit -- only one possible value. cardinality: 1
-data Bool = True | False -- only two possible values. cardinality: 2
+data Void
+ -- no possible values. cardinality: 0
+data Unit = Unit
+ -- only one possible value. cardinality: 1
+data Bool = True | False
+ -- only two possible values. cardinality: 2
 ```
 - Cardinality is written using notation: `|Void| = 0`
 - Two types are said to be _Isomorphic_ if they have same cardinality.
@@ -67,34 +70,45 @@ from . to = id
 ```
 For every value in domain `a` there can be `|b|` possible values in the range `b`. And there are `|a|` possible values in domain `a`. So:
 ```haskell
-|a -> b| = |b| * |b| * ... * |b| -- (|a| times)
-         = |b|^|a|
+|a -> b|
+  = |b| * |b| * ... * |b| -- (|a| times)
+  = |b|^|a|
 ```
 - Data can be represented in many possible isomorphic types. Some of them are more useful than others. Example:
 ```haskell
 data TicTacToe1 a = TicTacToe1
-  { topLeft    :: a, topCenter    :: a, topRight    :: a
-  , middleLeft :: a, middleCenter :: a, middleRight :: a
-  , bottomLeft :: a, bottomCenter :: a, bottomRight :: a
+  { topLeft      :: a
+  , topCenter    :: a
+  , topRight     :: a
+  , middleLeft   :: a
+  , middleCenter :: a
+  , middleRight  :: a
+  , bottomLeft   :: a
+  , bottomCenter :: a
+  , bottomRight  :: a
   }
 
-|TicTacToe1 a| = |a| * |a| * ... * |a| -- 9 times
-               = |a|^9
+|TicTacToe1 a|
+  = |a| * |a| * ... * |a| -- 9 times
+  = |a|^9
 
 emptyBoard1 :: TicTacToe1 (Maybe Bool)
-emptyBoard1 = TicTacToe1 Nothing Nothing Nothing
-                          Nothing Nothing Nothing
-                          Nothing Nothing Nothing
+emptyBoard1 =
+  TicTacToe1 Nothing Nothing Nothing
+             Nothing Nothing Nothing
+             Nothing Nothing Nothing
 
 data Three = One | Two | Three
-data TicTacToe2 a = TicTacToe2 (Three -> Three -> a)
+data TicTacToe2 a =
+  TicTacToe2 (Three -> Three -> a)
 
 |TicTacToe2 a| = |a|^(|Three| * |Three|)
                = |a|^(3*3)
                = |a|^9
 
 emptyBoard2 :: TicTacToe2 (Maybe Bool)
-emptyBoard2 = TicTacToe2 $ const $ const Nothing
+emptyBoard2 =
+  TicTacToe2 $ const $ const Nothing
 ```
 
 ### The Curry-Howard Isomorphism
@@ -109,7 +123,8 @@ emptyBoard2 = TicTacToe2 $ const $ const Nothing
 Either a (Either b (c, d)) -- canonical
 
 (a, Bool) -- not canonical
-Either a a -- same cardinality as above but canonical
+Either a a
+-- same cardinality as above but canonical
 ```
 
 ## Chapter 2. Terms, Types and Kinds
@@ -154,14 +169,16 @@ Control.Monad.Trans.Maybe.MaybeT IO Int :: *
 ```haskell
 Prelude> :set -XDataKinds
 Prelude> data Allow = Yes | No
-Prelude> :type Yes -- Yes is data constructor
+Prelude> :type Yes
 Yes :: Allow
+-- Yes is data constructor
 Prelude> :kind Allow -- Allow is a type
 Allow :: *
-Prelude> :kind 'Yes -- 'Yes is a type too. Its kind is 'Allow.
+Prelude> :kind 'Yes
 'Yes :: Allow
+-- 'Yes is a type too. Its kind is 'Allow.
 ```
-- Lifted constructors and types are written with a preceding `'`.
+- Lifted constructors and types are written with a preceding `'` (called _tick_).
 
 ### Promotion of Built-In Types
 
@@ -169,10 +186,12 @@ Prelude> :kind 'Yes -- 'Yes is a type too. Its kind is 'Allow.
 - Strings are promoted to the kind `Symbol`.
 - Natural numbers are promoted to the kind `Nat`.
 ```haskell
-Prelude> :kind "hi" -- "hi" is a type-level string
+Prelude> :kind "hi"
 "hi" :: GHC.Types.Symbol
-Prelude> :kind 123 -- 123 is a type-level natural number
+-- "hi" is a type-level string
+Prelude> :kind 123
 123 :: GHC.Types.Nat
+-- 123 is a type-level natural number
 ```
 - We can do type level operations on `Symbol`s and `Nat`s.
 ```haskell
