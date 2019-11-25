@@ -215,6 +215,8 @@ GHC.TypeLits> :kind '[1,2,3]
 '[1,2,3] :: [Nat]
 GHC.TypeLits> :kind '["abc"]
 '["abc"] :: [Symbol]
+GHC.TypeLits> :kind 'False ': 'True ': '[]
+'False ': 'True ': '[] :: [Bool]
 GHC.TypeLits> :kind '(6, "x", 'False)
 '(6, "x", 'False) :: (Nat, Symbol, Bool)
 ```
@@ -360,27 +362,27 @@ newtype T5 a = T5 ((a -> Int) -> Int)
 - `-XTypeApplications` extension lets us directly apply types to expressions:
 ```haskell
 > :set -XTypeApplications
-> :t traverse
+> :type traverse
 traverse
   :: (Traversable t, Applicative f) =>
      (a -> f b) -> t a -> f (t b)
-> :t traverse @Maybe
+> :type traverse @Maybe
 traverse @Maybe
   :: Applicative f =>
      (a -> f b) -> Maybe a -> f (Maybe b)
-> :t traverse @Maybe @[]
+> :type traverse @Maybe @[]
 traverse @Maybe @[]
   :: (a -> [b]) -> Maybe a -> [Maybe b]
-> :t traverse @Maybe @[] @Int
+> :type traverse @Maybe @[] @Int
 traverse @Maybe @[] @Int
   :: (Int -> [b]) -> Maybe Int -> [Maybe b]
-> :t traverse @Maybe @[] @Int @String
+> :type traverse @Maybe @[] @Int @String
 traverse @Maybe @[] @Int @String
   :: (Int -> [String]) -> Maybe Int -> [Maybe String]
 ```
 - Types are applied in the order they appear in the type signature. It is possible to avoid applying types by using a type with an underscore: `@_`
 ```haskell
-> :t traverse @Maybe @_ @_ @String
+> :type traverse @Maybe @_ @_ @String
 traverse @Maybe @_ @_ @String
   :: Applicative w1 =>
      (w2 -> w1 String) -> Maybe w2 -> w1 (Maybe String)
@@ -423,3 +425,202 @@ Data.Typeable> typeName @String
 Data.Typeable> typeName @(IO Int)
 "IO Int"
 ```
+
+## Chapter 5. Constraints and GADTs
+
+### Constraints
+
+- _Constraints_ are a kind different than the types (`*`).
+- Constraints are what appear on the left-hand side on the fat context arrow `=>` like `Show a`.
+```haskell
+> :k Show
+Show :: * -> Constraint
+> :k Show Int
+Show Int :: Constraint
+> :k (Show Int, Eq String)
+(Show Int, Eq String) :: Constraint
+```
+- Type equalities `(Int ~ a)` are another way of creating Constraints. `(Int ~ a)` says `a` is same as `Int`.
+- Type equalities are
+  - reflexive: `a ~ a` always
+  - symmetrical: `a ~ b` implies `b ~ a`
+  - transitive: `a ~ b` and `b ~ c` implies `a ~ c`
+
+### GADTs
+
+- _GADTs_ are Generalized Algebraic DataTypes. They allow writing explicit type signatures for data constructors. Here is the code for a length-typed list using GADTs:
+```haskell
+> :set -XGADTs
+> :set -XKindSignatures
+> :set -XTypeOperators
+> :set -XDataKinds
+> :m +GHC.TypeLits
+GHC.TypeLits> :{
+GHC.TypeLits| data List (a :: *) (n :: Nat) where
+GHC.TypeLits|   Nil  :: List a 0
+GHC.TypeLits|   (:~) :: a -> List a n -> List a (n + 1)
+GHC.TypeLits| infixr 5 :~
+GHC.TypeLits| :}
+GHC.TypeLits> :type Nil
+Nil :: List a 0
+GHC.TypeLits> :type 'a' :~ Nil
+'a' :~ Nil :: List Char 1
+GHC.TypeLits> :type 'b' :~ 'a' :~ Nil
+'b' :~ 'a' :~ Nil :: List Char 2
+GHC.TypeLits> :type True :~ 'a' :~ Nil
+
+<interactive>:1:9: error:
+    • Couldn't match type ‘Char’ with ‘Bool’
+      Expected type: List Bool 1
+        Actual type: List Char (0 + 1)
+    • In the second argument of ‘(:~)’, namely ‘'a' :~ Nil’
+      In the expression: True :~ 'a' :~ Nil
+```
+- GADTs are just syntactic sugar for ADTs with type equalities. The above definition is equivalent to:
+```haskell
+> :set -XGADTs
+> :set -XKindSignatures
+> :set -XTypeOperators
+> :set -XDataKinds
+> :m +GHC.TypeLits
+GHC.TypeLits> :{
+GHC.TypeLits| data List (a :: *) (n :: Nat)
+GHC.TypeLits|   = (n ~ 0) => Nil
+GHC.TypeLits|   | a :~ List a (n - 1)
+GHC.TypeLits| infixr 5 :~
+GHC.TypeLits| :}
+GHC.TypeLits> :type 'a' :~ Nil
+'a' :~ Nil :: List Char 1
+GHC.TypeLits> :type 'b' :~ 'a' :~ Nil
+'b' :~ 'a' :~ Nil :: List Char 2
+```
+- Type-safety of this list can be used to write a safe `head` function which does not compile for an empty list:
+```haskell
+GHC.TypeLits> :{
+GHC.TypeLits| safeHead :: List a (n + 1) -> a
+GHC.TypeLits| safeHead (x :~ _) = x
+GHC.TypeLits| :}
+GHC.TypeLits> safeHead ('a' :~ 'b' :~ Nil)
+'a'
+GHC.TypeLits> safeHead Nil
+
+<interactive>:21:10: error:
+    • Couldn't match type ‘1’ with ‘0’
+      Expected type: List a (0 + 1)
+        Actual type: List a 0
+    • In the first argument of ‘safeHead’, namely ‘Nil’
+      In the expression: safeHead Nil
+      In an equation for ‘it’: it = safeHead Nil
+```
+
+### Heterogeneous Lists
+
+We can use GADTs to build heterogeneous lists which can store values of different types and are type-safe to use.[^hlist-source]
+
+First, the required extensions and imports:
+```{.haskell include=files/hlist.hs snippet=imports}
+```
+
+`HList` is defined as a GADT:
+```{.haskell include=files/hlist.hs snippet=def}
+```
+
+Example usage:
+```haskell
+*HList> :type HNil
+HNil :: HList '[]
+*HList> :type 'a' :# HNil
+'a' :# HNil :: HList '[Char]
+*HList> :type True :# 'a' :# HNil
+True :# 'a' :# HNil :: HList '[Bool, Char]
+```
+
+We can write operations on `HList`:
+```{.haskell include=files/hlist.hs snippet=ops}
+```
+
+Example usage:
+```haskell
+*HList> hLength $ True :# 'a' :# HNil
+2
+*HList> hHead $ True :# 'a' :# HNil
+True
+*HList> hHead HNil
+
+<interactive>:7:7: error:
+    • Couldn't match type ‘'[]’ with ‘t : ts0’
+      Expected type: HList (t : ts0)
+        Actual type: HList '[]
+    • In the first argument of ‘hHead’, namely ‘HNil’
+      In the expression: hHead HNil
+      In an equation for ‘it’: it = hHead HNil
+    • Relevant bindings include it :: t (bound at <interactive>:7:1)
+```
+
+We need to define instances of typeclasses like `Eq`, `Ord` etc. for `HList` because GHC cannot derive them automatically yet:
+
+```{.haskell include=files/hlist.hs snippet=instances}
+```
+
+The instances are defined recursively: one for the base case and one for the inductive case.
+
+Example usage:
+```haskell
+*HList> True :# 'a' :# HNil == True :# 'a' :# HNil
+True
+*HList> True :# 'a' :# HNil == True :# 'b' :# HNil
+False
+*HList> True :# 'a' :# HNil == True :# HNil
+
+<interactive>:17:24: error:
+    • Couldn't match type ‘'[]’ with ‘'[Char]’
+      Expected type: HList '[Bool, Char]
+        Actual type: HList '[Bool]
+    • In the second argument of ‘(==)’, namely ‘True :# HNil’
+      In the expression: True :# 'a' :# HNil == True :# HNil
+      In an equation for ‘it’: it = True :# 'a' :# HNil == True :# HNil
+*HList> show $ True :# 'a' :# HNil
+"True@Bool :# 'a'@Char :# []"
+```
+
+### Creating New Constraints
+
+- Type families can be used to create new Constraints:
+```haskell
+> :set -XKindSignatures
+> :set -XDataKinds
+> :set -XTypeOperators
+> :set -XTypeFamilies
+> :m +Data.Constraint
+Data.Constraint> :{
+Data.Constraint| type family AllEq (ts :: [*]) :: Constraint where
+Data.Constraint|   AllEq '[] = ()
+Data.Constraint|   AllEq (t ': ts) = (Eq t, AllEq ts)
+Data.Constraint| :}
+Data.Constraint> :kind! AllEq '[Bool, Char]
+AllEq '[Bool, Char] :: Constraint
+= (Eq Bool, (Eq Char, () :: Constraint))
+```
+- `AllEq` is a type-level function from a list of types to a constraint.
+- With the `-XConstraintKinds` extension, `AllEq` can be made polymorphic over all constraints instead of just `Eq`:
+```haskell
+> :set -XKindSignatures
+> :set -XDataKinds
+> :set -XTypeOperators
+> :set -XTypeFamilies
+> :set -XConstraintKinds
+> :m +Data.Constraint
+Data.Constraint> :{
+Data.Constraint| type family All (c :: * -> Constraint)
+Data.Constraint|                 (ts :: [*]) :: Constraint where
+Data.Constraint|   All c '[] = ()
+Data.Constraint|   All c (t ': ts) = (c t, All c ts)
+Data.Constraint| :}
+```
+- With `All`, instances for `HList` can be written non-recursively:
+```haskell
+instance All Eq ts => Eq (HList ts) where
+  HNil == HNil = True
+  (a :# as) == (b :# bs) = a == b && as == bs
+```
+[^hlist-source]: [The complete code for `HList`](/files/hlist.hs).
