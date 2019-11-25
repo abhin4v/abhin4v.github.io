@@ -242,3 +242,56 @@ Prelude> :kind! And 'False 'True
 And 'False 'True :: Bool
 = 'False
 ```
+
+## Chapter 3: Variance
+
+- There are three types of _Variance_ (`T` here a `newtype` over the functions):
+  - Covariant: any function of type `a -> b` can be lifted into a function of type `T a -> T b`. Covariant types are instances of the `Functor` typeclass:
+  ```haskell
+  class Functor f where
+    fmap :: (a -> b) -> f a -> f b
+  ```
+  - Contravariant: any function of type `a -> b` can be lifted into a function of type `T b -> T a`. Contravariant functions are instances of the `Contravariant` typeclass:
+  ```haskell
+  class Contravariant f where
+    contramap :: (a -> b) -> f b -> f a
+  ```
+  - Invariant: no function of type `a -> b` can be lifted into a function of type `T a`. Invariant functions are instances of the `Invariant` typeclass:
+  ```haskell
+  class Invariant f where
+    invmap :: (a -> b) -> (b -> a) -> f a -> f b
+  ```
+- Variance of a type `T` is specified with respect to a particular type parameter. A type `T` with two parameters `a` and `b` could be covariant wrt. `a` and contravariant wrt. `b`.
+- Variance of a type `T` wrt. a particular type parameter is determined by whether the parameter appears in positive or negative *position*s.
+  - If a type parameter appears on the left-hand side of a function, it is said to be in a negative position. Else it is said to be in a positive position.
+  - If a type parameter appears only in positive positions then the type is covariant wrt. that parameter.
+  - If a type parameter appears only in negative positions then the type is contravariant wrt. that parameter.
+  - If a type parameter appears in both positive and negative positions then the type is invariant wrt. that parameter.
+  - positions follow the laws of multiplication for their *sign*s.
+
+a   b   a * b
+--  --  ------
++   +   +
++   -   -
+-   +   -
+-   -   +
+
+- Examples:
+```haskell
+newtype T1 a = T1 (Int -> a)
+-- a is in +ve position, T1 is covariant wrt. a.
+newtype T2 a = T2 (a -> Int)
+-- a is in -ve position, T2 is contravariant wrt. a.
+newtype T3 a = T3 (a -> a)
+-- a is in both -ve and +ve position. T3 is invariant wrt. a.
+newtype T4 a = T4 ((Int -> a) -> Int)
+-- a is in +ve position but (Int -> a) is in -ve position.
+-- So a is in -ve position overall. T4 is contravariant wrt. a.
+newtype T5 a = T5 ((a -> Int) -> Int)
+-- a is in -ve position but (a -> Int) is in -ve position.
+-- So a is in +ve position overall. T5 is covariant wrt. a.
+```
+- Covariant parameters are said to be _produced_ or _owned_ by the type.
+- Contravariant parameters are said to be _consumed_ by the type.
+- A type that is covariant in two parameters is called a `BiFunctor`.
+- A type that is contravariant in first parameter and covariant in second parameter is called a `Profunctor`.
