@@ -136,29 +136,29 @@ Either a a
 - Kinds are "the types of the Types".
 - Kind of things that can exist at runtime (terms) is `*`. That is, kind of `Int`, `String` etc is `*`.
 ```haskell
-Prelude> :type True
+> :type True
 True :: Bool
-Prelude> :kind Bool
+> :kind Bool
 Bool :: *
 ```
 - There are kinds other than `*`. For example:
 ```haskell
-Prelude> :kind Show Int
+> :kind Show Int
 Show Int :: Constraint
 ```
 - Higher-kinded types have `(->)` in their kind signature:
 ```haskell
-Prelude> :kind Maybe
+> :kind Maybe
 Maybe :: * -> *
-Prelude> :kind Maybe Int
+> :kind Maybe Int
 Maybe Int :: *
 
-Prelude> :type Control.Monad.Trans.Maybe.MaybeT
+> :type Control.Monad.Trans.Maybe.MaybeT
 Control.Monad.Trans.Maybe.MaybeT
   :: m (Maybe a) -> Control.Monad.Trans.Maybe.MaybeT m a
-Prelude> :kind Control.Monad.Trans.Maybe.MaybeT
+> :kind Control.Monad.Trans.Maybe.MaybeT
 Control.Monad.Trans.Maybe.MaybeT :: (* -> *) -> * -> *
-Prelude> :kind Control.Monad.Trans.Maybe.MaybeT IO Int
+> :kind Control.Monad.Trans.Maybe.MaybeT IO Int
 Control.Monad.Trans.Maybe.MaybeT IO Int :: *
 ```
 
@@ -167,14 +167,14 @@ Control.Monad.Trans.Maybe.MaybeT IO Int :: *
 - `-XDataKinds` extension lets us create new kinds.
 - It lifts data constructors into type constructors and types into kinds.
 ```haskell
-Prelude> :set -XDataKinds
-Prelude> data Allow = Yes | No
-Prelude> :type Yes
+> :set -XDataKinds
+> data Allow = Yes | No
+> :type Yes
 Yes :: Allow
 -- Yes is data constructor
-Prelude> :kind Allow -- Allow is a type
+> :kind Allow -- Allow is a type
 Allow :: *
-Prelude> :kind 'Yes
+> :kind 'Yes
 'Yes :: Allow
 -- 'Yes is a type too. Its kind is 'Allow.
 ```
@@ -186,36 +186,36 @@ Prelude> :kind 'Yes
 - Strings are promoted to the kind `Symbol`.
 - Natural numbers are promoted to the kind `Nat`.
 ```haskell
-Prelude> :kind "hi"
+> :kind "hi"
 "hi" :: GHC.Types.Symbol
 -- "hi" is a type-level string
-Prelude> :kind 123
+> :kind 123
 123 :: GHC.Types.Nat
 -- 123 is a type-level natural number
 ```
 - We can do type level operations on `Symbol`s and `Nat`s.
 ```haskell
-Prelude> :m +GHC.TypeLits
-Prelude GHC.TypeLits> :kind AppendSymbol
+> :m +GHC.TypeLits
+GHC.TypeLits> :kind AppendSymbol
 AppendSymbol :: Symbol -> Symbol -> Symbol
-Prelude GHC.TypeLits> :kind! AppendSymbol "hello " "there"
+GHC.TypeLits> :kind! AppendSymbol "hello " "there"
 AppendSymbol "hello " "there" :: Symbol
 = "hello there"
-Prelude GHC.TypeLits> :set -XTypeOperators
-Prelude GHC.TypeLits> :kind! (1 + 2) ^ 7
+GHC.TypeLits> :set -XTypeOperators
+GHC.TypeLits> :kind! (1 + 2) ^ 7
 (1 + 2) ^ 7 :: Nat
 = 2187
 ```
 - `-XTypeOperators` extension is needed for applying type-level functions with symbolic identifiers.
 - There are type-level lists and tuples:
 ```haskell
-Prelude GHC.TypeLits> :kind '[ 'True ]
+GHC.TypeLits> :kind '[ 'True ]
 '[ 'True ] :: [Bool]
-Prelude GHC.TypeLits> :kind '[1,2,3]
+GHC.TypeLits> :kind '[1,2,3]
 '[1,2,3] :: [Nat]
-Prelude GHC.TypeLits> :kind '["abc"]
+GHC.TypeLits> :kind '["abc"]
 '["abc"] :: [Symbol]
-Prelude GHC.TypeLits> :kind '(6, "x", 'False)
+GHC.TypeLits> :kind '(6, "x", 'False)
 '(6, "x", 'False) :: (Nat, Symbol, Bool)
 ```
 
@@ -223,27 +223,27 @@ Prelude GHC.TypeLits> :kind '(6, "x", 'False)
 
 - With the `-XTypeFamilies` extension, it's possible to write new type-level functions as closed type families:
 ```haskell
-Prelude> :set -XDataKinds
-Prelude> :set -XTypeFamilies
-Prelude> :{
-Prelude| type family And (x :: Bool) (y :: Bool) :: Bool where
-Prelude|   And 'True 'True = 'True
-Prelude|   And _     _     = 'False
-Prelude| :}
-Prelude> :kind And
+> :set -XDataKinds
+> :set -XTypeFamilies
+> :{
+| type family And (x :: Bool) (y :: Bool) :: Bool where
+|   And 'True 'True = 'True
+|   And _     _     = 'False
+| :}
+> :kind And
 And :: Bool -> Bool -> Bool
-Prelude> :kind! And 'True 'False
+> :kind! And 'True 'False
 And 'True 'False :: Bool
 = 'False
-Prelude> :kind! And 'True 'True
+> :kind! And 'True 'True
 And 'True 'True :: Bool
 = 'True
-Prelude> :kind! And 'False 'True
+> :kind! And 'False 'True
 And 'False 'True :: Bool
 = 'False
 ```
 
-## Chapter 3: Variance
+## Chapter 3. Variance
 
 - There are three types of _Variance_ (`T` here a `newtype` over the functions):
   - Covariant: any function of type `a -> b` can be lifted into a function of type `T a -> T b`. Covariant types are instances of the `Functor` typeclass:
@@ -295,3 +295,131 @@ newtype T5 a = T5 ((a -> Int) -> Int)
 - Contravariant parameters are said to be _consumed_ by the type.
 - A type that is covariant in two parameters is called a `BiFunctor`.
 - A type that is contravariant in first parameter and covariant in second parameter is called a `Profunctor`.
+
+## Chapter 4. Working with Types
+
+- Standard Haskell has no notion of scopes for types.
+- `-XScopedTypeVariables` extension lets us bind type variables to a scope. It requires an explicity `forall` quantifier in type signatures.
+
+```haskell
+-- This does not compile.
+> :{
+| comp :: (a -> b) -> (b -> c) -> a -> c
+| comp f g a = go f
+|  where
+|   go :: (a -> b) -> c
+|   go f' = g (f' a)
+| :}
+
+<interactive>:11:11: error:
+    • Couldn't match expected type ‘c1’ with actual type ‘c’
+      ‘c1’ is a rigid type variable bound by
+        the type signature for:
+          go :: forall a1 b1 c1. (a1 -> b1) -> c1
+        at <interactive>:10:3-21
+      ‘c’ is a rigid type variable bound by
+        the type signature for:
+          comp :: forall a b c. (a -> b) -> (b -> c) -> a -> c
+        at <interactive>:7:1-38
+    • In the expression: g (f' a)
+
+<interactive>:11:14: error:
+    • Couldn't match expected type ‘b’ with actual type ‘b1’
+      ‘b1’ is a rigid type variable bound by
+        the type signature for:
+          go :: forall a1 b1 c1. (a1 -> b1) -> c1
+        at <interactive>:10:3-21
+      ‘b’ is a rigid type variable bound by
+        the type signature for:
+          comp :: forall a b c. (a -> b) -> (b -> c) -> a -> c
+        at <interactive>:7:1-38
+    • In the first argument of ‘g’, namely ‘(f' a)’
+
+<interactive>:11:17: error:
+    • Couldn't match expected type ‘a1’ with actual type ‘a’
+      ‘a1’ is a rigid type variable bound by
+        the type signature for:
+          go :: forall a1 b1 c1. (a1 -> b1) -> c1
+        at <interactive>:10:3-21
+      ‘a’ is a rigid type variable bound by
+        the type signature for:
+          comp :: forall a b c. (a -> b) -> (b -> c) -> a -> c
+        at <interactive>:7:1-38
+    • In the first argument of ‘f'’, namely ‘a’
+
+-- But this does.
+> :set -XScopedTypeVariables
+> :{
+| comp :: forall a b c. (a -> b) -> (b -> c) -> a -> c
+| comp f g a = go f
+|  where
+|   go :: (a -> b) -> c
+|   go f' = g (f' a)
+| :}
+```
+- `-XTypeApplications` extension lets us directly apply types to expressions:
+```haskell
+> :set -XTypeApplications
+> :t traverse
+traverse
+  :: (Traversable t, Applicative f) =>
+     (a -> f b) -> t a -> f (t b)
+> :t traverse @Maybe
+traverse @Maybe
+  :: Applicative f =>
+     (a -> f b) -> Maybe a -> f (Maybe b)
+> :t traverse @Maybe @[]
+traverse @Maybe @[]
+  :: (a -> [b]) -> Maybe a -> [Maybe b]
+> :t traverse @Maybe @[] @Int
+traverse @Maybe @[] @Int
+  :: (Int -> [b]) -> Maybe Int -> [Maybe b]
+> :t traverse @Maybe @[] @Int @String
+traverse @Maybe @[] @Int @String
+  :: (Int -> [String]) -> Maybe Int -> [Maybe String]
+```
+- Types are applied in the order they appear in the type signature. It is possible to avoid applying types by using a type with an underscore: `@_`
+```haskell
+> :t traverse @Maybe @_ @_ @String
+traverse @Maybe @_ @_ @String
+  :: Applicative w1 =>
+     (w2 -> w1 String) -> Maybe w2 -> w1 (Maybe String)
+```
+- Sometimes the compiler cannot infer the type of an expression. `-XAllowAmbiguousTypes` extension allow such programs to compile.
+```haskell
+> :set -XScopedTypeVariables
+> :{
+| f :: forall a. Show a => Bool
+| f = True
+| :}
+
+<interactive>:7:6: error:
+    • Could not deduce (Show a0)
+      from the context: Show a
+        bound by the type signature for:
+                   f :: forall a. Show a => Bool
+        at <interactive>:7:6-29
+      The type variable ‘a0’ is ambiguous
+    • In the ambiguity check for ‘f’
+      To defer the ambiguity check to use sites, enable AllowAmbiguousTypes
+      In the type signature: f :: forall a. Show a => Bool
+```
+- `Proxy` is a type isomorphic to `()` except with a phantom type parameter:
+```haskell
+data Proxy a = Proxy
+```
+- With all the three extensions enabled, it is possible to get a term-level representation of types using the `Data.Typeable` module:
+```haskell
+> :set -XScopedTypeVariables
+> :set -XTypeApplications
+> :set -XAllowAmbiguousTypes
+> :m +Data.Typeable
+Data.Typeable> :{
+Data.Typeable| typeName :: forall a. Typeable a => String
+Data.Typeable| typeName = show . typeRep $ Proxy @a
+Data.Typeable| :}
+Data.Typeable> typeName @String
+"[Char]"
+Data.Typeable> typeName @(IO Int)
+"IO Int"
+```
