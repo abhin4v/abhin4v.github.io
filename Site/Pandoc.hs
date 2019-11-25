@@ -9,6 +9,7 @@ import qualified Text.Pandoc.Filter.EmphasizeCode.Chunking as EC
 import qualified Text.Pandoc.Filter.EmphasizeCode.Range as EC
 import qualified Text.Pandoc.Filter.EmphasizeCode.Renderable as EC
 import qualified Text.Pandoc.Filter.EmphasizeCode.Html as EC
+import Text.Pandoc.Filter.IncludeCode (includeCode)
 
 blankTargetLinks :: Inline -> Inline
 blankTargetLinks (Link (ident, classes, props) children (url, title)) =
@@ -98,3 +99,6 @@ emphasizeCode cb@(CodeBlock (id', classes, attrs) contents) =
   where
     lookupRanges attrs = Text.pack <$> lookup "emphasize" attrs
 emphasizeCode x = x
+
+includeCodeTransform :: Block -> IO Block
+includeCodeTransform = includeCode (Just (Format "html5"))

@@ -17,7 +17,7 @@ import System.FilePath.Posix (takeBaseName, takeDirectory)
 import Text.Pandoc.Definition (Pandoc)
 import Text.Pandoc.Extensions (disableExtension)
 import Text.Pandoc.Options
-import Text.Pandoc.Walk (walk)
+import Text.Pandoc.Walk (walkM, walk)
 
 compileDrafts :: Tags -> String -> [Identifier] -> Rules ()
 compileDrafts = doCompilePosts False
@@ -163,23 +163,31 @@ readContentWithPandoc = getResourceBody >>= readPandocWith defaultHakyllReaderOp
 readContentWithPandocWith :: ReaderOptions -> Compiler (Item Pandoc)
 readContentWithPandocWith readerOptions = getResourceBody >>= readPandocWith readerOptions
 
-pandocContentCompiler :: (Pandoc -> Pandoc) -> Item Pandoc -> Compiler (Item String)
-pandocContentCompiler transform = return . writePandocWith writerOptions . fmap transform
+pandocContentCompiler :: (Pandoc -> Compiler Pandoc) -> Item Pandoc -> Compiler (Item String)
+pandocContentCompiler transform item =
+  transform (itemBody item)
+  >>= makeItem
+  >>= return . writePandocWith writerOptions
 
 contentCompiler :: (Pandoc -> Pandoc) -> Compiler (Item String)
-contentCompiler transform = readContentWithPandoc >>= pandocContentCompiler transform
+contentCompiler transform = readContentWithPandoc >>= pandocContentCompiler (return . transform)
 
 contentCompilerWith :: ReaderOptions -> WriterOptions -> (Pandoc -> Pandoc) -> Compiler (Item String)
 contentCompilerWith readerOp writerOp transform =
   writePandocWith writerOp . fmap transform <$> readContentWithPandocWith readerOp
 
-postContentTransforms :: String -> String -> Pandoc -> Pandoc
+postContentTransforms :: String -> String -> Pandoc -> Compiler Pandoc
 postContentTransforms postSlug alignment =
-    walk linkHeaders
-  . walk (addHeaderTracking postSlug)
-  . walk linkImages
-  . walk mkScrollableTables
-  . tableOfContents alignment
-  . walk blankTargetLinks
-  . walk expandWikiLinks
-  . walk emphasizeCode
+  unsafeCompiler
+  . walkM includeCodeTransform
+  . pureTransforms
+  where
+    pureTransforms =
+      walk linkHeaders
+      . walk (addHeaderTracking postSlug)
+      . walk linkImages
+      . walk mkScrollableTables
+      . tableOfContents alignment
+      . walk blankTargetLinks
+      . walk expandWikiLinks
+      . walk emphasizeCode
