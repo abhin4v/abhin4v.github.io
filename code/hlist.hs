@@ -1,4 +1,3 @@
--- start snippet imports
 {-# LANGUAGE KindSignatures #-}
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE TypeOperators #-}
@@ -11,16 +10,12 @@
 module HList where
 
 import Data.Typeable
--- end snippet imports
 
--- start snippet def
 data HList (ts :: [*]) where
   HNil :: HList '[]
   (:#) :: t -> HList ts -> HList (t ': ts)
 infixr 5 :#
--- end snippet def
 
--- start snippet instances
 instance Eq (HList '[]) where
   HNil == HNil = True
 instance (Eq t, Eq (HList ts))
@@ -43,13 +38,10 @@ instance (Typeable t, Show t, Show (HList ts))
     show x 
     ++ "@" ++ show (typeRep (Proxy @t))
     ++ " :# " ++ show xs
--- end snippet instances
 
--- start snippet ops
 hLength :: HList ts -> Int
 hLength HNil = 0
 hLength (x :# xs) = 1 + hLength xs
 
 hHead :: HList (t ': ts) -> t
 hHead (t :# _) = t
--- end snippet ops

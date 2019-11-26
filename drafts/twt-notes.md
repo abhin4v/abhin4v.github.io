@@ -518,11 +518,11 @@ GHC.TypeLits> safeHead Nil
 We can use GADTs to build heterogeneous lists which can store values of different types and are type-safe to use.[^hlist-source]
 
 First, the required extensions and imports:
-```{.haskell include=files/hlist.hs snippet=imports}
+```{.haskell include=code/hlist.hs startLine=1 endLine=12}
 ```
 
 `HList` is defined as a GADT:
-```{.haskell include=files/hlist.hs snippet=def}
+```{.haskell include=code/hlist.hs startLine=14 endLine=17}
 ```
 
 Example usage:
@@ -536,7 +536,7 @@ True :# 'a' :# HNil :: HList '[Bool, Char]
 ```
 
 We can write operations on `HList`:
-```{.haskell include=files/hlist.hs snippet=ops}
+```{.haskell include=code/hlist.hs startLine=42 endLine=47}
 ```
 
 Example usage:
@@ -559,7 +559,7 @@ True
 
 We need to define instances of typeclasses like `Eq`, `Ord` etc. for `HList` because GHC cannot derive them automatically yet:
 
-```{.haskell include=files/hlist.hs snippet=instances}
+```{.haskell include=code/hlist.hs startLine=19 endLine=40}
 ```
 
 The instances are defined recursively: one for the base case and one for the inductive case.
@@ -604,12 +604,7 @@ AllEq '[Bool, Char] :: Constraint
 - `AllEq` is a type-level function from a list of types to a constraint.
 - With the `-XConstraintKinds` extension, `AllEq` can be made polymorphic over all constraints instead of just `Eq`:
 ```haskell
-> :set -XKindSignatures
-> :set -XDataKinds
-> :set -XTypeOperators
-> :set -XTypeFamilies
 > :set -XConstraintKinds
-> :m +Data.Constraint
 Data.Constraint> :{
 Data.Constraint| type family All (c :: * -> Constraint)
 Data.Constraint|                 (ts :: [*]) :: Constraint where
