@@ -9,15 +9,10 @@ import Data.Monoid ((<>))
 import qualified Data.Tree as Tree
 import Hakyll hiding (relativizeUrls)
 import Site.ERT
-import Site.Pandoc
-import Site.TOC
+import Site.Pandoc.Compiler
 import Site.Util
 import qualified Site.Webmentions as WM
 import System.FilePath.Posix (takeBaseName, takeDirectory)
-import Text.Pandoc.Definition (Pandoc)
-import Text.Pandoc.Extensions (disableExtension)
-import Text.Pandoc.Options
-import Text.Pandoc.Walk (walkM, walk)
 
 compileDrafts :: Tags -> String -> [Identifier] -> Rules ()
 compileDrafts = doCompilePosts False
@@ -56,7 +51,7 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
             boolField "live_reload" (const $ env == "DEV") <>
             WM.webmentionsCtx mentions
 
-  pandocContentCompiler (postContentTransforms postSlug alignment) content
+  pandocItemCompiler (postContentTransforms postSlug alignment) content
     >>= saveSnapshot "content"
     >>= loadAndApplyTemplate "templates/post.html" ctx
     >>= loadAndApplyTemplate "templates/default.html" ctx
@@ -148,46 +143,3 @@ sortComments items = do
 itemAfter, itemBefore :: Eq a => [a] -> a -> Maybe a
 itemAfter xs x  = lookup x $ zip xs (tail xs)
 itemBefore xs x = lookup x $ zip (tail xs) xs
-
-noHTMLreaderOptions :: ReaderOptions
-noHTMLreaderOptions = defaultHakyllReaderOptions {
-    readerExtensions = disableExtension Ext_raw_html (readerExtensions defaultHakyllReaderOptions)
-  }
-
-writerOptions :: WriterOptions
-writerOptions = defaultHakyllWriterOptions { writerEmailObfuscation = ReferenceObfuscation }
-
-readContentWithPandoc :: Compiler (Item Pandoc)
-readContentWithPandoc = getResourceBody >>= readPandocWith defaultHakyllReaderOptions
-
-readContentWithPandocWith :: ReaderOptions -> Compiler (Item Pandoc)
-readContentWithPandocWith readerOptions = getResourceBody >>= readPandocWith readerOptions
-
-pandocContentCompiler :: (Pandoc -> Compiler Pandoc) -> Item Pandoc -> Compiler (Item String)
-pandocContentCompiler transform item =
-  transform (itemBody item)
-  >>= makeItem
-  >>= return . writePandocWith writerOptions
-
-contentCompiler :: (Pandoc -> Pandoc) -> Compiler (Item String)
-contentCompiler transform = readContentWithPandoc >>= pandocContentCompiler (return . transform)
-
-contentCompilerWith :: ReaderOptions -> WriterOptions -> (Pandoc -> Pandoc) -> Compiler (Item String)
-contentCompilerWith readerOp writerOp transform =
-  writePandocWith writerOp . fmap transform <$> readContentWithPandocWith readerOp
-
-postContentTransforms :: String -> String -> Pandoc -> Compiler Pandoc
-postContentTransforms postSlug alignment =
-  unsafeCompiler
-  . walkM includeCodeTransform
-  . pureTransforms
-  where
-    pureTransforms =
-      walk linkHeaders
-      . walk (addHeaderTracking postSlug)
-      . walk linkImages
-      . walk mkScrollableTables
-      . tableOfContents alignment
-      . walk blankTargetLinks
-      . walk expandWikiLinks
-      . walk emphasizeCode

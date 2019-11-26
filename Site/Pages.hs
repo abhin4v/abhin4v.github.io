@@ -8,7 +8,7 @@ import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeOrError)
 import Hakyll hiding (relativizeUrls)
 import Site.Pandoc
-import Site.PostCompiler
+import Site.Pandoc.Compiler
 import Site.Util
 import Text.Pandoc.Definition (Pandoc)
 import Text.Pandoc.Walk (walk)
@@ -55,8 +55,9 @@ page pageName pat env =
       >>= loadAndApplyTemplate "templates/default.html" siteContext
       >>= relativizeUrls env
 
-pageContentTransforms :: String -> Pandoc -> Pandoc
+pageContentTransforms :: String -> Pandoc -> Compiler Pandoc
 pageContentTransforms postSlug =
-    walk (addHeaderTracking postSlug)
+  return
+  . walk (addHeaderTracking postSlug)
   . walk linkImages
   . walk blankTargetLinks

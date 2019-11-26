@@ -4,7 +4,7 @@ import Data.Monoid ((<>))
 import Data.List (isInfixOf)
 import Hakyll hiding (customRoute)
 import qualified Hakyll as H
-import System.FilePath.Posix  (takeBaseName, takeDirectory, (</>), splitFileName)
+import System.FilePath.Posix (takeBaseName, takeDirectory, (</>), splitFileName)
 import qualified Text.Numeral.Language.ENG as EN
 import qualified Text.Numeral as Num
 import qualified Data.Text as T

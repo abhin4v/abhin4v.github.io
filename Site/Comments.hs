@@ -6,6 +6,7 @@ import Data.Time.Clock (UTCTime)
 import Data.Time.Format (formatTime, defaultTimeLocale, parseTimeM, iso8601DateFormat)
 import Hakyll
 import Site.Pandoc
+import Site.Pandoc.Compiler
 import Site.PostCompiler
 import Text.Pandoc.Walk (walk)
 
@@ -23,7 +24,7 @@ comments = do
       let dateS       = formatTime defaultTimeLocale "%B %e, %Y" date
           level       = calcLevel replyToMap ident
 
-      contentCompilerWith noHTMLreaderOptions writerOptions (walk blankTargetLinks)
+      pandocCompilerWithTransform noHTMLreaderOptions writerOptions (walk blankTargetLinks)
         >>= loadAndApplyTemplate "templates/comment.html" (commentCtx commentID dateS tss email level)
         >>= saveSnapshot "comment"
 

@@ -43,6 +43,7 @@ executable site
                   , Site.Notes
                   , Site.Pages
                   , Site.Pandoc
+                  , Site.Pandoc.Compiler
                   , Site.Photos
                   , Site.Posts
                   , Site.PostCompiler
