@@ -6,7 +6,10 @@ import qualified Data.ByteString.Lazy.Char8 as C
 import Hakyll
 import Hakyll.Web.Sass
 import Site.Util
+import Site.Pandoc
+import Site.Pandoc.Compiler
 import Text.Jasmine
+import Text.Pandoc.Walk (walkM)
 
 assets :: Rules ()
 assets = do
@@ -27,6 +30,12 @@ assets = do
     compile $ getResourceBody
       >>= applyAsTemplate siteContext
       >>= loadAndApplyTemplate "templates/default.html" siteContext
+
+  -- code
+  match "code/**.md" $ do
+    route   $ setExtension "html"
+    compile $ contentCompiler (unsafeCompiler . walkM includeCodeTransform)
+      >>= loadAndApplyTemplate "templates/code.html" siteContext
 
   -- js
   match ("js/*.js" .&&. complement "js/*.min.js") $ do

@@ -618,4 +618,4 @@ instance All Eq ts => Eq (HList ts) where
   HNil == HNil = True
   (a :# as) == (b :# bs) = a == b && as == bs
 ```
-[^hlist-source]: [The complete code for `HList`](/files/hlist.hs).
+[^hlist-source]: [The complete code for `HList`](/code/hlist.html).

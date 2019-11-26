@@ -1,0 +1,18 @@
+@import "syntax";
+@import "fonts";
+
+.no-js {
+    code, pre {
+        background-color: transparent;
+        font-family: 'Fira Mono', monospace;
+    }
+}
+body {
+  display: flex;
+  justify-content: center;
+  font-size: 0.9em;
+  min-width: 25rem;
+  @media screen and(max-width: 640px){
+      font-size: 0.8em;
+  }
+}
