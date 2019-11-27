@@ -6,6 +6,16 @@
         background-color: transparent;
         font-family: 'Fira Mono', monospace;
     }
+    code > span > a {
+        font-size: 0.8em;
+        color:#999;
+        padding-right: 0.5ch;
+        margin-right: 1ch;
+        width: 4ch;
+        display: inline-block;
+        text-align: right;
+        border-right: 1px dashed #999;
+    }
 }
 body {
   display: flex;

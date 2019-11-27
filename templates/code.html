@@ -8,5 +8,10 @@
 </head>
 <body class="no-js">
 $body$
+<script>
+document.querySelectorAll("code.sourceCode > span > a").forEach(function(a) {
+  a.innerText = a.hash.split('-')[1];
+});
+</script>
 </body>
 </html>
