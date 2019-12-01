@@ -4,7 +4,7 @@ page_type: profile
 ---
 # About Me
 
-I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, India. I currently work at [Flipkart]. I've previously worked at [nilenso], [Capillary Technologies] and [FICO]. When not making software, I read books, play drums, listen to music and ride my bike.
+I am Abhinav Sarkar. I'm a software engineer currently living in Bangalore, India. I currently work at [Google]. I've previously worked at [Flipkart], [nilenso software], [Capillary Technologies] and [FICO]. When not making software, I read books, play drums, listen to music and ride my bike.
 
 Here are some talks and workshops I have presented in various conferences:
 
@@ -33,7 +33,7 @@ You can get in touch with me over [Twitter] or [email].
 
 This is my personal website written and edited by me.
 
-All content provided is for informational purposes only. The articles and posts on this website are my own and don’t necessarily represent the positions, strategies, or opinions of my employer or its subsidiaries. I make no representations as to the accuracy or completeness of any information found here or by following any links. I will not be liable for any errors or omissions in this information nor for the availability of this information. I will not be liable for any losses, injuries, or damages from the display or use of this information.
+All content provided is for informational purposes only. The articles and posts on this website are my own and don’t necessarily represent the positions, strategies, or opinions of my employer or previous employers or their subsidiaries. I make no representations as to the accuracy or completeness of any information found here or by following any links. I will not be liable for any errors or omissions in this information nor for the availability of this information. I will not be liable for any losses, injuries, or damages from the display or use of this information.
 
 The source of the website can be found on my [github][3]. The [master] branch contains the static website which is generated from the code and the content in the [source] branch.
 
@@ -68,10 +68,11 @@ The website is run using the [hastatic] server for [docker]. It is hosted on [Di
 [Strava]: http://www.strava.com/athletes/3485865
 [Twitter]: https://twitter.com/abhin4v
 
+[Google]: https://about.google
 [Flipkart]: https://en.wikipedia.org/wiki/Flipkart
-[nilenso]: https://nilenso.com
+[nilenso software]: https://nilenso.com
 [Capillary Technologies]: https://www.capillarytech.com
-[FICO]: http://www.fico.com/
+[FICO]: https://www.fico.com/
 
 [Clojure, Concurrency, and You]: /talks/clojure-concurrency-you/
 [Many Ways to Concur]: /talks/many-ways-to-concur/
