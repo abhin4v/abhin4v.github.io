@@ -4,40 +4,26 @@ page_type: profile
 ---
 # What I'm Doing Now
 
-I'm living in Bangalore, India and working at [Flipkart].
+I'm living in Bangalore, India and working at [Google].
 
-![A Mountain Road. Taken in B. R. Hills, Karnataka, India.](/photos/images/zP05Af7gb3rWgFBZSxE2X3j1H0GP8kmA.jpg)
-
-## Conference
-
-I'm attending [Functional Conf 2019].
+![A soft-serve icecream. Taken in Singapore.](/photos/images/U3hDP2XYxzJkQniMZsidJR5B1ZyV5A4p.jpg)
 
 ## Reading
 
-I'm trying to get back into the habit of reading technical (and non-technical) books. The year 2018 was quite bad in terms of reading; I was able to read only four books. This year I'm planning to devote more time to reading and finish at least ten books.
+I'm trying to get back into the habit of reading technical (and non-technical) books. The years 2018-19 were quite bad in terms of reading. This year I'm planning to devote more time to reading (and listening to) and finish at least fifteen books.
 
-## Running
+## Running and Cycling
 
-I'm [training] to run a half marathon race in [Bengaluru Marathon] for past couple of months. I'm yet to reach the 21km mark but I'm participating in [few][1] [10km][2] [races][3] to keep up the tempo.
+I'm [training] to run a half marathon race for past couple of months. I'm also trying to commute to work more frequently on my bicycle.
 
 ## Blogging
 
 I'm planning to write more programming focussed blog posts. The last post for my [Fast Sudoku Solver in Haskell] series and a few more are in pipeline.
 
-## Teaching
+<small>This is a ["now page"] which itemizes the work and other priorities that I'm concentrating on right now.<br>This page was last updated on Jan 25, 2020.</small>
 
-I'm teaching various topics related to programming at [public][cljbridge] and non-public (at my workplace) workshops.
-
-<small>This is a ["now page"] which itemizes the work and other priorities that I'm concentrating on right now.<br>This page was last updated on Sep 3, 2019.</small>
-
-[Flipkart]: https://en.wikipedia.org/wiki/Flipkart
+[Google]: https://about.google
 [training]: /activities/
 [Fast Sudoku Solver in Haskell]: /posts/fast-sudoku-solver-in-haskell-1/
 ["now page"]: https://nownownow.com/about
-[cljbridge]: https://www.meetup.com/meetup-group-JrOdKOTm/events/258870033
-[Bengaluru Marathon]: http://bengalurumarathon.in
-[Functional Conf 2019]: https://functionalconf.com/
 
-[1]: https://www.strava.com/activities/1995339863
-[2]: https://www.strava.com/activities/2006891713
-[3]: https://www.strava.com/activities/2170726926
