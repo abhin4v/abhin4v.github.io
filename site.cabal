@@ -33,6 +33,7 @@ executable site
                   , resourcet
                   , random-shuffle
                   , pandoc-emphasize-code
+                  , utility-ht
   other-modules:    Site.Activities
                   , Site.Activities.Strava
                   , Site.Assets

@@ -2,13 +2,17 @@
 module Site.Readings (readings) where
 
 import Control.Exception (try, SomeException)
+import Data.Function (on)
 import Data.Functor.Identity (runIdentity)
 import Data.Maybe (fromJust, isJust, fromMaybe)
 import Data.Monoid ((<>))
-import Data.List (find, isInfixOf, sortBy)
+import Data.List (find, isInfixOf, sortBy, groupBy)
 import Data.Ord (comparing)
 import qualified Data.Text as T
 import Data.Time (LocalTime, parseTimeM, defaultTimeLocale, rfc822DateFormat, formatTime)
+import Data.Time.Calendar (toGregorian)
+import Data.Time.LocalTime (localDay)
+import Data.Tuple.HT (fst3)
 import Hakyll hiding (relativizeUrls)
 import Network.HTTP.Simple (httpLBS, getResponseBody, parseRequest)
 import Site.Util
@@ -30,7 +34,10 @@ data Book = Book { bookName          :: String
                  , bookShelf         :: Shelf
                  } deriving (Show)
 
-data Books = Books { booksRead    :: [Book]
+data BooksRead = BooksRead { books :: [Book], booksReadOrAddedDate :: LocalTime }
+                 deriving (Show)
+
+data Books = Books { booksRead    :: [BooksRead]
                    , booksToRead  :: [Book]
                    , booksOnHold  :: [Book]
                    , booksReading :: [Book]
@@ -47,7 +54,7 @@ getBooks feedURL =
       Nothing -> return noBooks
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
         let books        = map itemToBook rssItems
-        in return Books { booksRead    = shelfBooks Read books
+        in return Books { booksRead    = partitionByYear (shelfBooks Read books)
                         , booksToRead  = shelfBooks ToRead books
                         , booksOnHold  = shelfBooks OnHold books
                         , booksReading = shelfBooks Reading books
@@ -57,6 +64,10 @@ getBooks feedURL =
     shelfBooks shelf =
       sortBy (flip (comparing bookDate) <> comparing bookName)
       . filter ((== shelf) . bookShelf)
+
+    partitionByYear =
+      map (\bs -> BooksRead bs (bookDate . head $ bs))
+      . groupBy ((==) `on` (fst3 . toGregorian . localDay . bookDate))
 
     bookDate Book {..} = fromMaybe bookAddedDate bookReadDate
 
@@ -111,7 +122,7 @@ readings env = do
       compile $ do
         Books {..} <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151"
 
-        let ctx = listField "books_read" bookFields (mapM makeItem booksRead) <>
+        let ctx = listField "books_read" booksReadFields (mapM makeItem booksRead) <>
                   listField "books_to_read" bookFields (mapM makeItem booksToRead) <>
                   listField "books_on_hold" bookFields (mapM makeItem booksOnHold) <>
                   listField "books_reading" bookFields (mapM makeItem booksReading) <>
@@ -137,9 +148,15 @@ readings env = do
               , bookHasField "has_rating" bookRating
               , bookField "published" (maybe "" show . bookPublishedYear)
               , bookHasField "has_published" bookPublishedYear
-              , bookField "read_date" (maybe "" (formatTime defaultTimeLocale "%b, %Y") . bookReadDate)
+              , bookField "read_date" (maybe "" formatDate . bookReadDate)
               , bookHasField "has_read_date" bookReadDate
-              , bookField "added_date" (formatTime defaultTimeLocale "%b, %Y" . bookAddedDate)
+              , bookField "added_date" (formatDate . bookAddedDate)
               ]
 
+    booksReadFields = field "year" (return . formatToYear . booksReadOrAddedDate . itemBody) <>
+      listFieldWith "books" bookFields (mapM makeItem . books . itemBody)
+
     ratingToStars rating = replicate rating '★' ++ replicate (5 - rating) '☆'
+
+    formatToYear = formatTime defaultTimeLocale "%Y"
+    formatDate = formatTime defaultTimeLocale "%b, %Y"

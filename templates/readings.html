@@ -19,6 +19,8 @@
 <h2 id="read">Read</h2>
 <div class="books">
   $for(books_read)$
+  <h3 style="grid-column: span 2;">$year$</h3>
+  $for(books)$
   <div class="book read">
     $partial("templates/book.html")$
     <div class="read-date">
@@ -30,6 +32,7 @@
     </div>
     $if(has_rating)$<div class="rating">$rating$</div>$endif$
   </div>
+  $endfor$
   $endfor$
 </div>
 <hr />
