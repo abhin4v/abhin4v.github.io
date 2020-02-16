@@ -43,33 +43,15 @@ data Books = Books { booksRead    :: [BooksRead]
                    , booksReading :: [Book]
                    } deriving (Show)
 
-noBooks :: Books
-noBooks = Books [] [] [] []
-
-getBooks :: String -> IO Books
+getBooks :: String -> IO [Book]
 getBooks feedURL =
   parseRequest feedURL >>= try . httpLBS >>= \case
-    Left (_ :: SomeException) -> return noBooks
+    Left (_ :: SomeException) -> return []
     Right resp -> case parseFeedSource $ getResponseBody resp of
-      Nothing -> return noBooks
+      Nothing -> return []
       Just (RSSFeed RSS { rssChannel = RSSChannel {..} }) ->
-        let books        = map itemToBook rssItems
-        in return Books { booksRead    = partitionByYear (shelfBooks Read books)
-                        , booksToRead  = shelfBooks ToRead books
-                        , booksOnHold  = shelfBooks OnHold books
-                        , booksReading = shelfBooks Reading books
-                        }
+        return $ map itemToBook rssItems
       _ -> error "Impossible"
-  where
-    shelfBooks shelf =
-      sortBy (flip (comparing bookDate) <> comparing bookName)
-      . filter ((== shelf) . bookShelf)
-
-    partitionByYear =
-      map (\bs -> BooksRead bs (bookDate . head $ bs))
-      . groupBy ((==) `on` (fst3 . toGregorian . localDay . bookDate))
-
-    bookDate Book {..} = fromMaybe bookAddedDate bookReadDate
 
 itemToBook :: RSSItem -> Book
 itemToBook RSSItem {..} =
@@ -113,6 +95,24 @@ itemToBook RSSItem {..} =
       x | "to-read" `isInfixOf` x           -> ToRead
       _                                     -> Read
 
+selveBooks :: [Book] -> Books
+selveBooks books =
+  Books { booksRead    = partitionByYear (shelfBooks Read books)
+        , booksToRead  = shelfBooks ToRead books
+        , booksOnHold  = shelfBooks OnHold books
+        , booksReading = shelfBooks Reading books
+        }
+  where
+    shelfBooks shelf =
+      sortBy (flip (comparing bookDate) <> comparing bookName)
+      . filter ((== shelf) . bookShelf)
+
+    partitionByYear =
+      map (\bs -> BooksRead bs (bookDate . head $ bs))
+      . groupBy ((==) `on` (fst3 . toGregorian . localDay . bookDate))
+
+    bookDate Book {..} = fromMaybe bookAddedDate bookReadDate
+
 readings :: String -> Rules ()
 readings env = do
   anyDependency <- makePatternDependency "**"
@@ -120,7 +120,9 @@ readings env = do
     create ["readings.html"] $ do
       route indexHTMLRoute
       compile $ do
-        Books {..} <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151"
+        books1 <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151"
+        books2 <- unsafeCompiler $ getBooks "https://www.goodreads.com/review/list_rss/24614151?page=2"
+        let Books {..} = selveBooks $ books1 <> books2
 
         let ctx = listField "books_read" booksReadFields (mapM makeItem booksRead) <>
                   listField "books_to_read" bookFields (mapM makeItem booksToRead) <>
