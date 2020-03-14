@@ -165,22 +165,33 @@
             break;
           case "run":
             jQuery.when(jQuery(".activity.ride").fadeOut(),
-                        jQuery(".activity.walk").fadeOut()).done(function() {
+                        jQuery(".activity.walk").fadeOut(),
+                        jQuery(".activity.workout").fadeOut()).done(function() {
               jQuery(".activity.run").fadeIn();
               activitySelector.get(0).scrollIntoView();
             });
             break;
           case "ride":
             jQuery.when(jQuery(".activity.run").fadeOut(),
-                        jQuery(".activity.walk").fadeOut()).done(function() {
+                        jQuery(".activity.walk").fadeOut(),
+                        jQuery(".activity.workout").fadeOut()).done(function() {
               jQuery(".activity.ride").fadeIn();
               activitySelector.get(0).scrollIntoView();
             });
             break;
           case "walk":
             jQuery.when(jQuery(".activity.ride").fadeOut(),
-                        jQuery(".activity.run").fadeOut()).done(function() {
+                        jQuery(".activity.run").fadeOut(),
+                        jQuery(".activity.workout").fadeOut()).done(function() {
               jQuery(".activity.walk").fadeIn();
+              activitySelector.get(0).scrollIntoView();
+            });
+            break;
+          case "workout":
+            jQuery.when(jQuery(".activity.ride").fadeOut(),
+                        jQuery(".activity.run").fadeOut(),
+                        jQuery(".activity.walk").fadeOut()).done(function() {
+              jQuery(".activity.workout").fadeIn();
               activitySelector.get(0).scrollIntoView();
             });
             break;

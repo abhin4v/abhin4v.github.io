@@ -17,20 +17,21 @@
     <option value="run">Runs</option>
     <option value="ride">Rides</option>
     <option value="walk">Walks</option>
+    <option value="workout">Workouts</option>
   </select>
 </div>
 $for(activities)$
 <section class="activity $type$">
   <h3 class="link"><a href="$url$" target="_blank" rel="noopener">$type$</a></h3>
   <span class="date">$date$</span>
-  <span class="bar" style="width: calc($width$*(100% - 11.3rem))"
-    title="Distance: $distance$ km
-Moving Time: $moving_time$
-Elevation Gain: $elev_gain$ m
+  <span class="bar" style="width: calc($width$*(100% - 13rem))"
+    title="Moving Time: $moving_time$
 Effort: $suffer_score$
-$if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km$endif$
-$if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$">&nbsp;</span>
-  <span class="desc">$distance$ km</span>
+$if(show_distance)$Distance: $distance$ km
+$endif$$if(show_distance)$Elevation Gain: $elev_gain$ m
+$endif$$if(show_speed)$Speed: $speed$ km/h$endif$$if(show_pace)$Pace: $pace$ min/km
+$endif$$if(show_hr)$Avg Heart Rate: $heart_rate$ bpm$endif$">&nbsp;</span>
+  <span class="desc">$if(show_distance)$$distance$ km$else$$moving_time$ hr$endif$</span>
 </section>
 $endfor$
 <br>

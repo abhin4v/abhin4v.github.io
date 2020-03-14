@@ -22,7 +22,7 @@ import Network.HTTP.Simple ( httpLBS, parseRequest, Request
 import Network.HTTP.Types.Header (hAuthorization)
 import Text.Read (readMaybe)
 
-data ActivityType = Ride | Run | Walk | Swim | Unknown deriving (Show, Read, Generic, Eq)
+data ActivityType = Ride | Run | Walk | Swim | Workout | Unknown deriving (Show, Read, Generic, Eq)
 
 instance FromJSON ActivityType where
   parseJSON = withText "ActivityType" $ pure . fromMaybe Unknown . readMaybe . T.unpack

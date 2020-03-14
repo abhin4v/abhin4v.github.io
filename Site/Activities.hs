@@ -24,8 +24,11 @@ instance ToJSON ShortActivity where
 stravaActivityPageUrlBase :: String
 stravaActivityPageUrlBase = "https://www.strava.com/activities/"
 
-allowedActivityTypes :: [ActivityType]
-allowedActivityTypes = [Ride, Run, Walk]
+recentActivityTypes, yearlyActivityTypes, speedActivityTypes, paceActivityTypes :: [ActivityType]
+recentActivityTypes = [Ride, Run, Walk, Workout]
+yearlyActivityTypes = [Ride, Run, Walk]
+speedActivityTypes = [Ride]
+paceActivityTypes = [Run, Walk]
 
 activities :: Auth -> String -> Rules ()
 activities auth env = do
@@ -63,10 +66,11 @@ activities auth env = do
 
     filterRecentActivities since =
       filter (not . isNaN . activitySufferScore)
-      . filterAllActivities since
+      . filter ((`elem` recentActivityTypes) . activityType)
+      . filter ((> since) . activityStartDate)
 
     filterAllActivities since =
-      filter ((`elem` allowedActivityTypes) . activityType)
+      filter ((`elem` yearlyActivityTypes) . activityType)
       . filter ((> since) . activityStartDate)
 
     calcMaxSufferScore =
@@ -79,41 +83,35 @@ activities auth env = do
 
 activityCtx :: Double -> Context Activity
 activityCtx maxSufferScore = mconcat [
-    activityField "name"         $ activityName
-  , activityField "type"         $ map toLower . show . activityType
-  , activityField "width"        $ show . (/ maxSufferScore) . activitySufferScore
-  , activityField "url"          $ (stravaActivityPageUrlBase ++) . show . activityId
-  , activityField "date"         $ formatTime defaultTimeLocale "%b %e" . activityStartDate
-  , activityField "distance"     $ showDist . activityDistance
-  , activityField "speed"        $ showSpeed . mpsToKmph . activityAverageSpeed
-  , activityField "pace"         $ showPace . mpsToMinpKm . activityAverageSpeed
-  , boolField     "show_speed"   $ (== Ride) . activityType . itemBody
-  , boolField     "show_pace"    $ (/= Ride) . activityType . itemBody
-  , activityField "heart_rate"   $ show . round . fromMaybe 0 . activityAverageHeartrate
-  , boolField     "show_hr"      $ isJust . activityAverageHeartrate . itemBody
-  , activityField "moving_time"  $ showSecs . activityMovingTime
-  , activityField "elev_gain"    $ show . activityTotalElevationGain
-  , activityField "suffer_score" $ show . round . activitySufferScore
+    activityField "name"          $ activityName
+  , activityField "type"          $ map toLower . show . activityType
+  , activityField "width"         $ show . (/ maxSufferScore) . activitySufferScore
+  , activityField "url"           $ (stravaActivityPageUrlBase ++) . show . activityId
+  , activityField "date"          $ formatTime defaultTimeLocale "%b %e" . activityStartDate
+  , activityField "distance"      $ showDist . activityDistance
+  , activityField "speed"         $ showSpeed . mpsToKmPerHr . activityAverageSpeed
+  , activityField "pace"          $ showPace . round . mpsToSecPerKm . activityAverageSpeed
+  , activityField "heart_rate"    $ show . round . fromMaybe 0 . activityAverageHeartrate
+  , activityField "moving_time"   $ showSecs . activityMovingTime
+  , activityField "elev_gain"     $ show . activityTotalElevationGain
+  , activityField "suffer_score"  $ show . round . activitySufferScore
+  , boolField     "show_distance" $ (`elem` yearlyActivityTypes) . activityType . itemBody
+  , boolField     "show_speed"    $ (`elem` speedActivityTypes) . activityType . itemBody
+  , boolField     "show_pace"     $ (`elem` paceActivityTypes) . activityType . itemBody
+  , boolField     "show_hr"       $ isJust . activityAverageHeartrate . itemBody
   ]
   where
     activityField name f = field name (return . f . itemBody)
 
-    mpsToKmph speed = speed * 18 / 5
-    mpsToMinpKm speed = 1 / speed * 50 / 3
+    mpsToKmPerHr speed = speed * 18 / 5
+    mpsToSecPerKm speed = 60 / speed * 50 / 3
     showDist dist = let d = round (dist / 100) in show (d `div` 10) ++ "." ++ show (d `mod` 10)
     showSpeed speed = let s = round (speed * 10) in show (s `div` 10) ++ "." ++ show (s `mod` 10)
-    showPace pace = let sec = round (pace * 60) in show (sec `div` 60) ++ ":" ++ showPad 2 '0' (sec `mod` 60)
+    showPace sec = show (sec `div` 60) ++ ":" ++ showPad 2 '0' (sec `mod` 60)
 
     showSecs sec = let
-        min = sec `div` 60
         hr = sec `div` 3600
-      in case (hr, min, sec) of
-        (0, 0, s) -> show s ++ " sec"
-        (0, m, s) ->
-          show m ++ " min" ++ recurse (s - min * 60)
-        (h, _, s) ->
-          show h ++ " hr" ++ recurse (s - h * 3600)
-      where
-        recurse rem = if rem == 0 then "" else " " ++ showSecs rem
+        min = (sec - hr * 3600) `div` 60
+      in show hr ++ ":" ++ showPad 2 '0' min ++ ":" ++ showPad 2 '0' (sec `mod` 60)
 
     showPad count char a = let s = show a in replicate (count - length s) char ++ s

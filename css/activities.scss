@@ -5,7 +5,7 @@
   margin-bottom: -0.3em;
   .link {
     display: inline-block;
-    width: 3.6rem;
+    width: 5.8rem;
     margin: auto;
     a {
       position: relative;
@@ -56,6 +56,14 @@
   }
   .link a {
     color: #5fc042;
+  }
+}
+.workout {
+  .bar {
+    background-color: #F089E5;
+  }
+  .link a {
+    color: #F089E5;
   }
 }
 
