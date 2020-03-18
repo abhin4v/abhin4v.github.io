@@ -45,7 +45,8 @@
 
   function sidenotesEnabled() {
     return jQuery(".footnotes").length != 0
-      && window.location.search.indexOf("nosidenotes") == -1;
+      && window.location.search.indexOf("nosidenotes") == -1
+      && !jQuery("body").hasClass("nosidenotes");
   }
 
   function unstyleFootnotes() {
