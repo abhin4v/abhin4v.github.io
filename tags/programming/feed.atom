@@ -261,6 +261,9 @@
 <span id="cb17-16"><a href="#cb17-16"></a><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span></span>
 <span id="cb17-17"><a href="#cb17-17"></a><span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
 <span id="cb17-18"><a href="#cb17-18"></a><span class="ot">=</span> <span class="dt">'False</span></span></code></pre></div>
+<div class="page-break">
+
+</div>
 <h2 id="chapter-3.-variance" data-track-content data-content-name="chapter-3.-variance" data-content-piece="twt-notes-1">Chapter 3. Variance<a href="#chapter-3.-variance" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
 <ul>
 <li>There are three types of <em>Variance</em> (<code>T</code> here a type of kind <code>* -&gt; *</code>):

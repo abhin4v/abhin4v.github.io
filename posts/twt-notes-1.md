@@ -242,6 +242,8 @@ And 'False 'True :: Bool
 = 'False
 ```
 
+<div class="page-break"></div>
+
 ## Chapter 3. Variance
 
 - There are three types of _Variance_ (`T` here a type of kind `* -> *`):
