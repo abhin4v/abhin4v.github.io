@@ -1,0 +1,688 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Posts tagged ‘notes’ on abhinavsarkar.net</title>
+    <link href="https://abhinavsarkar.net/tags/notes/feed.atom" rel="self" />
+    <link href="https://abhinavsarkar.net" />
+    <id>https://abhinavsarkar.net/tags/notes/feed.atom</id>
+    <author>
+        <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
+    </author>
+    <updated>2020-03-18T00:00:00Z</updated>
+    <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
+    <rights>© 2017-2019, Abhinav Sarkar</rights>
+    <entry>
+    <title>Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5</title>
+    <link rel="alternate" href="https://abhinavsarkar.net/posts/twt-notes-1/" />
+    <id>https://abhinavsarkar.net/posts/twt-notes-1/</id>
+    <published>2020-03-18T00:00:00Z</published>
+    <updated>2020-03-18T00:00:00Z</updated>
+    
+    <author>
+        <name>Abhinav Sarkar</name>
+        <email>abhinav@abhinavsarkar.net</email>
+        <uri>https://abhinavsarkar.net/about/</uri>
+    </author>
+    
+    
+    <category term="haskell" />
+    
+    <category term="notes" />
+    
+    <category term="programming" />
+    
+    <summary type="html"><![CDATA[<p><a href="https://www.haskell.org" target="_blank" rel="noopener">Haskell</a> — with its powerful type system — has a great support for type-level programming and it has gotten much better in the recent times with the new releases of the <a href="https://www.haskell.org/ghc/" target="_blank" rel="noopener">GHC</a> compiler. But type-level programming remains a daunting topic even with seasoned haskellers. <a href="https://thinkingwithtypes.com/" target="_blank" rel="noopener"><em>Thinking with Types: Type-level Programming in Haskell</em></a> by <a href="https://sandymaguire.me/about/" target="_blank" rel="noopener">Sandy Maguire</a> is a book which attempts to fix that. I’ve taken some notes to summarize my understanding of the same.</p>
+<!--more-->
+<nav id="toc"><h3>Contents</h3><ol><li><a href="#introduction">Introduction</a></li><li><a href="#chapter-1.-the-algebra-behind-types">Chapter 1. The Algebra Behind Types</a><ol><li><a href="#isomorphisms-and-cardinalities">Isomorphisms and Cardinalities</a></li><li><a href="#sum-product-and-exponential-types">Sum, Product and Exponential Types</a></li><li><a href="#the-curry-howard-isomorphism">The Curry-Howard Isomorphism</a></li><li><a href="#canonical-representations">Canonical Representations</a></li></ol></li><li><a href="#chapter-2.-terms-types-and-kinds">Chapter 2. Terms, Types and Kinds</a><ol><li><a href="#the-kind-system">The Kind System</a></li><li><a href="#data-kinds">Data Kinds</a></li><li><a href="#promotion-of-built-in-types">Promotion of Built-In Types</a></li><li><a href="#type-level-functions">Type-level Functions</a></li></ol></li><li><a href="#chapter-3.-variance">Chapter 3. Variance</a></li><li><a href="#chapter-4.-working-with-types">Chapter 4. Working with Types</a></li><li><a href="#chapter-5.-constraints-and-gadts">Chapter 5. Constraints and GADTs</a><ol><li><a href="#constraints">Constraints</a></li><li><a href="#gadts">GADTs</a></li><li><a href="#heterogeneous-lists">Heterogeneous Lists</a></li><li><a href="#creating-new-constraints">Creating New Constraints</a></li></ol></li></ol></nav>
+<h2 id="introduction" data-track-content data-content-name="introduction" data-content-piece="twt-notes-1">Introduction<a href="#introduction" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<ul>
+<li>Type-level Programming (TLP) is writing programs that run at compile-time, unlike term-level programming which is writing programs that run at run-time.</li>
+<li>TLP should be used in moderation.</li>
+<li>TLP should be mostly used
+<ul>
+<li>for programs that are catastrophic to get wrong (finance, healthcare, etc).</li>
+<li>when it simplifies the program API massively.</li>
+<li>when power-to-weight ratio of adding TLP is high.</li>
+</ul></li>
+<li>Types are not a silver bullet for fixing all errors:
+<ul>
+<li>Correct programs can be not well-typed.</li>
+<li>It could be hard to assign type for useful programs. e.g. <code>printf</code> from C.</li>
+</ul></li>
+<li>Types can turn possible runtime errors into compile-time errors.</li>
+</ul>
+<h2 id="chapter-1.-the-algebra-behind-types" data-track-content data-content-name="chapter-1.-the-algebra-behind-types" data-content-piece="twt-notes-1">Chapter 1. The Algebra Behind Types<a href="#chapter-1.-the-algebra-behind-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h3 id="isomorphisms-and-cardinalities">Isomorphisms and Cardinalities<a href="#isomorphisms-and-cardinalities" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>Cardinality</em> of a type is the number of values it can have ignoring bottoms. The values of a type are also called the <em>inhabitants</em> of the type.</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb1-1"><a href="#cb1-1"></a><span class="kw">data</span> <span class="dt">Void</span></span>
+<span id="cb1-2"><a href="#cb1-2"></a> <span class="co">-- no possible values. cardinality: 0</span></span>
+<span id="cb1-3"><a href="#cb1-3"></a><span class="kw">data</span> <span class="dt">Unit</span> <span class="ot">=</span> <span class="dt">Unit</span></span>
+<span id="cb1-4"><a href="#cb1-4"></a> <span class="co">-- only one possible value. cardinality: 1</span></span>
+<span id="cb1-5"><a href="#cb1-5"></a><span class="kw">data</span> <span class="dt">Bool</span> <span class="ot">=</span> <span class="dt">True</span> <span class="op">|</span> <span class="dt">False</span></span>
+<span id="cb1-6"><a href="#cb1-6"></a> <span class="co">-- only two possible values. cardinality: 2</span></span></code></pre></div>
+<ul>
+<li>Cardinality is written using notation: <code>|Void| = 0</code></li>
+<li>Two types are said to be <em>Isomorphic</em> if they have same cardinality.</li>
+<li>An <em>isomorphism</em> between types <code>a</code> and <code>b</code> is a pair of functions <code>to</code> and <code>from</code> such that:</li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb2-1"><a href="#cb2-1"></a><span class="ot">to ::</span> a <span class="ot">-&gt;</span> b</span>
+<span id="cb2-2"><a href="#cb2-2"></a><span class="ot">from ::</span> b <span class="ot">-&gt;</span> a</span>
+<span id="cb2-3"><a href="#cb2-3"></a>to <span class="op">.</span> from <span class="ot">=</span> <span class="fu">id</span></span>
+<span id="cb2-4"><a href="#cb2-4"></a>from <span class="op">.</span> to <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
+<h3 id="sum-product-and-exponential-types">Sum, Product and Exponential Types<a href="#sum-product-and-exponential-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><code>Either a b</code> is a <em>Sum</em> type. Its number of inhabitants is sum of the number of inhabitants of type <code>a</code> and <code>b</code> like so: <code>|a|</code> possible values with <code>Left</code> constructor and <code>|b|</code> possible values with the <code>Right</code> constructor. Formally:</li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">|</span><span class="dt">Either</span> a b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="op">|</span>b<span class="op">|</span></span></code></pre></div>
+<ul>
+<li><code>(a, b)</code> is a <em>Product</em> type. Its number of inhabitant is the product of the number of inhabitants of types <code>a</code> and <code>b</code>. Formally:</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb4-1"><a href="#cb4-1"></a><span class="op">|</span>(a, b)<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Some more examples:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb5-1"><a href="#cb5-1"></a><span class="op">|</span><span class="dt">Maybe</span> a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span><span class="dt">Nothing</span><span class="op">|</span> <span class="op">+</span> <span class="op">|</span><span class="dt">Just</span> a<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="op">|</span>[a]<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">2</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">3</span> <span class="op">+</span> <span class="op">...</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="op">|</span><span class="dt">Either</span> a <span class="dt">Void</span><span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="dv">0</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="op">|</span><span class="dt">Either</span> <span class="dt">Void</span> a<span class="op">|</span> <span class="ot">=</span> <span class="dv">0</span> <span class="op">+</span> <span class="op">|</span>a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="op">|</span>(a, <span class="dt">Unit</span>)<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="dv">1</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="op">|</span>(<span class="dt">Unit</span>, a)<span class="op">|</span> <span class="ot">=</span> <span class="dv">1</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Function types are exponentiation types.</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb6-1"><a href="#cb6-1"></a><span class="op">|</span>a <span class="ot">-&gt;</span> b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>b<span class="op">|^|</span>a<span class="op">|</span></span></code></pre></div>
+<p>For every value in domain <code>a</code> there can be <code>|b|</code> possible values in the range <code>b</code>. And there are <code>|a|</code> possible values in domain <code>a</code>. So:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb7-1"><a href="#cb7-1"></a><span class="op">|</span>a <span class="ot">-&gt;</span> b<span class="op">|</span></span>
+<span id="cb7-2"><a href="#cb7-2"></a>  <span class="ot">=</span> <span class="op">|</span>b<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span> <span class="op">*</span> <span class="op">...</span> <span class="op">*</span> <span class="op">|</span>b<span class="op">|</span> <span class="co">-- (|a| times)</span></span>
+<span id="cb7-3"><a href="#cb7-3"></a>  <span class="ot">=</span> <span class="op">|</span>b<span class="op">|^|</span>a<span class="op">|</span></span></code></pre></div>
+<ul>
+<li>Data can be represented in many possible isomorphic types. Some of them are more useful than others. Example:</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb8-1"><a href="#cb8-1"></a><span class="kw">data</span> <span class="dt">TicTacToe1</span> a <span class="ot">=</span> <span class="dt">TicTacToe1</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a>  {<span class="ot"> topLeft      ::</span> a</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  ,<span class="ot"> topCenter    ::</span> a</span>
+<span id="cb8-4"><a href="#cb8-4"></a>  ,<span class="ot"> topRight     ::</span> a</span>
+<span id="cb8-5"><a href="#cb8-5"></a>  ,<span class="ot"> middleLeft   ::</span> a</span>
+<span id="cb8-6"><a href="#cb8-6"></a>  ,<span class="ot"> middleCenter ::</span> a</span>
+<span id="cb8-7"><a href="#cb8-7"></a>  ,<span class="ot"> middleRight  ::</span> a</span>
+<span id="cb8-8"><a href="#cb8-8"></a>  ,<span class="ot"> bottomLeft   ::</span> a</span>
+<span id="cb8-9"><a href="#cb8-9"></a>  ,<span class="ot"> bottomCenter ::</span> a</span>
+<span id="cb8-10"><a href="#cb8-10"></a>  ,<span class="ot"> bottomRight  ::</span> a</span>
+<span id="cb8-11"><a href="#cb8-11"></a>  }</span>
+<span id="cb8-12"><a href="#cb8-12"></a></span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="op">|</span><span class="dt">TicTacToe1</span> a<span class="op">|</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a>  <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">*</span> <span class="op">...</span> <span class="op">*</span> <span class="op">|</span>a<span class="op">|</span> <span class="co">-- 9 times</span></span>
+<span id="cb8-15"><a href="#cb8-15"></a>  <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">9</span></span>
+<span id="cb8-16"><a href="#cb8-16"></a></span>
+<span id="cb8-17"><a href="#cb8-17"></a><span class="ot">emptyBoard1 ::</span> <span class="dt">TicTacToe1</span> (<span class="dt">Maybe</span> <span class="dt">Bool</span>)</span>
+<span id="cb8-18"><a href="#cb8-18"></a>emptyBoard1 <span class="ot">=</span></span>
+<span id="cb8-19"><a href="#cb8-19"></a>  <span class="dt">TicTacToe1</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-20"><a href="#cb8-20"></a>             <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-21"><a href="#cb8-21"></a>             <span class="dt">Nothing</span> <span class="dt">Nothing</span> <span class="dt">Nothing</span></span>
+<span id="cb8-22"><a href="#cb8-22"></a></span>
+<span id="cb8-23"><a href="#cb8-23"></a><span class="co">-- Alternatively</span></span>
+<span id="cb8-24"><a href="#cb8-24"></a></span>
+<span id="cb8-25"><a href="#cb8-25"></a><span class="kw">data</span> <span class="dt">Three</span> <span class="ot">=</span> <span class="dt">One</span> <span class="op">|</span> <span class="dt">Two</span> <span class="op">|</span> <span class="dt">Three</span></span>
+<span id="cb8-26"><a href="#cb8-26"></a><span class="kw">data</span> <span class="dt">TicTacToe2</span> a <span class="ot">=</span></span>
+<span id="cb8-27"><a href="#cb8-27"></a>  <span class="dt">TicTacToe2</span> (<span class="dt">Three</span> <span class="ot">-&gt;</span> <span class="dt">Three</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb8-28"><a href="#cb8-28"></a></span>
+<span id="cb8-29"><a href="#cb8-29"></a><span class="op">|</span><span class="dt">TicTacToe2</span> a<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span>(<span class="op">|</span><span class="dt">Three</span><span class="op">|</span> <span class="op">*</span> <span class="op">|</span><span class="dt">Three</span><span class="op">|</span>)</span>
+<span id="cb8-30"><a href="#cb8-30"></a>               <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span>(<span class="dv">3</span><span class="op">*</span><span class="dv">3</span>)</span>
+<span id="cb8-31"><a href="#cb8-31"></a>               <span class="ot">=</span> <span class="op">|</span>a<span class="op">|^</span><span class="dv">9</span></span>
+<span id="cb8-32"><a href="#cb8-32"></a></span>
+<span id="cb8-33"><a href="#cb8-33"></a><span class="ot">emptyBoard2 ::</span> <span class="dt">TicTacToe2</span> (<span class="dt">Maybe</span> <span class="dt">Bool</span>)</span>
+<span id="cb8-34"><a href="#cb8-34"></a>emptyBoard2 <span class="ot">=</span></span>
+<span id="cb8-35"><a href="#cb8-35"></a>  <span class="dt">TicTacToe2</span> <span class="op">$</span> <span class="fu">const</span> <span class="op">$</span> <span class="fu">const</span> <span class="dt">Nothing</span></span></code></pre></div>
+<h3 id="the-curry-howard-isomorphism">The Curry-Howard Isomorphism<a href="#the-curry-howard-isomorphism" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>Every logic statement can be expressed as an equivalent computer program.</li>
+<li>Helps us analyze mathematical theorems through programming.</li>
+</ul>
+<h3 id="canonical-representations">Canonical Representations<a href="#canonical-representations" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>Since multiple equivalent representations of a type are possible, the representation in form of sum of products is considered the canonical representation of the type. Example:</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb9-1"><a href="#cb9-1"></a><span class="dt">Either</span> a (<span class="dt">Either</span> b (c, d)) <span class="co">-- canonical</span></span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a>(a, <span class="dt">Bool</span>) <span class="co">-- not canonical</span></span>
+<span id="cb9-4"><a href="#cb9-4"></a><span class="dt">Either</span> a a</span>
+<span id="cb9-5"><a href="#cb9-5"></a><span class="co">-- same cardinality as above but canonical</span></span></code></pre></div>
+<h2 id="chapter-2.-terms-types-and-kinds" data-track-content data-content-name="chapter-2.-terms-types-and-kinds" data-content-piece="twt-notes-1">Chapter 2. Terms, Types and Kinds<a href="#chapter-2.-terms-types-and-kinds" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h3 id="the-kind-system">The Kind System<a href="#the-kind-system" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>Terms</em> are things manipulated at runtime. <em>Types</em> of terms are used by compiler to prove “things” about the terms.</li>
+<li>Similarly, <em>Types</em> are things manipulated at compile-time. <em>Kinds</em> of types are used by the compiler to prove “things” about the types.</li>
+<li>Kinds are “the types of the Types”.</li>
+<li>Kind of things that can exist at runtime (terms) is <code>*</code>. That is, kind of <code>Int</code>, <code>String</code> etc is <code>*</code>.</li>
+</ul>
+<div class="sourceCode" id="cb10"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb10-1"><a href="#cb10-1"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">True</span></span>
+<span id="cb10-2"><a href="#cb10-2"></a><span class="dt">True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Bool</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a><span class="dt">Bool</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<ul>
+<li>There are kinds other than <code>*</code>. For example:</li>
+</ul>
+<div class="sourceCode" id="cb11"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb11-1"><a href="#cb11-1"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Show</span> <span class="dt">Int</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="dt">Show</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">Constraint</span></span></code></pre></div>
+<ul>
+<li>Higher-kinded types have <code>(-&gt;)</code> in their kind signature:</li>
+</ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb12-1"><a href="#cb12-1"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Maybe</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="dt">Maybe</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Maybe</span> <span class="dt">Int</span></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="dt">Maybe</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="ot">  ::</span> m (<span class="dt">Maybe</span> a) <span class="ot">-&gt;</span> <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> m a</span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span><span class="ot"> ::</span> (<span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span>) <span class="ot">-&gt;</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="op">*</span></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> <span class="dt">IO</span> <span class="dt">Int</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a><span class="dt">Control.Monad.Trans.Maybe.MaybeT</span> <span class="dt">IO</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="op">*</span></span></code></pre></div>
+<h3 id="data-kinds">Data Kinds<a href="#data-kinds" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-DataKinds" target="_blank" rel="noopener"><code>-XDataKinds</code></a> extension lets us create new kinds.</li>
+<li>It lifts data constructors into type constructors and types into kinds.</li>
+</ul>
+<div class="sourceCode" id="cb13"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb13-1"><a href="#cb13-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb13-2"><a href="#cb13-2"></a><span class="op">&gt;</span> <span class="kw">data</span> <span class="dt">Allow</span> <span class="ot">=</span> <span class="dt">Yes</span> <span class="op">|</span> <span class="dt">No</span></span>
+<span id="cb13-3"><a href="#cb13-3"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">Yes</span></span>
+<span id="cb13-4"><a href="#cb13-4"></a><span class="dt">Yes</span><span class="ot"> ::</span> <span class="dt">Allow</span></span>
+<span id="cb13-5"><a href="#cb13-5"></a><span class="co">-- Yes is data constructor</span></span>
+<span id="cb13-6"><a href="#cb13-6"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">Allow</span> <span class="co">-- Allow is a type</span></span>
+<span id="cb13-7"><a href="#cb13-7"></a><span class="dt">Allow</span><span class="ot"> ::</span> <span class="op">*</span></span>
+<span id="cb13-8"><a href="#cb13-8"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">'Yes</span></span>
+<span id="cb13-9"><a href="#cb13-9"></a><span class="dt">'Yes</span><span class="ot"> ::</span> <span class="dt">Allow</span></span>
+<span id="cb13-10"><a href="#cb13-10"></a><span class="co">-- 'Yes is a type too. Its kind is 'Allow.</span></span></code></pre></div>
+<ul>
+<li>Lifted constructors and types are written with a preceding <code>'</code> (called <em>tick</em>).</li>
+</ul>
+<h3 id="promotion-of-built-in-types">Promotion of Built-In Types<a href="#promotion-of-built-in-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-DataKinds" target="_blank" rel="noopener"><code>-XDataKinds</code></a> extension promotes built-in types too.</li>
+<li>Strings are promoted to the kind <code>Symbol</code>.</li>
+<li>Natural numbers are promoted to the kind <code>Nat</code>.</li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb14-1"><a href="#cb14-1"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="st">&quot;hi&quot;</span></span>
+<span id="cb14-2"><a href="#cb14-2"></a><span class="st">&quot;hi&quot;</span><span class="ot"> ::</span> <span class="dt">GHC.Types.Symbol</span></span>
+<span id="cb14-3"><a href="#cb14-3"></a><span class="co">-- &quot;hi&quot; is a type-level string</span></span>
+<span id="cb14-4"><a href="#cb14-4"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dv">123</span></span>
+<span id="cb14-5"><a href="#cb14-5"></a><span class="dv">123</span><span class="ot"> ::</span> <span class="dt">GHC.Types.Nat</span></span>
+<span id="cb14-6"><a href="#cb14-6"></a><span class="co">-- 123 is a type-level natural number</span></span></code></pre></div>
+<ul>
+<li>We can do type level operations on <code>Symbol</code>s and <code>Nat</code>s.</li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb15-1"><a href="#cb15-1"></a><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">GHC.TypeLits</span></span>
+<span id="cb15-2"><a href="#cb15-2"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">AppendSymbol</span></span>
+<span id="cb15-3"><a href="#cb15-3"></a><span class="dt">AppendSymbol</span><span class="ot"> ::</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Symbol</span> <span class="ot">-&gt;</span> <span class="dt">Symbol</span></span>
+<span id="cb15-4"><a href="#cb15-4"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">AppendSymbol</span> <span class="st">&quot;hello &quot;</span> <span class="st">&quot;there&quot;</span></span>
+<span id="cb15-5"><a href="#cb15-5"></a><span class="dt">AppendSymbol</span> <span class="st">&quot;hello &quot;</span> <span class="st">&quot;there&quot;</span><span class="ot"> ::</span> <span class="dt">Symbol</span></span>
+<span id="cb15-6"><a href="#cb15-6"></a><span class="ot">=</span> <span class="st">&quot;hello there&quot;</span></span>
+<span id="cb15-7"><a href="#cb15-7"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb15-8"><a href="#cb15-8"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> (<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">^</span> <span class="dv">7</span></span>
+<span id="cb15-9"><a href="#cb15-9"></a>(<span class="dv">1</span> <span class="op">+</span> <span class="dv">2</span>) <span class="op">^</span> <span class="dv">7</span><span class="ot"> ::</span> <span class="dt">Nat</span></span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="ot">=</span> <span class="dv">2187</span></span></code></pre></div>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeOperators" target="_blank" rel="noopener"><code>-XTypeOperators</code></a> extension is needed for applying type-level functions with symbolic identifiers.</li>
+<li>There are type-level lists and tuples:</li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb16-1"><a href="#cb16-1"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[ <span class="dt">'True</span> ]</span>
+<span id="cb16-2"><a href="#cb16-2"></a>'[ <span class="dt">'True</span> ]<span class="ot"> ::</span> [<span class="dt">Bool</span>]</span>
+<span id="cb16-3"><a href="#cb16-3"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]</span>
+<span id="cb16-4"><a href="#cb16-4"></a>'[<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>]<span class="ot"> ::</span> [<span class="dt">Nat</span>]</span>
+<span id="cb16-5"><a href="#cb16-5"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '[<span class="st">&quot;abc&quot;</span>]</span>
+<span id="cb16-6"><a href="#cb16-6"></a>'[<span class="st">&quot;abc&quot;</span>]<span class="ot"> ::</span> [<span class="dt">Symbol</span>]</span>
+<span id="cb16-7"><a href="#cb16-7"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">'False</span> '<span class="op">:</span> <span class="dt">'True</span> '<span class="op">:</span> '[]</span>
+<span id="cb16-8"><a href="#cb16-8"></a><span class="dt">'False</span> '<span class="op">:</span> <span class="dt">'True</span> '<span class="op">:</span> '[]<span class="ot"> ::</span> [<span class="dt">Bool</span>]</span>
+<span id="cb16-9"><a href="#cb16-9"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>kind '(<span class="dv">6</span>, <span class="st">&quot;x&quot;</span>, <span class="dt">'False</span>)</span>
+<span id="cb16-10"><a href="#cb16-10"></a>'(<span class="dv">6</span>, <span class="st">&quot;x&quot;</span>, <span class="dt">'False</span>)<span class="ot"> ::</span> (<span class="dt">Nat</span>, <span class="dt">Symbol</span>, <span class="dt">Bool</span>)</span></code></pre></div>
+<h3 id="type-level-functions">Type-level Functions<a href="#type-level-functions" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>With the <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeFamilies" target="_blank" rel="noopener"><code>-XTypeFamilies</code></a> extension, it’s possible to write new type-level functions as closed type families:</li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb17-1"><a href="#cb17-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb17-2"><a href="#cb17-2"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeFamilies</span></span>
+<span id="cb17-3"><a href="#cb17-3"></a><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb17-4"><a href="#cb17-4"></a><span class="op">|</span> <span class="kw">type</span> <span class="kw">family</span> <span class="dt">And</span> (<span class="ot">x ::</span> <span class="dt">Bool</span>) (<span class="ot">y ::</span> <span class="dt">Bool</span>)<span class="ot"> ::</span> <span class="dt">Bool</span> <span class="kw">where</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a><span class="op">|</span>   <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span> <span class="ot">=</span> <span class="dt">'True</span></span>
+<span id="cb17-6"><a href="#cb17-6"></a><span class="op">|</span>   <span class="dt">And</span> _     _     <span class="ot">=</span> <span class="dt">'False</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb17-8"><a href="#cb17-8"></a><span class="op">&gt;</span> <span class="op">:</span>kind <span class="dt">And</span></span>
+<span id="cb17-9"><a href="#cb17-9"></a><span class="dt">And</span><span class="ot"> ::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb17-10"><a href="#cb17-10"></a><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'False</span></span>
+<span id="cb17-11"><a href="#cb17-11"></a><span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'False</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-12"><a href="#cb17-12"></a><span class="ot">=</span> <span class="dt">'False</span></span>
+<span id="cb17-13"><a href="#cb17-13"></a><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span></span>
+<span id="cb17-14"><a href="#cb17-14"></a><span class="dt">And</span> <span class="dt">'True</span> <span class="dt">'True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-15"><a href="#cb17-15"></a><span class="ot">=</span> <span class="dt">'True</span></span>
+<span id="cb17-16"><a href="#cb17-16"></a><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span></span>
+<span id="cb17-17"><a href="#cb17-17"></a><span class="dt">And</span> <span class="dt">'False</span> <span class="dt">'True</span><span class="ot"> ::</span> <span class="dt">Bool</span></span>
+<span id="cb17-18"><a href="#cb17-18"></a><span class="ot">=</span> <span class="dt">'False</span></span></code></pre></div>
+<h2 id="chapter-3.-variance" data-track-content data-content-name="chapter-3.-variance" data-content-piece="twt-notes-1">Chapter 3. Variance<a href="#chapter-3.-variance" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<ul>
+<li>There are three types of <em>Variance</em> (<code>T</code> here a type of kind <code>* -&gt; *</code>):
+<ul>
+<li>Covariant: any function of type <code>a -&gt; b</code> can be lifted into a function of type <code>T a -&gt; T b</code>. Covariant types are instances of the <a href="https://hackage.haskell.org/package/base/docs/Prelude.html#t:Functor" target="_blank" rel="noopener"><code>Functor</code></a> typeclass:</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb18-1"><a href="#cb18-1"></a><span class="kw">class</span> <span class="dt">Functor</span> f <span class="kw">where</span></span>
+<span id="cb18-2"><a href="#cb18-2"></a><span class="ot">  fmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div>
+<ul>
+<li>Contravariant: any function of type <code>a -&gt; b</code> can be lifted into a function of type <code>T b -&gt; T a</code>. Contravariant functions are instances of the <a href="https://hackage.haskell.org/package/base/docs/Data-Functor-Contravariant.html" target="_blank" rel="noopener"><code>Contravariant</code></a> typeclass:</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb19-1"><a href="#cb19-1"></a><span class="kw">class</span> <span class="dt">Contravariant</span> f <span class="kw">where</span></span>
+<span id="cb19-2"><a href="#cb19-2"></a><span class="ot">  contramap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f b <span class="ot">-&gt;</span> f a</span></code></pre></div>
+<ul>
+<li>Invariant: no function of type <code>a -&gt; b</code> can be lifted into a function of type <code>T a</code>. Invariant functions are instances of the <a href="https://hackage.haskell.org/package/invariant/docs/Data-Functor-Invariant.html#t:Invariant" target="_blank" rel="noopener"><code>Invariant</code></a> typeclass:</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb20-1"><a href="#cb20-1"></a><span class="kw">class</span> <span class="dt">Invariant</span> f <span class="kw">where</span></span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="ot">  invmap ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</span></code></pre></div></li>
+<li>Variance of a type <code>T</code> is specified with respect to a particular type parameter. A type <code>T</code> with two parameters <code>a</code> and <code>b</code> could be covariant wrt. <code>a</code> and contravariant wrt. <code>b</code>.</li>
+<li>Variance of a type <code>T</code> wrt. a particular type parameter is determined by whether the parameter appears in positive or negative <em>position</em>s.
+<ul>
+<li>If a type parameter appears on the left-hand side of a function, it is said to be in a negative position. Else it is said to be in a positive position.</li>
+<li>If a type parameter appears only in positive positions then the type is covariant wrt. that parameter.</li>
+<li>If a type parameter appears only in negative positions then the type is contravariant wrt. that parameter.</li>
+<li>If a type parameter appears in both positive and negative positions then the type is invariant wrt. that parameter.</li>
+<li>positions follow the laws of multiplication for their <em>sign</em>s.</li>
+</ul></li>
+</ul>
+<div class="scrollable-table">
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">a</th>
+<th style="text-align: left;">b</th>
+<th style="text-align: left;">a * b</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">+</td>
+<td style="text-align: left;">+</td>
+<td style="text-align: left;">+</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">+</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">+</td>
+<td style="text-align: left;">-</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">-</td>
+<td style="text-align: left;">+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<ul>
+<li>Examples:</li>
+</ul>
+<div class="sourceCode" id="cb21"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb21-1"><a href="#cb21-1"></a><span class="kw">newtype</span> <span class="dt">T1</span> a <span class="ot">=</span> <span class="dt">T1</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> a)</span>
+<span id="cb21-2"><a href="#cb21-2"></a><span class="co">-- a is in +ve position, T1 is covariant wrt. a.</span></span>
+<span id="cb21-3"><a href="#cb21-3"></a><span class="kw">newtype</span> <span class="dt">T2</span> a <span class="ot">=</span> <span class="dt">T2</span> (a <span class="ot">-&gt;</span> <span class="dt">Int</span>)</span>
+<span id="cb21-4"><a href="#cb21-4"></a><span class="co">-- a is in -ve position, T2 is contravariant wrt. a.</span></span>
+<span id="cb21-5"><a href="#cb21-5"></a><span class="kw">newtype</span> <span class="dt">T3</span> a <span class="ot">=</span> <span class="dt">T3</span> (a <span class="ot">-&gt;</span> a)</span>
+<span id="cb21-6"><a href="#cb21-6"></a><span class="co">-- a is in both -ve and +ve position. T3 is invariant wrt. a.</span></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="kw">newtype</span> <span class="dt">T4</span> a <span class="ot">=</span> <span class="dt">T4</span> ((<span class="dt">Int</span> <span class="ot">-&gt;</span> a) <span class="ot">-&gt;</span> <span class="dt">Int</span>)</span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="co">-- a is in +ve position but (Int -&gt; a) is in -ve position.</span></span>
+<span id="cb21-9"><a href="#cb21-9"></a><span class="co">-- So a is in -ve position overall. T4 is contravariant wrt. a.</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a><span class="kw">newtype</span> <span class="dt">T5</span> a <span class="ot">=</span> <span class="dt">T5</span> ((a <span class="ot">-&gt;</span> <span class="dt">Int</span>) <span class="ot">-&gt;</span> <span class="dt">Int</span>)</span>
+<span id="cb21-11"><a href="#cb21-11"></a><span class="co">-- a is in -ve position but (a -&gt; Int) is in -ve position.</span></span>
+<span id="cb21-12"><a href="#cb21-12"></a><span class="co">-- So a is in +ve position overall. T5 is covariant wrt. a.</span></span></code></pre></div>
+<ul>
+<li>Covariant parameters are said to be <em>produced</em> or <em>owned</em> by the type.</li>
+<li>Contravariant parameters are said to be <em>consumed</em> by the type.</li>
+<li>A type that has two parameters and is covariant in both of them is an instance of <a href="https://hackage.haskell.org/package/base/docs/Data-Bifunctor.html#t:Bifunctor" target="_blank" rel="noopener"><code>BiFunctor</code></a>.</li>
+<li>A type that has two parameters and is contravariant in first parameter and covariant in second parameter is an instance of <a href="https://hackage.haskell.org/package/profunctors/docs/Data-Profunctor.html#t:Profunctor" target="_blank" rel="noopener"><code>Profunctor</code></a>.</li>
+</ul>
+<h2 id="chapter-4.-working-with-types" data-track-content data-content-name="chapter-4.-working-with-types" data-content-piece="twt-notes-1">Chapter 4. Working with Types<a href="#chapter-4.-working-with-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<ul>
+<li>Standard Haskell has no notion of scopes for types.</li>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ScopedTypeVariables" target="_blank" rel="noopener"><code>-XScopedTypeVariables</code></a> extension lets us bind type variables to a scope. It requires an explicitly <code>forall</code> quantifier in type signatures.</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb22-1"><a href="#cb22-1"></a><span class="co">-- This does not compile.</span></span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb22-3"><a href="#cb22-3"></a><span class="op">|</span><span class="ot"> comp ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c</span>
+<span id="cb22-4"><a href="#cb22-4"></a><span class="op">|</span> comp f g a <span class="ot">=</span> go f</span>
+<span id="cb22-5"><a href="#cb22-5"></a><span class="op">|</span>  <span class="kw">where</span></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="op">|</span><span class="ot">   go ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> c</span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="op">|</span>   go f' <span class="ot">=</span> g (f' a)</span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb22-9"><a href="#cb22-9"></a></span>
+<span id="cb22-10"><a href="#cb22-10"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">11</span><span class="op">:</span><span class="dv">11</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb22-11"><a href="#cb22-11"></a>    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘c1’ with actual <span class="kw">type</span> ‘c’</span>
+<span id="cb22-12"><a href="#cb22-12"></a>      ‘c1’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-13"><a href="#cb22-13"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-14"><a href="#cb22-14"></a><span class="ot">          go ::</span> <span class="kw">forall</span> a1 b1 c1<span class="op">.</span> (a1 <span class="ot">-&gt;</span> b1) <span class="ot">-&gt;</span> c1</span>
+<span id="cb22-15"><a href="#cb22-15"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">10</span><span class="op">:</span><span class="dv">3</span><span class="op">-</span><span class="dv">21</span></span>
+<span id="cb22-16"><a href="#cb22-16"></a>      ‘c’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-17"><a href="#cb22-17"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-18"><a href="#cb22-18"></a><span class="ot">          comp ::</span> <span class="kw">forall</span> a b c<span class="op">.</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c</span>
+<span id="cb22-19"><a href="#cb22-19"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">1</span><span class="op">-</span><span class="dv">38</span></span>
+<span id="cb22-20"><a href="#cb22-20"></a>    • <span class="dt">In</span> the expression<span class="op">:</span> g (f' a)</span>
+<span id="cb22-21"><a href="#cb22-21"></a></span>
+<span id="cb22-22"><a href="#cb22-22"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">11</span><span class="op">:</span><span class="dv">14</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb22-23"><a href="#cb22-23"></a>    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘b’ with actual <span class="kw">type</span> ‘b1’</span>
+<span id="cb22-24"><a href="#cb22-24"></a>      ‘b1’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-25"><a href="#cb22-25"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-26"><a href="#cb22-26"></a><span class="ot">          go ::</span> <span class="kw">forall</span> a1 b1 c1<span class="op">.</span> (a1 <span class="ot">-&gt;</span> b1) <span class="ot">-&gt;</span> c1</span>
+<span id="cb22-27"><a href="#cb22-27"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">10</span><span class="op">:</span><span class="dv">3</span><span class="op">-</span><span class="dv">21</span></span>
+<span id="cb22-28"><a href="#cb22-28"></a>      ‘b’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-29"><a href="#cb22-29"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-30"><a href="#cb22-30"></a><span class="ot">          comp ::</span> <span class="kw">forall</span> a b c<span class="op">.</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c</span>
+<span id="cb22-31"><a href="#cb22-31"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">1</span><span class="op">-</span><span class="dv">38</span></span>
+<span id="cb22-32"><a href="#cb22-32"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘g’, namely ‘(f' a)’</span>
+<span id="cb22-33"><a href="#cb22-33"></a></span>
+<span id="cb22-34"><a href="#cb22-34"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">11</span><span class="op">:</span><span class="dv">17</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb22-35"><a href="#cb22-35"></a>    • <span class="dt">Couldn't</span> match expected <span class="kw">type</span> ‘a1’ with actual <span class="kw">type</span> ‘a’</span>
+<span id="cb22-36"><a href="#cb22-36"></a>      ‘a1’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-37"><a href="#cb22-37"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-38"><a href="#cb22-38"></a><span class="ot">          go ::</span> <span class="kw">forall</span> a1 b1 c1<span class="op">.</span> (a1 <span class="ot">-&gt;</span> b1) <span class="ot">-&gt;</span> c1</span>
+<span id="cb22-39"><a href="#cb22-39"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">10</span><span class="op">:</span><span class="dv">3</span><span class="op">-</span><span class="dv">21</span></span>
+<span id="cb22-40"><a href="#cb22-40"></a>      ‘a’ is a rigid <span class="kw">type</span> variable bound by</span>
+<span id="cb22-41"><a href="#cb22-41"></a>        the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb22-42"><a href="#cb22-42"></a><span class="ot">          comp ::</span> <span class="kw">forall</span> a b c<span class="op">.</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c</span>
+<span id="cb22-43"><a href="#cb22-43"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">1</span><span class="op">-</span><span class="dv">38</span></span>
+<span id="cb22-44"><a href="#cb22-44"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘f'’, namely ‘a’</span>
+<span id="cb22-45"><a href="#cb22-45"></a></span>
+<span id="cb22-46"><a href="#cb22-46"></a><span class="co">-- But this does.</span></span>
+<span id="cb22-47"><a href="#cb22-47"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XScopedTypeVariables</span></span>
+<span id="cb22-48"><a href="#cb22-48"></a><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb22-49"><a href="#cb22-49"></a><span class="op">|</span><span class="ot"> comp ::</span> <span class="kw">forall</span> a b c<span class="op">.</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c</span>
+<span id="cb22-50"><a href="#cb22-50"></a><span class="op">|</span> comp f g a <span class="ot">=</span> go f</span>
+<span id="cb22-51"><a href="#cb22-51"></a><span class="op">|</span>  <span class="kw">where</span></span>
+<span id="cb22-52"><a href="#cb22-52"></a><span class="op">|</span><span class="ot">   go ::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> c</span>
+<span id="cb22-53"><a href="#cb22-53"></a><span class="op">|</span>   go f' <span class="ot">=</span> g (f' a)</span>
+<span id="cb22-54"><a href="#cb22-54"></a><span class="op">|</span> <span class="op">:</span>}</span></code></pre></div>
+<ul>
+<li><a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeApplications" target="_blank" rel="noopener"><code>-XTypeApplications</code></a> extension lets us directly apply types to expressions:</li>
+</ul>
+<div class="sourceCode" id="cb23"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb23-1"><a href="#cb23-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeApplications</span></span>
+<span id="cb23-2"><a href="#cb23-2"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="fu">traverse</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="ot">  ::</span> (<span class="dt">Traversable</span> t, <span class="dt">Applicative</span> f) <span class="ot">=&gt;</span></span>
+<span id="cb23-5"><a href="#cb23-5"></a>     (a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> t a <span class="ot">-&gt;</span> f (t b)</span>
+<span id="cb23-6"><a href="#cb23-6"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span></span>
+<span id="cb23-7"><a href="#cb23-7"></a><span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span></span>
+<span id="cb23-8"><a href="#cb23-8"></a><span class="ot">  ::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span></span>
+<span id="cb23-9"><a href="#cb23-9"></a>     (a <span class="ot">-&gt;</span> f b) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> f (<span class="dt">Maybe</span> b)</span>
+<span id="cb23-10"><a href="#cb23-10"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[]</span>
+<span id="cb23-11"><a href="#cb23-11"></a><span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[]</span>
+<span id="cb23-12"><a href="#cb23-12"></a><span class="ot">  ::</span> (a <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> b]</span>
+<span id="cb23-13"><a href="#cb23-13"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[] <span class="op">@</span><span class="dt">Int</span></span>
+<span id="cb23-14"><a href="#cb23-14"></a><span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[] <span class="op">@</span><span class="dt">Int</span></span>
+<span id="cb23-15"><a href="#cb23-15"></a><span class="ot">  ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> [b]) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> b]</span>
+<span id="cb23-16"><a href="#cb23-16"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[] <span class="op">@</span><span class="dt">Int</span> <span class="op">@</span><span class="dt">String</span></span>
+<span id="cb23-17"><a href="#cb23-17"></a><span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>[] <span class="op">@</span><span class="dt">Int</span> <span class="op">@</span><span class="dt">String</span></span>
+<span id="cb23-18"><a href="#cb23-18"></a><span class="ot">  ::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">String</span>]) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> [<span class="dt">Maybe</span> <span class="dt">String</span>]</span></code></pre></div>
+<ul>
+<li>Types are applied in the order they appear in the type signature. It is possible to avoid applying types by using a type with an underscore: <code>@_</code></li>
+</ul>
+<div class="sourceCode" id="cb24"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb24-1"><a href="#cb24-1"></a><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>_ <span class="op">@</span>_ <span class="op">@</span><span class="dt">String</span></span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="fu">traverse</span> <span class="op">@</span><span class="dt">Maybe</span> <span class="op">@</span>_ <span class="op">@</span>_ <span class="op">@</span><span class="dt">String</span></span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="ot">  ::</span> <span class="dt">Applicative</span> w1 <span class="ot">=&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4"></a>     (w2 <span class="ot">-&gt;</span> w1 <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> w2 <span class="ot">-&gt;</span> w1 (<span class="dt">Maybe</span> <span class="dt">String</span>)</span></code></pre></div>
+<ul>
+<li>Sometimes the compiler cannot infer the type of an expression. <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-AllowAmbiguousTypes" target="_blank" rel="noopener"><code>-XAllowAmbiguousTypes</code></a> extension allow such programs to compile.</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb25-1"><a href="#cb25-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XScopedTypeVariables</span></span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="op">|</span><span class="ot"> f ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="op">|</span> f <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb25-6"><a href="#cb25-6"></a></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">6</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a>    • <span class="dt">Could</span> <span class="fu">not</span> deduce (<span class="dt">Show</span> a0)</span>
+<span id="cb25-9"><a href="#cb25-9"></a>      from the context<span class="op">:</span> <span class="dt">Show</span> a</span>
+<span id="cb25-10"><a href="#cb25-10"></a>        bound by the <span class="kw">type</span> signature for<span class="op">:</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="ot">                   f ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Bool</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a>        at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">6</span><span class="op">-</span><span class="dv">29</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a>      <span class="dt">The</span> <span class="kw">type</span> variable ‘a0’ is ambiguous</span>
+<span id="cb25-14"><a href="#cb25-14"></a>    • <span class="dt">In</span> the ambiguity check for ‘f’</span>
+<span id="cb25-15"><a href="#cb25-15"></a>      <span class="dt">To</span> defer the ambiguity check to use sites, enable <span class="dt">AllowAmbiguousTypes</span></span>
+<span id="cb25-16"><a href="#cb25-16"></a>      <span class="dt">In</span> the <span class="kw">type</span> signature<span class="op">:</span><span class="ot"> f ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Show</span> a <span class="ot">=&gt;</span> <span class="dt">Bool</span></span></code></pre></div>
+<ul>
+<li><code>Proxy</code> is a type isomorphic to <code>()</code> except with a phantom type parameter:</li>
+</ul>
+<div class="sourceCode" id="cb26"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb26-1"><a href="#cb26-1"></a><span class="kw">data</span> <span class="dt">Proxy</span> a <span class="ot">=</span> <span class="dt">Proxy</span></span></code></pre></div>
+<ul>
+<li>With all the three extensions enabled, it is possible to get a term-level representation of types using the <a href="https://hackage.haskell.org/package/base/docs/Data-Typeable.html" target="_blank" rel="noopener"><code>Data.Typeable</code></a> module:</li>
+</ul>
+<div class="sourceCode" id="cb27"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb27-1"><a href="#cb27-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XScopedTypeVariables</span></span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeApplications</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XAllowAmbiguousTypes</span></span>
+<span id="cb27-4"><a href="#cb27-4"></a><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">Data.Typeable</span></span>
+<span id="cb27-5"><a href="#cb27-5"></a><span class="dt">Data.Typeable</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb27-6"><a href="#cb27-6"></a><span class="dt">Data.Typeable</span><span class="op">|</span><span class="ot"> typeName ::</span> <span class="kw">forall</span> a<span class="op">.</span> <span class="dt">Typeable</span> a <span class="ot">=&gt;</span> <span class="dt">String</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a><span class="dt">Data.Typeable</span><span class="op">|</span> typeName <span class="ot">=</span> <span class="fu">show</span> <span class="op">.</span> typeRep <span class="op">$</span> <span class="dt">Proxy</span> <span class="op">@</span>a</span>
+<span id="cb27-8"><a href="#cb27-8"></a><span class="dt">Data.Typeable</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb27-9"><a href="#cb27-9"></a><span class="dt">Data.Typeable</span><span class="op">&gt;</span> typeName <span class="op">@</span><span class="dt">String</span></span>
+<span id="cb27-10"><a href="#cb27-10"></a><span class="st">&quot;[Char]&quot;</span></span>
+<span id="cb27-11"><a href="#cb27-11"></a><span class="dt">Data.Typeable</span><span class="op">&gt;</span> typeName <span class="op">@</span>(<span class="dt">IO</span> <span class="dt">Int</span>)</span>
+<span id="cb27-12"><a href="#cb27-12"></a><span class="st">&quot;IO Int&quot;</span></span></code></pre></div>
+<h2 id="chapter-5.-constraints-and-gadts" data-track-content data-content-name="chapter-5.-constraints-and-gadts" data-content-piece="twt-notes-1">Chapter 5. Constraints and GADTs<a href="#chapter-5.-constraints-and-gadts" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h2>
+<h3 id="constraints">Constraints<a href="#constraints" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>Constraints</em> are a kind different than the types (<code>*</code>).</li>
+<li>Constraints are what appear on the left-hand side on the fat context arrow <code>=&gt;</code>, like <code>Show a</code>.</li>
+</ul>
+<div class="sourceCode" id="cb28"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb28-1"><a href="#cb28-1"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">Show</span></span>
+<span id="cb28-2"><a href="#cb28-2"></a><span class="dt">Show</span><span class="ot"> ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Constraint</span></span>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="op">&gt;</span> <span class="op">:</span>k <span class="dt">Show</span> <span class="dt">Int</span></span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="dt">Show</span> <span class="dt">Int</span><span class="ot"> ::</span> <span class="dt">Constraint</span></span>
+<span id="cb28-5"><a href="#cb28-5"></a><span class="op">&gt;</span> <span class="op">:</span>k (<span class="dt">Show</span> <span class="dt">Int</span>, <span class="dt">Eq</span> <span class="dt">String</span>)</span>
+<span id="cb28-6"><a href="#cb28-6"></a>(<span class="dt">Show</span> <span class="dt">Int</span>, <span class="dt">Eq</span> <span class="dt">String</span>)<span class="ot"> ::</span> <span class="dt">Constraint</span></span></code></pre></div>
+<ul>
+<li>Type equalities <code>(Int ~ a)</code> are another way of creating Constraints. <code>(Int ~ a)</code> says <code>a</code> is same as <code>Int</code>.</li>
+<li>Type equalities are
+<ul>
+<li>reflexive: <code>a ~ a</code> always</li>
+<li>symmetrical: <code>a ~ b</code> implies <code>b ~ a</code></li>
+<li>transitive: <code>a ~ b</code> and <code>b ~ c</code> implies <code>a ~ c</code></li>
+</ul></li>
+</ul>
+<h3 id="gadts">GADTs<a href="#gadts" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li><em>GADTs</em> are Generalized Algebraic DataTypes. They allow writing explicit type signatures for data constructors. Here is the code for a length-typed list using GADTs:</li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb29-1"><a href="#cb29-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XGADTs</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XKindSignatures</span></span>
+<span id="cb29-3"><a href="#cb29-3"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">GHC.TypeLits</span></span>
+<span id="cb29-6"><a href="#cb29-6"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="kw">data</span> <span class="dt">List</span> (<span class="ot">a ::</span> <span class="op">*</span>) (<span class="ot">n ::</span> <span class="dt">Nat</span>) <span class="kw">where</span></span>
+<span id="cb29-8"><a href="#cb29-8"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span>   <span class="dt">Nil</span><span class="ot">  ::</span> <span class="dt">List</span> a <span class="dv">0</span></span>
+<span id="cb29-9"><a href="#cb29-9"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span><span class="ot">   (:~) ::</span> a <span class="ot">-&gt;</span> <span class="dt">List</span> a n <span class="ot">-&gt;</span> <span class="dt">List</span> a (n <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb29-10"><a href="#cb29-10"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="kw">infixr</span> <span class="dv">5</span> <span class="op">:~</span></span>
+<span id="cb29-11"><a href="#cb29-11"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb29-12"><a href="#cb29-12"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">Nil</span></span>
+<span id="cb29-13"><a href="#cb29-13"></a><span class="dt">Nil</span><span class="ot"> ::</span> <span class="dt">List</span> a <span class="dv">0</span></span>
+<span id="cb29-14"><a href="#cb29-14"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span>
+<span id="cb29-15"><a href="#cb29-15"></a><span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span><span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">Char</span> <span class="dv">1</span></span>
+<span id="cb29-16"><a href="#cb29-16"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="ch">'b'</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span>
+<span id="cb29-17"><a href="#cb29-17"></a><span class="ch">'b'</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span><span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">Char</span> <span class="dv">2</span></span>
+<span id="cb29-18"><a href="#cb29-18"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">True</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span>
+<span id="cb29-19"><a href="#cb29-19"></a></span>
+<span id="cb29-20"><a href="#cb29-20"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">1</span><span class="op">:</span><span class="dv">9</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb29-21"><a href="#cb29-21"></a>    • <span class="dt">Couldn't</span> match <span class="kw">type</span> ‘<span class="dt">Char</span>’ with ‘<span class="dt">Bool</span>’</span>
+<span id="cb29-22"><a href="#cb29-22"></a>      <span class="dt">Expected</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">List</span> <span class="dt">Bool</span> <span class="dv">1</span></span>
+<span id="cb29-23"><a href="#cb29-23"></a>        <span class="dt">Actual</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">List</span> <span class="dt">Char</span> (<span class="dv">0</span> <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb29-24"><a href="#cb29-24"></a>    • <span class="dt">In</span> the second argument <span class="kw">of</span> ‘(<span class="op">:~</span>)’, namely ‘<span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span>’</span>
+<span id="cb29-25"><a href="#cb29-25"></a>      <span class="dt">In</span> the expression<span class="op">:</span> <span class="dt">True</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span></code></pre></div>
+<ul>
+<li>GADTs are just syntactic sugar for ADTs with type equalities. The above definition is equivalent to:</li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb30-1"><a href="#cb30-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XGADTs</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XKindSignatures</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb30-5"><a href="#cb30-5"></a><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">GHC.TypeLits</span></span>
+<span id="cb30-6"><a href="#cb30-6"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb30-7"><a href="#cb30-7"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="kw">data</span> <span class="dt">List</span> (<span class="ot">a ::</span> <span class="op">*</span>) (<span class="ot">n ::</span> <span class="dt">Nat</span>)</span>
+<span id="cb30-8"><a href="#cb30-8"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span>   <span class="ot">=</span> (n <span class="op">~</span> <span class="dv">0</span>) <span class="ot">=&gt;</span> <span class="dt">Nil</span></span>
+<span id="cb30-9"><a href="#cb30-9"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span>   <span class="op">|</span> a <span class="op">:~</span> <span class="dt">List</span> a (n <span class="op">-</span> <span class="dv">1</span>)</span>
+<span id="cb30-10"><a href="#cb30-10"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="kw">infixr</span> <span class="dv">5</span> <span class="op">:~</span></span>
+<span id="cb30-11"><a href="#cb30-11"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb30-12"><a href="#cb30-12"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span>
+<span id="cb30-13"><a href="#cb30-13"></a><span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span><span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">Char</span> <span class="dv">1</span></span>
+<span id="cb30-14"><a href="#cb30-14"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="ch">'b'</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span></span>
+<span id="cb30-15"><a href="#cb30-15"></a><span class="ch">'b'</span> <span class="op">:~</span> <span class="ch">'a'</span> <span class="op">:~</span> <span class="dt">Nil</span><span class="ot"> ::</span> <span class="dt">List</span> <span class="dt">Char</span> <span class="dv">2</span></span></code></pre></div>
+<ul>
+<li>Type-safety of this list can be used to write a safe <code>head</code> function which does not compile for an empty list:</li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb31-1"><a href="#cb31-1"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb31-2"><a href="#cb31-2"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span><span class="ot"> safeHead ::</span> <span class="dt">List</span> a (n <span class="op">+</span> <span class="dv">1</span>) <span class="ot">-&gt;</span> a</span>
+<span id="cb31-3"><a href="#cb31-3"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> safeHead (x <span class="op">:~</span> _) <span class="ot">=</span> x</span>
+<span id="cb31-4"><a href="#cb31-4"></a><span class="dt">GHC.TypeLits</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb31-5"><a href="#cb31-5"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> safeHead (<span class="ch">'a'</span> <span class="op">:~</span> <span class="ch">'b'</span> <span class="op">:~</span> <span class="dt">Nil</span>)</span>
+<span id="cb31-6"><a href="#cb31-6"></a><span class="ch">'a'</span></span>
+<span id="cb31-7"><a href="#cb31-7"></a><span class="dt">GHC.TypeLits</span><span class="op">&gt;</span> safeHead <span class="dt">Nil</span></span>
+<span id="cb31-8"><a href="#cb31-8"></a></span>
+<span id="cb31-9"><a href="#cb31-9"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">21</span><span class="op">:</span><span class="dv">10</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb31-10"><a href="#cb31-10"></a>    • <span class="dt">Couldn't</span> match <span class="kw">type</span> ‘1’ with ‘0’</span>
+<span id="cb31-11"><a href="#cb31-11"></a>      <span class="dt">Expected</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">List</span> a (<span class="dv">0</span> <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb31-12"><a href="#cb31-12"></a>        <span class="dt">Actual</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">List</span> a <span class="dv">0</span></span>
+<span id="cb31-13"><a href="#cb31-13"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘safeHead’, namely ‘<span class="dt">Nil</span>’</span>
+<span id="cb31-14"><a href="#cb31-14"></a>      <span class="dt">In</span> the expression<span class="op">:</span> safeHead <span class="dt">Nil</span></span>
+<span id="cb31-15"><a href="#cb31-15"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> safeHead <span class="dt">Nil</span></span></code></pre></div>
+<h3 id="heterogeneous-lists">Heterogeneous Lists<a href="#heterogeneous-lists" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<p>We can use GADTs to build heterogeneous lists which can store values of different types and are type-safe to use.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>First, the required extensions and imports:</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb32-1"><a href="#cb32-1"></a><span class="ot">{-# LANGUAGE KindSignatures #-}</span></span>
+<span id="cb32-2"><a href="#cb32-2"></a><span class="ot">{-# LANGUAGE DataKinds #-}</span></span>
+<span id="cb32-3"><a href="#cb32-3"></a><span class="ot">{-# LANGUAGE TypeOperators #-}</span></span>
+<span id="cb32-4"><a href="#cb32-4"></a><span class="ot">{-# LANGUAGE GADTs #-}</span></span>
+<span id="cb32-5"><a href="#cb32-5"></a><span class="ot">{-# LANGUAGE FlexibleInstances #-}</span></span>
+<span id="cb32-6"><a href="#cb32-6"></a><span class="ot">{-# LANGUAGE FlexibleContexts #-}</span></span>
+<span id="cb32-7"><a href="#cb32-7"></a><span class="ot">{-# LANGUAGE TypeApplications #-}</span></span>
+<span id="cb32-8"><a href="#cb32-8"></a><span class="ot">{-# LANGUAGE ScopedTypeVariables #-}</span></span>
+<span id="cb32-9"><a href="#cb32-9"></a></span>
+<span id="cb32-10"><a href="#cb32-10"></a><span class="kw">module</span> <span class="dt">HList</span> <span class="kw">where</span></span>
+<span id="cb32-11"><a href="#cb32-11"></a></span>
+<span id="cb32-12"><a href="#cb32-12"></a><span class="kw">import</span> <span class="dt">Data.Typeable</span></span></code></pre></div>
+<p><code>HList</code> is defined as a GADT:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">data</span> <span class="dt">HList</span> (<span class="ot">ts ::</span> [<span class="op">*</span>]) <span class="kw">where</span></span>
+<span id="cb33-2"><a href="#cb33-2"></a>  <span class="dt">HNil</span><span class="ot"> ::</span> <span class="dt">HList</span> '[]</span>
+<span id="cb33-3"><a href="#cb33-3"></a><span class="ot">  (:#) ::</span> t <span class="ot">-&gt;</span> <span class="dt">HList</span> ts <span class="ot">-&gt;</span> <span class="dt">HList</span> (t '<span class="op">:</span> ts)</span>
+<span id="cb33-4"><a href="#cb33-4"></a><span class="kw">infixr</span> <span class="dv">5</span> <span class="op">:#</span></span></code></pre></div>
+<p>Example usage:</p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb34-1"><a href="#cb34-1"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">HNil</span></span>
+<span id="cb34-2"><a href="#cb34-2"></a><span class="dt">HNil</span><span class="ot"> ::</span> <span class="dt">HList</span> '[]</span>
+<span id="cb34-3"><a href="#cb34-3"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb34-4"><a href="#cb34-4"></a><span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span><span class="ot"> ::</span> <span class="dt">HList</span> '[<span class="dt">Char</span>]</span>
+<span id="cb34-5"><a href="#cb34-5"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="op">:</span><span class="kw">type</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb34-6"><a href="#cb34-6"></a><span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span><span class="ot"> ::</span> <span class="dt">HList</span> '[<span class="dt">Bool</span>, <span class="dt">Char</span>]</span></code></pre></div>
+<p>We can write operations on <code>HList</code>:</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb35-1"><a href="#cb35-1"></a><span class="ot">hLength ::</span> <span class="dt">HList</span> ts <span class="ot">-&gt;</span> <span class="dt">Int</span></span>
+<span id="cb35-2"><a href="#cb35-2"></a>hLength <span class="dt">HNil</span> <span class="ot">=</span> <span class="dv">0</span></span>
+<span id="cb35-3"><a href="#cb35-3"></a>hLength (x <span class="op">:#</span> xs) <span class="ot">=</span> <span class="dv">1</span> <span class="op">+</span> hLength xs</span>
+<span id="cb35-4"><a href="#cb35-4"></a></span>
+<span id="cb35-5"><a href="#cb35-5"></a><span class="ot">hHead ::</span> <span class="dt">HList</span> (t '<span class="op">:</span> ts) <span class="ot">-&gt;</span> t</span>
+<span id="cb35-6"><a href="#cb35-6"></a>hHead (t <span class="op">:#</span> _) <span class="ot">=</span> t</span></code></pre></div>
+<p>Example usage:</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb36-1"><a href="#cb36-1"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> hLength <span class="op">$</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb36-2"><a href="#cb36-2"></a><span class="dv">2</span></span>
+<span id="cb36-3"><a href="#cb36-3"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> hHead <span class="op">$</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb36-4"><a href="#cb36-4"></a><span class="dt">True</span></span>
+<span id="cb36-5"><a href="#cb36-5"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> hHead <span class="dt">HNil</span></span>
+<span id="cb36-6"><a href="#cb36-6"></a></span>
+<span id="cb36-7"><a href="#cb36-7"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">7</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb36-8"><a href="#cb36-8"></a>    • <span class="dt">Couldn't</span> match <span class="kw">type</span> ‘'[]’ with ‘t <span class="op">:</span> ts0’</span>
+<span id="cb36-9"><a href="#cb36-9"></a>      <span class="dt">Expected</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">HList</span> (t <span class="op">:</span> ts0)</span>
+<span id="cb36-10"><a href="#cb36-10"></a>        <span class="dt">Actual</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">HList</span> '[]</span>
+<span id="cb36-11"><a href="#cb36-11"></a>    • <span class="dt">In</span> the first argument <span class="kw">of</span> ‘hHead’, namely ‘<span class="dt">HNil</span>’</span>
+<span id="cb36-12"><a href="#cb36-12"></a>      <span class="dt">In</span> the expression<span class="op">:</span> hHead <span class="dt">HNil</span></span>
+<span id="cb36-13"><a href="#cb36-13"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> hHead <span class="dt">HNil</span></span>
+<span id="cb36-14"><a href="#cb36-14"></a>    • <span class="dt">Relevant</span> bindings include<span class="ot"> it ::</span> t (bound at <span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">7</span><span class="op">:</span><span class="dv">1</span>)</span></code></pre></div>
+<p>We need to define instances of typeclasses like <code>Eq</code>, <code>Ord</code> etc. for <code>HList</code> because GHC cannot derive them automatically yet:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb37-1"><a href="#cb37-1"></a><span class="kw">instance</span> <span class="dt">Eq</span> (<span class="dt">HList</span> '[]) <span class="kw">where</span></span>
+<span id="cb37-2"><a href="#cb37-2"></a>  <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">HNil</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb37-3"><a href="#cb37-3"></a><span class="kw">instance</span> (<span class="dt">Eq</span> t, <span class="dt">Eq</span> (<span class="dt">HList</span> ts))</span>
+<span id="cb37-4"><a href="#cb37-4"></a>    <span class="ot">=&gt;</span> <span class="dt">Eq</span> (<span class="dt">HList</span> (t '<span class="op">:</span> ts)) <span class="kw">where</span></span>
+<span id="cb37-5"><a href="#cb37-5"></a>  (x <span class="op">:#</span> xs) <span class="op">==</span> (y <span class="op">:#</span> ys) <span class="ot">=</span></span>
+<span id="cb37-6"><a href="#cb37-6"></a>    x <span class="op">==</span> y <span class="op">&amp;&amp;</span> xs <span class="op">==</span> ys</span>
+<span id="cb37-7"><a href="#cb37-7"></a></span>
+<span id="cb37-8"><a href="#cb37-8"></a><span class="kw">instance</span> <span class="dt">Ord</span> (<span class="dt">HList</span> '[]) <span class="kw">where</span></span>
+<span id="cb37-9"><a href="#cb37-9"></a>  <span class="dt">HNil</span> <span class="ot">`compare`</span> <span class="dt">HNil</span> <span class="ot">=</span> <span class="dt">EQ</span></span>
+<span id="cb37-10"><a href="#cb37-10"></a><span class="kw">instance</span> (<span class="dt">Ord</span> t, <span class="dt">Ord</span> (<span class="dt">HList</span> ts))</span>
+<span id="cb37-11"><a href="#cb37-11"></a>    <span class="ot">=&gt;</span> <span class="dt">Ord</span> (<span class="dt">HList</span> (t '<span class="op">:</span> ts)) <span class="kw">where</span></span>
+<span id="cb37-12"><a href="#cb37-12"></a>  (x <span class="op">:#</span> xs) <span class="ot">`compare`</span> (y <span class="op">:#</span> ys) <span class="ot">=</span></span>
+<span id="cb37-13"><a href="#cb37-13"></a>    x <span class="ot">`compare`</span> y <span class="op">&lt;&gt;</span> xs <span class="ot">`compare`</span> ys</span>
+<span id="cb37-14"><a href="#cb37-14"></a></span>
+<span id="cb37-15"><a href="#cb37-15"></a><span class="kw">instance</span> <span class="dt">Show</span> (<span class="dt">HList</span> '[]) <span class="kw">where</span></span>
+<span id="cb37-16"><a href="#cb37-16"></a>  <span class="fu">show</span> <span class="dt">HNil</span> <span class="ot">=</span> <span class="st">&quot;[]&quot;</span></span>
+<span id="cb37-17"><a href="#cb37-17"></a><span class="kw">instance</span> (<span class="dt">Typeable</span> t, <span class="dt">Show</span> t, <span class="dt">Show</span> (<span class="dt">HList</span> ts))</span>
+<span id="cb37-18"><a href="#cb37-18"></a>    <span class="ot">=&gt;</span> <span class="dt">Show</span> (<span class="dt">HList</span> (t '<span class="op">:</span> ts)) <span class="kw">where</span></span>
+<span id="cb37-19"><a href="#cb37-19"></a>  <span class="fu">show</span> (x <span class="op">:#</span> xs) <span class="ot">=</span></span>
+<span id="cb37-20"><a href="#cb37-20"></a>    <span class="fu">show</span> x </span>
+<span id="cb37-21"><a href="#cb37-21"></a>    <span class="op">++</span> <span class="st">&quot;@&quot;</span> <span class="op">++</span> <span class="fu">show</span> (typeRep (<span class="dt">Proxy</span> <span class="op">@</span>t))</span>
+<span id="cb37-22"><a href="#cb37-22"></a>    <span class="op">++</span> <span class="st">&quot; :# &quot;</span> <span class="op">++</span> <span class="fu">show</span> xs</span></code></pre></div>
+<p>The instances are defined recursively: one for the base case and one for the inductive case.</p>
+<p>Example usage:</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb38-1"><a href="#cb38-1"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-2"><a href="#cb38-2"></a><span class="dt">True</span></span>
+<span id="cb38-3"><a href="#cb38-3"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'b'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-4"><a href="#cb38-4"></a><span class="dt">False</span></span>
+<span id="cb38-5"><a href="#cb38-5"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">True</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-6"><a href="#cb38-6"></a></span>
+<span id="cb38-7"><a href="#cb38-7"></a><span class="op">&lt;</span>interactive<span class="op">&gt;:</span><span class="dv">17</span><span class="op">:</span><span class="dv">24</span><span class="op">:</span> <span class="fu">error</span><span class="op">:</span></span>
+<span id="cb38-8"><a href="#cb38-8"></a>    • <span class="dt">Couldn't</span> match <span class="kw">type</span> ‘'[]’ with ‘'[<span class="dt">Char</span>]’</span>
+<span id="cb38-9"><a href="#cb38-9"></a>      <span class="dt">Expected</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">HList</span> '[<span class="dt">Bool</span>, <span class="dt">Char</span>]</span>
+<span id="cb38-10"><a href="#cb38-10"></a>        <span class="dt">Actual</span> <span class="kw">type</span><span class="op">:</span> <span class="dt">HList</span> '[<span class="dt">Bool</span>]</span>
+<span id="cb38-11"><a href="#cb38-11"></a>    • <span class="dt">In</span> the second argument <span class="kw">of</span> ‘(<span class="op">==</span>)’, namely ‘<span class="dt">True</span> <span class="op">:#</span> <span class="dt">HNil</span>’</span>
+<span id="cb38-12"><a href="#cb38-12"></a>      <span class="dt">In</span> the expression<span class="op">:</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">True</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-13"><a href="#cb38-13"></a>      <span class="dt">In</span> an equation for ‘it’<span class="op">:</span> it <span class="ot">=</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">True</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-14"><a href="#cb38-14"></a><span class="op">*</span><span class="dt">HList</span><span class="op">&gt;</span> <span class="fu">show</span> <span class="op">$</span> <span class="dt">True</span> <span class="op">:#</span> <span class="ch">'a'</span> <span class="op">:#</span> <span class="dt">HNil</span></span>
+<span id="cb38-15"><a href="#cb38-15"></a><span class="st">&quot;True@Bool :# 'a'@Char :# []&quot;</span></span></code></pre></div>
+<h3 id="creating-new-constraints">Creating New Constraints<a href="#creating-new-constraints" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
+<ul>
+<li>Type families can be used to create new Constraints:</li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb39-1"><a href="#cb39-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XKindSignatures</span></span>
+<span id="cb39-2"><a href="#cb39-2"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XDataKinds</span></span>
+<span id="cb39-3"><a href="#cb39-3"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeOperators</span></span>
+<span id="cb39-4"><a href="#cb39-4"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XTypeFamilies</span></span>
+<span id="cb39-5"><a href="#cb39-5"></a><span class="op">&gt;</span> <span class="op">:</span>m <span class="op">+</span><span class="dt">Data.Constraint</span></span>
+<span id="cb39-6"><a href="#cb39-6"></a><span class="dt">Data.Constraint</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb39-7"><a href="#cb39-7"></a><span class="dt">Data.Constraint</span><span class="op">|</span> <span class="kw">type</span> <span class="kw">family</span> <span class="dt">AllEq</span> (<span class="ot">ts ::</span> [<span class="op">*</span>])<span class="ot"> ::</span> <span class="dt">Constraint</span> <span class="kw">where</span></span>
+<span id="cb39-8"><a href="#cb39-8"></a><span class="dt">Data.Constraint</span><span class="op">|</span>   <span class="dt">AllEq</span> '[] <span class="ot">=</span> ()</span>
+<span id="cb39-9"><a href="#cb39-9"></a><span class="dt">Data.Constraint</span><span class="op">|</span>   <span class="dt">AllEq</span> (t '<span class="op">:</span> ts) <span class="ot">=</span> (<span class="dt">Eq</span> t, <span class="dt">AllEq</span> ts)</span>
+<span id="cb39-10"><a href="#cb39-10"></a><span class="dt">Data.Constraint</span><span class="op">|</span> <span class="op">:</span>}</span>
+<span id="cb39-11"><a href="#cb39-11"></a><span class="dt">Data.Constraint</span><span class="op">&gt;</span> <span class="op">:</span>kind<span class="op">!</span> <span class="dt">AllEq</span> '[<span class="dt">Bool</span>, <span class="dt">Char</span>]</span>
+<span id="cb39-12"><a href="#cb39-12"></a><span class="dt">AllEq</span> '[<span class="dt">Bool</span>, <span class="dt">Char</span>]<span class="ot"> ::</span> <span class="dt">Constraint</span></span>
+<span id="cb39-13"><a href="#cb39-13"></a><span class="ot">=</span> (<span class="dt">Eq</span> <span class="dt">Bool</span>, (<span class="dt">Eq</span> <span class="dt">Char</span>,<span class="ot"> () ::</span> <span class="dt">Constraint</span>))</span></code></pre></div>
+<ul>
+<li><code>AllEq</code> is a type-level function from a list of types to a constraint.</li>
+<li>With the <a href="https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ConstraintKinds" target="_blank" rel="noopener"><code>-XConstraintKinds</code></a> extension, <code>AllEq</code> can be made polymorphic over all constraints instead of just <code>Eq</code>:</li>
+</ul>
+<div class="sourceCode" id="cb40"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb40-1"><a href="#cb40-1"></a><span class="op">&gt;</span> <span class="op">:</span>set <span class="op">-</span><span class="dt">XConstraintKinds</span></span>
+<span id="cb40-2"><a href="#cb40-2"></a><span class="dt">Data.Constraint</span><span class="op">&gt;</span> <span class="op">:</span>{</span>
+<span id="cb40-3"><a href="#cb40-3"></a><span class="dt">Data.Constraint</span><span class="op">|</span> <span class="kw">type</span> <span class="kw">family</span> <span class="dt">All</span> (<span class="ot">c ::</span> <span class="op">*</span> <span class="ot">-&gt;</span> <span class="dt">Constraint</span>)</span>
+<span id="cb40-4"><a href="#cb40-4"></a><span class="dt">Data.Constraint</span><span class="op">|</span>                 (<span class="ot">ts ::</span> [<span class="op">*</span>])<span class="ot"> ::</span> <span class="dt">Constraint</span> <span class="kw">where</span></span>
+<span id="cb40-5"><a href="#cb40-5"></a><span class="dt">Data.Constraint</span><span class="op">|</span>   <span class="dt">All</span> c '[] <span class="ot">=</span> ()</span>
+<span id="cb40-6"><a href="#cb40-6"></a><span class="dt">Data.Constraint</span><span class="op">|</span>   <span class="dt">All</span> c (t '<span class="op">:</span> ts) <span class="ot">=</span> (c t, <span class="dt">All</span> c ts)</span>
+<span id="cb40-7"><a href="#cb40-7"></a><span class="dt">Data.Constraint</span><span class="op">|</span> <span class="op">:</span>}</span></code></pre></div>
+<ul>
+<li>With <code>All</code>, instances for <code>HList</code> can be written non-recursively:</li>
+</ul>
+<div class="sourceCode" id="cb41"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb41-1"><a href="#cb41-1"></a><span class="kw">instance</span> <span class="dt">All</span> <span class="dt">Eq</span> ts <span class="ot">=&gt;</span> <span class="dt">Eq</span> (<span class="dt">HList</span> ts) <span class="kw">where</span></span>
+<span id="cb41-2"><a href="#cb41-2"></a>  <span class="dt">HNil</span> <span class="op">==</span> <span class="dt">HNil</span> <span class="ot">=</span> <span class="dt">True</span></span>
+<span id="cb41-3"><a href="#cb41-3"></a>  (a <span class="op">:#</span> as) <span class="op">==</span> (b <span class="op">:#</span> bs) <span class="ot">=</span> a <span class="op">==</span> b <span class="op">&amp;&amp;</span> as <span class="op">==</span> bs</span></code></pre></div>
+<section class="footnotes" role="doc-endnotes">
+<hr />
+<ol>
+<li id="fn1" role="doc-endnote"><p><a href="https://abhinavsarkar.net/code/hlist.html">The complete code for <code>HList</code></a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section><p>If you liked this post, please <a href="https://abhinavsarkar.net/posts/twt-notes-1/#comment-container">leave a comment</a>.</p><img src="https://anna.abhinavsarkar.net/piwik.php?idsite=1&amp;rec=1" style="border:0; display: none;" />]]></summary>
+</entry>
+
+</feed>
