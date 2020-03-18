@@ -78,4 +78,4 @@ tableOfContents alignment ast =
   if alignment /= "off"
     then let headers = query collectHeaders ast
          in walk (generateTOC headers alignment) ast
-else walk ignoreTOC ast
+  else walk ignoreTOC ast
