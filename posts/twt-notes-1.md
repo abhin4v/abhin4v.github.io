@@ -14,7 +14,7 @@
   - when power-to-weight ratio of adding TLP is high.
 - Types are not a silver bullet for fixing all errors:
   - Correct programs can be not well-typed.
-  - It could be hard to assign type for useful programs. e.g. `printf` from C.
+  - It can be hard to assign type for useful programs. e.g. `printf` from C.
 - Types can turn possible runtime errors into compile-time errors.
 
 ## Chapter 1. The Algebra Behind Types
@@ -42,7 +42,7 @@ from . to = id
 
 ### Sum, Product and Exponential Types
 
-- `Either a b` is a _Sum_ type. Its number of inhabitants is sum of the number of inhabitants of type `a` and `b` like so: `|a|` possible values with `Left` constructor and `|b|` possible values with the `Right` constructor. Formally:
+- `Either a b` is a _Sum_ type. Its number of inhabitants is sum of the number of inhabitants of type `a` and `b` like so: `|a|` possible values with the `Left` constructor and `|b|` possible values with the `Right` constructor. Formally:
 ```haskell
 |Either a b| = |a| + |b|
 ```

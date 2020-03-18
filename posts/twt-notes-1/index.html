@@ -11,11 +11,11 @@
         <meta name="twitter:card" content="summary">
         
         <meta name="twitter:creator" content="@abhin4v">
-        <meta name="twitter:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5">
+        <meta name="twitter:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapters 1–5">
 
         <meta property="og:url" content="https://abhinavsarkar.net/posts/twt-notes-1/">
         <meta property="og:type" content="article">
-        <meta property="og:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5">
+        <meta property="og:title" content="Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapters 1–5">
         <meta property="og:locale" content="en_US">
         <meta property="og:site_name" content="abhinavsarkar.net">
         
@@ -32,7 +32,7 @@
         <meta name="author" content="Abhinav Sarkar, abhinav@abhinavsarkar.net">
         <meta name="HandheldFriendly" content="True">
 
-        <title>Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5 | abhinavsarkar.net</title>
+        <title>Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapters 1–5 | abhinavsarkar.net</title>
 
         <link rel="shortcut icon" type="image/x-icon" href="//abhinavsarkar.net/images/favicon.ico">
         <link rel="archives" title="Archive" href="https://abhinavsarkar.net/archive/">
@@ -114,7 +114,7 @@
         <main role="main">
             <article itemscope itemtype="http://schema.org/Article" class="post h-entry">
     <header>
-        <h1 itemprop="name" id="#top" class="p-name">Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5</h1>
+        <h1 itemprop="name" id="#top" class="p-name">Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapters 1–5</h1>
     </header>
 
     <ul class="headers">
@@ -173,7 +173,7 @@
 <li>Types are not a silver bullet for fixing all errors:
 <ul>
 <li>Correct programs can be not well-typed.</li>
-<li>It could be hard to assign type for useful programs. e.g. <code>printf</code> from C.</li>
+<li>It can be hard to assign type for useful programs. e.g. <code>printf</code> from C.</li>
 </ul></li>
 <li>Types can turn possible runtime errors into compile-time errors.</li>
 </ul>
@@ -199,7 +199,7 @@
 <span id="cb2-4"><a href="#cb2-4"></a>from <span class="op">.</span> to <span class="ot">=</span> <span class="fu">id</span></span></code></pre></div>
 <h3 id="sum-product-and-exponential-types">Sum, Product and Exponential Types<a href="#sum-product-and-exponential-types" class="ref-link"></a><a href="#top" class="top-link" title="Back to top"></a></h3>
 <ul>
-<li><code>Either a b</code> is a <em>Sum</em> type. Its number of inhabitants is sum of the number of inhabitants of type <code>a</code> and <code>b</code> like so: <code>|a|</code> possible values with <code>Left</code> constructor and <code>|b|</code> possible values with the <code>Right</code> constructor. Formally:</li>
+<li><code>Either a b</code> is a <em>Sum</em> type. Its number of inhabitants is sum of the number of inhabitants of type <code>a</code> and <code>b</code> like so: <code>|a|</code> possible values with the <code>Left</code> constructor and <code>|b|</code> possible values with the <code>Right</code> constructor. Formally:</li>
 </ul>
 <div class="sourceCode" id="cb3"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span id="cb3-1"><a href="#cb3-1"></a><span class="op">|</span><span class="dt">Either</span> a b<span class="op">|</span> <span class="ot">=</span> <span class="op">|</span>a<span class="op">|</span> <span class="op">+</span> <span class="op">|</span>b<span class="op">|</span></span></code></pre></div>
 <ul>
