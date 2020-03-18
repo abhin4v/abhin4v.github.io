@@ -628,6 +628,10 @@ instance All Eq ts => Eq (HList ts) where
   (a :# as) == (b :# bs) = a == b && as == bs
 ```
 
+## Conclusion
+
+I'm still in the process of reading the book and I'll post the notes for the rest of the chapters in a later post. For now, you can discuss this post on [lobsters], [r/haskell] or in the comments below.
+
 [`Functor`]: https://hackage.haskell.org/package/base/docs/Prelude.html#t:Functor
 [`Contravariant`]: https://hackage.haskell.org/package/base/docs/Data-Functor-Contravariant.html
 [`Invariant`]: https://hackage.haskell.org/package/invariant/docs/Data-Functor-Invariant.html#t:Invariant
@@ -641,5 +645,7 @@ instance All Eq ts => Eq (HList ts) where
 [`-XTypeApplications`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeApplications
 [`-XAllowAmbiguousTypes`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-AllowAmbiguousTypes
 [`-XConstraintKinds`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ConstraintKinds
+[lobsters]: https://lobste.rs/s/cpzhtc/notes_for_thinking_with_types_type_level
+[r/haskell]: https://www.reddit.com/r/haskell/comments/fksskm/notes_for_thinking_with_types_typelevel/
 
 [^hlist-source]: [The complete code for `HList`](/code/hlist.html).
