@@ -1,11 +1,13 @@
 ---
-title: "Notes for 'Thinking with Types: Type-level Programming in Haskell'"
-date: 2019-11-22
+title: "Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5"
+date: 2020-03-18
 description: "Notes for the book 'Thinking with Types: Type-level Programming in Haskell'"
 tags: haskell, notes, programming
 author: Abhinav Sarkar
 toc: left
 ---
+
+[Haskell](https://www.haskell.org) --- with its powerful type system --- has a great support for type-level programming and it has gotten much better in the recent times with the new releases of the [GHC](https://www.haskell.org/ghc/) compiler. But type-level programming remains a daunting topic even with seasoned haskellers. [Thinking with Types: Type-level Programming in Haskell](https://thinkingwithtypes.com/) by [Sandy Maguire](https://sandymaguire.me/about/) is a book which attempts to fix that. I've taken some notes to summarize my understanding of the same.
 
 * toc
 
@@ -98,6 +100,8 @@ emptyBoard1 =
              Nothing Nothing Nothing
              Nothing Nothing Nothing
 
+-- Alternatively
+
 data Three = One | Two | Three
 data TicTacToe2 a =
   TicTacToe2 (Three -> Three -> a)
@@ -131,8 +135,8 @@ Either a a
 
 ### The Kind System
 
-- _Terms_ are things manipulated at runtime. _Types_ of terms are used by compiler to prove things about the terms.
-- Similarly, _Types_ are things manipulated at compile-time. _Kinds_ of types are used by the compiler to prove things about the types.
+- _Terms_ are things manipulated at runtime. _Types_ of terms are used by compiler to prove "things" about the terms.
+- Similarly, _Types_ are things manipulated at compile-time. _Kinds_ of types are used by the compiler to prove "things" about the types.
 - Kinds are "the types of the Types".
 - Kind of things that can exist at runtime (terms) is `*`. That is, kind of `Int`, `String` etc is `*`.
 ```haskell
@@ -164,7 +168,7 @@ Control.Monad.Trans.Maybe.MaybeT IO Int :: *
 
 ### Data Kinds
 
-- `-XDataKinds` extension lets us create new kinds.
+- [`-XDataKinds`] extension lets us create new kinds.
 - It lifts data constructors into type constructors and types into kinds.
 ```haskell
 > :set -XDataKinds
@@ -182,7 +186,7 @@ Allow :: *
 
 ### Promotion of Built-In Types
 
-- `-XDataKinds` extension promotes built-in types too.
+- [`-XDataKinds`] extension promotes built-in types too.
 - Strings are promoted to the kind `Symbol`.
 - Natural numbers are promoted to the kind `Nat`.
 ```haskell
@@ -206,7 +210,7 @@ GHC.TypeLits> :kind! (1 + 2) ^ 7
 (1 + 2) ^ 7 :: Nat
 = 2187
 ```
-- `-XTypeOperators` extension is needed for applying type-level functions with symbolic identifiers.
+- [`-XTypeOperators`] extension is needed for applying type-level functions with symbolic identifiers.
 - There are type-level lists and tuples:
 ```haskell
 GHC.TypeLits> :kind '[ 'True ]
@@ -223,7 +227,7 @@ GHC.TypeLits> :kind '(6, "x", 'False)
 
 ### Type-level Functions
 
-- With the `-XTypeFamilies` extension, it's possible to write new type-level functions as closed type families:
+- With the [`-XTypeFamilies`] extension, it's possible to write new type-level functions as closed type families:
 ```haskell
 > :set -XDataKinds
 > :set -XTypeFamilies
@@ -247,18 +251,18 @@ And 'False 'True :: Bool
 
 ## Chapter 3. Variance
 
-- There are three types of _Variance_ (`T` here a `newtype` over the functions):
-  - Covariant: any function of type `a -> b` can be lifted into a function of type `T a -> T b`. Covariant types are instances of the `Functor` typeclass:
+- There are three types of _Variance_ (`T` here a type of kind `* -> *`):
+  - Covariant: any function of type `a -> b` can be lifted into a function of type `T a -> T b`. Covariant types are instances of the [`Functor`] typeclass:
   ```haskell
   class Functor f where
     fmap :: (a -> b) -> f a -> f b
   ```
-  - Contravariant: any function of type `a -> b` can be lifted into a function of type `T b -> T a`. Contravariant functions are instances of the `Contravariant` typeclass:
+  - Contravariant: any function of type `a -> b` can be lifted into a function of type `T b -> T a`. Contravariant functions are instances of the [`Contravariant`] typeclass:
   ```haskell
   class Contravariant f where
     contramap :: (a -> b) -> f b -> f a
   ```
-  - Invariant: no function of type `a -> b` can be lifted into a function of type `T a`. Invariant functions are instances of the `Invariant` typeclass:
+  - Invariant: no function of type `a -> b` can be lifted into a function of type `T a`. Invariant functions are instances of the [`Invariant`] typeclass:
   ```haskell
   class Invariant f where
     invmap :: (a -> b) -> (b -> a) -> f a -> f b
@@ -295,13 +299,13 @@ newtype T5 a = T5 ((a -> Int) -> Int)
 ```
 - Covariant parameters are said to be _produced_ or _owned_ by the type.
 - Contravariant parameters are said to be _consumed_ by the type.
-- A type that is covariant in two parameters is called a `BiFunctor`.
-- A type that is contravariant in first parameter and covariant in second parameter is called a `Profunctor`.
+- A type that has two parameters and is covariant in both of them is an instance of [`BiFunctor`].
+- A type that has two parameters and is contravariant in first parameter and covariant in second parameter is an instance of [`Profunctor`].
 
 ## Chapter 4. Working with Types
 
 - Standard Haskell has no notion of scopes for types.
-- `-XScopedTypeVariables` extension lets us bind type variables to a scope. It requires an explicity `forall` quantifier in type signatures.
+- [`-XScopedTypeVariables`] extension lets us bind type variables to a scope. It requires an explicitly `forall` quantifier in type signatures.
 
 ```haskell
 -- This does not compile.
@@ -359,7 +363,7 @@ newtype T5 a = T5 ((a -> Int) -> Int)
 |   go f' = g (f' a)
 | :}
 ```
-- `-XTypeApplications` extension lets us directly apply types to expressions:
+- [`-XTypeApplications`] extension lets us directly apply types to expressions:
 ```haskell
 > :set -XTypeApplications
 > :type traverse
@@ -387,7 +391,7 @@ traverse @Maybe @_ @_ @String
   :: Applicative w1 =>
      (w2 -> w1 String) -> Maybe w2 -> w1 (Maybe String)
 ```
-- Sometimes the compiler cannot infer the type of an expression. `-XAllowAmbiguousTypes` extension allow such programs to compile.
+- Sometimes the compiler cannot infer the type of an expression. [`-XAllowAmbiguousTypes`] extension allow such programs to compile.
 ```haskell
 > :set -XScopedTypeVariables
 > :{
@@ -410,7 +414,7 @@ traverse @Maybe @_ @_ @String
 ```haskell
 data Proxy a = Proxy
 ```
-- With all the three extensions enabled, it is possible to get a term-level representation of types using the `Data.Typeable` module:
+- With all the three extensions enabled, it is possible to get a term-level representation of types using the [`Data.Typeable`] module:
 ```haskell
 > :set -XScopedTypeVariables
 > :set -XTypeApplications
@@ -431,7 +435,7 @@ Data.Typeable> typeName @(IO Int)
 ### Constraints
 
 - _Constraints_ are a kind different than the types (`*`).
-- Constraints are what appear on the left-hand side on the fat context arrow `=>` like `Show a`.
+- Constraints are what appear on the left-hand side on the fat context arrow `=>`, like `Show a`.
 ```haskell
 > :k Show
 Show :: * -> Constraint
@@ -602,7 +606,7 @@ AllEq '[Bool, Char] :: Constraint
 = (Eq Bool, (Eq Char, () :: Constraint))
 ```
 - `AllEq` is a type-level function from a list of types to a constraint.
-- With the `-XConstraintKinds` extension, `AllEq` can be made polymorphic over all constraints instead of just `Eq`:
+- With the [`-XConstraintKinds`] extension, `AllEq` can be made polymorphic over all constraints instead of just `Eq`:
 ```haskell
 > :set -XConstraintKinds
 Data.Constraint> :{
@@ -618,4 +622,19 @@ instance All Eq ts => Eq (HList ts) where
   HNil == HNil = True
   (a :# as) == (b :# bs) = a == b && as == bs
 ```
+
+[`Functor`]: https://hackage.haskell.org/package/base/docs/Prelude.html#t:Functor
+[`Contravariant`]: https://hackage.haskell.org/package/base/docs/Data-Functor-Contravariant.html
+[`Invariant`]: https://hackage.haskell.org/package/invariant/docs/Data-Functor-Invariant.html#t:Invariant
+[`BiFunctor`]: https://hackage.haskell.org/package/base/docs/Data-Bifunctor.html#t:Bifunctor
+[`Profunctor`]: https://hackage.haskell.org/package/profunctors/docs/Data-Profunctor.html#t:Profunctor
+[`Data.Typeable`]: https://hackage.haskell.org/package/base/docs/Data-Typeable.html
+[`-XDataKinds`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-DataKinds
+[`-XTypeOperators`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeOperators
+[`-XTypeFamilies`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeFamilies
+[`-XScopedTypeVariables`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ScopedTypeVariables
+[`-XTypeApplications`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-TypeApplications
+[`-XAllowAmbiguousTypes`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-AllowAmbiguousTypes
+[`-XConstraintKinds`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ConstraintKinds
+
 [^hlist-source]: [The complete code for `HList`](/code/hlist.html).
