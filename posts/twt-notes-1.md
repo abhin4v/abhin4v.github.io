@@ -1,5 +1,5 @@
 ---
-title: "Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapter 1–5"
+title: "Notes for 'Thinking with Types: Type-level Programming in Haskell', Chapters 1–5"
 date: 2020-03-18
 description: "Notes for the book 'Thinking with Types: Type-level Programming in Haskell'"
 tags: haskell, notes, programming
