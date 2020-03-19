@@ -620,7 +620,7 @@ instance All Eq ts => Eq (HList ts) where
 
 ## Conclusion
 
-I'm still in the process of reading the book and I'll post the notes for the rest of the chapters in a later post. For now, you can discuss this post on [lobsters], [r/haskell] or in the comments below.
+I'm still in the process of reading the book and I'll post the notes for the rest of the chapters in a later post. For now, you can discuss this post on [lobsters], [r/haskell], [hacker news], [twitter] or in the comments below.
 
 [`Functor`]: https://hackage.haskell.org/package/base/docs/Prelude.html#t:Functor
 [`Contravariant`]: https://hackage.haskell.org/package/base/docs/Data-Functor-Contravariant.html
@@ -637,5 +637,7 @@ I'm still in the process of reading the book and I'll post the notes for the res
 [`-XConstraintKinds`]: https://downloads.haskell.org/~ghc/latest/docs/html/users_guide/glasgow_exts.html#extension-ConstraintKinds
 [lobsters]: https://lobste.rs/s/cpzhtc/notes_for_thinking_with_types_type_level
 [r/haskell]: https://www.reddit.com/r/haskell/comments/fksskm/notes_for_thinking_with_types_typelevel/
+[hacker news]: https://news.ycombinator.com/item?id=22625209
+[twitter]: https://twitter.com/abhin4v/status/1240529389676302337
 
 [^hlist-source]: [The complete code for `HList`](/code/hlist.html).
