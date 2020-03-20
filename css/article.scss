@@ -199,6 +199,9 @@ body.article-page {
 @media screen and(max-width: 640px) {
   article.post {
     section.body {
+      > ul, > ul > li > ul, > ul > li > ul > li > ul {
+        padding-left: 1em;
+      }
       > .scrollable-table table {
         td, th {
           padding: 0.2em 0.2em;
