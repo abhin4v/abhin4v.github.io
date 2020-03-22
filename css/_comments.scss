@@ -4,13 +4,13 @@
 #comment-container {
   input[type="submit"] {
     font-family: $text-ss-ff;
-    background-color: #3e97ed;
-    color: #eee;
+    background-color: var(--button-bgcolor);
+    color: var(--button-color);
     border: none;
     cursor: pointer;
     margin-bottom: 0.25em;
     &:hover {
-      background-color: #bd24bb;
+      background-color: var(--button-hover-bgcolor);
     }
   }
 }
@@ -29,7 +29,8 @@
     display: block;
     margin: 1em 0;
     padding: 0.2em;
-    border: 1px solid $border-color;
+    border: 1px solid var(--border-color);
+    background-color: var(--input-bgcolor);
     font-family: $text-ff;
     &[type="email"] {
       margin-bottom: 0;
@@ -47,8 +48,10 @@
     width: 15em;
     padding: 0.3em;
   }
-  fieldset[disabled="disabled"] input[type="submit"] {
-    background-color: #777;
+  fieldset[disabled] {
+    input, textarea {
+      background-color: var(--disabled-input-bgcolor);
+    }
   }
   #cancel-reply {
     display: none;
@@ -61,7 +64,7 @@
 }
 
 #comment-form-message {
-  background-color: #faffac;
+  background-color: var(--highlight-bgcolor);
   padding: 0.3em;
   display: none;
 }
@@ -84,7 +87,7 @@
 
   .message {
     a[href] {
-      @include link-underline($background-color, $link-color, $selection-color);
+      @include link-underline(var(--background-color));
     }
     p:last-child {
       margin-bottom: 0;
@@ -106,9 +109,9 @@
     line-height: 1;
   }
   .post-author {
-    -webkit-box-shadow: 0 7px 0px -2px #a091d1b3;
-    -moz-box-shadow: 0 7px 0px -2px #a091d1b3;
-    box-shadow: 0 7px 0px -2px #a091d1b3;
+    -webkit-box-shadow: 0 7px 0px -2px #a091d1;
+    -moz-box-shadow: 0 7px 0px -2px #a091d1;
+    box-shadow: 0 7px 0px -2px #a091d1;
   }
   &.level-0 {
     margin-left: 0.5em;
@@ -116,7 +119,7 @@
   }
   &.level-1 {
     margin-left: 2.5em;
-    border-left: 0.3em solid #8a2be2;
+    border-left: 0.3em solid #9c54de;
   }
   &.level-2 {
     margin-left: 4.5em;

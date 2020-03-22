@@ -1,10 +1,73 @@
 $text-color: #333;
+$highlight-bgcolor: #faffac;
 $border-color: #ababab;
 $background-color: #fdfdfd;
 $selection-color: #b4d5fe;
 $link-color: #4078f2;
 $link-hover-color: #c18401;
+$button-bgcolor: #3e97ed;
+$button-hover-bgcolor: #bd24bb;
+$button-color: #eee;
+$input-bgcolor: #fff;
+$disabled-input-bgcolor: #c4c4c4;
+$mark-bgcolor: #dee7fd;
 $text-ff: 'Cardo', 'Georgia', serif;
 $header-ff: 'Noto Serif', 'Georgia', serif;
 $code-ff: 'Fira Mono', monospace;
 $text-ss-ff: 'Lato', 'Helvetica', sans-serif;
+
+:root {
+  --text-color: $text-color;
+  --text-color-d10: #{darken($text-color, 10%)};
+  --text-color-d20: #{darken($text-color, 20%)};
+  --text-color-u20: #{lighten($text-color, 20%)};
+  --text-color-u30: #{lighten($text-color, 30%)};
+  --text-color-u40: #{lighten($text-color, 40%)};
+  --highlight-bgcolor: #{$highlight-bgcolor};
+  --border-color: #{$border-color};
+  --border-color-u10: #{lighten($border-color, 10%)};
+  --border-color-u30: #{lighten($border-color, 25%)};
+  --border-color-d10: #{darken($border-color, 10%)};
+  --background-color: #{$background-color};
+  --background-color-d10: #{darken($background-color, 10%)};
+  --selection-color: #{$selection-color};
+  --link-color: #{$link-color};
+  --link-color-d30: #{darken($link-color, 30%)};
+  --link-hover-color: #{$link-hover-color};
+  --button-bgcolor: #{$button-bgcolor};
+  --button-hover-bgcolor: #{$button-hover-bgcolor};
+  --button-color: #{$button-color};
+  --input-bgcolor: #{$input-bgcolor};
+  --disabled-input-bgcolor: #{$disabled-input-bgcolor};
+  --code-bgcolor: #fafafa;
+  --code-lnum-color: #a42828;
+  --tag-bgcolor: #e6e6fa;
+  --mark-bgcolor: #{$mark-bgcolor};
+}
+
+@media(prefers-color-scheme: dark) {
+  :root {
+    --text-color: #{lighten(invert($text-color), 5%)};
+    --text-color-d10: #{lighten(invert($text-color), 15%)};
+    --text-color-d20: #{lighten(invert($text-color), 25%)};
+    --text-color-u20: #{darken(invert($text-color), 5%)};
+    --text-color-u30: #{darken(invert($text-color), 5%)};
+    --text-color-u40: #{darken(invert($text-color), 5%)};
+    --highlight-bgcolor: #{invert($highlight-bgcolor)};
+    --border-color: #{invert($border-color)};
+    --border-color-u10: #{darken(invert($border-color), 5%)};
+    --border-color-u30: #{darken(invert($border-color), 10%)};
+    --border-color-d10: #{lighten(invert($border-color), 20%)};
+    --background-color: #{lighten(invert($background-color), 15%)};
+    --background-color-d10: #{lighten(invert($background-color), 25%)};
+    --link-color: #{lighten($link-color, 25%)};
+    --link-color-d30: #{$link-color};
+    --link-hover-color: #{scale-color($link-hover-color, $lightness: 60%)};
+    --input-bgcolor: #{darken($input-bgcolor, 10%)};
+    --disabled-input-bgcolor: #{darken($disabled-input-bgcolor, 30%)};
+    --code-bgcolor: #282c34;
+    --code-lnum-color: #d58989;
+    --tag-bgcolor: #2d1e8a;
+    --mark-bgcolor: #{lighten(invert($mark-bgcolor), 10%)};
+  }
+}

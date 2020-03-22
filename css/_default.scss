@@ -15,9 +15,13 @@ body {
   font-family: $text-ff;
   font-size: 1.1em;
   line-height: 1.5em;
-  background-color: $background-color;
-  color: $text-color;
+  background-color: var(--background-color);
+  color: var(--text-color);
   text-rendering: optimizeLegibility !important;
+  @media(prefers-color-scheme: dark) {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
   > main {
     padding: 0 1em;
@@ -27,7 +31,7 @@ body {
     margin-right: auto;
     h1, h2, h3, h4, h5, h6 {
       font-family: $header-ff;
-      color: darken($text-color, $amount: 10);
+      color: var(--text-color-d10);
     }
   }
   > header {
@@ -40,17 +44,13 @@ body {
       font-size: 1.1em;
       font-weight: normal;
     }
-    a {
-      color: #000;
-      text-decoration: none;
-    }
   }
   > footer {
     max-width: 50rem;
     margin-left: auto;
     margin-right: auto;
     padding: 0 1rem;
-    border-top: 1px solid $border-color;
+    border-top: 1px solid var(--border-color);
     margin-top: 10px;
     #copy {
       text-align: right;
@@ -81,7 +81,7 @@ pre {
   code {
     display: block;
     mark {
-      background-color: lighten($color: $link-color, $amount: 33%);
+      background-color: var(--mark-bgcolor);
       color: inherit;
       padding: 0.3em 0;
       @media print {
@@ -102,16 +102,16 @@ ins::before {
   content: " > >";
 }
 hr {
-  color: $border-color;
-  background-color: $border-color;
+  color: var(--border-color);
+  background-color: var(--border-color);
   height: 1px;
   border: 0;
 }
 a, a:visited {
   text-decoration: none;
-  color: $link-color;
+  color: var(--link-color);
   &:hover {
-    color: $link-hover-color;
+    color: var(--link-hover-color);
   }
 }
 em {
@@ -123,6 +123,12 @@ em {
 }
 img.full-width {
   width: 100%;
+}
+
+@mixin dark-invert-filter {
+  @media(prefers-color-scheme: dark) {
+    filter: \invert(80%);
+  }
 }
 
 @mixin fancy-ul() {
@@ -138,6 +144,7 @@ img.full-width {
       @media screen and(max-width: 640px) {
         content: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M0%200v10l5-5-5-5z%22%20transform%3D%22translate(2)%22%20%2F%3E%3C%2Fsvg%3E");
       }
+      @include dark-invert-filter();
     }
   }
 }
@@ -177,7 +184,7 @@ img.full-width {
 
   a {
     text-decoration: none!important;
-    color: $text-color!important;
+    color: var(--text-color)!important;
   }
 
   .page-break {
@@ -192,14 +199,15 @@ img.full-width {
 
 .feed-icon {
   float: right;
-  color: $text-color!important;
+  color: var(--text-color)!important;
   &:hover {
-    color: $link-color!important;
+    color: var(--link-color)!important;
   }
   > svg {
     width: 1.5em;
     height: 1.5em;
     margin-bottom: -1em;
+    @include dark-invert-filter();
   }
 }
 
@@ -215,6 +223,6 @@ img.full-width {
     margin-bottom: -0.2em;
     width: 1em;
     height: 1em;
-    fill: $link-color;
+    fill: var(--link-color);
   }
 }

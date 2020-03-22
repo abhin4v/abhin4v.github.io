@@ -19,7 +19,6 @@
   table.sourceCode {
     width: 100%;
     line-height: 100%;
-    background-color: #f8f8f8;
   }
   td {
     &.lineNumbers {
@@ -33,11 +32,13 @@
       padding-left: 5px;
     }
   }
-  pre {
-    background-color: #f8f8f8;
-  }
   code {
-    background-color: #f8f8f8;
+    color: #333;
+
+    @media(prefers-color-scheme: dark) {
+      filter: \invert(80%);
+    }
+
     span {
       &.kw {
         color: #204a87;

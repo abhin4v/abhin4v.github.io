@@ -1,5 +1,5 @@
 .subscription-msg {
-  border-top: 1px solid $border-color;
+  border-top: 1px solid var(--border-color);
 
   form#subscription {
     display: flex;
@@ -11,7 +11,8 @@
       font-family: $text-ss-ff;
       display: block;
       padding: 0.3em 0.6em;
-      border: 1px solid $border-color;
+      border: 1px solid var(--border-color);
+      background-color: var(--input-bgcolor);
       margin-bottom: 0.5em;
 
       &[type="email"] {
@@ -21,12 +22,12 @@
       }
 
       &[type="submit"] {
-        background-color: #3e97ed;
-        color: #eee;
+        background-color: var(--button-bgcolor);
+        color: var(--button-color);
         border: none;
         cursor: pointer;
         &:hover {
-          background-color: #bd24bb;
+          background-color: var(--button-hover-bgcolor);
         }
       }
     }

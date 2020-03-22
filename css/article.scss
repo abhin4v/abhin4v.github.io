@@ -17,6 +17,7 @@
   vertical-align: middle;
   position: relative;
   top: -0.1em;
+  @include dark-invert-filter();
 }
 
 %top-link {
@@ -24,6 +25,7 @@
   display: inline-block;
   float: right;
   position: relative;
+  @include dark-invert-filter();
 }
 
 #mentions-container, #comment-container {
@@ -44,7 +46,7 @@ article.post {
     text-decoration: none;
     color: inherit;
     img {
-      border: 1px solid #ddd;
+      border: 1px solid var(--border-color);
       margin: 0px auto;
       display: block;
       padding: 0.2em;
@@ -60,19 +62,20 @@ article.post {
     padding-left: 0.5em;
   }
   td.hljs-ln-numbers {
-    color: brown;
+    color: var(--code-lnum-color);
     vertical-align: top;
-    border-right: 1px solid #aaa;
+    border-right: 1px solid var(--border-color);
     padding-right: 0.5em;
     font-size: smaller;
   }
   pre {
     white-space: pre-wrap;
     word-wrap: break-word;
-    background-color: #fafafa;
-    border: solid lighten($border-color, 28%);
+    background-color: var(--code-bgcolor);
+    border: solid var(--border-color-u30);
     border-width: 2px 0;
     position: relative;
+    text-indent: initial;
 
     &.small {
       font-size: 80%;
@@ -104,7 +107,10 @@ article.post {
       margin: auto;
     }
     li:target {
-      background-color: #fef9cc;
+      background-color: var(--highlight-bgcolor);
+      a[href] {
+        @include link-underline(var(--highlight-color));
+      }
     }
     a.footnote-back {
       background-image: none !important;
@@ -115,7 +121,7 @@ article.post {
     overflow-x: auto;
   }
   blockquote {
-    border-left: 10px solid #ccc;
+    border-left: 10px solid var(--border-color-u10);
     padding: 0 0.5em;
 
     p {
@@ -148,11 +154,14 @@ article.post {
         }
       }
     }
+    img[src$='.svg'] {
+      @include dark-invert-filter();
+    }
     ul {
       @include fancy-ul();
     }
     a[href] {
-      @include link-underline($background-color, $link-color, $selection-color);
+      @include link-underline(var(--background-color));
     }
     > .scrollable-table table {
       border-collapse: collapse;
@@ -164,13 +173,13 @@ article.post {
         padding: 0.2em 1em;
       }
       thead {
-        border-top: 2px solid lighten($text-color, 30%);
-        border-bottom: 2px solid lighten($text-color, 30%);
+        border-top: 2px solid var(--text-color-u30);
+        border-bottom: 2px solid var(--text-color-u30);
         display: table-row-group;
       }
       tbody {
         tr {
-          border-bottom: 1px solid lighten($text-color, 30%);
+          border-bottom: 1px solid var(--text-color-u30);
         }
       }
     }

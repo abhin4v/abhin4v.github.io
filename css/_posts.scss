@@ -30,6 +30,10 @@ article.post {
       padding: 0 0.25em;
       text-align: right;
     }
+
+    svg {
+      @include dark-invert-filter();
+    }
   }
 }
 

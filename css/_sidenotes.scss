@@ -16,9 +16,9 @@ body.sidenotes article.post {
       font-size: 0.85em;
       max-width: 18rem;
       list-style: none;
-      background-color: $background-color;
+      background-color: var(--background-color);
       padding: 10px;
-      border: 1px dashed #ccc;
+      border: 1px dashed var(--border-color-u10);
 
       p:first-child {
         margin-top: 0;

@@ -4,7 +4,7 @@
   dt {
     em {
       font-style: normal;
-      background: #e6e6fa;
+      background: var(--tag-bgcolor);
       padding: 0.1em 0.3em;
       border-radius: 0.3em;
       font-size: 0.75em;
@@ -17,4 +17,7 @@
       font-weight: bold;
     }
   }
+}
+.no-js .projects-page main dt em {
+  cursor: initial;
 }

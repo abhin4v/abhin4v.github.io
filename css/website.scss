@@ -19,12 +19,12 @@
         header {
             margin-bottom: 0;
             a {
-                color: $text-color;
+                color: var(--text-color);
             }
         }
         section.body {
             a {
-                color: $text-color;
+                color: var(--text-color);
 		&.footnote-ref {
 		    display: none;
 		}

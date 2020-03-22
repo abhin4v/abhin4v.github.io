@@ -1,5 +1,6 @@
 @import "syntax";
 @import "fonts";
+@import "consts";
 
 .no-js {
     code, pre {
@@ -8,13 +9,16 @@
     }
     code > span > a {
         font-size: 0.8em;
-        color:#999;
+        color: var(--code-lnum-color);
         padding-right: 0.5ch;
         margin-right: 1ch;
         width: 4ch;
         display: inline-block;
         text-align: right;
         border-right: 1px dashed #999;
+        @media(prefers-color-scheme: dark) {
+            filter: \invert(80%);
+        }
     }
 }
 body {
@@ -22,6 +26,7 @@ body {
   justify-content: center;
   font-size: 0.9em;
   min-width: 25rem;
+  background-color: var(--background-color);
   @media screen and(max-width: 640px){
       font-size: 0.8em;
   }

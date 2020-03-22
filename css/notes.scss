@@ -8,7 +8,7 @@ ul.fancy {
 .notes {
   time {
     display: inline-block;
-    color: lighten($color: $text-color, $amount: 40%);
+    color: var(--text-color-u40);
     font-size: 0.9em;
     min-width: 4em;
     margin-left: 0.5em;
@@ -20,7 +20,7 @@ ul.fancy {
     }
     em {
       font-style: normal;
-      background: #e6e6fa;
+      background: var(--tag-bgcolor);
       padding: 0.1em 0.3em;
       border-radius: 0.3em;
       font-size: 0.75em;
@@ -28,7 +28,7 @@ ul.fancy {
       margin: 0 0.2em;
       white-space: nowrap;
       a {
-        color: $text-color;
+        color: var(--text-color);
         &:hover {
           color: inherit;
         }

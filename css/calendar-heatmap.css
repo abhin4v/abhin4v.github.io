@@ -2,7 +2,7 @@ text.month-name,
 text.calendar-heatmap-legend-text,
 text.day-initial {
   font-size: 10px;
-  fill: inherit;
+  fill: currentColor;
   font-family: Helvetica, arial, 'Open Sans', sans-serif;
 }
 rect.day-cell:hover {

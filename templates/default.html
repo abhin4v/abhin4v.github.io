@@ -144,12 +144,13 @@
         }
       });
 
-      function loadStyleSheet(src) {
-        if (document.createStyleSheet){
-          document.createStyleSheet(src);
-        } else {
-          jQuery("head").append(jQuery("<link rel='stylesheet' href='"+src+"' type='text/css'>"));
+      function loadStyleSheet(src, media) {
+        var ssHtml = "<link rel='stylesheet' href='"+src+"' type='text/css'";
+        if (media !== undefined) {
+          ssHtml += " media='" + media + "''";
         }
+        ssHtml += ">"
+        jQuery("head").append(jQuery(ssHtml));
       }
 
       jQuery(window).ready(function setGenTime() {

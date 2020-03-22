@@ -3,6 +3,9 @@
 .download {
   float: right;
   font-size: smaller;
+  svg {
+    @include dark-invert-filter();
+  }
 }
 
 .embed-container { 

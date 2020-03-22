@@ -8,10 +8,13 @@
     display: table-cell;
     width: 50%;
     .title {
-      color: $text-color;
+      color: var(--text-color);
     }
     .ind {
       font-variant: small-caps;
+    }
+    svg.assist-icon {
+      @include dark-invert-filter();
     }
   }
   .previous {

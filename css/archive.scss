@@ -38,13 +38,13 @@
       margin-right: 0.2em;
 
       a {
-        color: lighten($text-color, 20%);
+        color: var(--text-color-u20);
         font-size: smaller;
         padding-left: 0.1em;
         padding-right: 0.1em;
 
         &:hover {
-          color: $link-color;
+          color: var(--link-color);
         }
       }
     }

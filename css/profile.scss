@@ -4,12 +4,13 @@ a.img-link {
   img {
     max-width: 50rem;
     width: 90vw;
+    background-color: #fdfdfd;;
   }
   img + span {
     font-size: medium;
     text-align: center;
     display: block;
-    color: lighten($text-color, 20%);
+    color: var(--text-color-u20);
   }
 }
 

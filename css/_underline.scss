@@ -13,7 +13,7 @@
                 -.15em 0 $background;
 }
 
-@mixin text-underline($color-bg, $color-text) {
+@mixin text-underline($color-text) {
   background-image: linear-gradient($color-text, $color-text);
   background-size: 1px 1px;
   background-repeat: repeat-x;
@@ -38,12 +38,12 @@
   }
 }
 
-@mixin link-underline($background, $text, $selection){
-  @include text-underline-crop($background);
-  @include text-underline($background, $text);
-  @include text-selection($selection);
+@mixin link-underline($background-color){
+  @include text-underline-crop($background-color);
+  @include text-underline(var(--link-color));
+  @include text-selection(var(--selection-color));
 
-  color: $text;
+  color: var(--link-color);
   text-decoration: none;
 
   *,
@@ -55,6 +55,6 @@
   }
 
   &:visited {
-    color: darken($text, 30%);
+    color: var(--link-color-d30);
   }
 }

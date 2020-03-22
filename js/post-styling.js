@@ -130,7 +130,10 @@
 (function() {
   function highlight() {
     if (typeof loadStyleSheet !== 'undefined') {
-      loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css");
+      loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-dark.min.css",
+        "(prefers-color-scheme: dark)");
+      loadStyleSheet("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/atom-one-light.min.css",
+        "(prefers-color-scheme: no-preference), (prefers-color-scheme: light)");
     } else {
       window.setTimeout(highlight, 500);
     }
