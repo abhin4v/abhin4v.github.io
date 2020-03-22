@@ -1,7 +1,7 @@
 {-# LANGUAGE OverloadedStrings, BangPatterns #-}
 module Main where
 
-import Control.Monad (unless)
+import Control.Monad (unless, when)
 import Data.Maybe (fromMaybe, fromJust)
 import Hakyll
 import Site.Activities
@@ -16,6 +16,7 @@ import Site.Readings
 import Site.ShortURLs
 import Site.Talks
 import System.Environment (lookupEnv)
+import Debug.Trace (traceIO)
 
 main :: IO ()
 main = do
@@ -25,6 +26,7 @@ main = do
   !stravaClientSecret <- fromJust        <$> lookupEnv "STRAVA_CLIENT_SECRET"
   !stravaRefreshToken <- fromJust        <$> lookupEnv "STRAVA_REFRESH_TOKEN"
 
+  when offline $ traceIO "Running offline"
   let stravaAuth = newAuth stravaClientId stravaClientSecret stravaRefreshToken
 
   hakyll $ do

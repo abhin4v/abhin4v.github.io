@@ -15,7 +15,7 @@ posts tags env offline = do
   -- posts
   match "posts/*.md" $ do
     route indexHTMLRoute
-    doCompilePosts (not offline) tags env =<< getMatches "posts/*.md"
+    doCompilePosts (not offline) True tags env =<< getMatches "posts/*.md"
 
   -- raw posts
   match "posts/*.md" $ version "raw" $ do

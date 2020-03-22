@@ -15,10 +15,10 @@ import qualified Site.Webmentions as WM
 import System.FilePath.Posix (takeBaseName, takeDirectory)
 
 compileDrafts :: Tags -> String -> [Identifier] -> Rules ()
-compileDrafts = doCompilePosts False
+compileDrafts = doCompilePosts False False
 
-doCompilePosts :: Bool -> Tags -> String -> [Identifier] -> Rules ()
-doCompilePosts commentsEnabled tags env posts = compile $ do
+doCompilePosts :: Bool -> Bool -> Tags -> String -> [Identifier] -> Rules ()
+doCompilePosts mentionsEnabled commentsEnabled tags env posts = compile $ do
   post         <- getUnderlying
   alignment    <- fromMaybe "left" <$> getMetadataField post "toc"
   path         <- getResourceFilePath
@@ -27,7 +27,7 @@ doCompilePosts commentsEnabled tags env posts = compile $ do
   comments <- sortComments =<< loadAllSnapshots (fromGlob $ "comments/" <> postSlug <> "/*.md") "comment"
   let commentCount = show $ length comments
 
-  mentions <- if commentsEnabled
+  mentions <- if mentionsEnabled
               then unsafeCompiler $ WM.getPostWebmentions postSlug
               else return mempty
 
