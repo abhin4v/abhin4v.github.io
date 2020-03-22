@@ -26,19 +26,20 @@
     var jq = jQuery;
 
     var ww = jq(window).width();
-    var margin = jq("main article").offset().left;
     var bw = jQuery("main article").width();
 
-    jq("article pre").each(function() {
-      if (jq(this).parents("section.footnotes").length == 0) {
-        jq(this).css("left", "-" + margin + "px");
-        jq(this).css("width", ww + "px");
-      }
-    });
     jq("article pre code").each(function() {
       if (jq(this).parents("section.footnotes").length == 0) {
+        var margin = jq(this).offset().left;
         jq(this).css("margin-left", margin + "px");
         jq(this).css("margin-right", (ww - margin - bw) + "px");
+      }
+    });
+    jq("article pre").each(function() {
+      if (jq(this).parents("section.footnotes").length == 0) {
+        var margin = jq(this).offset().left;
+        jq(this).css("left", "-" + margin + "px");
+        jq(this).css("width", ww + "px");
       }
     });
   }
@@ -88,6 +89,7 @@
 
   function doStyle() {
     styleFootnotes();
+    unstyleCode();
     styleCode();
     styleFootnotes();
     jQuery("article.post section.body p:contains('emboldened')").each(function() {
