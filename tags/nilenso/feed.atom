@@ -11,7 +11,7 @@
     </author>
     <updated>2018-08-13T00:00:00Z</updated>
     <icon>https://abhinavsarkar.net/images/favicon.ico</icon>
-    <rights>© 2017-2019, Abhinav Sarkar</rights>
+    <rights>© 2017–2020, Abhinav Sarkar</rights>
     <entry>
     <title>Fast Sudoku Solver in Haskell #3: Picking the Right Data Structures</title>
     <link rel="alternate" href="https://abhinavsarkar.net/posts/fast-sudoku-solver-in-haskell-3/" />
