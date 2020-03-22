@@ -8,7 +8,7 @@ toc: left
 bodyclass: nosidenotes
 ---
 
-[Haskell](https://www.haskell.org) --- with its powerful type system --- has a great support for type-level programming and it has gotten much better in the recent times with the new releases of the [GHC](https://www.haskell.org/ghc/) compiler. But type-level programming remains a daunting topic even with seasoned haskellers. [_Thinking with Types: Type-level Programming in Haskell_](https://thinkingwithtypes.com/) by [Sandy Maguire](https://sandymaguire.me/about/) is a book which attempts to fix that. I've taken some notes to summarize my understanding of the same.
+[Haskell](https://www.haskell.org) --- with its powerful type system --- has a great support for type-level programming and it has gotten much better in the recent times with the new releases of the [GHC](https://www.haskell.org/ghc/) compiler. But type-level programming remains a daunting topic even with seasoned haskellers. _[Thinking with Types: Type-level Programming in Haskell](https://thinkingwithtypes.com/)_ by [Sandy Maguire](https://sandymaguire.me/about/) is a book which attempts to fix that. I've taken some notes to summarize my understanding of the same.
 
 <!--more-->
 
