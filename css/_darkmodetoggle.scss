@@ -1,0 +1,18 @@
+#dark-mode-toggle {
+  position: fixed;
+  right: 0rem;
+  top: 3rem;
+  z-index: 99;
+  font-size: small;
+  opacity: 0.6;
+  &:hover {
+    background-color: var(--background-color-d10);
+    opacity: 1;
+  }
+  &:focus {
+    outline: none;
+  }
+  @media print {
+    display: none;
+  }
+}

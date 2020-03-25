@@ -1,0 +1,30 @@
+@import "consts";
+
+:root {
+  --text-color: #{lighten(invert($text-color), 5%)};
+  --text-color-d10: #{lighten(invert($text-color), 15%)};
+  --text-color-d20: #{lighten(invert($text-color), 25%)};
+  --text-color-u20: #{darken(invert($text-color), 5%)};
+  --text-color-u30: #{darken(invert($text-color), 5%)};
+  --text-color-u40: #{darken(invert($text-color), 5%)};
+  --highlight-bgcolor: #{invert($highlight-bgcolor)};
+  --border-color: #{invert($border-color)};
+  --border-color-u10: #{darken(invert($border-color), 5%)};
+  --border-color-u30: #{darken(invert($border-color), 10%)};
+  --border-color-d10: #{lighten(invert($border-color), 20%)};
+  --background-color: #{lighten(invert($background-color), 15%)};
+  --background-color-d10: #{lighten(invert($background-color), 25%)};
+  --selection-color: #{$selection-color};
+  --link-color: #{lighten($link-color, 25%)};
+  --link-color-d30: #{$link-color};
+  --link-hover-color: #{scale-color($link-hover-color, $lightness: 60%)};
+  --button-bgcolor: #{$button-bgcolor};
+  --button-hover-bgcolor: #{$button-hover-bgcolor};
+  --button-color: #{$button-color};
+  --input-bgcolor: #{darken($input-bgcolor, 10%)};
+  --disabled-input-bgcolor: #{darken($disabled-input-bgcolor, 30%)};
+  --code-bgcolor: #282c34;
+  --code-lnum-color: #d58989;
+  --tag-bgcolor: #2d1e8a;
+  --mark-bgcolor: #{lighten(invert($mark-bgcolor), 10%)};
+}

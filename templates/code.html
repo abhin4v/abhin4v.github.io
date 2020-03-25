@@ -4,13 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>$title$</title>
+  <link rel="stylesheet" href="/css/dark-theme.css" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="/css/light-theme.css" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">
   <link rel="stylesheet" href="/css/code.css">
+  <script type="module" src="/js/dark-mode-toggle.mjs"></script>
 </head>
 <body class="no-js">
+  <dark-mode-toggle
+      id="dark-mode-toggle"
+      appearance="toggle"
+      dark="Dark"
+      light="Light"
+      permanent="true">
+  </dark-mode-toggle>
 $body$
 <script>
 document.querySelectorAll("code.sourceCode > span > a").forEach(function(a) {
   a.innerText = a.hash.split('-')[1];
+});
+document.addEventListener('colorschemechange', function(e) {
+  const bodyClasses = document.body.classList;
+  bodyClasses.add(e.detail.colorScheme);
+  if (e.detail.colorScheme === 'light') {
+    bodyClasses.remove('dark');
+  } else {
+    bodyClasses.remove('light');
+  }
 });
 </script>
 </body>

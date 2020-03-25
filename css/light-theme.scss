@@ -1,0 +1,30 @@
+@import "consts";
+
+:root {
+    --text-color: $text-color;
+    --text-color-d10: #{darken($text-color, 10%)};
+    --text-color-d20: #{darken($text-color, 20%)};
+    --text-color-u20: #{lighten($text-color, 20%)};
+    --text-color-u30: #{lighten($text-color, 30%)};
+    --text-color-u40: #{lighten($text-color, 40%)};
+    --highlight-bgcolor: #{$highlight-bgcolor};
+    --border-color: #{$border-color};
+    --border-color-u10: #{lighten($border-color, 10%)};
+    --border-color-u30: #{lighten($border-color, 25%)};
+    --border-color-d10: #{darken($border-color, 10%)};
+    --background-color: #{$background-color};
+    --background-color-d10: #{darken($background-color, 10%)};
+    --selection-color: #{$selection-color};
+    --link-color: #{$link-color};
+    --link-color-d30: #{darken($link-color, 30%)};
+    --link-hover-color: #{$link-hover-color};
+    --button-bgcolor: #{$button-bgcolor};
+    --button-hover-bgcolor: #{$button-hover-bgcolor};
+    --button-color: #{$button-color};
+    --input-bgcolor: #{$input-bgcolor};
+    --disabled-input-bgcolor: #{$disabled-input-bgcolor};
+    --code-bgcolor: #fafafa;
+    --code-lnum-color: #a42828;
+    --tag-bgcolor: #e6e6fa;
+    --mark-bgcolor: #{$mark-bgcolor};
+  }

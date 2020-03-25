@@ -4,7 +4,7 @@ a.img-link {
   img {
     max-width: 50rem;
     width: 90vw;
-    background-color: #fdfdfd;;
+    background-color: $background-color;
   }
   img + span {
     font-size: medium;

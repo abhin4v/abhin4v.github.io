@@ -66,16 +66,26 @@
               location.host = "abhinavsarkar.net:443";
             }
           }
+
+          if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
+            document.head.insertAdjacentHTML(
+                'beforeend',
+                '<link rel="stylesheet" href="/css/light-theme.css"">');
+          }
         })();
         </script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css"
               media="preload" onload="if (media != 'all') media = 'all';">
+        <link rel="stylesheet" href="/css/dark-theme.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="/css/light-theme.css" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">
         <link rel="stylesheet" href="/css/$page_type$.css" media="preload" onload="if (media != 'all') media = 'all';">
         <noscript>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
           <link rel="stylesheet" href="/css/$page_type$.css">
         </noscript>
+
+        <script type="module" src="/js/dark-mode-toggle.mjs"></script>
 
         <!-- Matomo -->
         <script type="text/javascript">
@@ -116,6 +126,14 @@
             </nav>
         </header>
 
+        <dark-mode-toggle
+            id="dark-mode-toggle"
+            appearance="toggle"
+            dark="Dark"
+            light="Light"
+            permanent="true">
+        </dark-mode-toggle>
+
         <main role="main">
             $body$
         </main>
@@ -147,9 +165,9 @@
       function loadStyleSheet(src, media) {
         var ssHtml = "<link rel='stylesheet' href='"+src+"' type='text/css'";
         if (media !== undefined) {
-          ssHtml += " media='" + media + "''";
+          ssHtml += " media='" + media + "' onload='document.querySelector(\"#dark-mode-toggle\").mode = document.querySelector(\"#dark-mode-toggle\").mode'";
         }
-        ssHtml += ">"
+        ssHtml += ">";
         jQuery("head").append(jQuery(ssHtml));
       }
 
@@ -162,6 +180,15 @@
           } else {
             window.setTimeout(setGenTime, 1000);
           }
+        }
+      });
+      document.addEventListener('colorschemechange', function(e) {
+        const bodyClasses = document.body.classList;
+        bodyClasses.add(e.detail.colorScheme);
+        if (e.detail.colorScheme === 'light') {
+          bodyClasses.remove('dark');
+        } else {
+          bodyClasses.remove('light');
         }
       });
     </script>

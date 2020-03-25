@@ -22,6 +22,7 @@ assets = do
         , "files/**"
         , "fonts/**"
         , "js/*.min.js"
+        , "js/*.mjs"
         ] $ flip match $ route idRoute >> compile copyFileCompiler
 
   -- 404

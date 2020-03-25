@@ -1,6 +1,11 @@
 @import "consts";
 @import "fonts";
 @import "navigation";
+@import "darkmodetoggle";
+
+:root {
+  color-scheme: light dark;
+}
 
 html {
   overflow-x: hidden;
@@ -21,6 +26,10 @@ body {
   @media(prefers-color-scheme: dark) {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  &.light {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
   }
 
   > main {
@@ -128,6 +137,9 @@ img.full-width {
 @mixin dark-invert-filter {
   @media(prefers-color-scheme: dark) {
     filter: \invert(80%);
+  }
+  body.light & {
+    filter: \invert(0%);
   }
 }
 

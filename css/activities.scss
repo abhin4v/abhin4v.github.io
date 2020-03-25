@@ -29,6 +29,9 @@
     @media(prefers-color-scheme: dark) {
       box-shadow: 2px 2px #FF9494;
     }
+    body.light & {
+      box-shadow: 2px 2px #558ABB;
+    }
   }
   .desc {
     font-size: smaller;
@@ -44,11 +47,17 @@
     @media(prefers-color-scheme: dark) {
       background-color: darken($color, 10%);
     }
+    body.light & {
+      background-color: $color;
+    }
   }
   .link a {
     color: $color;
     @media(prefers-color-scheme: dark) {
       color: darken($color, 10%);
+    }
+    body.light & {
+      color: $color;
     }
   }
 }
