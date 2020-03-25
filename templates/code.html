@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="/css/light-theme.css" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">
   <link rel="stylesheet" href="/css/code.css">
   <script type="module" src="/js/dark-mode-toggle.mjs"></script>
+
+  $partial("templates/matomo.html")$
 </head>
 <body class="no-js">
   <dark-mode-toggle
@@ -30,6 +32,7 @@ document.addEventListener('colorschemechange', function(e) {
   } else {
     bodyClasses.remove('light');
   }
+  _paq.push(['trackEvent', 'DarkMode', 'Toggle', mode]);
 });
 </script>
 </body>
