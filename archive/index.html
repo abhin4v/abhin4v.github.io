@@ -55,31 +55,41 @@
               location.host = "abhinavsarkar.net:443";
             }
           }
+
+          if (window.matchMedia('(prefers-color-scheme: dark)').media === 'not all') {
+            document.head.insertAdjacentHTML(
+                'beforeend',
+                '<link rel="stylesheet" href="/css/light-theme.css"">');
+          }
         })();
         </script>
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css" media="preload" onload="if (media != 'all') media = 'all';">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/dark-theme.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="//abhinavsarkar.net/css/light-theme.css" media="(prefers-color-scheme: no-preference), (prefers-color-scheme: light)">
         <link rel="stylesheet" href="//abhinavsarkar.net/css/archive.css" media="preload" onload="if (media != 'all') media = 'all';">
         <noscript>
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
           <link rel="stylesheet" href="//abhinavsarkar.net/css/archive.css">
         </noscript>
 
+        <script type="module" src="//abhinavsarkar.net/js/dark-mode-toggle.mjs"></script>
+
         <!-- Matomo -->
-        <script type="text/javascript">
-          var _paq = _paq || [];
-          _paq.push(['trackPageView']);
-          _paq.push(['enableLinkTracking']);
-          _paq.push(['trackVisibleContentImpressions']);
-          (function() {
-            var u="//anna.abhinavsarkar.net/";
-            _paq.push(['setTrackerUrl', u+'piwik.php']);
-            _paq.push(['setSiteId', '1']);
-            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-            g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-          })();
-        </script>
-        <!-- End Matomo Code -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  _paq.push(['trackVisibleContentImpressions']);
+  (function() {
+    var u="//anna.abhinavsarkar.net/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', '1']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Matomo Code -->
     </head>
     <body class="archive-page ">
         <noscript>
@@ -108,6 +118,9 @@
                 </span>
             </nav>
         </header>
+
+        <dark-mode-toggle id="dark-mode-toggle" appearance="toggle" dark="Dark" light="Light" permanent="true">
+        </dark-mode-toggle>
 
         <main role="main">
             <div id="archive">
@@ -247,9 +260,9 @@
       function loadStyleSheet(src, media) {
         var ssHtml = "<link rel='stylesheet' href='"+src+"' type='text/css'";
         if (media !== undefined) {
-          ssHtml += " media='" + media + "''";
+          ssHtml += " media='" + media + "' onload='document.querySelector(\"#dark-mode-toggle\").mode = document.querySelector(\"#dark-mode-toggle\").mode'";
         }
-        ssHtml += ">"
+        ssHtml += ">";
         jQuery("head").append(jQuery(ssHtml));
       }
 
@@ -263,6 +276,17 @@
             window.setTimeout(setGenTime, 1000);
           }
         }
+      });
+      document.addEventListener('colorschemechange', function(e) {
+        const bodyClasses = document.body.classList;
+        const mode = e.detail.colorScheme;
+        bodyClasses.add(mode);
+        if (mode === 'light') {
+          bodyClasses.remove('dark');
+        } else {
+          bodyClasses.remove('light');
+        }
+        _paq.push(['trackEvent', 'DarkMode', 'Toggle', mode]);
       });
     </script>
     <style type="text/css" media="print">
