@@ -136,10 +136,10 @@ img.full-width {
 
 @mixin dark-invert-filter {
   @media(prefers-color-scheme: dark) {
-    filter: \invert(80%);
+    filter: invert(80%);
   }
   body.light & {
-    filter: \invert(0%);
+    filter: invert(0%);
   }
 }
 

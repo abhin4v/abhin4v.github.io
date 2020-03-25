@@ -1,5 +1,5 @@
 body.light.no-js code {
-  filter: \invert(0%);
+  filter: invert(0%);
 }
 
 .no-js {
@@ -40,7 +40,7 @@ body.light.no-js code {
     color: #333;
 
     @media(prefers-color-scheme: dark) {
-      filter: \invert(80%);
+      filter: invert(80%);
     }
 
     span {

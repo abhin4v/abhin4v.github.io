@@ -5,7 +5,7 @@
 
 body.light.no-js {
     code > span > a {
-        filter: \invert(0%);
+        filter: invert(0%);
     }
 }
 
@@ -24,7 +24,7 @@ body.light.no-js {
         text-align: right;
         border-right: 1px dashed #999;
         @media(prefers-color-scheme: dark) {
-            filter: \invert(80%);
+            filter: invert(80%);
         }
     }
 }
