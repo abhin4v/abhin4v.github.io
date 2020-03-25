@@ -8,6 +8,11 @@ body.light.no-js {
         filter: invert(0%);
     }
 }
+body.dark.no-js {
+    code > span > a {
+        filter: invert(80%);
+    }
+}
 
 .no-js {
     code, pre {
@@ -26,6 +31,9 @@ body.light.no-js {
         @media(prefers-color-scheme: dark) {
             filter: invert(80%);
         }
+        @media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+            filter: invert(0%);
+          }
     }
 }
 #dark-mode-toggle {
@@ -44,6 +52,10 @@ body {
   @media screen and(max-width: 640px){
       font-size: 0.8em;
   }
+  @media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
   @media(prefers-color-scheme: dark) {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -51,5 +63,9 @@ body {
   &.light {
     -webkit-font-smoothing: auto;
     -moz-osx-font-smoothing: auto;
+  }
+  &.dark {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

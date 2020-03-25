@@ -1,4 +1,5 @@
 @import "consts";
+@import "mixins";
 @import "fonts";
 @import "navigation";
 @import "darkmodetoggle";
@@ -23,6 +24,11 @@ body {
   background-color: var(--background-color);
   color: var(--text-color);
   text-rendering: optimizeLegibility !important;
+
+  @media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
   @media(prefers-color-scheme: dark) {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -30,6 +36,10 @@ body {
   &.light {
     -webkit-font-smoothing: auto;
     -moz-osx-font-smoothing: auto;
+  }
+  &.dark {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   > main {
@@ -132,33 +142,6 @@ em {
 }
 img.full-width {
   width: 100%;
-}
-
-@mixin dark-invert-filter {
-  @media(prefers-color-scheme: dark) {
-    filter: invert(80%);
-  }
-  body.light & {
-    filter: invert(0%);
-  }
-}
-
-@mixin fancy-ul() {
-  padding-left: 2em;
-  text-indent: -1em;
-  margin-left: 0;
-  li {
-    list-style: none;
-    &:before {
-      content: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2212%22%20viewBox%3D%220%200%2010%2012%22%3E%3Cpath%20d%3D%22M0%200v10l5-5-5-5z%22%20transform%3D%22translate(2)%22%20%2F%3E%3C%2Fsvg%3E");
-      display: inline-block;
-      margin-left: 1em;
-      @media screen and(max-width: 640px) {
-        content: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2210%22%20height%3D%2210%22%20viewBox%3D%220%200%2010%2010%22%3E%3Cpath%20d%3D%22M0%200v10l5-5-5-5z%22%20transform%3D%22translate(2)%22%20%2F%3E%3C%2Fsvg%3E");
-      }
-      @include dark-invert-filter();
-    }
-  }
 }
 
 @media all {

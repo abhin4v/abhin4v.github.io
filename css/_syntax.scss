@@ -1,6 +1,9 @@
 body.light.no-js code {
   filter: invert(0%);
 }
+body.dark.no-js code {
+  filter: invert(80%);
+}
 
 .no-js {
   div.sourceCode {
@@ -41,6 +44,9 @@ body.light.no-js code {
 
     @media(prefers-color-scheme: dark) {
       filter: invert(80%);
+    }
+    @media (prefers-color-scheme: light), (prefers-color-scheme: no-preference) {
+      filter: invert(0%);
     }
 
     span {

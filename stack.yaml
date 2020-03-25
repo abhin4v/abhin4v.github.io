@@ -9,6 +9,8 @@ extra-deps:
   - pandoc-emphasize-code-0.2.4@sha256:1d5fda15f841b701aefab9504eaa39dd64995d66f65ef806c5e432f758380018,2941
   - pandoc-include-code-1.4.0.0@sha256:2ebade499ab9c9605b13c2045291e5d65a205a7565bd160420c1f808ae133b2d,2279
   - https://github.com/abhin4v/thumbnail-plus/archive/fc10600d3af19ccce7c69416e2ec33143faa4d37.zip
-flags: {}
+flags:
+  hlibsass:
+    externallibsass: true
 extra-package-dbs: []
 allow-newer: true

@@ -14,6 +14,10 @@ ENV ENV=CI
 ADD . .
 RUN set -xe \
     && echo "127.0.0.1	abhinavsarkar.net" >> /etc/hosts \
+    && echo "deb http://deb.debian.org/debian testing main" | tee /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends libsass-dev=3.6\* \
+    && rm -rf /var/lib/apt/lists/* \
     && stack --no-terminal install --flag hakyll:-previewServer --flag hakyll:-watchServer --flag hakyll:-checkExternal --fast -j2 \
     && cd _site \
     && git checkout master \
