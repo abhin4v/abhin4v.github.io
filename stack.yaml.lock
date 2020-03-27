@@ -19,6 +19,13 @@ packages:
   original:
     hackage: hakyll-sass-0.2.4@sha256:4d2fbd8b63f5ef15483fc6dda09e10eefd63b4f873ad38dec2a3607eb504a8ba
 - completed:
+    hackage: hlibsass-0.1.9.0@sha256:a506590771134569cf308498bcc62604b81f8a2beb885d11db058fd0d7bcd75d,2564
+    pantry-tree:
+      size: 10549
+      sha256: c47fdf9abd68f9cd23246904948fa2caa8643de746efd03350682d097fc453ab
+  original:
+    hackage: hlibsass-0.1.9.0
+- completed:
     hackage: numerals-0.4.1@sha256:f138b4a0efbde3b3c6cbccb788eff683cb8a5d046f449729712fd174c5ee8a78,11430
     pantry-tree:
       size: 13751
